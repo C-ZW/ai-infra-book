@@ -1,0 +1,51 @@
+{
+  "id": "tla",
+  "title": "把系統寫成定理",
+  "subtitle": "TLA+ 與形式化方法",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 為什麼", "files": [
+      "../book-src/ch01-why-formal-methods.md",
+      "../book-src/ch02-state-machines.md"
+    ] },
+    { "title": "Part II — 數學地基", "files": [
+      "../book-src/ch03-logic.md",
+      "../book-src/ch04-sets-functions-relations.md",
+      "../book-src/ch05-induction.md"
+    ] },
+    { "title": "Part III — TLA+ 與時序邏輯", "files": [
+      "../book-src/ch06-action-logic.md",
+      "../book-src/ch07-temporal-logic.md",
+      "../book-src/ch08-complete-specs.md",
+      "../book-src/ch09-model-checking.md"
+    ] },
+    { "title": "Part IV — 協議精讀", "files": [
+      "../book-src/ch10-mutual-exclusion.md",
+      "../book-src/ch11-two-phase-commit.md",
+      "../book-src/ch12-paxos.md",
+      "../book-src/ch13-raft.md"
+    ] },
+    { "title": "Part V — 證明", "files": [
+      "../book-src/ch14-inductive-invariants.md",
+      "../book-src/ch15-refinement.md",
+      "../book-src/ch16-machine-proofs.md"
+    ] },
+    { "title": "Part VI — 實務與地圖", "files": [
+      "../book-src/ch17-industry-cases.md",
+      "../book-src/ch18-the-map.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-symbols.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

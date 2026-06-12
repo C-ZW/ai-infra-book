@@ -1,0 +1,12 @@
+### Worked example：5 節點手推一場 split vote 選舉
+
+**引述原文關鍵句**：
+`| n5 | Candidate → Follower（同上） | 2 → 3 | n5 → Nil |`
+
+**錯在哪**：
+此處的 `votedFor` 狀態轉移漏掉了 `n3`。
+當 `n3` 在 term 3 發起 RequestVote 請求時，此訊息會發送給所有節點（包含 `n5`）。當 `n5` 收到該訊息後，首先會執行 `UpdateTerm` 將 `currentTerm[n5]` 提升至 3，並將 `votedFor[n5]` 設為 `Nil`。接著，由於 `UpdateTerm` 並不消費訊息，同一條訊息會在下一步進入 `HandleRequestVoteRequest` 處理；此時 `n5` 的日誌與 `n3` 同為空（滿足 `logOk`），且 `votedFor[n5]` 為 `Nil`（滿足 `votedFor[n5] \in {Nil, n3}`），因此 `n5` 會同意投票給 `n3`，將 `votedFor[n5]` 設為 `n3`。
+因此，`n5` 的 `votedFor` 轉移過程應與 `n4` 類似，可能為 `Nil`（僅執行了 `UpdateTerm`）或 `n3`（兩步均完成），即寫作 `n5 → n3 或 Nil`。
+
+**正確推導**：
+`| n5 | Candidate → Follower（同上） | 2 → 3 | n5 → n3 或 Nil |`

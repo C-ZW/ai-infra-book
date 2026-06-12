@@ -69,8 +69,8 @@
 
 ## 結構性提醒
 
-- **網頁閱讀器（`web/index.html`）是產生物，不要手改**——由 `python3 web/build_reader.py` 從 book/ 重新打包（章節內容更新後必須重跑）。ASCII 圖改動後先跑 `python3 web/check_diagrams.py` 驗證對齊（規則：CJK=2 欄）。
-- **閱讀器字型假設 Apple 平台**：對齊修正用 `size-adjust:120.4%` 把 PingFang 縮放成 Menlo 半形的 2 倍，比例是按 Menlo 算的——在沒有 Menlo/PingFang 的裝置（Windows/Android）上圖會微歪（內文不受影響）。換平台時需重算比例或改 bundle 等寬 CJK 字型（如 Sarasa Mono TC）。
+- **網頁閱讀器（`web/index.html`）是產生物，不要手改**——由 `python3 ../tools/md-reader/build_reader.py web/book.config.json` 重新打包（章節內容更新後必須重跑，並跑 `build_shelf.py` 更新書架）。ASCII 圖改動後先跑 `python3 ../tools/md-reader/check_diagrams.py book` 驗證對齊（規則：CJK=2 欄）。工具於 2026-06-10 抽至 `personal/tools/md-reader/`。
+- **閱讀器字型假設 Apple 平台**：CJK=2 欄機制（2026-06-12 起）＝ build_reader 的 `wrapCJK` 在渲染時把 `pre` 內中文連續段包進 `.cjkw` span（PingFang、font-size 120.41%＝Menlo 半形 0.60205em×2、line-height:0）。**舊機制 `@font-face size-adjust` 已棄用**：WebKit/Safari 對 `local()` 來源忽略 size-adjust，中文越多的行右邊框越向左塌（Chrome 正常，所以只用 Chrome 驗證會漏抓；驗證須含使用者實際瀏覽器）。在沒有 Menlo/PingFang 的裝置（Windows/Android）上圖仍會微歪（內文不受影響）；換平台時需重算比例或 bundle 等寬 CJK 字型（如 Sarasa Mono TC）。
 
 - 附錄 A 的時間估計欄多為彙整者推估（非各章原文）——章節 lab 改版時附錄 A 需重新核對。
 - 附錄 C 是一致性的放大器：正文公式/參數改動，C.1/C.2 必須同步。

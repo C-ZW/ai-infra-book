@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>書架</title>
+<style>
+body{margin:0;background:#f7f2e9;color:#2f2b24;font-family:-apple-system,"PingFang TC",sans-serif;
+ min-height:100vh;padding:40px 20px 80px;box-sizing:border-box}
+.wrap{max-width:880px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#8d8474;font-size:13px;margin:0 0 28px}
+h2{font-size:14px;color:#8d8474;font-weight:600;letter-spacing:.05em;margin:34px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{display:block;background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;padding:18px;
+ text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.07)}
+.ct{font-weight:700;font-size:16px;margin-bottom:2px}
+.cs{font-size:12.5px;color:#8d8474;margin-bottom:10px}
+.cm{font-size:12px;color:#6f6759;margin-top:3px}
+.muted{color:#8d8474}
+.warn{color:#a05a17;font-weight:600}
+.panel{background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;padding:8px 18px}
+.fr{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #efe8d7}
+.fr:last-child{border-bottom:none}
+.fr.ok span:last-child{color:#5a7a4a}
+.fr.warn span:last-child{color:#a05a17;font-weight:600}
+.fr.info span:last-child{color:#8d8474}
+.foot{margin-top:30px;font-size:12px;color:#8d8474}
+code{background:#efe8d7;border-radius:4px;padding:1px 5px;font-size:11.5px}
+</style>
+</head>
+<body><div class="wrap">
+<h1>書架</h1>
+<p class="sub">個人書庫與 profile 狀態 ・ 產生於 2026-06-12</p>
+<h2>書</h2>
+<div class="grid">
+    <a class="card" href="web/index.html">
+      <div class="ct">從後端到 AI Infra</div>
+      <div class="cs">LLM 推論基礎設施工程</div>
+      <div class="cm">26 份文件 ・ 建置 2026-06-10</div>
+      <div class="cm"><span class="muted">內容掃描 2026-06-10</span></div>
+    </a>
+    <a class="card" href="web/plan.html">
+      <div class="ct">轉職文件</div>
+      <div class="cs">計劃書與履歷</div>
+      <div class="cm">2 份文件 ・ 建置 2026-06-10</div>
+      <div class="cm"><span class="muted">不適用</span></div>
+    </a>
+    <a class="card" href="books/tlaplus/web/index.html">
+      <div class="ct">把系統寫成定理</div>
+      <div class="cs">TLA+ 與形式化方法</div>
+      <div class="cm">26 份文件 ・ 建置 2026-06-12</div>
+      <div class="cm"><span class="muted">內容掃描 2026-06-12</span></div>
+    </a>
+</div>
+<h2>Profile 新鮮度</h2>
+<div class="panel"><div class="fr info"><span>goals</span><span>2026-06-11（每次建書確認）</span></div><div class="fr ok"><span>preferences</span><span>2026-06-10（2 天前）</span></div><div class="fr ok"><span>profile</span><span>2026-06-10（2 天前）</span></div><div class="fr ok"><span>skills</span><span>2026-06-10（2 天前）</span></div></div>
+<p class="foot">過期項目：在 AI session 說「差分訪談」即可更新。建立新書：說「寫一本關於 ___ 的書」。本頁由 <code>tools/md-reader/build_shelf.py</code> 產生，勿手改。</p>
+</div></body>
+</html>

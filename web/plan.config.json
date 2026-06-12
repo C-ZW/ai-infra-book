@@ -1,0 +1,9 @@
+{
+  "id": "plan",
+  "title": "轉職文件",
+  "subtitle": "計劃書與履歷",
+  "output": "plan.html",
+  "groups": [
+    { "title": "文件", "files": ["../plan.md", "../Chewei_Chen_Resume.md"] }
+  ]
+}

@@ -12,12 +12,16 @@
 
 ## 修改後，必跑
 
-- 動到 ASCII 圖：`python3 web/check_diagrams.py`（驗證 CJK=2 欄的對齊規則，exit 0 才算過）
-- 動到任何 book/ 內容：`python3 web/build_reader.py`（重新打包閱讀器）
-- `web/index.html` 是產生物，**不要手改**
+- 動到 ASCII 圖：`python3 ../tools/md-reader/check_diagrams.py book`（CJK=2 欄對齊規則，exit 0 才算過）
+- 動到任何 book/ 內容：`python3 ../tools/md-reader/build_reader.py web/book.config.json` 重新打包；書架有變動先跑 `python3 ../tools/md-reader/build_shelf.py`（閱讀器的「⌂ 書架」按鈕會自動連到最近的上層 bookshelf.html，所以書架要先存在）
+- `web/index.html`、`web/plan.html`、`bookshelf.html`（專案根）是產生物，**不要手改**；書架位置由 `../profile/books.json` 的 `shelf_output` 欄位決定
+
+工具已抽至 `../tools/md-reader/`（通用打包器，說明見該處 README；程式一律英文）。本 repo 只保留 reader 設定檔（`web/*.config.json`）與輸出。**每本書設定檔的 `id` 必須全域唯一**（localStorage 命名空間，重複會讓閱讀進度互相覆蓋）。
+
+個人上下文中樞在 `../profile/`（建書與個人化任務先讀其 README）；書籍登記簿 `../profile/books.json`；寫新書用 `write-book` skill。**所有書集中放在本專案 `books/<slug>/` 下**（2026-06-12 決定；如 `books/tlaplus/`，各有自己的 CLAUDE.md），只有本書（AI Infra 轉職書）因歷史因素留在 repo 根的 `book/`。
 
 ## 慣例
 
 - 使用者閱讀偏好：light mode（閱讀器預設紙感米白）。
-- 閱讀器字型對齊假設 Apple 平台（Menlo + PingFang size-adjust 120.4%），細節與限制見 maintenance.md。
+- 閱讀器字型對齊假設 Apple 平台（Menlo＋PingFang）：CJK=2 欄由 build_reader 的 **wrapCJK** 在渲染時把 `pre` 內中文包進 `.cjkw` span（PingFang、120.41%）達成。**不要改回 @font-face size-adjust**——WebKit/Safari 對 `local()` 字型忽略 size-adjust，會讓中文行右邊框塌掉（2026-06-12 教訓）。細節與限制見 maintenance.md。
 - 「掃描書的時效性」＝執行 maintenance.md 的掃描協定。

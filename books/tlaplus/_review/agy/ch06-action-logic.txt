@@ -1,0 +1,2 @@
+PASS
+已驗證文中時鐘例子的步數與 hr 變動比例（60步中59步不變）、結算系統 v0 狀態轉移與 behavior 手追過程（s₀ 到 s₄ 的每一步 action 滿足性與 enabled 狀態分析）、不變量 NoDoublePay 的邏輯推導，以及紙上推演題目中所有新增 action（Requeue、Backfill、BadRequeue）的變數指派與反例構造。

@@ -1,0 +1,3 @@
+PASS
+
+重算了 Consensus.tla 的 Invariance 與 LivenessTheorem（WF1 規則套用與 Init' \/ (chosen # {})' 邏輯）、DieHard_proof.tla 的 SmallToBig 與 BigToSmall 動作之 24 行 bounds 證明（Min 函數與 MinNat 引理的代數推演），以及紙上推演中 IndV1 證明骨架與 StrongInd 假證明的矛盾分析。所有計算、證明與推論步驟均完全正確。

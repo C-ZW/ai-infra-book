@@ -1,0 +1,23 @@
+{
+  "id": "aiib",
+  "title": "從後端到 AI Infra",
+  "subtitle": "LLM 推論基礎設施工程",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "groups": [
+    { "title": "開始", "files": ["../book/README.md"] },
+    { "title": "Part I — 心智模型與基礎", "dir": "../book/part-1-foundations", "pattern": "ch*.md" },
+    { "title": "Part II — 推論引擎", "dir": "../book/part-2-inference-engine", "pattern": "ch*.md" },
+    { "title": "Part III — 分散式推論", "dir": "../book/part-3-distributed", "pattern": "ch*.md" },
+    { "title": "Part IV — 平台工程", "dir": "../book/part-4-platform", "pattern": "ch*.md" },
+    { "title": "Part V — 生產維運", "dir": "../book/part-5-operations", "pattern": "ch*.md" },
+    { "title": "Part VI — 前沿與職涯", "dir": "../book/part-6-frontier", "pattern": "ch*.md" },
+    { "title": "附錄", "dir": "../book/appendix", "pattern": "*.md" },
+    { "title": "內部文件（_meta）", "files": [
+      "../book/_meta/landscape-2026.md",
+      "../book/_meta/maintenance.md",
+      "../book/_meta/outline.md",
+      "../book/_meta/style-guide.md"
+    ] }
+  ]
+}
