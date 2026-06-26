@@ -1,0 +1,7 @@
+All 3 tests pass. Summary of changes:
+
+- `textlib/names.py` — `format_name(first, last)` → `format_name(full_name)`, splits on the last space with `rsplit(" ", 1)` (handles multi-word first names like "Mary Ann Evans"), raises `ValueError` for single-word input
+- `textlib/greet.py` — `greeting(first, last)` → `greeting(full_name)`, passes it straight through
+- `textlib/report.py` — `roster` now expects `list[str]` instead of `list[tuple]`, iterates with `for name in people`
+
+What happens if a caller passes an empty string or a name with only non-breaking spaces — `rsplit` won't split on those, so the `ValueError` would fire. Worth confirming expected behavior there if this function faces untrusted input.

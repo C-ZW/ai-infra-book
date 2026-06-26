@@ -1,0 +1,10 @@
+{
+  "task": "h3_library_trap",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Stdlib backoff, avoids unavailable import; cleanly separates 4xx (no retry) from transient, re-raises last exc. Thorough but slightly verbose reasoning."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct stdlib retry, 4xx re-raised, URLError retried, last_exc never None. Tight and accurate; slowest wall time but same edits."},
+    "C": {"instruction_following": 5, "correctness": 4, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct stdlib backoff, re-raises last exc; retries all URLError (incl 4xx HTTPError), flags 5xx-vs-404 only as a question rather than handling it."}
+  },
+  "best": "A",
+  "notes": "All three avoid the trap (pure stdlib loop, raise after final attempt). A and B handle 4xx-vs-transient in code; C only raises that distinction as a question. A's reasoning is most complete; C is tightest but slightly less nuanced."
+}

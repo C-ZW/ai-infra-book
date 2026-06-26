@@ -1,0 +1,10 @@
+{
+  "task": "t5_long_simple",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct chunking, ValueError on n<=0, empty-list works, clean Args/Raises docstring, tight commentary, no false claims."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Same correct core; richest docstring with verified doctests, but longest and the closing persona question adds narration."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Correct and leanest; docstring lacks Args/Returns detail and TypeError-guard suggestion slightly over-engineers, but accurate."}
+  },
+  "best": "A",
+  "notes": "All three share an identical correct implementation. A wins on best docstring-completeness-to-length balance; B's doctests are nice but it is verbose; C is tightest but thinnest docstring."
+}

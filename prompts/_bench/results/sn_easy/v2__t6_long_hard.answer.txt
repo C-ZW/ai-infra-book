@@ -1,0 +1,6 @@
+All 4 tests pass. Changes made:
+
+- `cli.py`: added `reverse=False` param to `transform()` (reverses after uppercasing if both flags given), and `--reverse` flag to the argument parser.
+- `test_cli.py`: added `test_reverse` and `test_reverse_with_upper`.
+
+What's the most dangerous unhandled case here? Empty input — `reversed([])` is fine, but worth confirming that `list(reversed([]))` returns `[]` without error. It does; Python handles it gracefully.

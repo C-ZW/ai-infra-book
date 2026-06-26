@@ -1,0 +1,22 @@
+{
+  "config": "v2",
+  "task": "t3_med_simple",
+  "len": "medium",
+  "diff": "simple",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 13.5,
+  "num_turns": 3,
+  "cost_usd": 0.12797550000000002,
+  "duration_ms": 12187,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 192,
+  "stderr_tail": ""
+}

@@ -1,0 +1,6 @@
+"Make the logging better" could mean a lot of things across these tools. Can you be more specific?
+
+- **Which tool?** `build_reader.py`, `lint_book.py`, `verify_book.py`, `gate_book.py`, or all of them?
+- **What's missing?** Timestamps, color/level prefixes, structured JSON output, progress bars, quieter by default, more verbose on `--verbose`, proper `logging` module instead of bare `print`?
+
+Or if you mean something else entirely (the scan log in `maintenance.md`, the write-book pipeline output, etc.) — point me at it.

@@ -1,0 +1,31 @@
+{
+  "config": "v3",
+  "task": "h2_redherring_bug",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 31.2,
+  "num_turns": 9,
+  "cost_usd": 0.0981741,
+  "duration_ms": 30002,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [
+      ".pytest_cache/.gitignore",
+      ".pytest_cache/CACHEDIR.TAG",
+      ".pytest_cache/README.md",
+      ".pytest_cache/v/cache/nodeids",
+      "__pycache__/aggregate.cpython-313.pyc",
+      "__pycache__/test_aggregate.cpython-313-pytest-9.0.3.pyc"
+    ],
+    "deleted": [],
+    "modified": [
+      "aggregate.py"
+    ]
+  },
+  "answer_chars": 128,
+  "stderr_tail": ""
+}

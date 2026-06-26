@@ -1,0 +1,46 @@
+{
+  "id": "sleep",
+  "title": "大腦每晚的維護工作",
+  "subtitle": "睡眠的科學",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 為什麼要睡", "files": [
+      "../book-src/ch01-sleep-is-maintenance.md",
+      "../book-src/ch02-anatomy-of-a-night.md",
+      "../book-src/ch03-two-process-model.md"
+    ] },
+    { "title": "Part II — 三件維護工作", "files": [
+      "../book-src/ch04-clearance-glymphatic.md",
+      "../book-src/ch05-consolidation-memory.md",
+      "../book-src/ch06-rem-and-dreams.md",
+      "../book-src/ch07-calibration-shy-clock.md"
+    ] },
+    { "title": "Part III — 故障與後果", "files": [
+      "../book-src/ch08-sleep-deprivation.md",
+      "../book-src/ch09-insomnia-cbti.md",
+      "../book-src/ch10-narcolepsy-disorders.md",
+      "../book-src/ch11-social-jetlag-shiftwork.md"
+    ] },
+    { "title": "Part IV — 邊界與實踐", "files": [
+      "../book-src/ch12-caffeine-alcohol-drugs.md",
+      "../book-src/ch13-short-sleepers-naps-polyphasic.md",
+      "../book-src/ch14-dreams-lucid-consciousness.md",
+      "../book-src/ch15-sleep-hygiene-evidence.md",
+      "../book-src/ch16-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-glossary.md",
+      "../book-src/appendix-b-key-studies-people.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

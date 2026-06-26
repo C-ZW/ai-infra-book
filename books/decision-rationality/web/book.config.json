@@ -1,0 +1,68 @@
+{
+  "id": "decide",
+  "title": "在不確定中下注",
+  "subtitle": "決策與理性的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": false,
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 理性的地基",
+      "files": [
+        "../book-src/ch01-bet-and-test.md",
+        "../book-src/ch02-expected-value-st-petersburg.md",
+        "../book-src/ch03-utility-not-money.md",
+        "../book-src/ch04-risk-is-not-uncertainty.md"
+      ]
+    },
+    {
+      "title": "Part II — 信念與證據",
+      "files": [
+        "../book-src/ch05-bayesian-decision.md",
+        "../book-src/ch06-where-priors-come-from.md",
+        "../book-src/ch07-value-of-information.md"
+      ]
+    },
+    {
+      "title": "Part III — 描述的裂縫・展望理論",
+      "files": [
+        "../book-src/ch08-reference-point.md",
+        "../book-src/ch09-loss-aversion-probability-weighting.md",
+        "../book-src/ch10-framing-effect.md",
+        "../book-src/ch11-allais-independence-axiom.md",
+        "../book-src/ch12-description-or-norm.md"
+      ]
+    },
+    {
+      "title": "Part IV — 有限理性",
+      "files": [
+        "../book-src/ch13-bounded-rationality-satisficing.md",
+        "../book-src/ch14-multi-attribute-decision.md",
+        "../book-src/ch15-sequential-decisions-sunk-cost.md"
+      ]
+    },
+    {
+      "title": "Part V — 收束",
+      "files": [
+        "../book-src/ch16-when-the-opponent-reacts.md",
+        "../book-src/ch17-what-is-rationality.md",
+        "../book-src/ch18-five-algorithms-one-decision.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-notation.md",
+        "../book-src/appendix-b-glossary.md",
+        "../book-src/appendix-c-reading-map.md"
+      ]
+    }
+  ]
+}

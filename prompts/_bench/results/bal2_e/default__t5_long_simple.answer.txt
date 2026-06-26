@@ -1,0 +1,21 @@
+```python
+def chunk(lst, n):
+    """
+    Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not evenly divisible.
+
+    Raises ValueError if n <= 0.
+    """
+    if n <= 0:
+        raise ValueError(f"Chunk size must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+**Failure modes worth noting:**
+
+- `n <= 0` — raises `ValueError` with the bad value in the message rather than producing an infinite loop (`range(0, len, 0)` would raise `ValueError` from `range` anyway, but with a cryptic message).
+- Empty list — `range(0, 0, n)` is empty, so returns `[]` naturally; no special case needed.
+- `n > len(lst)` — returns a single-element list containing all of `lst`; that's correct per the spec.
+
+**What's the most dangerous unhandled case here?** If the caller passes a non-sequence iterable (e.g. a generator), slicing silently fails with `TypeError`. Should `chunk` accept iterables by converting with `lst = list(lst)` first, or is it intentionally sequence-only?

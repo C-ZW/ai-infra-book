@@ -1,0 +1,5 @@
+The canonical source is:
+
+`prompts/_bench/seeds/t3/billing/pricing.py:16`
+
+(The sandbox copy at `prompts/_bench/_sandboxes/v4e/v1__t3_med_simple/work/billing/pricing.py:16` is a derived copy.)

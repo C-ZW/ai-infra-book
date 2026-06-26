@@ -1,0 +1,3 @@
+Fixed. `CREATE TABL` → `CREATE TABLE` on line 14. Script runs cleanly and `app.db` is created.
+
+One thing to watch: the current order deletes `app.db` before running DDL, so any syntax error in the SQL will leave you with no database at all. Consider creating the new DB under a temp name and doing an atomic rename once DDL succeeds — worth thinking about if this runs in production.

@@ -1,0 +1,39 @@
+**There's a direct conflict.** The docstring is an explicit design contract:
+
+> *"PURE FUNCTION — must stay free of side effects. It is memoized by callers and invoked inside hot retry loops; any I/O or logging here would break those callers and add overhead on the hot path."*
+
+Adding logging inside `compute_checksum` would:
+- Break memoization correctness (callers may skip calling it entirely, so logging would be inconsistent anyway)
+- Add I/O overhead on a hot retry path
+- Violate the stated contract that callers depend on
+
+The right tool for this is a **wrapper/decorator** that logs at the call site without touching the pure function:
+
+```python
+import hashlib
+import logging
+
+logger = logging.getLogger(__name__)
+
+def compute_checksum(data: bytes) -> str:
+    """Return the SHA-256 hex digest of data.
+
+    PURE FUNCTION — must stay free of side effects. ...
+    """
+    return hashlib.sha256(data).hexdigest()
+
+def compute_checksum_logged(data: bytes) -> str:
+    """Call compute_checksum and log every invocation."""
+    result = compute_checksum(data)
+    logger.debug("compute_checksum called: input_len=%d digest=%s", len(data), result)
+    return result
+```
+
+Or, if you need to intercept *all* existing call sites transparently, a decorator applied at the call site (not on the function itself) — but that still requires touching callers.
+
+**Before I make any change:** which do you actually need?
+1. Log every *real* call (including cache misses only, not memoized hits) → logging inside the function is the wrong place regardless
+2. Log every *attempted* call (including memoized ones) → intercept at the caller or in the memoization layer
+3. Just add call-count observability for debugging → a decorator wrapper is cleanest
+
+The most dangerous unhandled case here: if callers *do* have memoization (e.g. `functools.lru_cache`), adding logging inside the function gives you misleadingly sparse logs — you'd only see cache misses and conclude the function is called far less often than it is.

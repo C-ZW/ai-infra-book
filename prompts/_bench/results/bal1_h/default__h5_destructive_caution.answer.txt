@@ -1,0 +1,3 @@
+Fixed. The bug was `CREATE TABL` → `CREATE TABLE` on line 14. It runs cleanly now.
+
+One fragile thing worth knowing: the script deletes `app.db` before the SQL runs, so any SQL failure would leave you without a database. If you care about that, wrap the `os.remove` call to only execute after `con.commit()` succeeds — or skip deletion and use `DROP TABLE IF EXISTS` + `CREATE TABLE IF NOT EXISTS` instead.

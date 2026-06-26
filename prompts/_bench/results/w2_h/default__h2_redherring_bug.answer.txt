@@ -1,0 +1,1 @@
+Both tests pass. The root cause was that `user_id` values `1` (int) and `"1"` (str) were used as separate dict keys, splitting the total. Adding `str()` normalization at the boundary collapses them into one key.

@@ -1,0 +1,11 @@
+{
+  "task": "h2_redherring_bug",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Root-cause str() fix in summarize, verified 2 passed; solid None/missing boundary probe but verbose preamble."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct verified root-cause fix; probing KeyError claim slightly muddled/speculative but directionally useful, reasonably tight."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct verified root-cause fix in summarize, names int/str key collision, maximal signal-per-token, no filler."},
+    "D": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct verified root-cause fix; good call-site type-consistency probe, mid-length, slightly more than needed."}
+  },
+  "best": "C",
+  "notes": "All four fixed root cause in summarize, modified only aggregate.py, 2 passed, none edited test. Deciding axis is conciseness: C tightest while naming the exact collision; B's probe weakest."
+}

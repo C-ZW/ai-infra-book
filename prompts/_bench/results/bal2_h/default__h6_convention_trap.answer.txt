@@ -1,0 +1,3 @@
+`delete_item` is registered at `"DELETE /items/{id}"` — a distinct key from `"/items/{id}"` — so both routes coexist without collision. It follows all conventions: `@route`, `ok`/`err`, `str.format`, errors returned not raised.
+
+What's the riskiest unhandled case here: if `id` arrives as a string `"1"` rather than the integer key `1`, `id not in DB` will pass but `DB[id]` would silently miss and the lookup would behave inconsistently with `get_item`. Worth confirming the framework coerces path params to the right type before dispatch.

@@ -1,0 +1,46 @@
+{
+  "id": "trig",
+  "title": "圓的影子",
+  "subtitle": "三角函數作為旋轉與週期的語言",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "inline_images": true,
+  "groups": [
+    { "title": "Part I — 搖籃與真身", "files": [
+      "../book-src/ch01-cradle-to-circle.md",
+      "../book-src/ch02-radian.md",
+      "../book-src/ch03-unit-circle.md"
+    ] },
+    { "title": "Part II — 旋轉是母題", "files": [
+      "../book-src/ch04-angle-addition.md",
+      "../book-src/ch05-rotation-matrix.md",
+      "../book-src/ch06-dot-product-projection.md"
+    ] },
+    { "title": "Part III — 複數：旋轉的代數", "files": [
+      "../book-src/ch07-complex-plane.md",
+      "../book-src/ch08-euler-formula.md",
+      "../book-src/ch09-de-moivre-roots.md"
+    ] },
+    { "title": "Part IV — 週期與波", "files": [
+      "../book-src/ch10-wave-anatomy.md",
+      "../book-src/ch11-why-sin-derivative-cos.md",
+      "../book-src/ch12-superposition-beats-lissajous.md",
+      "../book-src/ch13-fourier-doorway.md"
+    ] },
+    { "title": "Part V — 近親與收官", "files": [
+      "../book-src/ch14-inverse-and-atan2.md",
+      "../book-src/ch15-hyperbolic-and-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-identities.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

@@ -1,0 +1,28 @@
+```python
+def chunk(lst, n):
+    """
+    Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not evenly divisible.
+
+    Args:
+        lst: Any sequence to split.
+        n:   Chunk size. Must be a positive integer.
+
+    Returns:
+        A list of sublists.
+
+    Raises:
+        ValueError: If n is less than or equal to zero.
+    """
+    if n <= 0:
+        raise ValueError(f"Chunk size must be positive, got {n!r}")
+    return [lst[i : i + n] for i in range(0, len(lst), n)]
+```
+
+Key decisions:
+- **`n <= 0` raises `ValueError`** — a chunk size of zero or negative has no sensible interpretation and silently returning `[]` would hide bugs at the call site.
+- **Slicing returns the same type** — if `lst` is a `list`, you get `list` chunks; if it's a `str`, you get `str` chunks. No silent type coercion.
+- **Empty input returns `[]`** — `range(0, 0, n)` is empty, so `chunk([], 5)` yields `[]` naturally.
+
+What happens if `lst` is a lazy iterator (e.g., a generator)? Slicing won't work — you'd need to materialize it first (`list(lst)`) or use an `itertools`-based approach. Worth guarding if callers might pass iterators.

@@ -1,0 +1,47 @@
+{
+  "id": "game",
+  "title": "當理性互相碰撞",
+  "subtitle": "賽局理論的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": false,
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 困境與均衡", "files": [
+      "../book-src/ch01-prisoners-dilemma.md",
+      "../book-src/ch02-nash-equilibrium.md",
+      "../book-src/ch03-best-response.md"
+    ] },
+    { "title": "Part II — 純策略不夠用", "files": [
+      "../book-src/ch04-zero-sum-minimax.md",
+      "../book-src/ch05-mixed-strategies.md",
+      "../book-src/ch06-game-tree.md"
+    ] },
+    { "title": "Part III — 合作的考古學", "files": [
+      "../book-src/ch07-repeated-games.md",
+      "../book-src/ch08-tit-for-tat-folk-theorem.md",
+      "../book-src/ch09-evolutionary-ess.md"
+    ] },
+    { "title": "Part IV — 協調與資訊", "files": [
+      "../book-src/ch10-coordination-schelling.md",
+      "../book-src/ch11-signaling-asymmetric-info.md",
+      "../book-src/ch12-fairness-trust.md"
+    ] },
+    { "title": "Part V — 反過來設計賽局", "files": [
+      "../book-src/ch13-mechanism-design.md",
+      "../book-src/ch14-auctions.md"
+    ] },
+    { "title": "Part VI — 賽局無所不在＋收官", "files": [
+      "../book-src/ch15-voting-arrow.md",
+      "../book-src/ch16-public-goods.md",
+      "../book-src/ch17-applications.md",
+      "../book-src/ch18-seven-layers.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] }
+  ]
+}

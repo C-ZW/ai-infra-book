@@ -1,0 +1,5 @@
+`billing/pricing.py:16`
+
+It's defined as `def compute_total(items, discount_pct=0.0):` — the only definition in the project.
+
+One thing worth flagging since it's the most dangerous unhandled case: that `discount_pct` default is unbounded — nothing in the signature stops a caller passing `120` (negative total) or a string (TypeError mid-loop). Do you want me to check how `compute_total` validates `items` and `discount_pct` at its boundary?

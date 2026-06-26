@@ -1,0 +1,6 @@
+Changes made:
+
+- **`framework.py`**: `route()` now accepts an optional `method` parameter (default `"GET"`); routes are keyed on `(method, path)` to avoid collisions.
+- **`handlers.py`**: existing `get_item` gets an explicit `method="GET"`, and the new `delete_item` handles `DELETE /items/{id}` — returns 404-style `err()` if the id is missing, otherwise removes the entry and returns `ok({"id": id})`.
+
+One thing worth checking: does the framework's dispatch logic (wherever it resolves `_ROUTES` lookups) need updating to pass the method along with the path when matching a request?

@@ -1,0 +1,67 @@
+Read the whole surface. It's four tiny modules plus one test file; `CONFIG` is referenced in exactly three call sites across `client.py`, `logger.py`, `runner.py`, and the tests pass today (`python3 -m pytest -q` → 2 passed; note `python` is not on PATH, only `python3` / Python 3.13.7).
+
+# Implementation Plan: replace global `CONFIG` with a `Settings` dataclass
+
+## Current state (ground truth)
+- `app/config.py:1` — global `CONFIG = {"timeout": 30, "retries": 3, "verbose": False}`.
+- `app/client.py` — `connect(host)` reads `CONFIG["timeout"]`, `CONFIG["retries"]`.
+- `app/logger.py` — `log(message)` reads `CONFIG["verbose"]` twice (one in the `if`, one in the `return`).
+- `app/runner.py` — `run(host)` calls `connect(host)` and reads `CONFIG["timeout"]`.
+- `test_app.py` — exercises `connect("h1")` and `run("h1")` against the default values 30 / 3.
+- `app/__init__.py` is empty; there is **no** `__main__`/entry point that constructs config today (construction is implicit at import).
+
+## Design decisions
+- New `Settings` is a `@dataclass` with fields and defaults matching the dict exactly: `timeout: int = 30`, `retries: int = 3`, `verbose: bool = False`. Identical defaults are what keep behavior identical and let tests build `Settings()` with no args.
+- `settings` becomes a **required positional parameter** on every function that used `CONFIG` (`connect`, `log`, `run`). This matches the task's "passed into the functions that use it" and forces every call site to be updated explicitly rather than silently falling back to a hidden default.
+- `run` must **forward its received `settings` instance** to `connect` — do not construct a second `Settings()` inside `run` (that would still pass tests by luck but violates "constructed once").
+- Recommend `@dataclass(frozen=True)` for immutability (nothing mutates `CONFIG` anywhere, so this is safe and prevents accidental shared-state mutation). Flagged as a judgment call below since it is the one observable difference from the old mutable dict.
+
+## Ordered steps
+1. **`app/config.py`** — remove the `CONFIG` dict; define `Settings` dataclass (`timeout/retries/verbose` with defaults 30/3/False). This is the only place the global disappears.
+2. **`app/client.py`** — change signature to `connect(host, settings)`; replace `CONFIG["timeout"]`→`settings.timeout`, `CONFIG["retries"]`→`settings.retries`; drop `from app.config import CONFIG` (add `from app.config import Settings` only if you add a type annotation, otherwise no import needed).
+3. **`app/logger.py`** — change signature to `log(message, settings)`; replace both `CONFIG["verbose"]` occurrences (the `if` guard and the `return`) with `settings.verbose`; remove the `CONFIG` import.
+4. **`app/runner.py`** — change signature to `run(host, settings)`; pass through as `connect(host, settings)`; replace `CONFIG["timeout"]`→`settings.timeout`; swap the `CONFIG` import for `from app.config import Settings` (only if annotating).
+5. **`test_app.py`** — `from app.config import Settings`; update calls to `connect("h1", Settings())` and `run("h1", Settings())`. Assertions stay unchanged (30 / 3) — they are the behavior-identical contract.
+6. Sweep for stragglers and verify (below).
+
+## Exact call sites to migrate
+| File:line | Now | After |
+|---|---|---|
+| `app/config.py:1-5` | `CONFIG = {...}` | `Settings` dataclass; global removed |
+| `app/client.py:1` | `from app.config import CONFIG` | removed (or `import Settings` for hint) |
+| `app/client.py:4` | `def connect(host):` | `def connect(host, settings):` |
+| `app/client.py:8` | `CONFIG["timeout"]` | `settings.timeout` |
+| `app/client.py:9` | `CONFIG["retries"]` | `settings.retries` |
+| `app/logger.py:1` | `from app.config import CONFIG` | removed |
+| `app/logger.py:4` | `def log(message):` | `def log(message, settings):` |
+| `app/logger.py:6` | `if CONFIG["verbose"]:` | `if settings.verbose:` |
+| `app/logger.py:8` | `return CONFIG["verbose"]` | `return settings.verbose` |
+| `app/runner.py:1` | `from app.config import CONFIG` | `from app.config import Settings` (or removed) |
+| `app/runner.py:5` | `def run(host):` | `def run(host, settings):` |
+| `app/runner.py:7` | `connect(host)` | `connect(host, settings)` |
+| `app/runner.py:8` | `CONFIG["timeout"]` | `settings.timeout` |
+| `test_app.py:6` | `connect("h1")` | `connect("h1", Settings())` |
+| `test_app.py:11` | `run("h1")` | `run("h1", Settings())` |
+
+Note: `logger.log` has no caller in the repo or tests — its signature still must change for consistency, but consider adding a test that constructs `Settings(verbose=True)` and asserts `log` prints + returns `True` (currently untested, see risks).
+
+## How I'd verify
+1. `python3 -m pytest -q` → expect **2 passed**, identical to baseline (use `python3`; `python` is absent).
+2. `grep -rn "CONFIG" --include="*.py" .` → expect **zero matches** (proves the global is fully removed, no dangling reference).
+3. Import smoke check: `python3 -c "import app.config, app.client, app.logger, app.runner"` → no `ImportError`/`NameError`.
+4. Behavior-equivalence spot check: `python3 -c "from app.client import connect; from app.config import Settings; assert connect('h', Settings()) == {'host':'h','timeout':30,'retries':3}"`.
+5. Confirm no unused `Settings` imports remain (e.g. `python3 -m pyflakes app test_app.py` if available; otherwise visual check).
+
+## Risks / failure modes
+- **Hidden external caller breaks.** Making `settings` required raises `TypeError` for any caller passing the old `connect(host)` arity. Grep shows only in-repo usage, but anything outside this repo (a script, notebook, downstream import of `app.config.CONFIG`) would break loudly — acceptable if this is the whole codebase, fatal if not. → clarifying question below.
+- **Second-instance bug in `run`.** If `run` constructs its own `Settings()` instead of forwarding, "constructed once" is violated and a non-default `settings` passed to `run` would silently not reach `connect`. Tests use defaults so they'd pass anyway — this bug would be invisible to the current suite. Mitigate by forwarding explicitly and, ideally, adding a `run("h", Settings(timeout=5))` assertion.
+- **Mutability change.** The old dict was mutable and module-global; `frozen=True` makes assignment raise `FrozenInstanceError`. No code mutates it today, so behavior is identical in practice — but if any out-of-repo code did `CONFIG["timeout"] = x`, that pattern is gone. Flagging as the one semantic difference.
+- **Type drift.** Keep `timeout`/`retries` as `int` and `verbose` as `bool`; a stray default like `verbose: bool = 0` would technically alter the `return` type of `log`. Match 30/3/False exactly.
+- **Untested `log`.** `log` is migrated blind (no test covers it). A typo (`settings.verbose` vs `settings.verose`) wouldn't be caught. Recommend adding a minimal `log` test as part of this change.
+
+## Clarifying questions
+1. **Required vs optional `settings`?** I plan to make it a required positional arg (explicit, forces call-site updates). Do you instead want `settings=None` → `Settings()` fallback for back-compat? That reintroduces an implicit default and partly defeats "constructed once."
+2. **Is `app/` the entire surface?** Grep finds `CONFIG` only in these four files + tests. Can you confirm there's no external consumer of `app.config.CONFIG` (a `main`, CLI, or another package) that I can't see from this tree?
+3. **Frozen dataclass acceptable?** I'd prefer `frozen=True` for safety; confirm nothing relies on mutating config at runtime.
+
+The most dangerous unhandled case: if `run` quietly builds its own `Settings()` instead of forwarding the caller's, the change passes all current tests yet silently drops any non-default config on the floor in production — should I add a `run`-with-non-default-settings test to this plan so that failure mode can't ship invisibly?

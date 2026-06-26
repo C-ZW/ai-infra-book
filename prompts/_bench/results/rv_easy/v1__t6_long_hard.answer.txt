@@ -1,0 +1,9 @@
+Done. All 5 tests pass and the flag works end-to-end.
+
+- `cli.py:7` — `transform` now takes `reverse=False`; reverses via `list(reversed(lines))`, which returns a new list and never mutates the caller's input.
+- `cli.py:16` — registered `--reverse` (`store_true`) and pass `reverse=args.reverse` through.
+- `test_cli.py` — added `test_reverse`, `test_reverse_with_upper`, and `test_reverse_does_not_mutate_input`.
+
+`--upper` and passthrough behavior are unchanged. The order is upper-then-reverse, but since reversal acts on list order and upper acts per-line content, the two compose independently.
+
+One edge case worth noting: `--reverse` reverses *line order*, not characters within a line — if you actually wanted `"abc"` → `"cba"`, that's a different feature. Which did you mean?

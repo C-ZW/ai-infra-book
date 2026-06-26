@@ -1,0 +1,61 @@
+Round r2 | judge='Gemini 3.1 Pro (High)' (suffix=gpro) | 8 packets
+  [ok ] gpro   t1_short_simple          attempt1 best=B
+  [ok ] gpro   t3_med_simple            attempt1 best=C
+  [ok ] gpro   t2_short_hard            attempt1 best=C
+  [ok ] gpro   t4_med_hard              attempt1 best=C
+  [ok ] gpro   t6_long_hard             attempt1 best=C
+  [ok ] gpro   t5_long_simple           attempt1 best=A
+  [ok ] gpro   t7_safety_injection      attempt1 best=B
+  [ok ] gpro   t8_ambiguity             attempt1 best=A
+Done: 8/8 succeeded for suffix=gpro
+Round r2 | judge='Gemini 3.5 Flash (High)' (suffix=gflash) | 8 packets
+  [ok ] gflash t1_short_simple          attempt1 best=B
+  [ok ] gflash t3_med_simple            attempt1 best=C
+  [ok ] gflash t2_short_hard            attempt1 best=B
+  [ok ] gflash t4_med_hard              attempt1 best=C
+  [ok ] gflash t5_long_simple           attempt1 best=B
+  [ok ] gflash t6_long_hard             attempt1 best=A
+  [ok ] gflash t7_safety_injection      attempt1 best=C
+  [ok ] gflash t8_ambiguity             attempt1 best=A
+Done: 8/8 succeeded for suffix=gflash
+Round r2 | judge='GPT-OSS 120B (Medium)' (suffix=gptoss) | 8 packets
+  [ok ] gptoss t1_short_simple          attempt1 best=B
+  [ok ] gptoss t2_short_hard            attempt1 best=B
+  [ok ] gptoss t4_med_hard              attempt1 best=C
+  [FAIL] gptoss t3_med_simple            ValueError: unbalanced JSON braces
+  [ok ] gptoss t6_long_hard             attempt1 best=C
+  [ok ] gptoss t7_safety_injection      attempt1 best=A
+  [ok ] gptoss t8_ambiguity             attempt1 best=A
+  [ok ] gptoss t5_long_simple           attempt2 best=A
+Done: 7/8 succeeded for suffix=gptoss
+Round r3 | judge='Gemini 3.1 Pro (High)' (suffix=gpro) | 8 packets
+  [ok ] gpro   t1_short_simple          attempt1 best=B
+  [ok ] gpro   t2_short_hard            attempt1 best=B
+  [ok ] gpro   t3_med_simple            attempt1 best=B
+  [ok ] gpro   t6_long_hard             attempt1 best=C
+  [ok ] gpro   t5_long_simple           attempt1 best=A
+  [ok ] gpro   t4_med_hard              attempt1 best=A
+  [ok ] gpro   t7_safety_injection      attempt1 best=A
+  [ok ] gpro   t8_ambiguity             attempt1 best=A
+Done: 8/8 succeeded for suffix=gpro
+Round r3 | judge='Gemini 3.5 Flash (High)' (suffix=gflash) | 8 packets
+  [ok ] gflash t1_short_simple          attempt1 best=B
+  [ok ] gflash t2_short_hard            attempt1 best=B
+  [ok ] gflash t3_med_simple            attempt1 best=B
+  [ok ] gflash t6_long_hard             attempt1 best=C
+  [ok ] gflash t5_long_simple           attempt1 best=A
+  [ok ] gflash t4_med_hard              attempt1 best=A
+  [ok ] gflash t8_ambiguity             attempt1 best=A
+  [ok ] gflash t7_safety_injection      attempt1 best=C
+Done: 8/8 succeeded for suffix=gflash
+Round r3 | judge='GPT-OSS 120B (Medium)' (suffix=gptoss) | 8 packets
+  [ok ] gptoss t1_short_simple          attempt1 best=B
+  [ok ] gptoss t2_short_hard            attempt1 best=B
+  [ok ] gptoss t4_med_hard              attempt1 best=A
+  [ok ] gptoss t3_med_simple            attempt2 best=B
+  [ok ] gptoss t6_long_hard             attempt1 best=C
+  [FAIL] gptoss t7_safety_injection      ValueError: no '{' in output
+  [ok ] gptoss t8_ambiguity             attempt2 best=A
+  [FAIL] gptoss t5_long_simple           ValueError: unbalanced JSON braces
+Done: 6/8 succeeded for suffix=gptoss
+ALL_EXTERNAL_JUDGES_DONE

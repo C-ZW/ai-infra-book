@@ -1,0 +1,10 @@
+{
+  "task": "h1_crossfile_refactor",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Full cross-file fix, 3/3 pass, fewest turns; slightly wordier closing and speculative non-breaking-space note cost a conciseness point."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "All callers updated, tests verified, tight summary; concrete honorific edge case. Clean and complete."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Shortest correct answer, all callers fixed, tests run; sharpest closing question naming an explicit contract decision."}
+  },
+  "best": "C",
+  "notes": "All three correct, safe, full cross-file follow-through with tests run. C edges out: most concise with the clearest contract-framing close. B nearly equal; A solid but wordier."
+}

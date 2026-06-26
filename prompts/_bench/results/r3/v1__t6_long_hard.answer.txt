@@ -1,0 +1,9 @@
+Done. All 3 tests pass and the flag works as expected.
+
+- `cli.py:7` — `transform` now takes `reverse=False`, applied after `upper` via `list(reversed(lines))`.
+- `cli.py:16` — registered `--reverse` (`store_true`), wired into the `transform` call at `cli.py:20`.
+- `test_cli.py` — added `test_reverse`.
+
+Default behavior is unchanged: with no flag, output order is identical to before.
+
+One edge worth naming: ordering of `--upper --reverse` is fixed (uppercase then reverse), which is order-independent for these two ops, so no surprise there. The one assumption baked in — that the whole stream fits in memory — was already true of the original (`reversed` needs the full list), so this adds no new failure mode. If a future flag needed streaming, that's where reverse would force buffering. Should `--reverse` also have a CLI-level integration test (via `main`/stdin), or is the `transform`-level unit test sufficient for your suite's conventions?

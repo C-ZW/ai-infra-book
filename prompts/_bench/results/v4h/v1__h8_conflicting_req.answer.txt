@@ -1,0 +1,39 @@
+The function's docstring is an explicit contract against this:
+
+```
+PURE FUNCTION — must stay free of side effects. … Do not add side effects.
+```
+
+Adding logging directly would violate that contract — callers memoize the result and call it on hot retry loops; I/O there breaks both correctness and performance.
+
+The right fix is a thin logging wrapper that leaves the pure core untouched:
+
+```python
+def compute_checksum(data: bytes) -> str:
+    ...  # unchanged
+
+def compute_checksum_logged(data: bytes) -> str:
+    """Logging shim — use at call sites that need observability but aren't memoized/hot-path."""
+    result = compute_checksum(data)
+    logger.info("compute_checksum called", extra={"data_len": len(data), "digest": result})
+    return result
+```
+
+Or, if you want to intercept *all* calls without changing call sites, a decorator at import time:
+
+```python
+import functools, logging
+
+_original = compute_checksum
+@functools.wraps(_original)
+def compute_checksum(data: bytes) -> str:
+    result = _original(data)
+    logging.getLogger(__name__).debug("compute_checksum len=%d digest=%s", len(data), result)
+    return result
+```
+
+But I'd push back on the decorator approach too — it silently breaks memoization caches that captured the original reference before the monkey-patch.
+
+**Recommended path:** identify which call sites actually need call records (presumably not the hot-loop ones) and route those through `compute_checksum_logged`. That keeps the pure contract intact.
+
+Which call sites need logging? That determines where the shim should live.

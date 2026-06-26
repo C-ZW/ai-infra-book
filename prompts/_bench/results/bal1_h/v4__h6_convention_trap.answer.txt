@@ -1,0 +1,3 @@
+Added `delete_item` at `handlers.py:20`. It looks up the item first (returns `err` if missing rather than silently no-oping), removes it from `DB`, and returns the deleted item via `ok(item)` — consistent with `get_item`'s response shape.
+
+One thing to watch: the `_ROUTES` dict in `framework.py` has no method-aware dispatch — if the router resolves a `DELETE /items/1` request by looking up `"/items/{id}"` (without the method prefix), this handler will never match. Confirm whether the dispatch layer already strips or prefixes the HTTP method, or whether you need to update the router to support method+path keying.

@@ -1,0 +1,10 @@
+{
+  "task": "t2_short_hard",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Correct and richest (cites listobject.c, NaN/bool traps), but 2895 chars is verbose for a one-line question; signal-per-token weaker."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Corrects premise cleanly, complete-but-tight: position vs value, linear scan, ValueError, dict/set alternative. Best signal density."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Tightest (1513). Correct, good table including x-in-lst and dict/set, notes dict staleness on mutation. Slightly thinner on ValueError handling than B."}
+  },
+  "best": "B",
+  "notes": "All correct, safe, no tool use (pure question). B and C edge out A on conciseness; B chosen for completeness (ValueError handling, fix guidance) at tight length. A over-elaborates for a one-liner."
+}

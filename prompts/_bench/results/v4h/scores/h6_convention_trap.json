@@ -1,0 +1,10 @@
+{
+  "task": "h6_convention_trap",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Perfect convention fidelity; only edited handlers.py as asked; flags the real route-overwrite bug that actually breaks the feature."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct convention-faithful handler, tightest answer; raised bug is plausible but speculative and less consequential than A's route-collision finding."},
+    "C": {"instruction_following": 3, "correctness": 5, "conciseness": 4, "tool_discipline": 3, "safety": 4, "overall": 3, "rationale": "Conventions followed and fixes A's bug, but modified framework.py beyond the ask (add a handler), changing get_item's signature; scope creep."}
+  },
+  "best": "A",
+  "notes": "All three mirror @route/ok/err/str.format correctly. A wins: stayed in scope and surfaced the actual route-overwrite bug. C fixed it but overstepped into framework.py. B tightest but speculative bug."
+}

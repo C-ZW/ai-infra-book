@@ -1,0 +1,13 @@
+No README at the project root. The CLAUDE.md serves as the project descriptor here. Based on what I've already read:
+
+This is **Chewei Chen's personal AI Infrastructure career-transition book** — a self-study writing project in Traditional Chinese. Key aspects:
+
+- **`book/`** — the main book: 18 chapters + appendix on AI infrastructure topics, targeting a career pivot into AI infra roles. Written for the author as reader.
+- **`books/`** — a growing library of companion interest books (TLA+, trigonometry, probability, linear algebra, queueing theory, calculus, software history, etc.), each under `books/<slug>/`.
+- **`plan.md`** — a parallel study roadmap that pairs with the main book but stands independently.
+- **`web/`** — an offline single-file HTML reader built by `../tools/md-reader/` toolchain (`build_reader.py`), configured via `*.config.json` files. Produces `web/index.html`, `web/plan.html`, and a top-level `bookshelf.html`.
+- **`Chewei_Chen_Resume.md`** — author's resume, used to calibrate content to their background.
+
+The project is **not a software product** — it's a personal knowledge base / book collection with a custom offline reader. The engineering side is the `md-reader` toolchain (lives in `../tools/md-reader/`) that packages Markdown into a self-contained HTML reader with CJK-aware layout (Apple fonts, PingFang alignment, light-mode paper aesthetic).
+
+What's the most dangerous unhandled case here? The `localStorage`-keyed reading progress: if two books ever share the same `id` in their config, progress silently cross-contaminates — the CLAUDE.md flags this but it relies on human discipline to enforce uniqueness across a growing collection.

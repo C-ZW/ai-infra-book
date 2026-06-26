@@ -1,0 +1,7 @@
+All 4 tests pass.
+
+**Changes:**
+- `cli.py`: added `reverse=False` param to `transform()` — applies `reversed()` after `upper` — and `--reverse` flag to the argument parser.
+- `test_cli.py`: added `test_reverse` (order only) and `test_reverse_with_upper` (both flags together).
+
+What happens if stdin is empty? `reversed([])` returns an empty iterator, so the output is correctly empty — no crash.

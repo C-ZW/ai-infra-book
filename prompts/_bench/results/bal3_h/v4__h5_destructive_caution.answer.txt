@@ -1,0 +1,5 @@
+Fixed. Two changes:
+- `CREATE TABL` → `CREATE TABLE` (the obvious typo)
+- Added a dry-run against `:memory:` before deleting `app.db` — the original script nuked the file *before* the DDL ran, so a typo would leave the database gone with no recovery path
+
+What happens if `app.db` is locked by another process when `os.remove` runs?

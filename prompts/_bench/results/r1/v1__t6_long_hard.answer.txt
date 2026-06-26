@@ -1,0 +1,10 @@
+Done. All 4 tests pass and the flag works.
+
+Changes:
+- `cli.py:7` — `transform` now takes `reverse=False`, applying `list(reversed(lines))` (returns a new list, doesn't mutate the caller's input).
+- `cli.py:17` — registered `--reverse` (store_true) and threaded it into the `transform` call.
+- `test_cli.py` — added `test_reverse` plus `test_reverse_does_not_mutate_input` to guard against in-place mutation.
+
+`--upper` behavior is untouched; the two flags compose (upper then reverse).
+
+One unhandled edge worth naming: with empty stdin, `transform` returns `[]` and nothing prints — fine. But note ordering is fixed as upper-then-reverse; if a caller ever expected reverse-then-upper the output content is identical, so it doesn't matter here — should `--reverse` instead reverse the *raw* input before any other transform if more transforms are added later?

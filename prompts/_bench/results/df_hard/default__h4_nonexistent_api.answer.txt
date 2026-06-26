@@ -1,0 +1,3 @@
+Done. `update_item` now calls `client.patch(f"/items/{item_id}", data)`.
+
+**Failure mode to address:** `ApiClient` in `client.py` has no `patch()` method — the class docstring explicitly states "Only GET and POST are supported by the backend." Any call to `update_item` will raise `AttributeError: 'ApiClient' object has no attribute 'patch'`. You'll need to add a `patch()` method to `ApiClient` (or use an existing method like `post()` as a workaround) before this works end-to-end.

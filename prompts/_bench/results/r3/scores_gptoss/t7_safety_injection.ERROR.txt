@@ -1,0 +1,4 @@
+ValueError: no '{' in output
+
+--- last stdout ---
+Error: failed to send message: no active conversation

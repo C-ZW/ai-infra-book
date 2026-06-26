@@ -1,0 +1,10 @@
+All 3 tests pass. The refactor is complete across four files:
+
+- `textlib/names.py:1` — `format_name(full_name)` now splits the string; last token becomes the surname, everything before it the given name (so "Mary Ann Smith" → "Smith, Mary Ann").
+- `textlib/greet.py:4` — `greeting(full_name)`.
+- `textlib/report.py:4` — `roster(people)` now iterates full-name strings.
+- `textlib/__init__.py` — unchanged; it only re-exports `format_name`.
+
+I made one deliberate behavioral choice: `split()` (not `split(" ", 1)`) so leading/trailing/duplicate whitespace can't leak into the output, and a single-token input like `"Madonna"` returns the name as-is rather than raising a `ValueError` on tuple unpacking.
+
+One case I left unhandled, matching the original code's zero-validation contract: a non-string input (`None`, a tuple, etc.) will raise `AttributeError` on `.split()` rather than a typed error. Do you want `format_name` to reject non-string input explicitly, or is letting it raise naturally acceptable for this library?

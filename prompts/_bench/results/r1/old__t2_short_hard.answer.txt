@@ -1,0 +1,20 @@
+Partly right premise, wrong conclusion. A CPython `list` *is* a contiguous array of pointers — but that only buys O(1) for **indexing by position** (`lst[i]`), not for `list.index(x)`.
+
+`list.index(x)` does a **linear scan** from the front, comparing each element with `==` until it finds a match. That's **O(n)** time, and worse in practice than that bound suggests:
+
+- It calls `__eq__` on each element. If `x` is something with an expensive comparison (large strings, custom objects, NumPy scalars with overloaded `==`), each step is more than a pointer compare.
+- It returns the **first** match only; duplicates past it are never seen.
+- It raises `ValueError` if `x` isn't present — and the not-found case is the *worst* case, scanning all n elements. Code that does `if x in lst: i = lst.index(x)` walks the list twice.
+
+The thing your teammate is probably conflating:
+
+| Operation | Complexity |
+|---|---|
+| `lst[i]` (index access) | O(1) |
+| `lst.index(x)` (value search) | O(n) |
+| `x in lst` | O(n) |
+| `dict`/`set` membership | O(1) average |
+
+If you need repeated lookups of "where is this value," a list is the wrong structure — build a `dict` mapping value → index once (O(n)) and query it in O(1), accepting that it goes stale the moment the list is mutated and that it collapses duplicates to one index.
+
+The most dangerous case here: are you relying on `.index()` inside a loop over the same list? That quietly turns an O(n) algorithm into O(n²) — what's the largest this list gets in production?

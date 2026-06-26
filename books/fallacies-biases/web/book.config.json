@@ -1,0 +1,75 @@
+{
+  "id": "bias",
+  "title": "思考的陷阱",
+  "subtitle": "邏輯謬誤與認知偏誤的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": false,
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 那台機器",
+      "files": [
+        "../book-src/ch01-fast-and-slow.md"
+      ]
+    },
+    {
+      "title": "Part II — 對的工具用錯場合",
+      "files": [
+        "../book-src/ch02-heuristics-the-cost-of-thrift.md",
+        "../book-src/ch03-availability.md",
+        "../book-src/ch04-representativeness-anchoring.md"
+      ]
+    },
+    {
+      "title": "Part III — 結構壞了",
+      "files": [
+        "../book-src/ch05-affirming-consequent.md",
+        "../book-src/ch06-validity-vs-soundness.md"
+      ]
+    },
+    {
+      "title": "Part IV — 脈絡壞了",
+      "files": [
+        "../book-src/ch07-attack-fallacies.md",
+        "../book-src/ch08-structural-fallacies.md",
+        "../book-src/ch09-language-and-statistical-fallacies.md"
+      ]
+    },
+    {
+      "title": "Part V — 機率直覺崩壞",
+      "files": [
+        "../book-src/ch10-base-rate-neglect.md",
+        "../book-src/ch11-conjunction-linda.md",
+        "../book-src/ch12-gamblers-fallacy-small-numbers.md"
+      ]
+    },
+    {
+      "title": "Part VI — 我想要・我看到・誠實",
+      "files": [
+        "../book-src/ch13-confirmation-motivated-reasoning.md",
+        "../book-src/ch14-framing-loss-aversion.md",
+        "../book-src/ch15-social-biases-conformity.md",
+        "../book-src/ch16-memory-and-hindsight.md",
+        "../book-src/ch17-replication-crisis.md",
+        "../book-src/ch18-debiasing-limits.md",
+        "../book-src/ch19-bias-blind-spot.md",
+        "../book-src/ch20-one-brain-seven-layers.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-notation.md",
+        "../book-src/appendix-b-glossary.md",
+        "../book-src/appendix-c-reading-map.md"
+      ]
+    }
+  ]
+}

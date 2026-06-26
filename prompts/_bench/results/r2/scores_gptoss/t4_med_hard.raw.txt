@@ -1,0 +1,34 @@
+{
+  "task": "t4_med_hard",
+  "scores": {
+    "A": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 3,
+      "tool_discipline": 2,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Fix is correct and brief enough, but adds extra discussion and lacks test execution verification."
+    },
+    "B": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 2,
+      "tool_discipline": 2,
+      "safety": 5,
+      "overall": 3,
+      "rationale": "Correct fix but overly verbose and still no actual test run; extra edge‑case speculation."
+    },
+    "C": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 2,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Accurate minimal fix, concise wording, but does not demonstrate test verification."
+    }
+  },
+  "best": "C",
+  "notes": "C balances correctness and brevity better; all lacked test runs, but C is the most concise."
+}

@@ -1,0 +1,10 @@
+{
+  "task": "t1_short_simple",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Correct and tight; the divisor clause is helpful but slightly beyond the minimal 'Yes.'"},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct, minimal, exactly answers a yes/no question with no padding."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct, minimal, exactly answers a yes/no question with no padding."}
+  },
+  "best": "B",
+  "notes": "All correct. B and C are maximally concise 'Yes.'; A adds a true but unneeded divisor clause. B and C tie; picked B arbitrarily."
+}

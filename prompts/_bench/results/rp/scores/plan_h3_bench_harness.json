@@ -1,0 +1,10 @@
+{
+  "task": "plan_h3_bench_harness",
+  "scores": {
+    "A": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 5, "risk_handling": 5, "discipline": 4, "overall": 5, "rationale": "Five-status model, explicit drain-then-join order, memory-growth-during-hang insight, oracle agreement check, repeats short-circuit; longest but signal-dense and stayed a plan."},
+    "B": {"decomposition": 5, "sequencing": 5, "completeness": 4, "verification": 4, "risk_handling": 4, "discipline": 5, "overall": 4, "rationale": "Clean, tight four-status plan; nails hang mechanism, spawn safety, in-child timing. Less edge-case depth (no Queue-drain order, no memory note) but crisp."},
+    "C": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 5, "risk_handling": 5, "discipline": 4, "overall": 4, "rationale": "Failure-mode-first F1-F11, boundary validation, per-cell status insight, fork+spawn contexts, mechanism flag. Slightly looser parent control-flow precision than A."}
+  },
+  "best": "A",
+  "notes": "All three correctly diagnose the pure-Python hang and reject try/except/threads/pool for fresh Process+kill. A wins on depth: explicit Queue-drain ordering, five statuses, memory-OOM-during-hang, oracle check. C nearly ties; B is tightest but shallower."
+}

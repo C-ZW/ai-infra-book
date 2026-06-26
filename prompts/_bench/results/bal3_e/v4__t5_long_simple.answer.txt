@@ -1,0 +1,25 @@
+```python
+def chunk(lst, n):
+    """
+    Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not a multiple of n.
+
+    Args:
+        lst: Any sequence supporting slicing.
+        n:   Positive integer chunk size.
+
+    Returns:
+        A list of slices of lst.
+
+    Raises:
+        ValueError: If n <= 0.
+    """
+    if n <= 0:
+        raise ValueError(f"Chunk size must be a positive integer, got {n!r}")
+    return [lst[i : i + n] for i in range(0, len(lst), n)]
+```
+
+`range(0, len(lst), n)` naturally produces an empty sequence when `lst` is empty, so `chunk([], 3)` returns `[]` without any special case.
+
+What happens when `lst` is a non-list sequence (tuple, string)? The slices preserve the original type — `chunk("hello", 2)` yields `['he', 'll', 'o']`. If callers need uniform `list` chunks regardless of input type, wrap the slices: `[list(lst[i : i + n]) ...]`.

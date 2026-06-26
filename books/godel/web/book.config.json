@@ -1,0 +1,66 @@
+{
+  "id": "godel",
+  "title": "這句話無法被證明",
+  "subtitle": "哥德爾不完備的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": false,
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 機械之夢",
+      "files": [
+        "../book-src/ch01-mechanical-proof.md",
+        "../book-src/ch02-hilberts-dream.md",
+        "../book-src/ch03-true-vs-provable.md"
+      ]
+    },
+    {
+      "title": "Part II — 自我指涉的引擎",
+      "files": [
+        "../book-src/ch04-liar-to-unprovable.md",
+        "../book-src/ch05-godel-numbering.md",
+        "../book-src/ch06-diagonalization.md"
+      ]
+    },
+    {
+      "title": "Part III — 兩聲驚雷",
+      "files": [
+        "../book-src/ch07-first-incompleteness.md",
+        "../book-src/ch08-second-incompleteness.md"
+      ]
+    },
+    {
+      "title": "Part IV — 孿生與邊界",
+      "files": [
+        "../book-src/ch09-halting-problem.md",
+        "../book-src/ch10-undecidable-archipelago.md",
+        "../book-src/ch11-no-end-patching-holes.md",
+        "../book-src/ch12-where-G-is-true.md",
+        "../book-src/ch13-systems-that-escape.md"
+      ]
+    },
+    {
+      "title": "Part V — 與極限共處",
+      "files": [
+        "../book-src/ch14-what-godel-did-not-say.md",
+        "../book-src/ch15-gentzen-outsourcing-consistency.md",
+        "../book-src/ch16-one-sentence-G-decoded.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-notation.md",
+        "../book-src/appendix-b-glossary.md",
+        "../book-src/appendix-c-reading-map.md"
+      ]
+    }
+  ]
+}

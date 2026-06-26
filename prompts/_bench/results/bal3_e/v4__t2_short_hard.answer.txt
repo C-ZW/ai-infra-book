@@ -1,0 +1,9 @@
+No, that's wrong.
+
+`list.index(x)` is O(n) — it scans from the left until it finds a match (or exhausts the list). The fact that Python lists are backed by a C array only means **indexed access** (`list[i]`) is O(1). Searching by *value* has no shortcut; CPython literally does a linear scan.
+
+You can verify in CPython's source (`Objects/listobject.c`, `list_index_impl`): it loops over every element comparing with `==`.
+
+If your teammate needs O(1) lookup by value, the right structure is a `set` or `dict` (hash table). The tradeoff is that those don't preserve insertion order for indexing, and building either from a list is itself O(n).
+
+What's the actual use case — maybe there's a structure that fits better than patching the assumption?

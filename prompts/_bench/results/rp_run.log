@@ -1,0 +1,24 @@
+Round rp: 3 configs x 6 tasks = 18 runs, workers=5, model=default
+  [ok     ] v1__plan_p1_priority_e2e                   80.6s  turns=9  chars=6239  del=0 mod=0 add=8
+  [ok     ] v1__plan_p2_config_refactor                86.3s  turns=10  chars=6395  del=0 mod=0 add=0
+  [ok     ] default__plan_p2_config_refactor           93.4s  turns=10  chars=6838  del=0 mod=0 add=0
+  [ok     ] default__plan_p1_priority_e2e             101.1s  turns=8  chars=7301  del=0 mod=0 add=0
+  [ok     ] v2__plan_p1_priority_e2e                  136.2s  turns=9  chars=7122  del=0 mod=0 add=8
+  [ok     ] default__plan_p3_build_pipeline            70.4s  turns=4  chars=7217  del=0 mod=0 add=0
+  [ok     ] v1__plan_p3_build_pipeline                 73.5s  turns=7  chars=6454  del=0 mod=0 add=0
+  [ok     ] v2__plan_p2_config_refactor                88.9s  turns=11  chars=7845  del=0 mod=0 add=9
+  [ok     ] v2__plan_p3_build_pipeline                 76.8s  turns=4  chars=7010  del=0 mod=0 add=0
+  [ok     ] v1__plan_h2_plugin_system                 106.5s  turns=5  chars=9151  del=0 mod=0 add=0
+  [ok     ] default__plan_h1_test_harness             160.6s  turns=3  chars=12745  del=0 mod=0 add=0
+  [ok     ] v2__plan_h1_test_harness                  138.3s  turns=3  chars=12560  del=0 mod=0 add=0
+  [ok     ] default__plan_h2_plugin_system            154.5s  turns=3  chars=13326  del=0 mod=0 add=0
+  [TIMEOUT] v1__plan_h1_test_harness                  200.0s  turns=None  chars=0  del=0 mod=0 add=0
+  [ok     ] v2__plan_h2_plugin_system                 106.4s  turns=5  chars=9724  del=0 mod=0 add=0
+  [ok     ] v1__plan_h3_bench_harness                 146.4s  turns=4  chars=11864  del=0 mod=0 add=0
+  [ok     ] v2__plan_h3_bench_harness                 132.4s  turns=3  chars=11137  del=0 mod=0 add=0
+  [ok     ] default__plan_h3_bench_harness            192.0s  turns=3  chars=13439  del=0 mod=0 add=0
+Done in 488.8s. Wrote 18 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/rp
+Per-config rollup:
+  v1        runs=6 err=1 timeout=1 avg_chars=6683 turns=35 cost=$1.706
+  default   runs=6 err=0 timeout=0 avg_chars=10144 turns=31 cost=$2.435
+  v2        runs=6 err=0 timeout=0 avg_chars=9233 turns=35 cost=$2.130

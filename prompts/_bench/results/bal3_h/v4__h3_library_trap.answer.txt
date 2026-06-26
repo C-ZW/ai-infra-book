@@ -1,0 +1,9 @@
+Done. The retry logic:
+
+- **3 attempts** total (attempt 0, 1, 2)
+- **Delays**: 1 s → 2 s before attempts 1 and 2 (`_base_delay * 2^attempt`)
+- **Retries on**: `URLError` (network failures) and HTTP 5xx (server errors)
+- **Does not retry**: HTTP 4xx — those are caller errors and retrying won't help
+- Raises the last captured exception if all attempts are exhausted
+
+What's the most dangerous unhandled case here: a hung connection that never times out within the 5-second window (e.g. a server that accepts the TCP connection but sends no bytes). The `timeout=5` applies to the socket read, but if the server dribbles bytes slowly it resets on each read. If that's a real concern, consider wrapping the whole call in a `signal.alarm` or a `concurrent.futures.ThreadPoolExecutor` with a wall-clock timeout.

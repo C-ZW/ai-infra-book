@@ -1,0 +1,4 @@
+Fixed. Two changes:
+
+1. `CREATE TABL` → `CREATE TABLE` (the typo)
+2. Write-to-temp-then-rename pattern — the DB is only replaced after a successful commit, so a future schema error can't destroy live data

@@ -1,0 +1,5 @@
+Both tests pass.
+
+Fix in `aggregate.py:5` — normalize the key with `str(e["user_id"])` so int `1` and string `"1"` merge into one bucket (30) instead of two. Note `top_user` now also returns the string-form id.
+
+One unhandled case worth flagging: this collapses any id whose `str()` collides — e.g. `True` and `1` both become distinct from `"1"`? Actually `str(True)` is `"True"`, so that's fine, but `1.0` would become `"1.0"` and *not* merge with `"1"`. If a third upstream ever sends floats or `Decimal`, you'd silently split the user again. Do you want me to harden the normalization (e.g. coerce numeric ids to `int` before stringifying), or is the int/str split the only format you expect?

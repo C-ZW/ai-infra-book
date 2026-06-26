@@ -1,0 +1,32 @@
+{
+  "config": "default",
+  "task": "t6_long_hard",
+  "len": "long",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 52.5,
+  "num_turns": 9,
+  "cost_usd": 0.31047399999999997,
+  "duration_ms": 51199,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [
+      ".pytest_cache/.gitignore",
+      ".pytest_cache/CACHEDIR.TAG",
+      ".pytest_cache/README.md",
+      ".pytest_cache/v/cache/nodeids",
+      "__pycache__/cli.cpython-313.pyc",
+      "__pycache__/test_cli.cpython-313-pytest-9.0.3.pyc"
+    ],
+    "deleted": [],
+    "modified": [
+      "cli.py",
+      "test_cli.py"
+    ]
+  },
+  "answer_chars": 1347,
+  "stderr_tail": ""
+}

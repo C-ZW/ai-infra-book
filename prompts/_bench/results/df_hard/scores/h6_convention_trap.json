@@ -1,0 +1,10 @@
+{
+  "task": "h6_convention_trap",
+  "scores": {
+    "A": {"instruction_following": 4, "correctness": 3, "conciseness": 5, "tool_discipline": 4, "safety": 5, "overall": 3, "rationale": "Mirrors conventions correctly and diagnoses the route-clobbering bug sharply, but only flags it rather than fixing it, leaving GET silently overwritten."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Follows all conventions, fixes the route collision via (method,path) keying, and its caveat (call-site dispatch) is the load-bearing remaining risk."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Same correct convention-following fix as B, but used more turns and its closing concurrency question is more speculative than B's dispatch caveat."}
+  },
+  "best": "B",
+  "notes": "B and C both fix the path-clobbering collision while honoring @route/ok/err/str.format; A only diagnoses it. B edges C: tighter, fewer turns, and a more load-bearing caveat (call-site lookup vs speculative concurrency)."
+}

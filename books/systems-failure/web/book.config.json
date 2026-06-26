@@ -1,0 +1,24 @@
+{
+  "id": "fail",
+  "ui_lang": "zh-TW",
+  "title": "正常意外",
+  "subtitle": "複雜系統如何崩壞，以及一個工程師該怕什麼",
+  "footer": "內容基準 2026-06 ｜ 興趣・工程災難解剖",
+  "output": "index.html",
+  "groups": [
+    { "title": "Part I — 框架與前傳", "files": ["../book-src/ch01-normal-accidents.md", "../book-src/ch02-anatomy-tools.md", "../book-src/ch03-before-the-machine.md"] },
+    { "title": "Part II — 安全系統即兇手", "files": ["../book-src/ch04-737-max-mcas.md", "../book-src/ch05-air-france-447.md", "../book-src/ch06-uberlingen.md"] },
+    { "title": "Part III — 一個數字，一場崩塌", "files": ["../book-src/ch07-gimli-glider.md", "../book-src/ch08-schiaparelli.md", "../book-src/ch09-sleipner.md"] },
+    { "title": "Part IV — 連鎖反應", "files": ["../book-src/ch10-cloudflare-regex.md", "../book-src/ch11-flash-crash.md", "../book-src/ch12-texas-grid.md", "../book-src/ch13-cloud-cascade.md"] },
+    { "title": "Part V — 漂移到失效", "files": ["../book-src/ch14-challenger.md", "../book-src/ch15-columbia.md", "../book-src/ch16-three-mile-island.md", "../book-src/ch17-chernobyl.md"] },
+    { "title": "Part VI — 看不見的縫：安全、供應鏈與靜默損毀", "files": ["../book-src/ch18-morris-worm.md", "../book-src/ch19-heartbleed.md", "../book-src/ch20-supply-chain.md", "../book-src/ch21-silent-corruption.md"] },
+    { "title": "Part VII — 怎麼安全地壞", "files": ["../book-src/ch22-resilience.md", "../book-src/ch23-normal-accidents-and-you.md"] },
+    { "title": "附錄", "files": ["../book-src/appendix-a-timeline.md", "../book-src/appendix-b-failure-modes.md", "../book-src/appendix-c-reading-map.md"] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

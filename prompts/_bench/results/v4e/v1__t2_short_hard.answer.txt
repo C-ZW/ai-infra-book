@@ -1,0 +1,16 @@
+No. `list.index(x)` is O(n) — it scans elements left to right until it finds a match (or exhausts the list).
+
+The confusion: Python lists *are* backed by a contiguous array, so **index access by position** (`lst[i]`) is O(1). But `list.index(x)` searches *by value*, not by position — it has no choice but to walk the array linearly because there's no hash table or sorted index underneath.
+
+Quick mental model:
+
+| Operation | Complexity | Why |
+|---|---|---|
+| `lst[i]` | O(1) | pointer arithmetic on contiguous array |
+| `lst.index(x)` | O(n) | linear scan by value |
+| `x in lst` | O(n) | same scan |
+| `x in set_` | O(1) average | hash lookup |
+
+If the performance matters, the fix is to convert to a `set` (or `dict`) for membership/lookup, or keep a separate index structure if you need the position.
+
+Dangerous unhandled case worth raising with your teammate: what if the list contains duplicates? `list.index(x)` returns only the *first* match — is that the assumed behavior, or a silent correctness bug waiting to surface?

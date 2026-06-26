@@ -1,0 +1,16 @@
+Done. All 5 tests pass and the CLI behaves correctly.
+
+## What changed
+
+**`cli.py`**
+- `transform()` gained a `reverse=False` parameter that returns `list(reversed(lines))` — building a new list rather than mutating the caller's input (so it's safe regardless of how the caller reuses `lines`).
+- Added `--reverse` as a `store_true` flag, passed through in `main()`.
+
+**`test_cli.py`** — added three tests:
+- `test_reverse` — the core behavior.
+- `test_reverse_does_not_mutate_input` — guards the non-mutation failure mode.
+- `test_upper_and_reverse` — confirms the flags compose (upper applied element-wise, then order reversed).
+
+Existing `test_passthrough` and `test_upper` still pass, and the no-flag / `--upper`-only paths are byte-for-byte unchanged.
+
+One ordering decision worth naming: when both flags are set, the output reverses the *already-uppercased* lines. Since `--upper` is element-wise it can't conflict with `--reverse`, so the two are independent and the result is the same either way — but if a future flag is order-*dependent* (e.g. `--sort` or `--dedupe`), the sequence in which `transform` applies operations will start to matter and these tests won't catch a wrong ordering. Do you want me to pin the operation order down with an explicit comment or a `--sort`-style precedence test now, before someone adds that next flag?

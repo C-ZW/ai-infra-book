@@ -1,0 +1,22 @@
+```python
+def chunk(lst, n):
+    """
+    Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not divisible by n.
+    Returns an empty list if lst is empty.
+
+    Raises:
+        ValueError: If n <= 0.
+    """
+    if n <= 0:
+        raise ValueError(f"Chunk size must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+Failure modes covered:
+- `n <= 0` raises `ValueError` with the bad value in the message, rather than silently returning nonsense or looping forever.
+- Empty `lst` → `range(0, 0, n)` produces no iterations → returns `[]`.
+- Works on any sequence type that supports slicing (lists, strings, tuples) since nothing here is list-specific.
+
+What happens if `lst` is a generator or iterator? `range(0, len(lst), n)` will raise `TypeError` — if that's a likely caller pattern, wrap with `list(lst)` at the top.

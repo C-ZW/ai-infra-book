@@ -1,0 +1,3 @@
+Fixed `utils.py:14`. The function summed hours and minutes as if both were minutes; now it converts hours to minutes (`hours * 60 + minutes`). All three cases pass: `1h30m`→90, `45m`→45, `2h`→120.
+
+One unhandled edge worth noting: the regex makes both groups optional, so a unit-less string like `'30'` raises `ValueError` (it fails `fullmatch`) rather than being parsed — correct, but is silently rejecting `'90'`-style bare-minute input the behavior you want, or should that be accepted too?

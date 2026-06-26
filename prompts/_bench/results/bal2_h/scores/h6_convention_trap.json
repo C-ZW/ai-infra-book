@@ -1,0 +1,11 @@
+{
+  "task": "h6_convention_trap",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Extends route() to (method,path) keying preserving @route pattern; fetch-then-delete returns err not raises. Convention-faithful, sound, sharp key-coercion probe."},
+    "B": {"instruction_following": 5, "correctness": 3, "conciseness": 5, "tool_discipline": 4, "safety": 5, "overall": 3, "rationale": "Claims convention fidelity and is tightest, but bakes method into path string instead of real method dispatch; brittle routing if route() only keys on path."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Proper (method,path) tuple keying, existence-check then err, explicitly affirms err/ok+str.format conventions. Equivalent to A, slightly slower wall time."},
+    "D": {"instruction_following": 4, "correctness": 4, "conciseness": 4, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Correct (method,path) keying with DB.pop, but adds unrequested get_item method=GET edit and frames error vaguely as 404-style; self-flagged race probe less central."}
+  },
+  "best": "A",
+  "notes": "A, C technically tied: both extend framework idiomatically with err-not-raise. C names conventions more explicitly; A's key-coercion probe edges it. B under-engineers routing via path hack; D mild scope creep plus vaguer convention adherence."
+}

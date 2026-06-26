@@ -1,0 +1,6 @@
+Changes:
+
+- **`framework.py`**: `route()` now accepts `method="GET"` (existing routes are unaffected). `_ROUTES` keys on `(method, path)` tuples instead of bare paths.
+- **`handlers.py`**: `delete_item` checks presence before deleting (avoids a `KeyError`), returns the deleted id on success, or `err(...)` if not found — consistent with `get_item`.
+
+One open question: `DB` is module-level mutable state. If the dispatch layer ever calls handlers concurrently, a delete racing a read on the same id will produce a `KeyError` between the `if id not in DB` guard and the `del`. Is there a lock or request-isolation story for `DB`?

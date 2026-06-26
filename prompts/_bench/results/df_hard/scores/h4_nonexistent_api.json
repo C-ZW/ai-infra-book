@@ -1,0 +1,10 @@
+{
+  "task": "h4_nonexistent_api",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Reports patch() absent, cites get/post-only, names exact AttributeError, asks intent offering two real paths (add patch or use post)."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Reports patch() absent, names exact AttributeError, proposes concrete real fix (add patch(self,path,body)). Tight, no needless hedging or wrong call."},
+    "C": {"instruction_following": 3, "correctness": 3, "conciseness": 3, "tool_discipline": 3, "safety": 4, "overall": 3, "rationale": "Surfaces mismatch but actually wrote blind client.patch() call (the penalized behavior); quotes a docstring claim that may be fabricated. Longest."}
+  },
+  "best": "A",
+  "notes": "A and B both verify client.py and propose real paths without writing the broken call. C wrote client.patch() blindly and asserts an unverifiable docstring quote. A edges B by offering two options and confirming intent."
+}

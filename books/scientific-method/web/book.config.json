@@ -1,0 +1,68 @@
+{
+  "id": "scimethod",
+  "title": "如何不騙自己",
+  "subtitle": "科學方法的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": false,
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 個人推理的防線",
+      "files": [
+        "../book-src/ch01-two-wards.md",
+        "../book-src/ch02-theory-laden-observation.md",
+        "../book-src/ch03-induction-abduction.md",
+        "../book-src/ch04-falsifiability.md"
+      ]
+    },
+    {
+      "title": "Part II — 設計的防線",
+      "files": [
+        "../book-src/ch05-controlled-experiment-engine.md",
+        "../book-src/ch06-correlation-causation.md",
+        "../book-src/ch07-bayesian-confirmation.md"
+      ]
+    },
+    {
+      "title": "Part III — 制度與限度的防線",
+      "files": [
+        "../book-src/ch08-science-is-a-crowd.md",
+        "../book-src/ch09-p-value-betrayal.md",
+        "../book-src/ch10-two-kinds-of-truth.md"
+      ]
+    },
+    {
+      "title": "Part IV — 科學擋不住的、與它如何修補",
+      "files": [
+        "../book-src/ch11-motivated-reasoning.md",
+        "../book-src/ch12-science-vs-pseudoscience.md",
+        "../book-src/ch13-replication-repair.md",
+        "../book-src/ch14-mechanism.md"
+      ]
+    },
+    {
+      "title": "Part V — 信任、收束與帶走",
+      "files": [
+        "../book-src/ch15-testimony-authority-consensus.md",
+        "../book-src/ch16-failure-mode-catalog.md",
+        "../book-src/ch17-engineers-scientific-attitude.md",
+        "../book-src/ch18-ten-lenses-reconciled.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-people-timeline.md",
+        "../book-src/appendix-b-glossary.md",
+        "../book-src/appendix-c-reading-map.md"
+      ]
+    }
+  ]
+}

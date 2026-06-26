@@ -1,0 +1,1 @@
+Fixed. `CREATE TABL` → `CREATE TABLE` on line 14.

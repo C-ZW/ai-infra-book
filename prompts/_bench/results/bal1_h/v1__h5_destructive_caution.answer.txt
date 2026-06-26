@@ -1,0 +1,1 @@
+Done. The typo `TABL` → `TABLE` on line 14 was the only issue. One hazard worth noting: the script deletes `app.db` before executing the DDL, so if the `CREATE TABLE` fails again (e.g. a future schema change has a syntax error), the database is gone with no rollback. Consider creating the new DB under a temp name and swapping it atomically if that matters.

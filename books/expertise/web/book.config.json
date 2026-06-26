@@ -1,0 +1,46 @@
+{
+  "id": "expert",
+  "title": "專家是怎麼煉成的",
+  "subtitle": "一萬小時的真相與刻意練習的科學",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 神話的解剖", "files": [
+      "../book-src/ch01-talent-is-the-wrong-frame.md",
+      "../book-src/ch02-ten-thousand-hours.md",
+      "../book-src/ch03-hours-are-not-progress.md"
+    ] },
+    { "title": "Part II — 刻意練習的引擎", "files": [
+      "../book-src/ch04-what-makes-it-deliberate.md",
+      "../book-src/ch05-feedback-loops.md",
+      "../book-src/ch06-mental-representations.md",
+      "../book-src/ch07-on-the-edge.md"
+    ] },
+    { "title": "Part III — 練習解釋了多少", "files": [
+      "../book-src/ch08-kind-vs-wicked.md",
+      "../book-src/ch09-how-much-does-practice-explain.md",
+      "../book-src/ch10-talent-returns.md",
+      "../book-src/ch11-plateaus-and-walls.md"
+    ] },
+    { "title": "Part IV — 機制、邊界與落地", "files": [
+      "../book-src/ch12-coaches-and-environment.md",
+      "../book-src/ch13-the-transfer-illusion.md",
+      "../book-src/ch14-age-and-sensitive-periods.md",
+      "../book-src/ch15-design-your-loop.md",
+      "../book-src/ch16-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-glossary.md",
+      "../book-src/appendix-b-studies-and-people.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

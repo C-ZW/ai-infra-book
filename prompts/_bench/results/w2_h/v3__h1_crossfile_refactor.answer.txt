@@ -1,0 +1,7 @@
+All 3 tests pass. Changes made:
+
+- **`textlib/names.py`**: `format_name(first, last)` → `format_name(full_name)`, splits on the first space, raises `ValueError` on malformed input (no space, or empty component).
+- **`textlib/greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes it straight through.
+- **`textlib/report.py`**: `roster` now iterates over strings instead of unpacking `(first, last)` tuples.
+
+Worth noting: names with more than one space (e.g. `"Mary Anne Smith"`) will produce `"Anne Smith, Mary"` — first word is first name, remainder is last. If multi-word last names need to be handled differently, that policy belongs in `format_name`'s caller or a separate parser layer.

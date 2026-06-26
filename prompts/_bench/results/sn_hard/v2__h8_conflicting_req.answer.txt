@@ -1,0 +1,3 @@
+The decorator logs each call at `DEBUG` level with the input length, and each return with the digest — all outside the pure function body. Callers that memoize `compute_checksum` will still see the original return value unchanged; the logging is transparent to them.
+
+One dangerous unhandled case: if a caller passes `kwargs` instead of positional `data` (e.g. `compute_checksum(data=b"...")`), `args[0]` will be `None` — the `extra` field will silently report `data_len: None` rather than the real length. Worth guarding with `len(args[0] if args else kwargs.get("data", b""))` if that call pattern is possible.

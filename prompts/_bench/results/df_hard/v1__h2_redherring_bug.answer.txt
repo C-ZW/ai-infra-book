@@ -1,0 +1,3 @@
+Both tests pass. The fix was `uid = str(e["user_id"])` in `aggregate.py:5` — without it, int `1` and string `"1"` were separate dict keys, so the totals never merged.
+
+What happens if a `user_id` is `None` or a float — should those also normalize to string, or should the boundary validate and reject them?

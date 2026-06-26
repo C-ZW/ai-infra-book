@@ -1,0 +1,3 @@
+Done. The updated `fetch_url` retries up to 3 times on `URLError`/`OSError`, sleeping 1 s then 2 s between attempts, and re-raises the last exception if all attempts fail.
+
+One probing question: should HTTP 5xx responses (which `urlopen` raises as `urllib.error.HTTPError`, a subclass of `URLError`) be retried unconditionally, or only on specific status codes like 429/503? If the upstream returns 404, retrying wastes time without any hope of recovery.

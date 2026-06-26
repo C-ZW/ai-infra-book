@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "claim": "咖啡冷卻定律變數代換 (dy/dt = -ky)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "令 y = T - T_room，因 T_room 為常數，dy/dt = dT/dt。代入原方程 dT/dt = -k(T - T_room) 即得 dy/dt = -ky。"
+    },
+    {
+      "claim": "指數函數微分與通解驗證 (C e^(kt))' = k y",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "依連鎖規則 d/dt(e^(kt)) = k e^(kt)。若 y = C e^(kt)，則 y' = C k e^(kt) = k y。"
+    },
+    {
+      "claim": "微分方程解的唯一性證明 (u = y e^(-kt) => u' = 0)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "u' = (y' - ky) e^(-kt)。若 y' = ky，則 u' = 0，由均值定理知 u 為常數 C，故 y = C e^(kt) 包含所有解。"
+    },
+    {
+      "claim": "分離變數法推導 (ln y = kt + c => y = C e^(kt))",
+      "verdict": "imprecise",
+      "correct_value": "",
+      "explanation": "積分應為 ln|y| = kt + c。原推導直接寫 ln y 限制了 y > 0 且 C = e^c > 0，未處理 C <= 0 與 y = 0（除以零）的狀況。"
+    },
+    {
+      "claim": "半衰期計算公式 (t½ = ln 2/λ ≈ 0.6931/λ)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "解 e^(-λ t½) = 1/2 得 -λ t½ = -ln 2，即 t½ = ln 2 / λ。因 ln 2 ≈ 0.693147，估算無誤。"
+    },
+    {
+      "claim": "彈簧振子二階方程通解及初值 (x(0) = A, x'(0) = B)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "x'' = -A cos t - B sin t = -x 滿足方程。x(0) = A, x'(0) = B，二階方程有兩個自由常數可由初值唯一確定。"
+    },
+    {
+      "claim": "彈簧能量守恆證明 (E' = 0)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "E' = 2x x' + 2v v' = 2x v - 2v x = 0（因 v = x', v' = -x），能量完美守恆。"
+    },
+    {
+      "claim": "Euler 法 dy/dt = y, h=0.1 手算前四步 (y₁=1.1 至 y₄=1.4641)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "遞迴式為 y_{n+1} = 1.1 y_n，y_0 = 1。計算 1.1^1=1.1, 1.1^2=1.21, 1.1^3=1.331, 1.1^4=1.4641 皆精確。"
+    },
+    {
+      "claim": "Euler 法 h=0.1 第十步數值與誤差 (y_10=2.59374, 誤差約 0.1245)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "(1.1)^10 = 2.5937424601，四捨五入得 2.59374；e - 2.5937424601 ≈ 0.124539，誤差約 0.1245。"
+    },
+    {
+      "claim": "Euler 法 h=0.01 百步數值與誤差 (y_100≈2.7048, 誤差約 0.0135)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "1.01^100 ≈ 2.7048138，e - 2.7048138 ≈ 0.013468，數值與誤差估算皆正確。"
+    },
+    {
+      "claim": "紙上推演題 1 咖啡冷卻通解 (T(t) = 25 + 65 e^(-kt))",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "代入 t=0 得 T(0)=90，t->inf 時 T->25。求導得 T' = -65 k e^(-kt) = -k(T - 25) 滿足原方程。"
+    },
+    {
+      "claim": "紙上推演題 2(a) Euler 三步與誤差 (y_3=0.729, 誤差約 0.012)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "y_3 = 0.9^3 = 0.729。e^(-0.3) ≈ 0.7408，誤差 0.7408 - 0.729 = 0.0118 ≈ 0.012。"
+    },
+    {
+      "claim": "紙上推演題 2(b) 步長 1.5 與 2.5 迭代結果",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "y_{n+1} = (1-h) y_n。h=1.5 時 y 序列為 1, -0.5, 0.25, -0.125, 0.0625；h=2.5 時為 1, -1.5, 2.25, -3.375, 5.0625。計算正確。"
+    },
+    {
+      "claim": "紙上推演題 2(c) Euler 穩定條件 (0 < h < 2)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "衰變方程更新式為 y_{n+1} = (1-h)y_n，收斂要求 |1-h| < 1，解得 0 < h < 2。"
+    },
+    {
+      "claim": "紙上推演題 3 EMA 與微分方程對應 (α = k Δt)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "dy/dt = k(x-y) 經 Euler 離散為 y_{n+1} = y_n + Δt k (x_n - y_n)，與 EMA 定義對比即得 α = k Δt。"
+    },
+    {
+      "claim": "Python 實驗彈簧 Euler 能量每步放大率 (1 + h²)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "(x + hv)^2 + (v - hx)^2 = (1 + h^2)(x^2 + v^2)，代數展開完全正確。"
+    },
+    {
+      "claim": "Python 實驗彈簧 t=60 (600步) 能量值 (1.01^600 ≈ 391.6)",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "1.01^600 ≈ 391.58342，與模擬第 600 步輸出之 391.5834 符合。"
+    },
+    {
+      "claim": "Python 實驗能量守恆改進（調換 v 與 x 更新順序）",
+      "verdict": "correct",
+      "correct_value": "",
+      "explanation": "先更新 v 再更新 x 為半隱式 Euler 法，其轉移矩陣行列式值恆為 1（保辛映射），故能量近乎守恆而不發散。"
+    }
+  ],
+  "summary": "本章所有數學計算、數值表、代數推導與物理解答皆高度精確，僅分離變數法的積分推導在嚴謹度上略有瑕疵（忽略了絕對值與 y=0 的情況）。"
+}

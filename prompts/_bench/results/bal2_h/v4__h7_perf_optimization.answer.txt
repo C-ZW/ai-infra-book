@@ -1,0 +1,3 @@
+O(n) now. The `in seen` check is O(1) average instead of O(n), so the full pass drops from O(n²) to O(n).
+
+One edge case to be aware of: items must be **hashable** — unhashable types like `list` or `dict` will raise a `TypeError` on `seen.add(x)`. The original had the same constraint implicitly (lists aren't equal-comparable in a useful dedup sense), so output is identical for any input the old version handled correctly.

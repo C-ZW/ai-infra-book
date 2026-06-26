@@ -1,0 +1,7 @@
+All 3 tests pass. Changes made:
+
+- **`textlib/names.py`**: `format_name(first, last)` → `format_name(full_name)`. Uses `rsplit(None, 1)` to split on the last whitespace token (so `"Mary Ann Evans"` → `"Evans, Mary Ann"` correctly). Raises `ValueError` on empty/single-word input rather than silently producing garbage.
+- **`textlib/greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes through to the refactored function.
+- **`textlib/report.py`**: `roster` now expects a list of full-name strings instead of `(first, last)` tuples.
+
+Edge case to be aware of: callers passing `(first, last)` tuples into `roster` will now get a `ValueError` instead of the old behavior — confirm no external callers use the tuple form before deploying.

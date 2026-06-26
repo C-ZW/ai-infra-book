@@ -1,0 +1,1 @@
+`utils.py:14` — `hours + minutes` → `hours * 60 + minutes`. The hours were never converted to minutes before adding.

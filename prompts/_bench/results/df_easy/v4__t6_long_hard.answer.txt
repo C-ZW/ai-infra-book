@@ -1,0 +1,3 @@
+All 4 tests pass. 
+
+Added `reverse=False` parameter to `transform()` in `cli.py:7` and `--reverse` flag to the argparse setup in `main()`. Two new tests cover `--reverse` alone and combined with `--upper`.

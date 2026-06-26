@@ -1,0 +1,3 @@
+Done — but **`ApiClient` has no `patch` method** (`client.py:1-12` only defines `get` and `post`, and the docstring explicitly says "Only GET and POST are supported by the backend"). Any call to `update_item` will raise `AttributeError: 'ApiClient' object has no attribute 'patch'`.
+
+What's the plan for adding `patch` support — extend `ApiClient`, or route the partial update through `POST`?

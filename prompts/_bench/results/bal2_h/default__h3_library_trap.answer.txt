@@ -1,0 +1,3 @@
+Done. `fetch_url` now retries up to 3 times on `URLError` or `TimeoutError`, sleeping 1 s then 2 s between attempts (doubling each time). On the third failure it re-raises the original exception.
+
+What's the most dangerous unhandled case here: an `HTTPError` (which is a subclass of `URLError`) with a non-retryable status like 404 or 403 will also be retried. If that matters for your use case, you'd want to check `isinstance(exc, urllib.error.HTTPError)` and skip the retry for 4xx responses.

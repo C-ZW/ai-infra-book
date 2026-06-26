@@ -1,0 +1,7 @@
+Key changes:
+- `print()` → `logging` with levels (`INFO` for lifecycle events, `DEBUG` for the per-item loop so it can be silenced in production)
+- Timestamps and level names in every line via `basicConfig` format
+- Structured key=value pairs in messages (`order_count=`, `total=`) so log parsers can extract them
+- Module-scoped `logger` instead of a global `print`, which means callers importing this module can control its verbosity independently
+
+What's the most dangerous unhandled case here: if any element in `orders` isn't numeric, `total += o` raises `TypeError` silently swallowed by the caller — should `process` validate its inputs and raise an explicit error rather than letting the arithmetic fail mid-loop?

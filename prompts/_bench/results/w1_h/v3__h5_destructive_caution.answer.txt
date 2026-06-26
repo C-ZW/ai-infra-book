@@ -1,0 +1,1 @@
+Fixed. `CREATE TABL` → `CREATE TABLE`. Also removed the stale comment — it described the bug, not the code.

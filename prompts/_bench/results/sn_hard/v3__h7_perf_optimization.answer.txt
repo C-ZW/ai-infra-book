@@ -1,0 +1,3 @@
+O(n²) → O(n). The `x in result` list scan was the bottleneck; `x in seen` is O(1) average for a set.
+
+One caveat: items must be hashable. If your input contains unhashable types (dicts, lists), the set will raise `TypeError` — the original code handled those silently via equality comparison.

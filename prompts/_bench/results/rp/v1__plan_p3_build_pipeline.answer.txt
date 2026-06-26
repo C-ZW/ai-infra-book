@@ -1,0 +1,109 @@
+Grounded in the actual files. Here's the plan.
+
+---
+
+## Context (from the repo)
+
+- `expenses.csv` — header `date,category,amount`, 7 data rows, currency amounts with 2 decimals, one trailing blank line. Categories repeat (`food`, `transport`, `rent`, `entertainment`).
+- `README.md` — wants 3 components (parser → aggregator → formatter), wired in `main()`, **one test per component**.
+- No language, build config, or git repo present. Python 3.13 and Node 24 both available.
+
+## Key decision (please confirm — see clarifying questions)
+
+**Language: Python 3, stdlib only** (`csv`, `decimal`, `unittest`). Rationale: smallest tool that satisfies "test per component" with zero dependencies; `csv` handles quoting/edge cases for free. I'll proceed on this default unless you say otherwise.
+
+**Money: `decimal.Decimal`, not `float`.** `12.50 + 8.00 + 15.75` in binary float drifts (e.g. `36.249999…`); a report that's a cent off is a silent data-correctness bug. Decimal is exact for currency.
+
+## Proposed layout
+
+```
+expense_report.py        # parser, aggregator, formatter, main()
+test_expense_report.py   # one test class per component
+expenses.csv             # exists
+```
+
+Single module keeps a 3-function tool navigable; splitting into a package is over-engineering at this size.
+
+## Components and interfaces
+
+**1. Parser**
+```python
+@dataclass(frozen=True)
+class Expense:
+    date: str
+    category: str
+    amount: Decimal
+
+def parse(rows: Iterable[str]) -> list[Expense]      # core: takes lines/file object
+def parse_file(path: str) -> list[Expense]           # thin wrapper: opens path, calls parse
+```
+- Core takes an iterable of lines (or file object) so tests need no fixture file on disk.
+- Uses `csv.DictReader`; validates header has `date,category,amount`.
+- Skips blank lines (handles the trailing newline in the data).
+- Normalizes: `category.strip().lower()`, `date.strip()`.
+- Raises a **named** `ParseError(line_no, reason)` on: missing/extra columns, non-decimal amount, missing header. Decision per clarifying-Q whether bad rows raise vs. skip-with-warning.
+
+**2. Aggregator**
+```python
+def aggregate(expenses: Iterable[Expense]) -> dict[str, Decimal]
+```
+- Sums `amount` per `category`. Pure function, no I/O.
+- Empty input → `{}` (not an error).
+- Starts each category at `Decimal("0")`; preserves Decimal precision.
+
+**3. Formatter**
+```python
+def format_report(totals: Mapping[str, Decimal]) -> str
+```
+- Sorts by total **descending**, **tie-break by category name ascending** (determinism — without this, equal totals order is undefined and tests flake).
+- Renders each line `category` + right-aligned amount at 2 dp (`{:.2f}`), plus a `TOTAL` line.
+- Empty totals → a defined "no expenses" string, not a blank/crash.
+
+**4. main()**
+```python
+def main(argv: list[str]) -> int
+```
+- Path from `argv[1]` else default `expenses.csv`.
+- `parse_file → aggregate → format_report → print`.
+- Wraps `FileNotFoundError` and `ParseError` into a stderr message + non-zero exit code; returns `0` on success.
+- Guarded by `if __name__ == "__main__": sys.exit(main(sys.argv))`.
+
+## Ordered steps
+
+1. Scaffold module with `Expense`, `ParseError`, and the four signatures (stubbed).
+2. Implement **parser** (core + file wrapper, header validation, skip-blank, normalization, error path).
+3. Implement **aggregator** (pure sum).
+4. Implement **formatter** (sort desc + tie-break, 2-dp alignment, empty case).
+5. Wire **main()** (arg/default path, error handling, exit codes).
+6. Write `test_expense_report.py` — one test class per component (below).
+7. Run tests + a real `python3 expense_report.py` against the bundled CSV; confirm totals reconcile by hand.
+
+## Verification per component
+
+- **Parser**: feed an in-memory list of lines → assert exact `[Expense(...)]`; assert blank line skipped; assert `ParseError` raised on a row with a non-numeric amount and on a bad header. (`assertRaises`.)
+- **Aggregator**: feed known `Expense` list → assert exact dict, e.g. `food = Decimal("36.25")`, `transport = Decimal("6.40")`; assert `aggregate([]) == {}`.
+- **Formatter**: feed a known totals dict (including a deliberate tie) → assert the **exact** output string, proving descending order + tie-break + 2-dp formatting; assert empty-dict case.
+- **Whole tool**: `python3 -m unittest` (zero deps, no discovery config needed) and one manual run; hand-check `food=36.25, rent=900.00, transport=6.40, entertainment=40.00` so `rent` sorts first.
+
+Expected report order from the real data: `rent (900.00) → entertainment (40.00) → food (36.25) → transport (6.40)`.
+
+## Risks / failure modes
+
+- **Float money** → cent-level drift. Mitigated by Decimal (above).
+- **Undefined tie-break** → non-deterministic order, flaky test. Mitigated by secondary sort on category.
+- **Category drift** — `"Food"`, `"food "`, `"food"` aggregate separately and silently inflate the category count. Mitigated by strip+lowercase normalization (confirm this is wanted — it's lossy on display casing).
+- **Malformed amount** (e.g. `$12.50`, `12,50`, empty) → `Decimal` raises `InvalidOperation`; caught and re-raised as `ParseError` with line number rather than a bare stack trace.
+- **Negative amounts** (refunds) — currently allowed and summed; could make a category total negative and reorder the report. Need a decision.
+- **Empty / header-only file** → must produce an empty report, not divide-by-zero or crash.
+- **BOM / encoding** — a UTF-8 BOM on the header would break column matching; open with `encoding="utf-8-sig"`.
+- **Duplicate/extra columns or reordered header** → `DictReader` validation guards this.
+
+## Clarifying questions
+
+1. **Language** — Python 3 (my default), or Node/another? Changes everything downstream.
+2. **Bad rows** — fail fast (`ParseError`, exit non-zero) or skip-and-warn and still report the rest?
+3. **Category normalization** — fold case/whitespace (`Food`==`food`), or treat exactly as written?
+4. **Negative amounts** — valid (refunds) or rejected?
+5. **Output** — plain text to stdout enough, or do you want totals also as CSV/JSON, and any currency symbol/locale?
+
+The most dangerous unhandled case: if `amount` ever arrives as `float` instead of `Decimal` anywhere in the chain, totals will look right in tests with small inputs and silently go a cent wrong on larger real data — do you want the parser to *hard-reject* any amount that doesn't round-trip exactly through `Decimal`, so that failure is loud instead of latent?

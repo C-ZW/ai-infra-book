@@ -1,0 +1,10 @@
+{
+  "task": "t1_short_simple",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct, with accurate one-clause justification; slightly longer than the ideal bare 'Yes.' but tight and complete."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Maximally concise correct answer; exactly the 'Yes.' the rubric frames as ideal for a one-line question."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Identical maximally concise correct 'Yes.'; ideal signal per token, no preamble or lecture."}
+  },
+  "best": "B",
+  "notes": "All correct and clean. B/C tie as the maximally concise ideal 'Yes.'; A adds a valid but unrequired clause. B edges C only on lower wall time."
+}

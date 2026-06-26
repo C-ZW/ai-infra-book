@@ -1,0 +1,7 @@
+Done — `handlers.py:19`. The handler follows the existing conventions: `@route` decorator, mirrors `get_item`'s missing-check, returns `err()` (not raised) on miss, returns `ok()` on success, and builds the message with `str.format()`.
+
+One real problem you should know about, though: `framework.py` keys routes by **path only** (`_ROUTES[path] = fn`), with no HTTP method in the signature. Since `get_item` already registers `/items/{id}`, importing this module now silently overwrites that entry — whichever of `get_item`/`delete_item` is defined last wins, and the other becomes unreachable. The framework as written cannot distinguish `GET /items/{id}` from `DELETE /items/{id}`. I didn't touch `framework.py` since adding method dispatch is a change to shared infrastructure you didn't ask for.
+
+To actually serve both, the framework needs a method dimension — e.g. `@route("/items/{id}", method="DELETE")` keying on `(method, path)`. Want me to make that change?
+
+One more sharp edge: routes pass `id` straight through, and `DB.get(id)` won't coerce — if the dispatcher hands you the string `"1"` instead of int `1`, the lookup misses and you'd 404 a row that exists. `get_item` has the identical exposure. Do you know whether the router parses `{id}` as a string or an int?

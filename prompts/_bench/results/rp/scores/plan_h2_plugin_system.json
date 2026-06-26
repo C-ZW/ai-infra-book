@@ -1,0 +1,10 @@
+{
+  "task": "plan_h2_plugin_system",
+  "scores": {
+    "A": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 3, "risk_handling": 4, "discipline": 4, "overall": 4, "rationale": "Nails registry+decorator+auto-discovery decoupling and inline decoupling test, but garbles the upper/reverse order proof and ships a corrupted smoke command (stray CJK char in code)."},
+    "B": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 5, "risk_handling": 5, "discipline": 5, "overall": 5, "rationale": "Tightest, signal-dense plan; correct auto-discovery decoupling, catches the order false-positive with an asymmetric plugin, clean risk table, thread-safety, decoupling acceptance test."},
+    "C": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 5, "risk_handling": 5, "discipline": 4, "overall": 5, "rationale": "Most complete: rigorous commute analysis merging order+decoupling test, git-diff acceptance check, alternatives rejecting explicit-list as violating constraint; long with illustrative code but stayed a plan."}
+  },
+  "best": "B",
+  "notes": "All three nail registry+@register+pkgutil auto-discovery decoupling. A loses on a corrupted smoke command and muddled order proof. B and C both correct and complete; B edges it on discipline (tighter, signal-dense) while C is longer with inline code."
+}

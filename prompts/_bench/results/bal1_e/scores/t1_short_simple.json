@@ -1,0 +1,11 @@
+{
+  "task": "t1_short_simple",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct with a brief, true justification clause; slightly less tight than a bare 'Yes.' but complete and helpful."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Bare 'Yes.' — maximally concise and correct for a one-line yes/no factual question."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Bare 'Yes.' — maximally concise and correct for a one-line yes/no factual question."},
+    "D": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Bare 'Yes.' — maximally concise and correct for a one-line yes/no factual question."}
+  },
+  "best": "B",
+  "notes": "All four correct and safe. B/C/D give the ideal bare 'Yes.'; A adds a true but slightly extra justification clause. Among identical B/C/D, B chosen as representative best."
+}

@@ -1,0 +1,10 @@
+{
+  "task": "t6_long_hard",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Full loop: flag added, tests added and verified passing, --upper preserved. Tight closing noting predictable ordering after upper."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct, verified, well-scoped, but longest answer; bolts on an unprompted empty-stdin edge-case note that pads the closing."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Tightest complete answer; tests cover flag in isolation and combined with --upper, confirming no regression. Verified passing."}
+  },
+  "best": "C",
+  "notes": "All three correct, verified, scoped, safe. C is tightest while confirming --upper coverage; A matches it with ordering rationale; B equally correct but wordiest with an unprompted edge-case aside."
+}

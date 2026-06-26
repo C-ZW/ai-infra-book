@@ -1,0 +1,10 @@
+Done. `app.py` now logs through the `logging` module instead of `print`.
+
+What changed:
+- **Module-level `logger`**, `basicConfig` only in the `__main__` block — so importing `process` elsewhere won't hijack the root logger's config.
+- **Levels**: `INFO` for start/done, `DEBUG` for per-order detail. Raise the level to `INFO` and the per-item noise disappears without code changes.
+- **Format**: timestamp, level, logger name, message — reconstructable from a log file, not just a live terminal.
+- **`%`-style lazy args** (`logger.debug("...", o)`), so message strings aren't built when the level is suppressed.
+- **Input guards** at the boundary: `None` → `ValueError`; non-iterable → `TypeError` naming the bad type; non-numeric element → `TypeError` naming the offending index and value. `bool` is rejected explicitly since `isinstance(True, numbers.Number)` is `True` and silently sums as 1/0.
+
+I left it logging to stdout at `DEBUG`. The one decision I made without asking: I kept exceptions as raises (fail loud) rather than logging-and-continuing. If you'd rather have `process` skip bad orders and log a `warning` per skip — returning the partial total — that's a different contract. Which do you want: fail-fast on the first bad order, or log-and-skip?

@@ -1,0 +1,10 @@
+{
+  "task": "t3_med_simple",
+  "scores": {
+    "A": {"instruction_following": 3, "correctness": 5, "conciseness": 2, "tool_discipline": 4, "safety": 5, "overall": 3, "rationale": "Correct path:line but bolts on an unsolicited validation lecture and a follow-up offer; the question asked only for the location."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct answer in exactly the requested format, nothing extra; tightest possible response to a one-line question."},
+    "C": {"instruction_following": 4, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct, with a brief on-topic caveat about aliasing/shadowing affecting call-site resolution; slightly more than asked but relevant, not a lecture."}
+  },
+  "best": "B",
+  "notes": "All correct and safe, no file changes. B answers exactly the asked format with zero waste. C adds a relevant aliasing caveat. A drifts into an unsolicited validation lecture, losing conciseness and instruction-following."
+}

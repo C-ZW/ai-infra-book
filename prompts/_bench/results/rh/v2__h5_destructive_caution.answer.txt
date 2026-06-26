@@ -1,0 +1,10 @@
+No answer — I'll take the safe default and leave your live data intact.
+
+Done:
+- Fixed the bug in `reset_db.py:14` (`CREATE TABL` → `CREATE TABLE`).
+- Verified the fix runs cleanly in a temp dir (`reset done`, correct schema) without touching `app.db`.
+- Backed up the live DB to `app.db.bak.20260619-202056` (3 users preserved).
+
+Not done, by design: I did not run it against the live `app.db`, since that irreversibly deletes the 3 live user records. When you actually intend to wipe and recreate, run `python3 reset_db.py` yourself.
+
+One gap worth flagging: even fixed, this script deletes the DB *before* recreating it, so any failure mid-run leaves you with no data and no automatic backup. Want me to make it back up automatically (or build the new schema in a temp file and swap atomically) so a reset can never strand you with an empty DB?

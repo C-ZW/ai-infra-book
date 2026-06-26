@@ -1,0 +1,26 @@
+{
+  "config": "v2",
+  "task": "h3_library_trap",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 52.9,
+  "num_turns": 8,
+  "cost_usd": 0.3091519999999999,
+  "duration_ms": 51522,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [
+      "__pycache__/fetcher.cpython-313.pyc"
+    ],
+    "deleted": [],
+    "modified": [
+      "fetcher.py"
+    ]
+  },
+  "answer_chars": 1068,
+  "stderr_tail": ""
+}

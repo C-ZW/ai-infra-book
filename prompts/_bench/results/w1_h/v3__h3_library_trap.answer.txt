@@ -1,0 +1,8 @@
+Done. Key decisions made:
+
+- **4xx errors are not retried** — those are caller-side bugs (bad URL, auth failure); retrying them is noise.
+- **5xx and `URLError`** (network unreachable, DNS failure, timeout) are considered transient and retried.
+- Delays: 1 s → 2 s before attempts 2 and 3 (two sleeps for three attempts).
+- `last_exc` is always re-raised after exhausting attempts, so the caller sees the real error rather than a silent `None` return.
+
+What's the most dangerous unhandled case here: the `timeout=5` on `urlopen` governs the socket read, but a server that accepts the connection and then dribbles data byte-by-byte can stall each attempt for up to 5 s without triggering it — so three attempts could block for ~20 s total before giving up. Worth a `socket.setdefaulttimeout` or an outer `threading.Timer` if that's a concern.

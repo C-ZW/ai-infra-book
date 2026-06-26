@@ -1,0 +1,12 @@
+No, that's wrong. `list.index(x)` is O(n) — it does a linear scan from left to right until it finds a match or exhausts the list.
+
+The O(1) confusion likely comes from mixing up two distinct operations:
+
+- `list[i]` — index **by position** → O(1), because it's a fixed-offset memory read into a contiguous array
+- `list.index(x)` — **search by value** → O(n), because Python has no way to know where `x` lives without looking
+
+From CPython's source (`listobject.c`), `list.index` iterates elements one by one comparing with `==`. No hash, no binary search, no shortcut.
+
+If you actually need O(1) value lookup, the right structure is a `dict` or `set`.
+
+> Dangerous unhandled case: does your teammate's code call `list.index` inside a loop? That's an O(n²) operation masquerading as O(n), which won't show up until the list gets large.

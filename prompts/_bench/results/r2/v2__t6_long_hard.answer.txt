@@ -1,0 +1,7 @@
+Done. All 4 tests pass and the flag behaves as expected.
+
+- `cli.py:7` — `transform` now takes `reverse=False` and reverses via `list(reversed(lines))` (non-mutating, applied after `upper`).
+- `cli.py:16` — registered `--reverse` (`store_true`) and passed it through in `main`.
+- `test_cli.py` — added `test_reverse` plus `test_reverse_does_not_mutate_input` to lock in that the input list isn't mutated.
+
+Default and `--upper` paths are untouched. One edge worth noting: empty stdin yields zero lines and `--reverse` correctly prints nothing — verified by the passthrough logic, not by a dedicated test. Want me to add an explicit empty-input test case?

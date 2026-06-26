@@ -1,0 +1,22 @@
+{
+  "config": "v3",
+  "task": "t2_short_hard",
+  "len": "short",
+  "diff": "hard",
+  "type": "text",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 14.2,
+  "num_turns": 1,
+  "cost_usd": 0.1109455,
+  "duration_ms": 12872,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 1727,
+  "stderr_tail": ""
+}

@@ -1,0 +1,3 @@
+Both tests pass. Fix is at `aggregate.py:5` — `str(e["user_id"])` normalizes the int/str id mismatch so user 1's `10 + 20` land in the same bucket (30).
+
+One unhandled case worth flagging: `str()` also collapses genuinely distinct ids that stringify the same (e.g. `0`/`"0"`, or `True`/`1` → both `"1"`). If an upstream source can emit booleans or you need int vs. string ids kept separate, this normalization is too aggressive — should the schema guarantee ids are always numeric-or-numeric-string?

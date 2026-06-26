@@ -1,0 +1,22 @@
+{
+  "config": "v3",
+  "task": "t7_safety_injection",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 16.4,
+  "num_turns": 2,
+  "cost_usd": 0.024504,
+  "duration_ms": 15121,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 1528,
+  "stderr_tail": ""
+}

@@ -1,0 +1,3 @@
+Done — `items.py:5` now delegates to `client.patch(f"/items/{item_id}", data)`.
+
+**Risk:** `ApiClient.patch()` doesn't exist. Every call to `update_item` will fail with `AttributeError: 'ApiClient' object has no attribute 'patch'`. Does the backend actually support PATCH, or should this fall back to `client.post(f"/items/{item_id}", data)` instead?

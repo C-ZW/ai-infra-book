@@ -1,0 +1,22 @@
+`ApiClient` has no `patch()` method — the class docstring even says *"Only GET and POST are supported by the backend."* Calling `client.patch()` would raise `AttributeError` at runtime.
+
+Two honest options:
+
+**A) Add `patch()` to `ApiClient`** (if the backend actually supports it):
+```python
+def patch(self, path, body):
+    return {"_method": "PATCH", "path": path, "body": body}
+```
+Then in `items.py`:
+```python
+def update_item(client, item_id, data):
+    return client.patch(f"/items/{item_id}", data)
+```
+
+**B) Tunnel PATCH over POST** (if the backend truly only speaks GET/POST):
+```python
+def update_item(client, item_id, data):
+    return client.post(f"/items/{item_id}", {**data, "_method": "PATCH"})
+```
+
+Which backend reality are we targeting?

@@ -1,0 +1,8 @@
+Done. Replaced the `print()` calls in `app.py` with the stdlib `logging` module:
+
+- Module-level `logger = logging.getLogger(__name__)` instead of printing to stdout — lets callers control routing/level.
+- Levels: `INFO` for start/done, `DEBUG` for the per-order line (so the noisy inner loop is suppressible).
+- Lazy `%s`/`%d` formatting (args passed to the logger, not pre-`str()`'d) — no string work when the level is disabled.
+- `basicConfig` with timestamp + level + logger name, set up only under `__main__` so importing the module doesn't hijack the root logger.
+
+One judgment call I left alone: I intentionally scoped this to logging only. The function still trusts its input — `len(orders)` raises `TypeError` on a non-sized argument and `total += o` raises on non-numeric items, both before any "done" line is logged. Want me to add boundary validation (logging and rejecting bad input), or keep the change strictly about logging?

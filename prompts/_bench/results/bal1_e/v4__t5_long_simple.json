@@ -1,0 +1,22 @@
+{
+  "config": "v4",
+  "task": "t5_long_simple",
+  "len": "long",
+  "diff": "simple",
+  "type": "text",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 8.4,
+  "num_turns": 1,
+  "cost_usd": 0.011755499999999999,
+  "duration_ms": 6002,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 807,
+  "stderr_tail": ""
+}

@@ -1,0 +1,34 @@
+{
+  "task": "t6_long_hard",
+  "scores": {
+    "A": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Meets requirements, correct, concise enough."
+    },
+    "B": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 2,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Correct but overly verbose."
+    },
+    "C": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Precise, correct, very concise."
+    }
+  },
+  "best": "C",
+  "notes": "C delivered full solution with minimal wording, outperforming verbose B."
+}

@@ -1,0 +1,26 @@
+```python
+def chunk(lst, n):
+    """
+    Split *lst* into consecutive chunks of size *n*.
+
+    The last chunk may be shorter than *n* if len(lst) is not a multiple of *n*.
+
+    Args:
+        lst: Any sequence (list, tuple, str, …).
+        n:   Chunk size; must be a positive integer.
+
+    Returns:
+        A list of slices of *lst*.
+
+    Raises:
+        ValueError: If *n* is not a positive integer.
+    """
+    if not isinstance(n, int) or n <= 0:
+        raise ValueError(f"chunk size must be a positive integer, got {n!r}")
+    return [lst[i : i + n] for i in range(0, len(lst), n)]
+```
+
+Edge cases handled:
+- `n <= 0` or non-integer → `ValueError` with the bad value in the message
+- empty `lst` → returns `[]` (the `range` produces nothing)
+- `n > len(lst)` → returns one chunk containing all elements

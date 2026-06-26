@@ -1,0 +1,1 @@
+Both tests pass. The fix is one line in `aggregate.py:6`: `uid = str(e["user_id"])` normalizes the id before using it as a dict key, so `1` and `"1"` from the two upstream sources collapse into the same `"1"` bucket.

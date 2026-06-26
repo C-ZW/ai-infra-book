@@ -1,0 +1,7 @@
+All 3 tests pass. Summary of changes:
+
+- `textlib/names.py` — `format_name(first, last)` → `format_name(full_name)`, splits on the last space via `rsplit(" ", 1)`, raises `ValueError` for single-token input
+- `textlib/greet.py` — `greeting(first, last)` → `greeting(full_name)`, passes it straight through
+- `textlib/report.py` — `roster` iterable changed from `(first, last)` tuples to plain name strings
+
+One edge to watch: names with only one token (e.g. mononyms) will now raise explicitly rather than silently misbehave — decide whether that needs a fallback (e.g. `"Cher, "`) before extending the call sites.

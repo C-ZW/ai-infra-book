@@ -1,0 +1,8 @@
+Done. Key decisions made:
+
+- **4xx errors re-raise immediately** — client errors (bad URL, auth failure) aren't transient; retrying them wastes time and could trigger rate-limiting.
+- **5xx + `URLError`** (network failures, DNS, timeouts) are retried — these are the genuinely transient cases.
+- Delays: 1 s → 2 s before attempts 2 and 3 (no sleep after the final failure).
+- `_attempts` and `_base_delay` are keyword-only with leading underscores — overridable in tests without polluting the public API.
+
+One sharp open question: the per-attempt `timeout=5` is a *socket* timeout, not a wall-clock deadline. With 3 attempts, worst-case wall time is `3×5 + (1+2) = 18 s`. Is that acceptable for callers, or do you need a global deadline passed in?

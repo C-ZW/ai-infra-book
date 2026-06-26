@@ -1,0 +1,10 @@
+{
+  "task": "t2_short_hard",
+  "scores": {
+    "A": {"instruction_following": 4, "correctness": 5, "conciseness": 3, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Correct, clear correction with rich table, but the duplicates 'dangerous case' is off-topic scope creep and adds length."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct, tight, and uniquely cites verifiable CPython source (list_index_impl linear loop) — strong for refuting a confident teammate."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct, tightest answer, clean table, names the conflation and the fix. Complete with no filler."}
+  },
+  "best": "B",
+  "notes": "All correct and safe. C is most concise; B edges it with a verifiable CPython citation that best rebuts a confident teammate. A loses points for off-topic duplicates aside and length."
+}

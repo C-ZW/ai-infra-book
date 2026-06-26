@@ -1,0 +1,70 @@
+Grounded in the actual code. Here is the plan — no changes have been made.
+
+## Context (what exists today)
+
+- `todoapp/model.py` — `Task` dataclass: `id: int`, `title: str`, `done: bool = False`.
+- `todoapp/storage.py` — `save()`/`load()` hand-roll the dict per field (explicit key list, no `asdict`); `load` uses `d["done"]` (hard key access, no defaults).
+- `todoapp/cli.py` — argparse with `add` (positional `title`) and `list`; module-level `STORE = "tasks.json"` written to cwd; `list` prints `[mark] #id title` in stored order.
+- `test_todoapp.py` — one storage roundtrip test. `python3 -m pytest -q` → 1 passed. pytest 9.0.3 / Python 3.13. No `tasks.json` on disk.
+
+## Ordered steps
+
+### Step 1 — Model: add the field
+`todoapp/model.py`: add `priority: int = 3` to `Task`. Append it **after** `done` (last field) so existing positional construction stays valid.
+- Verify: `python3 -c "from todoapp.model import Task; t=Task(1,'a'); print(t.priority)"` → `3`; `python3 -m pytest -q` still green (existing positional `Task(1,"a")` / `Task(2,"b",done=True)` unaffected).
+
+### Step 2 — Storage: persist + read back compatibly
+`todoapp/storage.py`:
+- `save`: add `"priority": t.priority` to the serialized dict.
+- `load`: read it as `d.get("priority", 3)` — **not** `d["priority"]` — so pre-existing `tasks.json` files written before this change still load (back-compat default). Optionally coerce/validate (`int(...)`) to defend against hand-edited JSON.
+- Verify: ad-hoc roundtrip writes a task with `priority=1`, loads, asserts `==1`; and a dict missing `priority` loads as `3`. Covered by tests in Step 5.
+
+### Step 3 — CLI `add`: `--priority` flag
+`todoapp/cli.py`:
+- In `build_parser`, on the `add` subparser: `a.add_argument("--priority", type=int, default=3)` (argparse `type=int` rejects non-integers with exit code 2 at the boundary).
+- In `cmd_add`: construct `Task(id=next_id, title=args.title, priority=args.priority)`.
+- Verify: `python3 -m todoapp add "x" --priority 5` prints `added #N`; inspect `tasks.json` shows `"priority": 5`. `add "y"` with no flag → `3`. `--priority abc` → exit 2.
+
+### Step 4 — CLI `list`: show + sort highest-first
+`todoapp/cli.py` `cmd_list`:
+- Sort: `for t in sorted(tasks, key=lambda t: t.priority, reverse=True):`. Python's sort is stable, so equal priorities keep insertion (id) order — predictable tie-break.
+- Display: include priority in the line, e.g. `print("[{}] P{} #{} {}".format(mark, t.priority, t.id, t.title))`. (Exact format is a cosmetic decision — see questions.)
+- Verify: add tasks with mixed priorities, run `list`, confirm descending order and that priority shows.
+
+### Step 5 — Tests
+Extend `test_todoapp.py`:
+1. Model default: `Task(1,"a").priority == 3`.
+2. Storage roundtrip carries priority (e.g. save with `priority=1`, load, assert).
+3. Back-compat: write JSON **without** a `priority` key directly to a temp file, `load`, assert `priority == 3`.
+4. `add` default and `add --priority N` write the right value — drive via `cli.main([...])`.
+5. `list` ordering: seed mixed priorities, capture stdout (pytest `capsys`), assert highest-first and that ties fall back to id order.
+
+Critical test-isolation detail: `STORE` is a module-level constant pointing at cwd. CLI tests must **not** write into the repo. Either `monkeypatch.setattr("todoapp.cli.STORE", <tmp path>)` or `monkeypatch.chdir(tmp_path)`. Without this, tests pollute the working dir and can interfere with each other.
+
+- Verify: `python3 -m pytest -q` all green; confirm no stray `tasks.json` left in the repo after the run.
+
+### Step 6 — Final full verification
+`python3 -m pytest -q`, plus a manual end-to-end: `add` a few tasks at different priorities, `list`, confirm ordering and display. Confirm an old-format `tasks.json` (no priority key) still loads.
+
+## Files changed
+- `todoapp/model.py` (field)
+- `todoapp/storage.py` (save + load)
+- `todoapp/cli.py` (parser flag, `cmd_add`, `cmd_list`)
+- `test_todoapp.py` (new tests)
+
+No changes needed to `todoapp/__init__.py`.
+
+## Risks & edge cases (the failure modes)
+- **Back-compat on load is the highest-risk item.** Any existing `tasks.json` lacks the `priority` key; `d["priority"]` would raise `KeyError` and break `list`/`add` for current users. `.get(..., 3)` is mandatory, not optional.
+- **Dataclass field ordering.** A field with a default cannot precede a non-default field. Appending `priority` after `done` is safe and preserves positional construction (`Task(1,"a")`). Inserting it mid-struct risks breaking any positional callers.
+- **Sort key assumes `priority` is always a comparable int.** If a hand-edited or legacy JSON yields `None`/string, `sorted` raises `TypeError`. The `load`-side default/coercion is what protects the sort.
+- **No range validation by default.** `--priority` accepts any int, including negative or huge values. argparse only enforces "is an int." If priorities are meant to be bounded, that's unhandled.
+- **List output format change** could break downstream scripts/tests that parse the old `[mark] #id title` line. Current tests don't assert on it, so internal risk is low — but it's a public-output contract change.
+- **Concurrency / partial write** (pre-existing): `save` truncates then writes without atomic rename or locking; a crash mid-write corrupts `tasks.json`. Out of scope for this task, but the new field rides on the same fragile write path — worth flagging.
+
+## Clarifying questions
+1. **Valid range / semantics:** Is priority bounded (e.g. 1–5), and does *higher number = higher priority* (my sort assumes yes)? Should `add` reject out-of-range values, or accept any int?
+2. **List display format:** Exact desired format for the priority in the `list` output (e.g. `P3`, `(prio 3)`, a column)? Any need for a `--sort`/`--reverse` toggle, or is highest-first always the only order?
+3. **Tie-break:** For equal priorities, is id-ascending (insertion order) the intended secondary sort?
+
+The most dangerous unhandled case is a **legacy `tasks.json` written before this change**: if `load` uses `d["priority"]` instead of a defaulted `.get`, every existing user's `list` and `add` will crash on first run after the upgrade — do you have such files in play, or is the store always created fresh?

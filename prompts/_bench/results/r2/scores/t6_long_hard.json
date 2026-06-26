@@ -1,0 +1,10 @@
+{
+  "task": "t6_long_hard",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Full loop, tests pass, --upper preserved, non-mutating reverse. Tight with a sharp closing naming streaming-buffer edge plus a real ordering design question."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct, verified, two good tests. But wordiest (1482 chars), restates the task, headers and longer closing lower signal-per-token; closing question more generic."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Most concise, verified, and added the strongest test (mutation guard). Clear closing naming empty-input edge with a concrete offered next test."}
+  },
+  "best": "C",
+  "notes": "All three did the full verified loop correctly; cache artifacts a wash. C wins on tightest signal plus the most rigorous test (mutation guard). A near-tie with richer design closing; B correct but verbose and restates the task."
+}

@@ -1,0 +1,24 @@
+{
+  "id": "swhist",
+  "ui_lang": "zh-TW",
+  "title": "複雜度守恆",
+  "subtitle": "軟體發展史的工程師讀法",
+  "footer": "內容基準 2026-06 ｜ 興趣・思想史×方法演化",
+  "output": "index.html",
+  "groups": [
+    { "title": "Part I — 機器與第一層抽象", "files": ["../book-src/ch01-fighting-complexity.md", "../book-src/ch02-stored-program.md", "../book-src/ch03-compiler-bet.md"] },
+    { "title": "Part II — 語言的哲學與第一次危機", "files": ["../book-src/ch04-lisp-and-algol.md", "../book-src/ch05-software-crisis.md", "../book-src/ch06-modularity-and-unix.md"] },
+    { "title": "Part III — 抽象的大廈：物件、型別、函數", "files": ["../book-src/ch07-object-oriented.md", "../book-src/ch08-types-and-formal-methods.md", "../book-src/ch09-functional-return.md"] },
+    { "title": "Part IV — 流程的戰爭", "files": ["../book-src/ch10-mythical-man-month.md", "../book-src/ch11-waterfall.md", "../book-src/ch12-agile.md"] },
+    { "title": "Part V — 資料、開源與網路", "files": ["../book-src/ch13-relational-model.md", "../book-src/ch14-open-source-and-git.md", "../book-src/ch15-network-and-web.md"] },
+    { "title": "Part VI — 雲與分散式", "files": ["../book-src/ch16-server-to-cloud.md", "../book-src/ch17-microservices-and-containers.md", "../book-src/ch18-devops-and-sre.md"] },
+    { "title": "Part VII — 當下與回望", "files": ["../book-src/ch19-leaky-abstractions.md", "../book-src/ch20-ai-assisted-coding.md", "../book-src/ch21-conservation-of-complexity.md"] },
+    { "title": "附錄", "files": ["../book-src/appendix-a-timeline.md", "../book-src/appendix-b-glossary.md", "../book-src/appendix-c-reading-map.md"] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

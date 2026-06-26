@@ -1,0 +1,3 @@
+O(n²) → O(n). The `seen` set makes duplicate checks O(1) average instead of scanning the growing `result` list each time. Output is identical — same first-seen order.
+
+> **What happens if items are unhashable (e.g., lists or dicts)?** The set will raise `TypeError`. The original also couldn't deduplicate them via equality alone — but if your inputs include unhashable types, the fix must account for that.

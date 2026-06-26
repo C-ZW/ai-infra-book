@@ -1,0 +1,3 @@
+**Warning:** `ApiClient` declares only `get()` and `post()` — there is no `patch()`. This will fail with `AttributeError: 'ApiClient' object has no attribute 'patch'` on any real call.
+
+If `patch()` won't be added to `ApiClient`, the fallback is `client.post(f"/items/{item_id}", data)`. What's the plan for adding `patch()` support to the client?

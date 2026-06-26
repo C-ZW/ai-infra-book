@@ -1,0 +1,1 @@
+Yes, 17 is prime. Its only divisors are 1 and itself.

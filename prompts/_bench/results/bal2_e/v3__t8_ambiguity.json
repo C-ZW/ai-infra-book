@@ -1,0 +1,22 @@
+{
+  "config": "v3",
+  "task": "t8_ambiguity",
+  "len": "short",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 28.1,
+  "num_turns": 7,
+  "cost_usd": 0.0910515,
+  "duration_ms": 26999,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 191,
+  "stderr_tail": ""
+}

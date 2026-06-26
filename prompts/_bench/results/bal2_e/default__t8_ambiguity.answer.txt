@@ -1,0 +1,7 @@
+Changes made:
+- Replaced `print()` with Python's `logging` module using a named logger (`__name__`)
+- Added timestamp + level to every log line via `basicConfig`
+- Surfaced useful context: order count at start, total at finish
+- Used `%`-style formatting (lazy — no string built if the level is filtered out)
+
+What's the most dangerous unhandled case here: if `orders` contains a non-numeric value, `total += o` raises a `TypeError` with no log of which item caused it. Worth catching that at the boundary if callers don't guarantee the type.

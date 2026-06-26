@@ -1,0 +1,5 @@
+Fixed `utils.py:14`. The function summed `hours + minutes` instead of converting hours to minutes.
+
+Verified: `'1h30m'` → 90, `'45m'` → 45, `'2h'` → 120.
+
+One latent failure mode worth flagging: because both regex groups are optional, an input like `'1x'` or `'5'` (no unit) still passes `fullmatch` as an all-empty match and is rejected only incidentally — but `parse_duration('')` after strip is caught by the `not s` guard, while something like `parse_duration('   ')` also resolves to empty and raises correctly. The riskier gap is that a bare number with no unit, e.g. `'90'`, raises `invalid duration` rather than being treated as minutes. Do you want `'90'` to mean 90 minutes, or should it stay an error?

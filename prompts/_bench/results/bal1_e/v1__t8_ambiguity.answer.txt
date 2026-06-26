@@ -1,0 +1,3 @@
+"Make the logging better" is too broad — which code are you referring to? The bench scripts (`prompts/_bench/`), the md-reader tools (`build_reader.py`, `lint_book.py`, etc.), or something else?
+
+What's the context — are you seeing output that's hard to read, missing info during a failure, or something else?

@@ -1,0 +1,13 @@
+The `AskUserQuestion` tool hit an error. To summarize:
+
+The docstring in `core.py:4–10` explicitly prohibits side effects — logging inside `compute_checksum` will silently drop entries on memoized cache hits and add I/O to hot retry loops.
+
+Three options:
+
+1. **Wrapper function** (recommended) — add `compute_checksum_logged()` alongside the pure function; callers opt in. No breakage.
+2. **Log directly inside `compute_checksum`** — violates the docstring constraint; memoized callers will miss log entries.
+3. **Post-definition decorator** — same memoization problem as option 2.
+
+Which do you want?
+
+> ⚠️ Dangerous unhandled case: if the real intent is auditing (e.g. security/compliance), a wrapper that callers can bypass defeats the purpose — you'd need to track callers too. What's the logging for?

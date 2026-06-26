@@ -1,0 +1,34 @@
+{
+  "task": "t8_ambiguity",
+  "scores": {
+    "A": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Perfect implementation of minimal logging changes, clear assumptions, concise summary, and a focused scoping question."
+    },
+    "B": {
+      "instruction_following": 3,
+      "correctness": 5,
+      "conciseness": 2,
+      "tool_discipline": 3,
+      "safety": 5,
+      "overall": 3,
+      "rationale": "Over-implemented by changing core logic to handle/skip errors, wrote a verbose response, and left pyc files behind."
+    },
+    "C": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Excellent minimal logging implementation and scoping question, though slightly wordier than A."
+    }
+  },
+  "best": "A",
+  "notes": "A and C both correctly handled ambiguity by keeping logic unchanged and asking scoping questions. A is best due to its conciseness. B over-implemented error handling and left pyc cache files."
+}

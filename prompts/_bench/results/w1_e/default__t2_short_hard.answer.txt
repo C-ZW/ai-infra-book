@@ -1,0 +1,27 @@
+No, your teammate is half-right but drawing the wrong conclusion.
+
+**The array part is correct.** CPython's `list` is a dynamic array — elements are stored in contiguous memory, so random access by position (`list[i]`) is O(1).
+
+**`list.index(x)` is O(n), not O(1).** Index lookup by *value* requires a linear scan: it compares `x` against each element in order until it finds a match or exhausts the list. There's no hash table or index structure behind it.
+
+```python
+# This is O(1) — direct offset calculation
+val = my_list[42]
+
+# This is O(n) — scans left to right until match found
+pos = my_list.index(x)
+```
+
+The confusion is a classic conflation of two different operations:
+
+| Operation | Complexity | Why |
+|-----------|------------|-----|
+| `list[i]` | O(1) | Direct memory offset from base pointer |
+| `list.index(x)` | O(n) | Sequential equality scan |
+| `dict[k]` / `set.__contains__` | O(1) avg | Hash lookup |
+
+**The dangerous assumption here:** if `x` is near the end of a large list, `.index(x)` touches every element before it. On a 10M-element list called in a hot loop, this silently becomes a quadratic nightmare.
+
+If the use case requires fast value-to-position lookup, the right tool is a pre-built `{value: index}` dict — O(1) lookup at the cost of O(n) build time and O(n) extra memory.
+
+What's the actual use case your teammate is trying to solve? That context might reveal whether O(n) is fine or genuinely a problem.

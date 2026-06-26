@@ -1,0 +1,8 @@
+Replaced bare `print()` calls with `logging`:
+
+- **`logging.basicConfig`** adds timestamps and level names to every line
+- Per-item logs are `DEBUG` (verbose, suppressible in production by raising the level to `INFO`)
+- Start/end logs are `INFO` and carry structured context: `count=`, `total=`
+- Module-scoped `logger = logging.getLogger(__name__)` means the source module is identifiable when this is imported
+
+What's the most dangerous unhandled case here: what happens if an element of `orders` isn't numeric? `total += o` will raise a `TypeError` mid-loop with no log of which order caused it or how many had already been processed. Worth adding a `try/except` around the accumulation if the input is untrusted.

@@ -1,0 +1,56 @@
+{
+  "id": "attn",
+  "title": "注意力機制的原理",
+  "subtitle": "直覺、機制與理論",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 注意力解決什麼問題", "files": [
+      "../book-src/ch01-where-to-look.md",
+      "../book-src/ch02-fixed-vector-bottleneck.md",
+      "../book-src/ch03-bahdanau-alignment.md"
+    ] },
+    { "title": "Part II — 三步骨架：核心機制", "files": [
+      "../book-src/ch04-query-key-value.md",
+      "../book-src/ch05-softmax.md",
+      "../book-src/ch06-scaling-sqrt-d.md",
+      "../book-src/ch07-self-attention.md",
+      "../book-src/ch08-multi-head.md"
+    ] },
+    { "title": "Part III — 補上缺的零件", "files": [
+      "../book-src/ch09-positional-encoding.md",
+      "../book-src/ch10-rope-relative.md",
+      "../book-src/ch11-masking.md",
+      "../book-src/ch12-cross-attention.md",
+      "../book-src/ch13-layer-to-model.md"
+    ] },
+    { "title": "Part IV — 為什麼是 O(n²)", "files": [
+      "../book-src/ch14-quadratic-bottleneck.md",
+      "../book-src/ch15-sparse-linear.md",
+      "../book-src/ch16-flashattention-kv-sharing.md"
+    ] },
+    { "title": "Part V — 理論身世", "files": [
+      "../book-src/ch17-kernel-regression.md",
+      "../book-src/ch18-hopfield-memory.md",
+      "../book-src/ch19-set-operation.md"
+    ] },
+    { "title": "Part VI — 看進黑盒與未來", "files": [
+      "../book-src/ch20-attention-as-explanation.md",
+      "../book-src/ch21-circuits-induction-heads.md",
+      "../book-src/ch22-beyond-attention-ssm.md",
+      "../book-src/ch23-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

@@ -1,0 +1,9 @@
+All 3 tests pass and the edge cases degrade sensibly.
+
+Changes:
+- `textlib/names.py:1` — `format_name(full_name)` now splits the string; last token is the surname, the rest is the given name, with a type guard and an empty-input check.
+- `textlib/greet.py:4` — `greeting(full_name)` passes the string straight through.
+- `textlib/report.py:4` — `roster(people)` now iterates full-name strings.
+- `textlib/__init__.py` — unchanged; it only re-exports the symbol.
+
+One judgment call worth flagging: I treated the **last** whitespace token as the surname, so `"Mary Jane Watson"` → `"Watson, Mary Jane"`. If your data instead has multi-word surnames (e.g. `"Ada Van Helsing"` meaning surname "Van Helsing"), this splits it the wrong way — there's no way to disambiguate `"first middle last"` from `"first last-part-1 last-part-2"` from a single flat string. Do any of your real inputs have multi-word surnames, or is the one-word-surname assumption safe?

@@ -1,0 +1,14 @@
+No. The teammate is conflating two different operations.
+
+**`list[i]` (subscript by position) is O(1)** — that's the array property. A CPython list is a contiguous block of object pointers, so `list[i]` is just a pointer offset.
+
+**`list.index(x)` (search by value) is O(n)** — it scans elements one by one until it finds one that compares equal. Position is irrelevant; it has to inspect each slot. Worst case: element is absent or at the end.
+
+```python
+a = list(range(10_000_000))
+a.index(9_999_999)   # scans ~10M elements
+```
+
+If O(1) value lookup is what you need, that's what `dict` and `set` are for (hash table, average O(1) lookup). The price is unordered storage and the requirement that elements are hashable.
+
+The dangerous unhandled case worth flagging to your teammate: relying on `list.index()` inside a loop over the same list is O(n²) and will silently destroy performance at scale.

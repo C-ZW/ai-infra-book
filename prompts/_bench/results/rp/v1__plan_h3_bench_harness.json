@@ -1,0 +1,22 @@
+{
+  "config": "v1",
+  "task": "plan_h3_bench_harness",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 146.4,
+  "num_turns": 4,
+  "cost_usd": 0.402806,
+  "duration_ms": 144834,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 11864,
+  "stderr_tail": ""
+}

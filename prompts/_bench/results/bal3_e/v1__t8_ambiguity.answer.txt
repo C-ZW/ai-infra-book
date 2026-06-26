@@ -1,0 +1,9 @@
+Which logging are you referring to? There are several candidates:
+
+1. **`build_reader.py`** — the book packager
+2. **`lint_book.py`** — the linter
+3. **`verify_book.py`** — the fact-checker
+4. **`gate_book.py`** — the quality gate
+5. **Something in `book/_meta/`** — the maintenance scan log
+
+Or are you talking about a specific script that's been running recently where the output wasn't useful enough?

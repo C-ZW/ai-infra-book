@@ -1,0 +1,34 @@
+{
+  "task": "t3_med_simple",
+  "scores": {
+    "A": {
+      "instruction_following": 2,
+      "correctness": 5,
+      "conciseness": 1,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 2,
+      "rationale": "Correct answer but failed formatting constraint with extensive unrequested explanation and caveats."
+    },
+    "B": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Perfect adherence to the formatting constraint, highly concise."
+    },
+    "C": {
+      "instruction_following": 4,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Correct answer but included a minor unnecessary clarification."
+    }
+  },
+  "best": "B",
+  "notes": "Candidate B perfectly followed the constraint 'Answer as path:line' with zero extra chatter, making it the most concise and accurate."
+}

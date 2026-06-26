@@ -1,0 +1,10 @@
+{
+  "task": "t3_med_simple",
+  "scores": {
+    "A": {"instruction_following": 4, "correctness": 5, "conciseness": 2, "tool_discipline": 5, "safety": 5, "overall": 3, "rationale": "Correct path:line, but bloated with speculative shadowing caveat and an unrequested probing question; over-answers a one-line ask."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Exact correct path:line in 23 chars; perfect one-line answer to a one-line question, clean tool telemetry."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct path:line plus one tight, genuinely useful sentence disambiguating the definition from re-exports; complete and tight."}
+  },
+  "best": "B",
+  "notes": "All correct via search, no file changes. B is the maximally tight one-liner the task asked for; C adds one useful sentence; A over-answers with speculation and an extraneous question."
+}

@@ -1,0 +1,46 @@
+{
+  "id": "chaos-d",
+  "title": "蝴蝶的鐵律",
+  "subtitle": "混沌理論的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": true,
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 決定論的承諾", "files": [
+      "../book-src/ch01-laplace-promise.md",
+      "../book-src/ch02-three-body.md",
+      "../book-src/ch03-butterfly-sdic.md",
+      "../book-src/ch04-three-axes.md"
+    ] },
+    { "title": "Part II — 一條遞迴式裡的宇宙", "files": [
+      "../book-src/ch05-logistic-map.md",
+      "../book-src/ch06-fixed-points.md",
+      "../book-src/ch07-period-doubling.md",
+      "../book-src/ch08-feigenbaum.md",
+      "../book-src/ch09-chaos-and-windows.md"
+    ] },
+    { "title": "Part III — 混沌的肖像", "files": [
+      "../book-src/ch10-phase-space.md",
+      "../book-src/ch11-strange-attractor.md",
+      "../book-src/ch12-fractals.md",
+      "../book-src/ch13-fractal-dimension.md"
+    ] },
+    { "title": "Part IV — 為什麼測不準", "files": [
+      "../book-src/ch14-lyapunov.md",
+      "../book-src/ch15-predictability-horizon.md",
+      "../book-src/ch16-stretch-fold.md"
+    ] },
+    { "title": "Part V — 與混沌共處", "files": [
+      "../book-src/ch17-chaos-vs-noise.md",
+      "../book-src/ch18-controlling-chaos.md",
+      "../book-src/ch19-seven-layers.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] }
+  ]
+}

@@ -1,0 +1,22 @@
+`/Users/cheweichen/chunk.py:1` already contains a correct implementation, and it passes the smoke tests.
+
+```python
+def chunk(lst, n):
+    """Split lst into consecutive chunks of size n; the final chunk may be shorter.
+    ...
+    """
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise TypeError(f"n must be an int, got {type(n).__name__}")
+    if n <= 0:
+        raise ValueError(f"n must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+Behavior verified:
+- `chunk([1,2,3,4,5], 2)` → `[[1, 2], [3, 4], [5]]` (short final chunk)
+- `chunk([], 3)` → `[]`
+- `chunk('abcdef', 4)` → `['abcd', 'ef']` (works on any sliceable)
+- `n <= 0` → `ValueError` instead of an infinite loop (a `range` with step 0 would raise, but step `<0` would silently return `[]` — so the guard is load-bearing, not cosmetic)
+- `bool` is rejected before the `int` check, since `True == 1` would otherwise sneak through as a chunk size.
+
+One design choice worth surfacing: this returns a fully materialized list. If `lst` is large, that doubles peak memory. Do you want a generator variant (`yield lst[i:i+n]`) for streaming, or is the list return what you need?

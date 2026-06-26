@@ -1,0 +1,34 @@
+{
+  "task": "t2_short_hard",
+  "scores": {
+    "A": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 3,
+      "tool_discipline": null,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Correctly handles the technical explanation but is the most verbose, relying on extra formatting and length."
+    },
+    "B": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": null,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Provides a flawlessly tight, highly accurate explanation of the technical reality and potential failure modes."
+    },
+    "C": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": null,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Accurate and well-paced. The inclusion of a one-line `timeit` proof is a brilliant addition for this specific prompt."
+    }
+  },
+  "best": "C",
+  "notes": "B is the most concise, but C takes the win for providing an actionable, one-line proof specifically tailored to settle an argument with a teammate."
+}

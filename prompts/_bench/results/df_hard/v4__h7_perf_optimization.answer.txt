@@ -1,0 +1,3 @@
+O(n²) → O(n). The `set` provides O(1) average membership tests; the list still tracks insertion order. Output is identical.
+
+One edge case to confirm: if `items` contains unhashable elements (e.g. `list`, `dict`), the `set` will raise `TypeError` — whereas the original silently handled them. Worth checking if that's possible in your inputs.

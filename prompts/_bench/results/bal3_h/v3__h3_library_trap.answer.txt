@@ -1,0 +1,7 @@
+Done. Key decisions:
+
+- **Retries only on transient failures**: `5xx` HTTP errors, `URLError`, `TimeoutError`, `OSError`. `4xx` (caller bugs) raise immediately.
+- **Delays**: 1 s → 2 s → raise (last exception, not a generic wrapper), so callers get the real error.
+- **Parameters** are private kwargs (`_attempts`, `_base_delay`) — testable without monkey-patching, not part of the public API.
+
+Edge case to watch: `timeout=5` is per-attempt, so worst-case wall time is `3×5 + 3 = 18 s`. If the caller has its own deadline, they'll need to wrap this in a thread or `concurrent.futures` with a tighter timeout.

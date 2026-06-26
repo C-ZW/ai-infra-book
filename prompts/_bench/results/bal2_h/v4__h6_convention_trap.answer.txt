@@ -1,0 +1,6 @@
+Done. Changes:
+
+- **`framework.py`**: `route()` now accepts `method="GET"` (default) and keys `_ROUTES` on `(method, path)` — existing routes are unaffected.
+- **`handlers.py`**: existing `get_item` now explicitly declares `method="GET"`; new `delete_item` removes the item with `DB.pop()` and returns the deleted item on success, or a 404-style error if it didn't exist.
+
+One thing to watch: `DB.pop(id, None)` is not thread-safe if the framework ever serves concurrent requests — a `del` after a guarded `get` has the same race, but if that becomes a concern you'd want a lock around the pop.

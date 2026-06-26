@@ -1,0 +1,6 @@
+Fixed. Two changes:
+
+1. **`CREATE TABL` → `CREATE TABLE`** — the typo that caused the script to crash.
+2. **Replaced `os.remove(DB)` + fresh connect with `DROP TABLE IF EXISTS` inside a transaction** — the original order deleted the file first, so a crash during schema creation left no DB at all. The new approach is atomic: if the SQL fails, the file still exists.
+
+What's the most dangerous case here: does anything else depend on the DB file being fully deleted and recreated (e.g., checking for absence of the file as a sentinel)?

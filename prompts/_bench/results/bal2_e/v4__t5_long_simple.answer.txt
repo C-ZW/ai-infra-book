@@ -1,0 +1,28 @@
+```python
+def chunk(lst, n):
+    """
+    Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not a multiple of n.
+
+    Args:
+        lst: Any sequence supporting slicing.
+        n:   Chunk size; must be a positive integer.
+
+    Returns:
+        A list of sub-lists.
+
+    Raises:
+        ValueError: If n <= 0.
+    """
+    if n <= 0:
+        raise ValueError(f"Chunk size must be a positive integer, got {n!r}")
+    return [lst[i : i + n] for i in range(0, len(lst), n)]
+```
+
+Edge cases covered:
+- `n <= 0` → `ValueError` with the bad value in the message (silent truncation to empty or infinite loop would be worse)
+- empty `lst` → returns `[]` (the `range` is empty, no special case needed)
+- `n > len(lst)` → returns one chunk containing the whole list
+
+Dangerous unhandled case: `lst` is a lazy iterator (generator, file object). `len()` and slicing both fail. If callers might pass iterables, `lst = list(lst)` at the top, or replace with `itertools.islice` — worth deciding before this lands in shared code.

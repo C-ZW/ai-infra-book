@@ -1,0 +1,28 @@
+```python
+def chunk(lst, n):
+    """Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not divisible by n.
+
+    Args:
+        lst: Any sequence to split.
+        n:   Chunk size; must be a positive integer.
+
+    Returns:
+        A list of lists.
+
+    Raises:
+        ValueError: If n <= 0.
+    """
+    if n <= 0:
+        raise ValueError(f"Chunk size must be a positive integer, got {n!r}")
+    return [lst[i : i + n] for i in range(0, len(lst), n)]
+```
+
+Edge cases covered:
+- `n <= 0` → explicit `ValueError` with the bad value in the message
+- empty `lst` → returns `[]` (the `range` produces nothing)
+- `len(lst) % n != 0` → last slice naturally falls short, no special case needed
+- works on any sequence (`list`, `str`, `tuple`) since slicing is the only operation
+
+What's the most dangerous unhandled case here? Passing a lazy iterator (e.g. a generator) — `range(0, len(lst), n)` will raise `TypeError` on `len()`, and even if you worked around that, the slice `lst[i:i+n]` would fail. If callers might pass generators, wrap with `lst = list(lst)` at the top of the function.

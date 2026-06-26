@@ -1,0 +1,14 @@
+Done. Here's what changed and why.
+
+**Before:** four bare `print()` calls — no levels, no timestamps, no way to silence them, and they go to stdout mixed with real output.
+
+**After:**
+- **`logging` module instead of `print`** — output now carries a timestamp, level, and logger name, and a consumer can raise/lower verbosity or redirect it without touching `process()`.
+- **Levels chosen on purpose:** `INFO` for the start/finish lifecycle events, `DEBUG` for the noisy per-order detail (so production can run at `INFO` and drop the per-item spam).
+- **Lazy `%s` formatting** (`logger.debug("...", o)` not `"..." + str(o)`) — the string is only built if that level is enabled, so DEBUG logging costs nothing when disabled.
+- **Logger is module-level, config is in `__main__`** — a library shouldn't call `basicConfig` on import; that's the application's job. This keeps `process()` importable without hijacking the root logger.
+- **Context in the messages** — order count, index `i+1/len`, running total, final total — so a log line is actually reconstructable later.
+
+I also hardened the failure path (the anxious-engineer reflex): non-iterable input and non-numeric items now raise a `TypeError` with the offending index, type, and value, instead of crashing deep in `total += o` with an opaque message. Note `bool` is explicitly rejected — in Python `True + 1 == 2`, so without that check a stray boolean would silently corrupt the total.
+
+One thing I should flag rather than assume: I set the demo to `level=DEBUG` so you can see all the lines. **What's the intended runtime here** — is this a library other code imports (in which case the `__main__` block is just a demo and the real caller configures logging), or a standalone script that should default to `INFO` in production?

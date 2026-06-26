@@ -1,0 +1,10 @@
+{
+  "task": "h1_crossfile_refactor",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Updated all callers, tests pass, tightest answer, flags real TypeError behavior change, sharp closing on out-of-repo callers."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "All callers updated, tests pass, line-anchored and graceful degradation; slightly longer, strong closing on non-string contract."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 5, "safety": 4, "overall": 4, "rationale": "Correct and verified but longest; ValueError on mononyms/empty is a more opinionated contract change, though flagged."}
+  },
+  "best": "A",
+  "notes": "All three correct, verified 3/3, updated the same callers. A wins on signal-per-token plus naming the loud-TypeError change; C longest and stricter (hard-error mononyms)."
+}

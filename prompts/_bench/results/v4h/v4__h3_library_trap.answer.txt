@@ -1,0 +1,7 @@
+Three retries with delays of 1 s → 2 s (doubling). Key decisions:
+
+- **What's retried**: `URLError` (network failures, timeouts) and `HTTPError` with status ≥ 500. HTTP 4xx re-raises immediately — repeating a bad request wastes retries and can mask bugs.
+- **`last_exc` can't be `None` on raise**: the loop only falls through when an exception was caught, so `last_exc` is always set before `raise last_exc`. The type annotation makes that intent explicit.
+- **`time.sleep` only between attempts**: `if attempt < _MAX_ATTEMPTS - 1` prevents a pointless sleep after the final failure.
+
+What's the expected behavior if the server returns a 429 (Too Many Requests) with a `Retry-After` header? Currently it's retried on the fixed backoff schedule, ignoring that header — worth deciding whether that matters for your use case.

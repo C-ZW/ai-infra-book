@@ -1,0 +1,5 @@
+Which logging are you referring to? Options:
+
+1. **`md-reader` Python tools** (`build_reader.py`, `lint_book.py`, `verify_book.py`, etc.) — their console output/progress messages
+2. **A specific script** — paste the path or name
+3. **Something else in the project**

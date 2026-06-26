@@ -1,0 +1,1 @@
+Both tests pass. The fix is `aggregate.py:5` — `uid = str(e["user_id"])` normalizes int/str IDs to a consistent key so the two events for user 1 accumulate correctly.

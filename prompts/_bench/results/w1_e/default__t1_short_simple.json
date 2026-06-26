@@ -1,0 +1,22 @@
+{
+  "config": "default",
+  "task": "t1_short_simple",
+  "len": "short",
+  "diff": "simple",
+  "type": "text",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 6.2,
+  "num_turns": 1,
+  "cost_usd": 0.08121719999999999,
+  "duration_ms": 3455,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 53,
+  "stderr_tail": ""
+}

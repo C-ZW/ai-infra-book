@@ -1,0 +1,1 @@
+Fixed. `CREATE TABL` → `CREATE TABLE` on line 14. One lurking risk: if the script dies between `os.remove(DB)` and `con.commit()` (e.g. this same typo previously), the database is gone with no schema. Consider wrapping the whole thing in a temp-file-then-rename pattern if the DB needs to be atomic.

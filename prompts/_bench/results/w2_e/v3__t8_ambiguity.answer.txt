@@ -1,0 +1,1 @@
+Which logging do you mean — the Python tools in `../tools/md-reader/` (build_reader, lint_book, verify_book, etc.), the `write-book` skill pipeline, or something else?

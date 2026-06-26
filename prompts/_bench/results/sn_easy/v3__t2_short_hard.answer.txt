@@ -1,0 +1,13 @@
+No. Your teammate is conflating two different operations.
+
+**`list[i]` (index access) is O(1)** — that's the array property: pointer arithmetic on a contiguous block.
+
+**`list.index(x)` (value search) is O(n)** — it scans from left to right until it finds a match or exhausts the list. The list being a contiguous array gives you fast *positional* lookup, but nothing helps you find *by value* without checking elements one at a time. There's no hash table, no sorted order, no shortcut.
+
+You can verify in CPython's source (`Objects/listobject.c`, `list_index_impl`): it's a plain loop over the array.
+
+The mental model to fix: "array" → O(1) position access, not O(1) value lookup. For O(1) value lookup you need a `set` or `dict`.
+
+---
+
+Sharp follow-up to stress-test your teammate's model: if `list.index()` were O(1), what would `x in my_list` be — and why does Python still recommend using a `set` for membership tests?

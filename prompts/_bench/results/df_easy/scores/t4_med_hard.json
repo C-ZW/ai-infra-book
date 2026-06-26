@@ -1,0 +1,10 @@
+{
+  "task": "t4_med_hard",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 4, "safety": 5, "overall": 5, "rationale": "Correct minimal fix; 7 turns plus 'all three cases pass' claim implies verification, though pytest not named explicitly."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Correct fix; cites concrete wrong output 31-vs-90 showing observed behavior, but fewest turns (5) weakens the run-tests evidence."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 3, "safety": 5, "overall": 4, "rationale": "Correct, tightest answer; 7 turns but reports no verification of outcomes, so test-run is unconfirmed."}
+  },
+  "best": "A",
+  "notes": "All three apply identical correct fix to utils.py only. A best balances correctness with an explicit pass claim plus higher turn count signaling verification; C concise but unverified; B's 31-vs-90 detail strong but fewest turns."
+}

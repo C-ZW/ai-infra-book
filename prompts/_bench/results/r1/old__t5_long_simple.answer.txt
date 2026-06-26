@@ -1,0 +1,33 @@
+Written to `/Users/cheweichen/chunk.py` and verified:
+
+```python
+def chunk(lst, n):
+    """Split lst into consecutive chunks of size n; the final chunk may be shorter.
+
+    Args:
+        lst: A sliceable sequence (list, tuple, str, etc.).
+        n: Positive integer chunk size.
+
+    Returns:
+        A list of slices of lst, each of length n except possibly the last.
+        An empty lst yields an empty list.
+
+    Raises:
+        TypeError: If n is not an integer.
+        ValueError: If n <= 0 (no sensible way to chunk by a non-positive size).
+    """
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise TypeError(f"n must be an int, got {type(n).__name__}")
+    if n <= 0:
+        raise ValueError(f"n must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+Failure modes I chose to handle explicitly rather than let them corrupt silently:
+- **`n <= 0`** → `ValueError`. The tempting "sensible" alternative is returning `[]`, but that hides a caller bug — a zero/negative size is almost always a computed value gone wrong, and silently swallowing it means the missing data surfaces somewhere far away.
+- **`n` non-integer** → `TypeError`. A float like `2.5` makes `range` raise a cryptic error deep in the comprehension; failing at the boundary with a clear message is debuggable. `bool` is rejected too, since `True`/`False` are sneaky `int` subclasses (`chunk(x, True)` would otherwise mean chunk size 1).
+- **Empty `lst`** → `[]`, naturally, no special-casing.
+
+One caveat I did **not** guard: `lst` must support `len()` and slicing. Pass a generator or other lazy iterable and you'll get a `TypeError` from `len()` — by design, since slicing a consumed iterator can't produce consecutive chunks anyway.
+
+If you need this to accept arbitrary iterables (streams, generators) rather than only sliceable sequences, the implementation has to change to an `itertools.islice` loop — do you want that version, or is sliceable-sequence input guaranteed at your call sites?

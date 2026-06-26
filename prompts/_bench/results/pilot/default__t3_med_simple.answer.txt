@@ -1,0 +1,3 @@
+`billing/pricing.py:16` — defined as `def compute_total(items, discount_pct=0.0):`
+
+That was the only definition I found across the project. One thing worth flagging: my search would also miss a definition that's dynamically created (e.g. `setattr`, a generated method, or an alias assigned at runtime) — if you're seeing `compute_total` behave unexpectedly somewhere, is it possible a second copy is being monkey-patched or imported under that name elsewhere?

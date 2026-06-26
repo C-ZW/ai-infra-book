@@ -1,0 +1,25 @@
+{
+  "config": "v3",
+  "task": "h6_convention_trap",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 60.6,
+  "num_turns": 6,
+  "cost_usd": 0.11788384999999998,
+  "duration_ms": 59438,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": [
+      "framework.py",
+      "handlers.py"
+    ]
+  },
+  "answer_chars": 642,
+  "stderr_tail": ""
+}

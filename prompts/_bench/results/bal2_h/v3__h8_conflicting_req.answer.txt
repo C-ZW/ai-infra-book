@@ -1,0 +1,27 @@
+There's a direct conflict: the docstring on `compute_checksum` explicitly forbids side effects, naming exactly this scenario — it's memoized by callers and runs in hot retry loops, so logging inside it breaks those callers and adds overhead.
+
+**Options that don't violate the constraint:**
+
+**1. Logging wrapper (recommended)** — wrap at call sites or provide a logged variant:
+
+```python
+import logging
+
+_log = logging.getLogger(__name__)
+
+def compute_checksum_logged(data: bytes) -> str:
+    """Wrapper around compute_checksum that logs each invocation."""
+    result = compute_checksum(data)
+    _log.debug("compute_checksum called: input_len=%d digest=%s", len(data), result)
+    return result
+```
+
+Callers that need observability use `compute_checksum_logged`; hot/memoized paths keep using `compute_checksum` directly.
+
+**2. Instrument at call sites** — add the `_log.debug(...)` line at each call site rather than inside the function.
+
+**3. Break the constraint** — add logging directly inside `compute_checksum`, accepting that memoization will log on cache misses only (if callers cache the return value, not the call) or log every hit (if callers memoize the call itself — breaking correctness).
+
+Which approach fits your intent? If you want the wrapper, I can add it now and update the relevant call sites.
+
+> **Probing question:** Do you know which callers are memoizing `compute_checksum` — is it a `functools.lru_cache` on the function itself, or do callers cache the result externally? That determines whether option 3 would silently double-log or silently skip logging on cache hits.

@@ -1,0 +1,56 @@
+{
+  "id": "linalg",
+  "title": "矩陣是動詞",
+  "subtitle": "線性代數作為空間變換的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "ui_lang": "zh-TW",
+  "output": "index.html",
+  "inline_images": true,
+  "groups": [
+    { "title": "Part I — 向量與空間：線性到底在說什麼", "files": [
+      "../book-src/ch01-why-linear.md",
+      "../book-src/ch02-vectors-three-faces.md",
+      "../book-src/ch03-span-independence-basis.md",
+      "../book-src/ch04-coordinates-change-of-basis.md"
+    ] },
+    { "title": "Part II — 矩陣即變換", "files": [
+      "../book-src/ch05-matrix-as-verb.md",
+      "../book-src/ch06-multiplication-composition.md",
+      "../book-src/ch07-solving-ax-b.md",
+      "../book-src/ch08-inverse-singularity.md"
+    ] },
+    { "title": "Part III — 行列式與秩", "files": [
+      "../book-src/ch09-determinant-area.md",
+      "../book-src/ch10-rank-four-subspaces.md"
+    ] },
+    { "title": "Part IV — 特徵值與對角化", "files": [
+      "../book-src/ch11-eigenvectors.md",
+      "../book-src/ch12-complex-eigenvalues.md",
+      "../book-src/ch13-diagonalization.md",
+      "../book-src/ch14-matrix-powers-dynamics.md"
+    ] },
+    { "title": "Part V — 正交、投影與最佳近似", "files": [
+      "../book-src/ch15-inner-product.md",
+      "../book-src/ch16-projection-least-squares.md",
+      "../book-src/ch17-orthonormal-qr.md",
+      "../book-src/ch18-symmetric-spectral.md"
+    ] },
+    { "title": "Part VI — SVD、應用與收官", "files": [
+      "../book-src/ch19-svd.md",
+      "../book-src/ch20-low-rank-pca.md",
+      "../book-src/ch21-pagerank-markov.md",
+      "../book-src/ch22-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

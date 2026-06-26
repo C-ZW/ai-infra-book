@@ -1,0 +1,3 @@
+Done — but this will throw `AttributeError: 'ApiClient' object has no attribute 'patch'` on every call. `ApiClient` only defines `get()` and `post()`.
+
+**What breaks when this is called:** any code path that hits `update_item` fails immediately. Should `client.post("/items/{id}", data)` be used instead, or does `ApiClient` need a `patch()` method added?

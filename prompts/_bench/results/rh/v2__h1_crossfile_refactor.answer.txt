@@ -1,0 +1,5 @@
+All 3 tests pass. 
+
+`format_name` now takes a single full-name string and parses it into `Last, First` (trailing token = last name, so middle names stay with the first). Updated dependents: `greet.py` (`greeting(full_name)`), `report.py` (`roster` over full-name strings), and confirmed `__init__.py` re-export still resolves. Empty and single-token names (e.g. `"Madonna"`) return the trimmed name instead of crashing on unpacking.
+
+One behavior change worth flagging: callers that previously passed separate `first, last` args now break loudly with a `TypeError` (arity mismatch) rather than silently — which is what you want. Are there any callers outside this repo (notebooks, scripts) that import `greeting`/`roster` with the old two-arg signature?

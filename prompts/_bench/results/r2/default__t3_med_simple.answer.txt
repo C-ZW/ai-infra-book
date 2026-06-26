@@ -1,0 +1,5 @@
+`billing/pricing.py:16`
+
+The function `compute_total` is defined at line 16 of `billing/pricing.py` (a Python `def compute_total(items, discount_pct=0.0):`).
+
+One caveat worth flagging: that grep matched a single definition, but if this project has any test mocks, re-exports, or shadowing definitions elsewhere, a name can be redefined. Want me to confirm there's no second definition or re-export of `compute_total` anywhere in the tree?

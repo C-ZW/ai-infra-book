@@ -1,0 +1,62 @@
+{
+  "claude": {
+    "family": "Claude",
+    "n": 16,
+    "v2_overall": 4.75,
+    "v1_overall": 4.688,
+    "d_overall": 0.062,
+    "v2_concise": 4.75,
+    "v1_concise": 4.25,
+    "d_concise": 0.5,
+    "wins": {
+      "v2": 11,
+      "v1": 4,
+      "default": 1
+    }
+  },
+  "gpro": {
+    "family": "Gemini",
+    "n": 16,
+    "v2_overall": 4.75,
+    "v1_overall": 4.375,
+    "d_overall": 0.375,
+    "v2_concise": 4.625,
+    "v1_concise": 4.062,
+    "d_concise": 0.563,
+    "wins": {
+      "v2": 12,
+      "v1": 4,
+      "default": 0
+    }
+  },
+  "gflash": {
+    "family": "Gemini",
+    "n": 16,
+    "v2_overall": 4.75,
+    "v1_overall": 4.5,
+    "d_overall": 0.25,
+    "v2_concise": 4.875,
+    "v1_concise": 4.312,
+    "d_concise": 0.563,
+    "wins": {
+      "v2": 10,
+      "v1": 4,
+      "default": 2
+    }
+  },
+  "gptoss": {
+    "family": "GPT-OSS",
+    "n": 16,
+    "v2_overall": 4.438,
+    "v1_overall": 4.25,
+    "d_overall": 0.188,
+    "v2_concise": 4.312,
+    "v1_concise": 3.812,
+    "d_concise": 0.5,
+    "wins": {
+      "v2": 14,
+      "v1": 2,
+      "default": 0
+    }
+  }
+}

@@ -1,0 +1,3 @@
+O(n²) → O(n). The `seen` set makes membership checks O(1) average, so the loop is now linear. Output is identical — `seen` tracks only what's already appended, so first-seen order is preserved.
+
+One thing to be aware of: items must be **hashable** — this was true of the original too (unhashable types like lists would have crashed the `in result` scan as well), so no regression there.

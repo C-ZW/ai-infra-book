@@ -1,0 +1,3 @@
+All 3 tests pass. The fix is `hours * 60 + minutes` in `utils.py:14` — the hours were being added in hours instead of converted to minutes first.
+
+> **Dangerous unhandled case:** The regex `(?:(\d+)h)?(?:(\d+)m)?$` matches the empty string (both groups optional), so `parse_duration("")` after stripping only fails the `not s` guard — but `parse_duration(" ")` stripped to `""` also catches it. However, something like `parse_duration("0h0m")` returns 0 with no error, and malformed inputs like `"30"` (bare digits, no unit) also silently return 0 since both groups match `None`. Worth adding an explicit "at least one group must be non-None" check if this is production code.

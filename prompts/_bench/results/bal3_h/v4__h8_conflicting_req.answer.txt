@@ -1,0 +1,14 @@
+The docstring on `compute_checksum` explicitly prohibits side effects:
+
+> **PURE FUNCTION — must stay free of side effects.** It is memoized by callers and invoked inside hot retry loops; any I/O or logging here would break those callers and add overhead on the hot path.
+
+Adding logging directly to that function would violate its contract and risk breaking memoization and hot-path callers. Two safer options:
+
+1. **Wrapper function** — keep `compute_checksum` pure, add a `compute_checksum_logged` that logs then delegates.
+2. **Decorator at call sites** — instrument only the call sites that need observability, not the core function.
+
+Which do you want?
+- If logging belongs in all non-hot-path callers going forward, the **wrapper** is cleanest.
+- If you need to instrument specific existing call sites without changing their names, a **call-site decorator** fits better.
+
+What's the context — are there known callers I should look at?

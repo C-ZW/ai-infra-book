@@ -1,0 +1,9 @@
+The function `compute_total` is defined at:
+
+**`billing/pricing.py:16`**
+
+(full path: `/private/tmp/cc_bench/r3/default__t3_med_simple/work/billing/pricing.py:16`)
+
+The other two hits in `billing/__init__.py` are just a re-export (`from .pricing import compute_total, ...`) and an `__all__` listing — not the definition itself.
+
+One caveat worth flagging: this is the only definition currently on disk. If your project relies on dynamically generated code, conditional imports, or a build step that emits another `compute_total`, this grep wouldn't catch it — is `billing/pricing.py` the source you expected, or could something be shadowing it at runtime?

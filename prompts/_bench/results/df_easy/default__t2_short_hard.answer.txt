@@ -1,0 +1,11 @@
+No, your teammate is conflating two different operations.
+
+**`list[i]` (access by position) is O(1)** — because a Python list is a contiguous array, so `base_ptr + i * ptr_size` gives the element directly.
+
+**`list.index(x)` (search by value) is O(n)** — it has no choice but to scan elements one by one, comparing each to `x`, until it finds a match or exhausts the list. The array structure gives you cheap positional arithmetic, not telepathic value lookup.
+
+CPython source (`Objects/listobject.c`, `list_index_impl`) confirms this: it's a plain linear scan with an equality check per element.
+
+The teammate's reasoning has a hidden flaw: they're assuming the runtime can *locate a value* in O(1) the same way it *locates a position* in O(1). Those are fundamentally different operations. To get O(1) value lookup you'd need a hash map (`dict` or `set`).
+
+Dangerous unhandled case: if the codebase calls `.index(x)` inside a loop over a large list, that's a silent O(n²) — the kind of thing that's fine in testing and collapses in production. Worth auditing if this assumption is load-bearing anywhere.

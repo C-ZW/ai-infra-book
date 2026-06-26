@@ -1,0 +1,7 @@
+All 3 tests pass. Summary of changes:
+
+- **`textlib/names.py`** — `format_name(first, last)` → `format_name(full_name)`: splits on whitespace, joins all-but-last as first, raises `ValueError` if fewer than 2 parts.
+- **`textlib/greet.py`** — `greeting(first, last)` → `greeting(full_name)`: passes `full_name` straight through to `format_name`.
+- **`textlib/report.py`** — `roster(people)` now expects a list of full-name strings (not `(first, last)` tuples); iterates with `for name in people`.
+
+What's the most dangerous unhandled case here: names with only one word (e.g. `"Cher"` or `"Madonna"`) will raise `ValueError` — is that the right behavior for your callers, or should single-word names be handled as last-name-only?

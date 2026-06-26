@@ -1,0 +1,7 @@
+The two options:
+
+1. **Logging wrapper (recommended)** — add `compute_checksum_logged()` in `core.py` that logs then delegates. Callers opt in; the pure function stays intact and memoization is unaffected.
+
+2. **Override the constraint** — log directly inside `compute_checksum`. You accept that memoized callers will miss subsequent log entries (only the first call per unique input is logged) and that every hot-path invocation pays the I/O cost.
+
+Which do you want?

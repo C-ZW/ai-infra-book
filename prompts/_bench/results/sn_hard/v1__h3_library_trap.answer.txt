@@ -1,0 +1,7 @@
+Three attempts, sleeping 1 s then 2 s between them. A few design decisions worth knowing:
+
+- **What retries:** `URLError` (covers connection failures and timeouts) and HTTP 429/5xx. Non-retryable HTTP errors (4xx like 404, 403) raise immediately without sleeping — pointless to retry those.
+- **Delay schedule:** `1 * 2^attempt` → 1 s after attempt 0, 2 s after attempt 1, no sleep after the final attempt.
+- **Last exception re-raised:** the caller gets the actual exception from the last attempt, not a wrapped one, so stack traces stay clean.
+
+What happens if the server returns 503 with a `Retry-After` header? That's the most dangerous unhandled case here — the backoff will ignore it and may retry too early or too late.

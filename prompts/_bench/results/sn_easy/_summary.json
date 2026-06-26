@@ -1,0 +1,26 @@
+{
+  "v1": {
+    "runs": 8,
+    "errors": 0,
+    "timeouts": 0,
+    "chars": 4189,
+    "turns": 31,
+    "cost": 0.7285649500000001
+  },
+  "v2": {
+    "runs": 8,
+    "errors": 0,
+    "timeouts": 0,
+    "chars": 4270,
+    "turns": 31,
+    "cost": 0.6362673999999999
+  },
+  "v3": {
+    "runs": 8,
+    "errors": 0,
+    "timeouts": 0,
+    "chars": 3779,
+    "turns": 30,
+    "cost": 0.61854255
+  }
+}

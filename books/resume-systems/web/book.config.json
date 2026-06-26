@@ -1,0 +1,65 @@
+{
+  "id": "rsys",
+  "title": "保證與取捨",
+  "subtitle": "後端與分散式系統的概念地圖",
+  "footer": "內容基準 2026-06",
+  "ui_lang": "zh-TW",
+  "output": "index.html",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part 0 — 透鏡：怎麼判斷、怎麼推動", "files": [
+      "../book-src/T1-driving-adoption.md",
+      "../book-src/T2-ai-and-debt.md",
+      "../book-src/U-judgment.md"
+    ] },
+    { "title": "Part 1 — 訊息、交付與整合", "files": [
+      "../book-src/A1-delivery-semantics.md",
+      "../book-src/A2-ordering-cross-service.md",
+      "../book-src/A3-messaging-tools.md"
+    ] },
+    { "title": "Part 2 — 資料、一致性與儲存", "files": [
+      "../book-src/B1-isolation-concurrency.md",
+      "../book-src/B2-consistency-replication.md",
+      "../book-src/O-storage-engines.md",
+      "../book-src/G-caching.md",
+      "../book-src/L-data-sync.md"
+    ] },
+    { "title": "Part 3 — 連線、網路與 API", "files": [
+      "../book-src/N-network-protocols.md",
+      "../book-src/C-realtime-transport.md",
+      "../book-src/H-api-gateway.md",
+      "../book-src/F-identity-access.md"
+    ] },
+    { "title": "Part 4 — 並發、過載與韌性", "files": [
+      "../book-src/D-concurrency.md",
+      "../book-src/E-overload.md",
+      "../book-src/P-resilience.md",
+      "../book-src/S-performance.md"
+    ] },
+    { "title": "Part 5 — 分散式系統核心", "files": [
+      "../book-src/M1-consensus-replication.md",
+      "../book-src/M2-coordination-time.md"
+    ] },
+    { "title": "Part 6 — 架構、雲端與發布", "files": [
+      "../book-src/K-decoupling.md",
+      "../book-src/J-cloud-primitives.md",
+      "../book-src/Q-deployment.md"
+    ] },
+    { "title": "Part 7 — 觀測與營運文化", "files": [
+      "../book-src/I1-observability-signals.md",
+      "../book-src/I2-testing-quality.md",
+      "../book-src/V-ops-culture.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-guarantee-cheatsheet.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

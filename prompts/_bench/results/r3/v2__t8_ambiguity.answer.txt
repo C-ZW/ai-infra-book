@@ -1,0 +1,9 @@
+Done. Replaced the `print()` calls in `app.py` with the standard `logging` module:
+
+- Module-level `logger = logging.getLogger(__name__)` — no output config at import time, so importing `app` won't hijack the root logger (library-safe).
+- Levels: `INFO` for start/done, `DEBUG` for per-order detail.
+- Lazy `%`-style args so messages aren't built when the level is disabled.
+- Structured context: order count, running total, final total.
+- `basicConfig` with timestamps/level/name lives only under `__main__`.
+
+I kept `process`'s behavior identical and didn't touch input handling — that's the one gap worth naming: `len(orders)` raises `TypeError` on a generator or `None`, and a non-numeric item still crashes the loop. Want me to harden the input boundary too, or is logging-only the intended scope?

@@ -1,0 +1,3 @@
+Added `delete_item` at `handlers.py:20`. Follows all framework conventions: `@route`, `ok()`/`err()` returns, `str.format()` strings, error returned (not raised).
+
+One probing question: if `id` arrives as a string from the URL (e.g. `"1"`) but DB keys are integers, `id not in DB` will be `True` even for a valid item — same latent bug exists in `get_item`. Is there input coercion happening somewhere in the dispatch layer, or does this need an explicit `int(id)` guard in both handlers?

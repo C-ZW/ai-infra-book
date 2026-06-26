@@ -1,0 +1,53 @@
+{
+  "id": "sets",
+  "title": "不只一種無限",
+  "subtitle": "集合論與無限的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 一樣多是什麼", "files": [
+      "../book-src/ch01-shepherds-pairing.md",
+      "../book-src/ch02-hilberts-hotel.md",
+      "../book-src/ch03-rationals-countable.md"
+    ] },
+    { "title": "Part II — 不只一種無限", "files": [
+      "../book-src/ch04-diagonal-argument.md",
+      "../book-src/ch05-the-continuum.md",
+      "../book-src/ch06-power-set-theorem.md"
+    ] },
+    { "title": "Part III — 把無限做成數", "files": [
+      "../book-src/ch07-cardinals-and-csb.md",
+      "../book-src/ch08-ordinals.md",
+      "../book-src/ch09-transfinite-induction.md"
+    ] },
+    { "title": "Part IV — 地基的危機", "files": [
+      "../book-src/ch10-russells-paradox.md",
+      "../book-src/ch11-zfc.md",
+      "../book-src/ch12-axiom-of-choice.md",
+      "../book-src/ch13-banach-tarski.md"
+    ] },
+    { "title": "Part V — 不能判定的問題", "files": [
+      "../book-src/ch14-continuum-hypothesis.md",
+      "../book-src/ch15-independence.md",
+      "../book-src/ch16-incompleteness.md"
+    ] },
+    { "title": "Part VI — 回到爭論與今天", "files": [
+      "../book-src/ch17-infinity-wars.md",
+      "../book-src/ch18-infinity-in-your-stack.md",
+      "../book-src/ch19-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

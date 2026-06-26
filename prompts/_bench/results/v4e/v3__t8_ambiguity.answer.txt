@@ -1,0 +1,9 @@
+Changes made:
+
+- `print()` → `logging` with level, timestamp, logger name, and correlation ID on every line
+- `_CorrelationFilter` stamps a `[cid]` onto each record so all lines from one `process()` call are linkable in aggregated logs
+- `correlation_id` param lets callers propagate an existing trace ID (e.g. from an HTTP request header) instead of generating a new one
+- Input validated at the boundary — wrong type raises a named `TypeError`; non-numeric items are warned and skipped rather than crashing mid-loop
+- `DEBUG` for per-item chatter (silent in prod by default), `INFO` for entry/exit, `WARNING` for skipped items, `ERROR` before raising
+
+One unhandled case: `log.addFilter`/`removeFilter` isn't thread-safe — if `process()` is called concurrently, filters from different calls can bleed across. Worth considering a `logging.LoggerAdapter` instead if this runs in a thread pool or async context.

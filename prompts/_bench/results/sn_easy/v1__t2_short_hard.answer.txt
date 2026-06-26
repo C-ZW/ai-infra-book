@@ -1,0 +1,19 @@
+No, your teammate is conflating two different operations.
+
+**`list[i]` (index by position) is O(1)** — yes, Python lists are dynamic arrays, so random access by integer index is constant time.
+
+**`list.index(x)` (search for a value) is O(n)** — it scans elements left to right until it finds a match (or reaches the end). The array structure gives you cheap positional access, not cheap value lookup.
+
+```python
+a = [1, 2, 3, 4, 5]
+a[2]        # O(1) — jump directly to offset 2
+a.index(3)  # O(n) — scan: is 1==3? is 2==3? is 3==3? ✓ stop
+```
+
+The worst case is O(n): value is at the end, or not present at all (`ValueError`).
+
+If you need O(1) value lookups, use a `set` (for membership) or a `dict` (for value→index mapping). Building either is O(n) once, then each lookup is O(1) average.
+
+---
+
+**Probing question:** Does the code calling `.index()` do so inside a loop over the same list? If so, that's an accidental O(n²) — worth checking.

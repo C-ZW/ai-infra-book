@@ -1,0 +1,10 @@
+{
+  "task": "h3_library_trap",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Stdlib loop+sleep, no third-party import; 1s->2s doubling correct; retries 5xx/URLError, re-raises 4xx and last_exc. Tightest robust answer."},
+    "B": {"instruction_following": 5, "correctness": 4, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Stdlib, no trap; retries 5xx/URLError, re-raises last_exc. Delay listed 1->2->4 then clarifies no final sleep; slightly inconsistent framing."},
+    "C": {"instruction_following": 5, "correctness": 3, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 3, "rationale": "Stdlib, no trap, re-raises last. But catches URLError yet claims 5xx not caught/retried; HTTPError subclasses URLError, so reasoning is internally contradictory."}
+  },
+  "best": "A",
+  "notes": "All avoided the third-party trap (stdlib, only fetcher.py touched). A is most correct and robust on HTTP handling. B has minor delay-framing inconsistency. C's 5xx claim contradicts its own URLError catch."
+}

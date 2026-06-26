@@ -1,0 +1,3 @@
+The bug was on line 14: `hours + minutes` should be `hours * 60 + minutes`. Without the conversion, `'1h30m'` returned `31` (1+30) instead of `90`. All three cases now pass.
+
+What's the most dangerous unhandled case here? A string like `'90m'` where minutes ≥ 60 — the regex accepts it fine and returns `90`, which is correct, but callers expecting normalized `(h, m)` pairs rather than raw minutes could be surprised. Worth confirming the return contract is documented clearly if downstream code ever unpacks it.

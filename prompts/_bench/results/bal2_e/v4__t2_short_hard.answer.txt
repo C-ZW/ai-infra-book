@@ -1,0 +1,16 @@
+No. `list.index(x)` is O(n).
+
+Yes, Python lists are backed by a dynamic array, so *indexing by position* (`lst[i]`) is O(1). But `.index(x)` searches for a *value* — it scans from the front until it finds a match or exhausts the list. No array structure gives you O(1) value search without a hash table or sorted order.
+
+Your teammate is conflating two different operations:
+
+| Operation | What it does | Complexity |
+|---|---|---|
+| `lst[i]` | access by position | O(1) |
+| `lst.index(x)` | find first position of value | O(n) |
+
+The worst case is when `x` is at the end or absent — every element is checked. You can verify this in CPython: [`listobject.c`](https://github.com/python/cpython/blob/main/Objects/listobject.c) implements `list_index_impl` as a plain linear scan.
+
+If you genuinely need O(1) lookup by value, you want a `dict` or `set`.
+
+What's the actual use case — maybe there's a better data structure for it?

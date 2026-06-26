@@ -1,0 +1,11 @@
+{
+  "task": "h1_crossfile_refactor",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "All callers+tests updated, 3 pass; fewest turns, fastest, tight summary, accurate edge-case note."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Correct full refactor, shortest answer, but frames ValueError as unguarded; more turns than A for same result."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Most precise on actual changes (docstring, explicit ValueError) but slowest wall time, slightly longer."},
+    "D": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Correct and accurate, but most turns and longest answer for an identical outcome; less efficient."}
+  },
+  "best": "A",
+  "notes": "All four correct, verified, same files. A wins: fewest turns, fastest, tightest answer with accurate edge case. C most precise but slowest; B shortest but vaguer on error; D most verbose/most turns."
+}

@@ -1,0 +1,6 @@
+Done. Two changes:
+
+- **`framework.py`**: `route()` now accepts an optional `method` parameter (defaults to `"GET"`), keying `_ROUTES` on `(method, path)` so GET and DELETE on the same path coexist without clobbering each other.
+- **`handlers.py`**: `delete_item` uses `DB.pop(id, None)` — atomic lookup-and-remove — returns `err` if the id is absent, `ok({"deleted": id})` on success. Follows all existing conventions: `@route`, `ok`/`err`, `str.format()`.
+
+One thing to verify: does whatever dispatches `_ROUTES` pass the method alongside the path when looking up the handler? If the call site still does `_ROUTES[path]` it'll need to be updated to `_ROUTES[(method, path)]` too.

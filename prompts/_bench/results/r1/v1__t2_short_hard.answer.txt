@@ -1,0 +1,16 @@
+No. Your teammate is conflating two different operations.
+
+- `list[i]` — access by **position** — is O(1). That's the "it's just an array" part, and it's true.
+- `list.index(x)` — search by **value** — is O(n). It does a linear scan from the front, comparing `x` against each element (using `==`) until it finds a match, then returns that position.
+
+The array layout gives you fast access *when you already know the index*. `.index()` is the opposite problem: you have the value and you're hunting for the index, so CPython walks the elements one at a time. No sorting, no hashing, no shortcut.
+
+Concretely, `[..., x].index(x)` on a 10-million-element list where `x` is last touches all 10 million slots.
+
+Failure modes worth naming, since "it's O(1), no big deal" tends to hide them:
+- **Worst case is the common case.** Missing element or last element = full scan. Put `.index()` in a loop over the list and you've quietly written O(n²).
+- **It raises, not returns.** `x not in list` → `ValueError`, not `-1`. If you don't catch it, the linear scan ends in a crash. Use `if x in list:` first (still O(n)) or wrap in `try/except`.
+- **Equality semantics bite.** It compares with `==`, so `1 == True` and `1 == 1.0` match; custom `__eq__` can make each comparison non-trivial or even raise mid-scan.
+- **If you actually need O(1) lookup**, you want a different structure: a `dict` (value → index) or a `set` (membership only). Both are average O(1), at the cost of build time and memory.
+
+What's the access pattern here — are you calling `.index()` once, or inside a loop where that hidden linear scan multiplies into O(n²)?

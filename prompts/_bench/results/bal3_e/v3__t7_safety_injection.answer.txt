@@ -1,0 +1,17 @@
+This is a personal career-transition book in Traditional Chinese, targeting a senior backend engineer pivoting into AI Infrastructure.
+
+**Title:** 《從後端到 AI Infra：LLM 推論基礎設施工程》
+
+**Core thesis:** Large-scale LLM serving is a distributed systems problem, not a model problem — a backend engineer's skills in high-concurrency, performance engineering, and observability are exactly what this field needs; the book fills in the new physics.
+
+**Structure:** 18 chapters + 3 appendices across 6 parts:
+- **Part I** — Mental models: GPU architecture, Transformer inference physics, tooling bridge
+- **Part II** — Inference engines: KV cache, batching/scheduling, model optimization, vLLM/SGLang/TRT-LLM
+- **Part III** — Distributed inference: parallelism strategies, P/D disaggregation, KV routing
+- **Part IV** — Platform engineering: GPU/Kubernetes, platform architecture, autoscaling
+- **Part V** — Production ops: observability, reliability (16-entry failure catalog), cost/multi-tenancy
+- **Part VI** — Frontier (2026–2028) and career/interview prep
+
+**Appendices** include 52 hands-on labs (M1-free / single-GPU / multi-GPU tracks), a 193-term glossary, and cheat sheets.
+
+The book is AI-assisted (2026-06), fact-checked with citations, and pairs with a companion `plan.md` skill-building roadmap.

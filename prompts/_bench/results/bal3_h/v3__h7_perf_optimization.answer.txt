@@ -1,0 +1,3 @@
+O(n²) → O(n). The `seen` set gives O(1) average-case membership tests, so each element is checked exactly once.
+
+One sharp edge: items must be **hashable**. If `items` can contain dicts, lists, or other unhashable types, the set will raise `TypeError`. The original also failed silently on unhashable types (they'd always appear non-equal via `in` on a list), so the semantics are identical for hashable inputs — but worth confirming the input domain is clean.

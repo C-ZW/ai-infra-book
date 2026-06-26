@@ -1,0 +1,22 @@
+Done. `chunk.py` is written and verified — doctests pass and all edge cases behave.
+
+```python
+def chunk(lst, n):
+    """Split ``lst`` into consecutive chunks of size ``n``. ..."""
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise TypeError(f"n must be an int, got {type(n).__name__}")
+    if n <= 0:
+        raise ValueError(f"n must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+**Design decisions, and the failure modes behind them:**
+
+- **`n <= 0` → `ValueError`.** I chose to *raise* rather than return `[]` or `[lst]`. A `range(0, len, 0)` would `raise` anyway, but worse: any home-rolled `while` version with a non-positive step loops forever. Raising makes the bad call fail loudly at the boundary instead of hanging. If you'd rather it return `[]` silently for `n <= 0`, that's a one-line change — but I'd argue silent is the dangerous choice.
+- **`bool` rejected explicitly.** `True == 1` in Python, so `chunk(lst, True)` would *silently* chunk by 1 — a classic silent-corruption bug. The `isinstance(n, bool)` guard comes first because `bool` is a subclass of `int`.
+- **Type preserved.** Slicing means `chunk("abc", 2)` yields `str` pieces and a `tuple` yields `tuple` pieces — consistent with the input rather than coercing to `list`.
+- **Empty `lst` → `[]`**, which is the natural and tested result.
+
+One unhandled case worth flagging: this assumes `lst` is **sliceable and sized** (`len()` + `lst[i:j]`). Pass a generator or a plain iterator and you'll get a `TypeError` from `len()` — by design, since lazy chunking has different semantics (you can't slice a consumed stream).
+
+Do you need this to also handle **lazy iterables** (generators, file objects, infinite streams) where you can't call `len()` — or is the sliceable-sequence contract sufficient for your use?

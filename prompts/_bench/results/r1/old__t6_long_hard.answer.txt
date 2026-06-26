@@ -1,0 +1,7 @@
+Done. Added `--reverse` to `cli.py` and tests in `test_cli.py`.
+
+- `transform()` gained a `reverse=False` param that reverses lines via `list(reversed(lines))` — applied after `--upper`, and it returns a new list rather than mutating the caller's input.
+- `main()` wires up the `--reverse` argparse flag and passes it through.
+- Tests: `test_reverse` plus `test_reverse_does_not_mutate_input`; all 4 pass, and the e2e check confirms `--reverse` and `--upper --reverse` work.
+
+The most dangerous unhandled case: `--upper` and `--reverse` compose order-dependently only if upper ever changed line *count* — it doesn't, so output is identical either way today. But if someone later adds a filtering transform (e.g. `--grep`), should `--reverse` run before or after that filter, and is that ordering contract written down anywhere?

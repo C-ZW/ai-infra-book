@@ -1,0 +1,46 @@
+{
+  "id": "mem",
+  "title": "大腦怎麼編造過去",
+  "subtitle": "記憶作為重建的科學",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 回放的幻覺", "files": [
+      "../book-src/ch01-not-a-videotape.md",
+      "../book-src/ch02-encoding-storage-retrieval.md",
+      "../book-src/ch03-forgetting-is-a-feature.md"
+    ] },
+    { "title": "Part II — 重建與污染", "files": [
+      "../book-src/ch04-reconstruction-bartlett.md",
+      "../book-src/ch05-misinformation-effect.md",
+      "../book-src/ch06-lost-in-the-mall.md",
+      "../book-src/ch07-drm-false-memory.md"
+    ] },
+    { "title": "Part III — 系統與機制", "files": [
+      "../book-src/ch08-hippocampus-consolidation.md",
+      "../book-src/ch09-reconsolidation.md",
+      "../book-src/ch10-flashbulb-memory.md",
+      "../book-src/ch11-emotion-amygdala.md"
+    ] },
+    { "title": "Part IV — 邊界與應用", "files": [
+      "../book-src/ch12-eyewitness-courtroom.md",
+      "../book-src/ch13-source-monitoring.md",
+      "../book-src/ch14-hsam-memory-palace.md",
+      "../book-src/ch15-remembering-better.md",
+      "../book-src/ch16-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-key-studies.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

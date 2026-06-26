@@ -1,0 +1,11 @@
+No. Your teammate is conflating two different operations.
+
+**`list[i]`** (access by position) is O(1) — that's the array property: fixed stride, direct offset calculation.
+
+**`list.index(x)`** (search by value) is O(n) — it's a linear scan from position 0 until it finds a match or exhausts the list. Being backed by an array says nothing about search cost; the array doesn't know where `x` lives.
+
+CPython source confirms this: `listobject.c` implements `list_index_impl` as a plain `for` loop over the elements with `PyObject_RichCompareBool`.
+
+The teammate's confusion is understandable — "it's an array so it's fast" is a half-true shortcut. Arrays buy you O(1) *positional* access; they buy you nothing on *value* search unless the data is sorted (binary search, O(log n)) or hashed (dict/set, O(1) amortized).
+
+If O(1) lookup by value is what they actually need, the right tool is a `set` or `dict`.

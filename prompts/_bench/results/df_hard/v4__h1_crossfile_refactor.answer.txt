@@ -1,0 +1,7 @@
+All 3 tests pass. Changes made:
+
+- `textlib/names.py` — `format_name(first, last)` → `format_name(full_name)`, splits on the last space (handles compound first names like `"Mary Jo Smith"` → `"Smith, Mary Jo"`), raises `ValueError` on empty or single-word input instead of silently returning broken output
+- `textlib/greet.py` — `greeting(first, last)` → `greeting(full_name)`, passes straight through
+- `textlib/report.py` — `roster` now iterates over name strings rather than `(first, last)` tuples
+
+One unhandled case worth noting: names with honorifics or suffixes (e.g. `"Ada Lovelace Jr."`) will produce `"Jr., Ada Lovelace"` — if that's a real input shape, the split logic needs a convention for it.

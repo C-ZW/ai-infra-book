@@ -1,0 +1,26 @@
+{
+  "config": "default",
+  "task": "t8_ambiguity",
+  "len": "short",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 49.2,
+  "num_turns": 5,
+  "cost_usd": 0.269362,
+  "duration_ms": 47851,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [
+      "__pycache__/app.cpython-313.pyc"
+    ],
+    "deleted": [],
+    "modified": [
+      "app.py"
+    ]
+  },
+  "answer_chars": 2289,
+  "stderr_tail": ""
+}

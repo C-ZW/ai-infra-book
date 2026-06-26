@@ -1,0 +1,13 @@
+No README at the project root. Based on the `CLAUDE.md` and project structure, here's what the project does:
+
+**AI Infrastructure 轉職書** — a personal Chinese-language book project (Traditional Chinese, Taiwan usage) covering AI Infrastructure topics, intended as a career-transition study resource for the author themselves.
+
+Key components:
+- `book/` — 18 completed chapters + appendices, written in Markdown
+- `web/` — a single-file offline reader (HTML) built by `../tools/md-reader/build_reader.py`, configured via `web/book.config.json`
+- `plan.md` — a companion study/practice roadmap that mirrors the book's structure
+- `book/_meta/` — editorial meta-files: consistency baseline (`maintenance.md`), style guide, chapter outline, and a 2026 landscape reference for time-sensitive facts
+
+The toolchain (`../tools/md-reader/`) packages the Markdown into a self-contained `web/index.html` (offline reader with a shelf browser at `bookshelf.html`). The repo also hosts several other books under `books/<slug>/` (TLA+, calculus, probability, etc.), all sharing the same reader tooling.
+
+What might bite: there's no README, so onboarding relies entirely on `CLAUDE.md` — if toolchain paths shift or a collaborator picks this up, discovery is non-trivial.

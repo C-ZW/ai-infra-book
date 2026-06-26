@@ -1,0 +1,9 @@
+Fixed and verified.
+
+**The bug:** `utils.py:14` returned `hours + minutes`, treating the hour count as if it were already minutes. `'1h30m'` parsed to `hours=1, minutes=30` and returned `31` instead of `90`.
+
+**The fix:** convert hours to minutes before summing — `return hours * 60 + minutes`.
+
+All three cases pass: `'1h30m'` → 90, `'45m'` → 45, `'2h'` → 120.
+
+One unhandled case worth flagging while you're here: the regex uses optional groups with no anchored content, so `parse_duration('')` would slip past the regex but is caught by the `not s` guard — good. However, a whitespace-only string like `'   '` is stripped to `''` and correctly rejected, but a malformed-but-partial input like `'30'` (no unit) or `'1m30h'` (wrong order) will raise `ValueError`, which is the right behavior. The most dangerous remaining gap: `parse_duration(None)` throws an `AttributeError` on `.strip()` rather than a clean `ValueError` — do you want non-string input validated at the boundary too?

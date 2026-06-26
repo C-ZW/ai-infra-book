@@ -1,0 +1,1 @@
+Done. **Risk:** `ApiClient.patch()` doesn't exist — this will fail with `AttributeError: 'ApiClient' object has no attribute 'patch'` until the client is updated. Does `ApiClient` need a `patch()` method added, or should `update_item` fall back to `post()`?

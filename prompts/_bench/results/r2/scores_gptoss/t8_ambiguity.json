@@ -1,0 +1,34 @@
+{
+  "task": "t8_ambiguity",
+  "scores": {
+    "A": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Minimal logging upgrade, clear assumption, concise, no extra changes."
+    },
+    "B": {
+      "instruction_following": 4,
+      "correctness": 5,
+      "conciseness": 3,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Extensive rewrite with extra validation and long explanation, less concise."
+    },
+    "C": {
+      "instruction_following": 4,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 3,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Similar changes but adds compiled file and extra guards, less disciplined."
+    }
+  },
+  "best": "A",
+  "notes": "A is best: concise, focused, minimal changes, proper clarifying question. B is verbose; C adds unnecessary compiled file."
+}

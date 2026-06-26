@@ -1,0 +1,3 @@
+O(n²) → O(n). The `set` tracks seen elements for O(1) lookups; `result` preserves insertion order. Output is identical.
+
+One risk worth naming: elements must be **hashable** — this was already true with the list-membership check, but now it fails *loudly* (TypeError) rather than silently using equality fallback. Any unhashable items (e.g. dicts, lists) in the input will surface as errors here that were previously masked.

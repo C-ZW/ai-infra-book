@@ -1,0 +1,3 @@
+O(n²) → O(n). The `seen` set makes membership checks O(1) average instead of scanning the growing `result` list each iteration.
+
+One caveat: items must be **hashable**. If `items` can contain dicts, lists, or other unhashable types, this will raise `TypeError` where the original silently worked. Worth checking your call sites if that's a possibility.

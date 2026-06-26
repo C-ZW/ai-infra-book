@@ -1,0 +1,50 @@
+{
+  "id": "labs",
+  "ui_lang": "zh-TW",
+  "title": "藍圖之外",
+  "subtitle": "同一套 Transformer，八家大模型為何各擅勝場",
+  "footer": "內容基準 2026-06 ｜ 興趣・AI 模型產業的成因結構（非排行榜）",
+  "output": "index.html",
+  "groups": [
+    { "title": "Part I — 共通底層（同一張藍圖）", "files": [
+      "../book-src/ch01-same-blueprint.md",
+      "../book-src/ch02-grown-not-written.md",
+      "../book-src/ch03-five-variables.md",
+      "../book-src/ch04-measuring-strongest.md"
+    ] },
+    { "title": "Part II — 八家深入（一家一章）", "files": [
+      "../book-src/ch05-openai.md",
+      "../book-src/ch06-google-deepmind.md",
+      "../book-src/ch07-anthropic.md",
+      "../book-src/ch08-meta.md",
+      "../book-src/ch09-mistral.md",
+      "../book-src/ch10-xai.md",
+      "../book-src/ch11-deepseek.md",
+      "../book-src/ch12-qwen.md"
+    ] },
+    { "title": "Part III — 跨家主題（差異的橫切面）", "files": [
+      "../book-src/ch13-open-vs-closed.md",
+      "../book-src/ch14-reasoning-race.md",
+      "../book-src/ch15-alignment-evolution.md",
+      "../book-src/ch16-compute-arms-race.md",
+      "../book-src/ch17-multimodal.md",
+      "../book-src/ch18-data-underground.md",
+      "../book-src/ch19-interpretability.md"
+    ] },
+    { "title": "Part IV — 收束", "files": [
+      "../book-src/ch20-persist-and-converge.md",
+      "../book-src/ch21-eight-styles.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-model-families.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

@@ -1,0 +1,3 @@
+Running. The fix was `CREATE TABL` → `CREATE TABLE`. I also swapped the order to write into a `.new` temp file and rename it over only after the schema succeeds — so a future SQL error can't leave you with a deleted-but-not-recreated DB.
+
+Dangerous unhandled case: `os.rename(tmp, DB)` is atomic on POSIX but **not on Windows** if `DB` already exists at rename time — on Windows, `os.rename` raises if the target exists, so the `os.remove(DB)` before it matters. If this ever runs on Windows and two processes race to reset simultaneously, one could remove `DB` while the other is mid-write to `.new`, leaving the DB absent for a moment. Not a concern here, but worth knowing if this moves cross-platform.

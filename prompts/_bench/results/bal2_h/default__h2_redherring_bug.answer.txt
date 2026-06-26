@@ -1,0 +1,3 @@
+Both tests pass. The root cause was that `user_id` values `1` (int) and `"1"` (str) were hashed to different dictionary keys, so their amounts never merged. Normalizing with `str()` at the point of accumulation fixes it.
+
+What's the most dangerous remaining case here? An event with `user_id: None` — `str(None)` becomes `"None"`, silently creating a bucket instead of rejecting the malformed event.

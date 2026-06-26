@@ -1,0 +1,10 @@
+{
+  "task": "plan_p3_build_pipeline",
+  "scores": {
+    "A": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 5, "risk_handling": 5, "discipline": 4, "overall": 5, "rationale": "All 3 interfaces+main+dataclass, stream+file parser (testable), explicit tie-break, BOM, 8 risks, golden tests. Minor 'assert 6...(actually 7)' self-correction blemish."},
+    "B": {"decomposition": 5, "sequencing": 5, "completeness": 4, "verification": 4, "risk_handling": 5, "discipline": 5, "overall": 4, "rationale": "Strong, signal-dense, expected-output oracle, out-of-scope section, 7 well-reasoned Qs. Weaker: path-only parser (less testable), plain utf-8 no BOM handling."},
+    "C": {"decomposition": 5, "sequencing": 5, "completeness": 5, "verification": 5, "risk_handling": 5, "discipline": 5, "overall": 5, "rationale": "Best grounding (notes trailing blank line + skip), stream+file parser, tie-break, BOM, normalization, 8 risks, exact-value tests. Tightest at 6454 chars."}
+  },
+  "best": "C",
+  "notes": "All complete and disciplined. C edges A: best data grounding (trailing blank line), tightest, no blemish. A strong but has visible self-correction. B weaker on parser testability (path-only) and omits BOM handling."
+}

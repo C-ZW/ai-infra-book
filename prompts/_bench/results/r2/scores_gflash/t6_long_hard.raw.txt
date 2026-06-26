@@ -1,0 +1,34 @@
+{
+  "task": "t6_long_hard",
+  "scores": {
+    "A": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Correct implementation and verified via testing. Tested composition with --upper. Very helpful CLI buffering analysis."
+    },
+    "B": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 3,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Correct implementation and verified via testing, but verbose and includes unnecessary discussion and follow-up questions."
+    },
+    "C": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Highly concise and correct implementation. Tested non-mutation, but did not test interaction/composition with --upper."
+    }
+  },
+  "best": "A",
+  "notes": "A and C both implemented the feature well, but A is best because it tested flag composition with --upper and provided valuable edge case analysis."
+}

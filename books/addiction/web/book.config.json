@@ -1,0 +1,46 @@
+{
+  "id": "addct",
+  "title": "大腦被劫持",
+  "subtitle": "成癮的機制",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 獎賞系統", "files": [
+      "../book-src/ch01-why-hijacked.md",
+      "../book-src/ch02-reward-circuit.md",
+      "../book-src/ch03-dopamine-prediction-error.md",
+      "../book-src/ch04-wanting-vs-liking.md"
+    ] },
+    { "title": "Part II — 劫持的過程", "files": [
+      "../book-src/ch05-goal-to-habit.md",
+      "../book-src/ch06-tolerance-withdrawal.md",
+      "../book-src/ch07-cue-craving.md",
+      "../book-src/ch08-incentive-sensitization.md"
+    ] },
+    { "title": "Part III — 範圍與爭論", "files": [
+      "../book-src/ch09-behavioral-addiction.md",
+      "../book-src/ch10-disease-vs-learning.md",
+      "../book-src/ch11-vulnerability.md",
+      "../book-src/ch12-rat-park-environment.md"
+    ] },
+    { "title": "Part IV — 出路與機制", "files": [
+      "../book-src/ch13-recovery-neuroscience.md",
+      "../book-src/ch14-how-treatment-works.md",
+      "../book-src/ch15-digital-hijack.md",
+      "../book-src/ch16-finale.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-glossary.md",
+      "../book-src/appendix-b-studies-and-people.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

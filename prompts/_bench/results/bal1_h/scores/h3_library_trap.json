@@ -1,0 +1,11 @@
+{
+  "task": "h3_library_trap",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Stdlib backoff, 4xx re-raise immediately/5xx+URLError retry, raises after final attempt; testable params, solid wall-time analysis."},
+    "B": {"instruction_following": 5, "correctness": 4, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Best named error (FetchError w/ url/attempts/cause), but retries URLError broadly so 4xx HTTPError still retried; less precise classification."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Stdlib, guards raise None, 4xx immediate/5xx retry, raises after final; sharpest probing question (200-but-hanging body) with concrete fixes."},
+    "D": {"instruction_following": 4, "correctness": 4, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct stdlib loop, raises after final attempt; but retries any URLError so 4xx wrongly retried — flagged as question, not fixed."}
+  },
+  "best": "C",
+  "notes": "All avoided the unavailable-import trap and raise after final attempt. C and A handle 4xx-vs-5xx correctly; C adds the raise-None guard and sharpest question. B has best error type but retries 4xx; D leaves 4xx wasteful-retry unfixed."
+}

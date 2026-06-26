@@ -1,0 +1,26 @@
+{
+  "config": "default",
+  "task": "h8_conflicting_req",
+  "len": "short",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 84.2,
+  "num_turns": 7,
+  "cost_usd": 0.3993885,
+  "duration_ms": 83117,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [
+      "__pycache__/core.cpython-313.pyc"
+    ],
+    "deleted": [],
+    "modified": [
+      "core.py"
+    ]
+  },
+  "answer_chars": 2447,
+  "stderr_tail": ""
+}

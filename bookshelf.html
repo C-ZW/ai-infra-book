@@ -12,14 +12,45 @@ h1{font-size:22px;margin:0 0 4px}
 .sub{color:#8d8474;font-size:13px;margin:0 0 28px}
 h2{font-size:14px;color:#8d8474;font-weight:600;letter-spacing:.05em;margin:34px 0 12px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.card{display:block;background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;padding:18px;
- text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card{position:relative;display:block;background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;
+ padding:18px 30px 18px 18px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s,opacity .12s}
 .card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.07)}
+.card.dim{opacity:.5}
+.x{position:absolute;top:7px;right:8px;width:22px;height:22px;line-height:21px;text-align:center;
+ border-radius:6px;color:#c3b9a4;font-size:13px;cursor:pointer;user-select:none;
+ transition:background .12s,color .12s}
+.x:hover{background:#efe8d7;color:#a05a17}
 .ct{font-weight:700;font-size:16px;margin-bottom:2px}
 .cs{font-size:12.5px;color:#8d8474;margin-bottom:10px}
 .cm{font-size:12px;color:#6f6759;margin-top:3px}
 .muted{color:#8d8474}
 .warn{color:#a05a17;font-weight:600}
+.shelf-actions{margin-top:14px;min-height:1px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 12px}
+.sec-head h2{margin:0}
+.shelf-btn{background:#fffdf8;border:1px solid #e2d9c6;border-radius:8px;color:#6f6759;
+ font-size:12.5px;padding:6px 13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.shelf-btn:hover{background:#efe8d7;color:#a05a17}
+.grid.list{display:block}
+.grid.list .card{display:flex;align-items:center;gap:12px;padding:11px 32px 11px 16px;margin-bottom:8px}
+.grid.list .card:hover{transform:none}
+.grid.list .ct{font-size:14px;margin:0;flex:0 0 auto}
+.grid.list .cs{margin:0;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid.list .meta{flex:0 0 auto;display:flex;gap:14px;margin:0;text-align:right}
+.grid.list .meta .cm{margin:0;white-space:nowrap}
+@media (max-width:520px){.grid.list .cs{display:none}.grid.list .meta{gap:10px}}
+.prog{display:none;margin-top:11px}
+.prog.on{display:block}
+.pbar{display:block;height:4px;background:#ece3d2;border-radius:3px;overflow:hidden}
+.pbar > i{display:block;height:100%;width:0;background:#a9874e;border-radius:3px;transition:width .3s}
+.ptxt{display:block;font-size:11px;color:#8d8474;margin-top:4px}
+.prog.done .pbar > i{background:#7d9460}
+.prog.nobar .pbar{display:none}
+.grid.list .prog{flex:0 0 auto;margin:0;order:3}
+.grid.list .prog.on{display:flex;align-items:center;gap:7px}
+.grid.list .meta{order:4}
+.grid.list .pbar{width:46px}
+.grid.list .ptxt{margin:0;white-space:nowrap}
 .panel{background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;padding:8px 18px}
 .fr{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #efe8d7}
 .fr:last-child{border-bottom:none}
@@ -32,30 +63,406 @@ code{background:#efe8d7;border-radius:4px;padding:1px 5px;font-size:11.5px}
 </head>
 <body><div class="wrap">
 <h1>書架</h1>
-<p class="sub">個人書庫與 profile 狀態 ・ 產生於 2026-06-12</p>
-<h2>書</h2>
+<p class="sub">個人書庫與 profile 狀態 ・ 產生於 2026-06-22</p>
+<div class="sec-head"><h2>書</h2><button id="toggle-view" class="shelf-btn" type="button">☰ 清單</button></div>
 <div class="grid">
-    <a class="card" href="web/index.html">
+    <a class="card" data-book-id="aiib" href="web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
       <div class="ct">從後端到 AI Infra</div>
       <div class="cs">LLM 推論基礎設施工程</div>
-      <div class="cm">26 份文件 ・ 建置 2026-06-10</div>
-      <div class="cm"><span class="muted">內容掃描 2026-06-10</span></div>
+      <div class="meta">
+        <div class="cm">26 份文件 ・ 建置 2026-06-10</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-10</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
     </a>
-    <a class="card" href="web/plan.html">
+    <a class="card" data-book-id="plan" href="web/plan.html">
+      <span class="x" title="從書架隱藏">✕</span>
       <div class="ct">轉職文件</div>
       <div class="cs">計劃書與履歷</div>
-      <div class="cm">2 份文件 ・ 建置 2026-06-10</div>
-      <div class="cm"><span class="muted">不適用</span></div>
+      <div class="meta">
+        <div class="cm">2 份文件 ・ 建置 2026-06-10</div>
+        <div class="cm"><span class="muted">不適用</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
     </a>
-    <a class="card" href="books/tlaplus/web/index.html">
+    <a class="card" data-book-id="tla" href="books/tlaplus/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
       <div class="ct">把系統寫成定理</div>
       <div class="cs">TLA+ 與形式化方法</div>
-      <div class="cm">26 份文件 ・ 建置 2026-06-12</div>
-      <div class="cm"><span class="muted">內容掃描 2026-06-12</span></div>
+      <div class="meta">
+        <div class="cm">15 份文件 ・ 建置 2026-06-12</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-12</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="calc" href="books/calculus/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">馴服無限</div>
+      <div class="cs">微積分的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">16 份文件 ・ 建置 2026-06-19</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-19</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="trig" href="books/trig/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">圓的影子</div>
+      <div class="cs">三角函數作為旋轉與週期的語言</div>
+      <div class="meta">
+        <div class="cm">15 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="swhist" href="books/software-history/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">複雜度守恆</div>
+      <div class="cs">軟體發展史的工程師讀法</div>
+      <div class="meta">
+        <div class="cm">21 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="prob" href="books/probability/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">馴服隨機</div>
+      <div class="cs">機率與統計的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">23 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="linalg" href="books/linear-algebra/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">矩陣是動詞</div>
+      <div class="cs">線性代數作為空間變換的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">22 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="labs" href="books/model-labs/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">藍圖之外</div>
+      <div class="cs">同一套 Transformer，八家大模型為何各擅勝場</div>
+      <div class="meta">
+        <div class="cm">21 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="attn" href="books/attention/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">注意力機制的原理</div>
+      <div class="cs">直覺、機制與理論</div>
+      <div class="meta">
+        <div class="cm">23 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="fail" href="books/systems-failure/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">正常意外</div>
+      <div class="cs">複雜系統如何崩壞，以及一個工程師該怕什麼</div>
+      <div class="meta">
+        <div class="cm">23 份文件 ・ 建置 2026-06-13</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-13</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="queue" href="books/queueing/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">等待的數學</div>
+      <div class="cs">排隊理論</div>
+      <div class="meta">
+        <div class="cm">21 份文件 ・ 建置 2026-06-19</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-19</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="sets" href="books/set-theory/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">不只一種無限</div>
+      <div class="cs">集合論與無限的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">19 份文件 ・ 建置 2026-06-20</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-20</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="game" href="books/game-theory/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">當理性互相碰撞</div>
+      <div class="cs">賽局理論的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">18 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="chaos-c" href="books/chaos-c/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">決定卻測不準</div>
+      <div class="cs">混沌理論的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">19 份文件 ・ 建置 2026-06-19</div>
+        <div class="cm"><span class="muted">不適用</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="chaos-d" href="books/chaos-d/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">蝴蝶的鐵律</div>
+      <div class="cs">混沌理論的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">19 份文件 ・ 建置 2026-06-20</div>
+        <div class="cm"><span class="muted">不適用</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="expert" href="books/expertise/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">專家是怎麼煉成的</div>
+      <div class="cs">一萬小時的真相與刻意練習的科學</div>
+      <div class="meta">
+        <div class="cm">16 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="mem" href="books/memory/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">大腦怎麼編造過去</div>
+      <div class="cs">記憶作為重建的科學</div>
+      <div class="meta">
+        <div class="cm">16 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="sleep" href="books/sleep/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">大腦每晚的維護工作</div>
+      <div class="cs">睡眠的科學</div>
+      <div class="meta">
+        <div class="cm">16 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="addct" href="books/addiction/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">大腦被劫持</div>
+      <div class="cs">成癮的機制</div>
+      <div class="meta">
+        <div class="cm">16 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="primes" href="books/number-theory/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">乘法的原子</div>
+      <div class="cs">數論與質數的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">20 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="godel" href="books/godel/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">這句話無法被證明</div>
+      <div class="cs">哥德爾不完備的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">16 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="bias" href="books/fallacies-biases/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">思考的陷阱</div>
+      <div class="cs">邏輯謬誤與認知偏誤的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">20 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="scimethod" href="books/scientific-method/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">如何不騙自己</div>
+      <div class="cs">科學方法的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">18 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="decide" href="books/decision-rationality/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">在不確定中下注</div>
+      <div class="cs">決策與理性的直覺與驚嘆</div>
+      <div class="meta">
+        <div class="cm">18 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="rsys" href="books/resume-systems/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">保證與取捨</div>
+      <div class="cs">後端與分散式系統的概念地圖</div>
+      <div class="meta">
+        <div class="cm">30 份文件 ・ 建置 2026-06-21</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-21</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
+    </a>
+    <a class="card" data-book-id="mech" href="books/backend-mechanisms/web/index.html">
+      <span class="x" title="從書架隱藏">✕</span>
+      <div class="ct">機制之下</div>
+      <div class="cs">後端與分散式系統如何運作、為何如此</div>
+      <div class="meta">
+        <div class="cm">139 份文件 ・ 建置 2026-06-22</div>
+        <div class="cm"><span class="muted">內容掃描 2026-06-22</span></div>
+      </div>
+      <div class="prog"><span class="pbar"><i></i></span><span class="ptxt"></span></div>
     </a>
 </div>
+<div class="shelf-actions"><button id="toggle-hidden" class="shelf-btn" type="button" hidden></button></div>
 <h2>Profile 新鮮度</h2>
-<div class="panel"><div class="fr info"><span>goals</span><span>2026-06-11（每次建書確認）</span></div><div class="fr ok"><span>preferences</span><span>2026-06-10（2 天前）</span></div><div class="fr ok"><span>profile</span><span>2026-06-10（2 天前）</span></div><div class="fr ok"><span>skills</span><span>2026-06-10（2 天前）</span></div></div>
-<p class="foot">過期項目：在 AI session 說「差分訪談」即可更新。建立新書：說「寫一本關於 ___ 的書」。本頁由 <code>tools/md-reader/build_shelf.py</code> 產生，勿手改。</p>
-</div></body>
+<div class="panel"><div class="fr info"><span>goals</span><span>2026-06-12（每次建書確認）</span></div><div class="fr ok"><span>preferences</span><span>2026-06-10（12 天前）</span></div><div class="fr ok"><span>profile</span><span>2026-06-10（12 天前）</span></div><div class="fr ok"><span>skills</span><span>2026-06-10（12 天前）</span></div></div>
+<p class="foot">過期項目：在 AI session 說「差分訪談」即可更新。建立新書：說「寫一本關於 ___ 的書」。卡片右上角 ✕ 只在這個瀏覽器隱藏該書（不刪原檔、不動登記簿），按「顯示已隱藏」可復原。進度條讀自各書閱讀器存在這個瀏覽器的閱讀位置，換裝置看不到。本頁由 <code>tools/md-reader/build_shelf.py</code> 產生，勿手改。</p>
+</div>
+<script id="shelf-progress" type="application/json">{"aiib": ["README", "ch01-from-backend-to-ai-infra", "ch02-gpu-architecture", "ch03-inference-physics", "ch04-language-bridge", "ch05-kv-cache", "ch06-batching-scheduling", "ch07-model-optimization", "ch08-engines-in-practice", "ch09-parallelism", "ch10-disaggregation-routing", "ch11-kubernetes-for-gpus", "ch12-platform-architecture", "ch13-autoscaling-capacity", "ch14-observability-benchmarking", "ch15-reliability", "ch16-cost-multitenancy", "ch17-frontier-2026-2028", "ch18-career", "a-labs-index", "b-glossary", "c-cheatsheets", "landscape-2026", "maintenance", "outline", "style-guide"], "plan": ["plan", "Chewei_Chen_Resume"], "tla": ["README", "ch01-why-formal-methods", "ch02-state-machines", "ch03-logic", "ch04-sets-functions-relations", "ch05-induction", "ch06-action-logic", "ch07-temporal-logic", "ch08-complete-specs", "ch09-model-checking", "ch10-mutual-exclusion", "ch11-two-phase-commit", "ch12-paxos", "ch13-raft", "ch14-inductive-invariants", "ch15-refinement", "ch16-machine-proofs", "ch17-industry-cases", "ch18-the-map", "appendix-a-symbols", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "calc": ["README", "ch01-zenos-arrow", "ch02-method-of-exhaustion", "ch03-limits", "ch04-instantaneous-rate", "ch05-derivative-rules-and-e", "ch06-optimization", "ch07-integration", "ch08-fundamental-theorem", "ch09-infinite-series", "ch10-differential-equations", "ch11-fourier", "ch12-divergent-series", "ch13-monster-functions", "ch14-rigor", "ch15-mother-tongue", "ch16-taming-infinity", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "trig": ["ch01-cradle-to-circle", "ch02-radian", "ch03-unit-circle", "ch04-angle-addition", "ch05-rotation-matrix", "ch06-dot-product-projection", "ch07-complex-plane", "ch08-euler-formula", "ch09-de-moivre-roots", "ch10-wave-anatomy", "ch11-why-sin-derivative-cos", "ch12-superposition-beats-lissajous", "ch13-fourier-doorway", "ch14-inverse-and-atan2", "ch15-hyperbolic-and-finale", "appendix-a-notation", "appendix-b-identities", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "swhist": ["ch01-fighting-complexity", "ch02-stored-program", "ch03-compiler-bet", "ch04-lisp-and-algol", "ch05-software-crisis", "ch06-modularity-and-unix", "ch07-object-oriented", "ch08-types-and-formal-methods", "ch09-functional-return", "ch10-mythical-man-month", "ch11-waterfall", "ch12-agile", "ch13-relational-model", "ch14-open-source-and-git", "ch15-network-and-web", "ch16-server-to-cloud", "ch17-microservices-and-containers", "ch18-devops-and-sre", "ch19-leaky-abstractions", "ch20-ai-assisted-coding", "ch21-conservation-of-complexity", "appendix-a-timeline", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "prob": ["README", "ch01-why-randomness", "ch02-three-faces", "ch03-combining-events", "ch04-conditional-independence", "ch05-bayes-theorem", "ch06-bayesian-worldview", "ch07-random-variables", "ch08-expectation", "ch09-variance", "ch10-covariance-correlation", "ch11-discrete-distributions", "ch12-continuous-distributions", "ch13-law-of-large-numbers", "ch14-central-limit-theorem", "ch15-normal-distribution", "ch16-sampling", "ch17-confidence-intervals", "ch18-hypothesis-testing", "ch19-statistics-breaks", "ch20-random-walk", "ch21-markov-chains", "ch22-brownian-motion", "ch23-taming-randomness", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "linalg": ["ch01-why-linear", "ch02-vectors-three-faces", "ch03-span-independence-basis", "ch04-coordinates-change-of-basis", "ch05-matrix-as-verb", "ch06-multiplication-composition", "ch07-solving-ax-b", "ch08-inverse-singularity", "ch09-determinant-area", "ch10-rank-four-subspaces", "ch11-eigenvectors", "ch12-complex-eigenvalues", "ch13-diagonalization", "ch14-matrix-powers-dynamics", "ch15-inner-product", "ch16-projection-least-squares", "ch17-orthonormal-qr", "ch18-symmetric-spectral", "ch19-svd", "ch20-low-rank-pca", "ch21-pagerank-markov", "ch22-finale", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "labs": ["ch01-same-blueprint", "ch02-grown-not-written", "ch03-five-variables", "ch04-measuring-strongest", "ch05-openai", "ch06-google-deepmind", "ch07-anthropic", "ch08-meta", "ch09-mistral", "ch10-xai", "ch11-deepseek", "ch12-qwen", "ch13-open-vs-closed", "ch14-reasoning-race", "ch15-alignment-evolution", "ch16-compute-arms-race", "ch17-multimodal", "ch18-data-underground", "ch19-interpretability", "ch20-persist-and-converge", "ch21-eight-styles", "appendix-a-model-families", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "attn": ["README", "ch01-where-to-look", "ch02-fixed-vector-bottleneck", "ch03-bahdanau-alignment", "ch04-query-key-value", "ch05-softmax", "ch06-scaling-sqrt-d", "ch07-self-attention", "ch08-multi-head", "ch09-positional-encoding", "ch10-rope-relative", "ch11-masking", "ch12-cross-attention", "ch13-layer-to-model", "ch14-quadratic-bottleneck", "ch15-sparse-linear", "ch16-flashattention-kv-sharing", "ch17-kernel-regression", "ch18-hopfield-memory", "ch19-set-operation", "ch20-attention-as-explanation", "ch21-circuits-induction-heads", "ch22-beyond-attention-ssm", "ch23-finale", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "fail": ["ch01-normal-accidents", "ch02-anatomy-tools", "ch03-before-the-machine", "ch04-737-max-mcas", "ch05-air-france-447", "ch06-uberlingen", "ch07-gimli-glider", "ch08-schiaparelli", "ch09-sleipner", "ch10-cloudflare-regex", "ch11-flash-crash", "ch12-texas-grid", "ch13-cloud-cascade", "ch14-challenger", "ch15-columbia", "ch16-three-mile-island", "ch17-chernobyl", "ch18-morris-worm", "ch19-heartbleed", "ch20-supply-chain", "ch21-silent-corruption", "ch22-resilience", "ch23-normal-accidents-and-you", "appendix-a-timeline", "appendix-b-failure-modes", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "queue": ["README", "ch01-why-queueing", "ch02-operational-laws", "ch03-probability-toolbox", "ch04-exponential", "ch05-poisson-process", "ch06-markov-chains", "ch07-ctmc-birth-death", "ch08-mm1", "ch09-mmc-erlang", "ch10-finite-capacity", "ch11-reversibility-burke", "ch12-mg1", "ch13-scheduling", "ch14-gg1-kingman", "ch15-heavy-tails", "ch16-jackson-networks", "ch17-closed-networks-mva", "ch18-network-limits", "ch19-simulation", "ch20-back-to-systems", "ch21-map-and-next", "appendix-a-notation", "appendix-b-formulas", "appendix-c-glossary", "appendix-d-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "sets": ["README", "ch01-shepherds-pairing", "ch02-hilberts-hotel", "ch03-rationals-countable", "ch04-diagonal-argument", "ch05-the-continuum", "ch06-power-set-theorem", "ch07-cardinals-and-csb", "ch08-ordinals", "ch09-transfinite-induction", "ch10-russells-paradox", "ch11-zfc", "ch12-axiom-of-choice", "ch13-banach-tarski", "ch14-continuum-hypothesis", "ch15-independence", "ch16-incompleteness", "ch17-infinity-wars", "ch18-infinity-in-your-stack", "ch19-finale", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "game": ["README", "ch01-prisoners-dilemma", "ch02-nash-equilibrium", "ch03-best-response", "ch04-zero-sum-minimax", "ch05-mixed-strategies", "ch06-game-tree", "ch07-repeated-games", "ch08-tit-for-tat-folk-theorem", "ch09-evolutionary-ess", "ch10-coordination-schelling", "ch11-signaling-asymmetric-info", "ch12-fairness-trust", "ch13-mechanism-design", "ch14-auctions", "ch15-voting-arrow", "ch16-public-goods", "ch17-applications", "ch18-seven-layers", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map"], "chaos-c": ["README", "ch01-laplace-demon", "ch02-three-body", "ch03-butterfly-effect", "ch04-determinism-vs-predictability", "ch05-logistic-map", "ch06-fixed-points-stability", "ch07-period-doubling", "ch08-feigenbaum", "ch09-chaos-and-windows", "ch10-phase-space", "ch11-strange-attractors", "ch12-fractals", "ch13-fractal-dimension", "ch14-lyapunov", "ch15-predictability-horizon", "ch16-stretch-and-fold", "ch17-chaos-vs-noise", "ch18-taming-chaos", "ch19-seven-layers", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "chaos-d": ["README", "ch01-laplace-promise", "ch02-three-body", "ch03-butterfly-sdic", "ch04-three-axes", "ch05-logistic-map", "ch06-fixed-points", "ch07-period-doubling", "ch08-feigenbaum", "ch09-chaos-and-windows", "ch10-phase-space", "ch11-strange-attractor", "ch12-fractals", "ch13-fractal-dimension", "ch14-lyapunov", "ch15-predictability-horizon", "ch16-stretch-fold", "ch17-chaos-vs-noise", "ch18-controlling-chaos", "ch19-seven-layers", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map"], "expert": ["README", "ch01-talent-is-the-wrong-frame", "ch02-ten-thousand-hours", "ch03-hours-are-not-progress", "ch04-what-makes-it-deliberate", "ch05-feedback-loops", "ch06-mental-representations", "ch07-on-the-edge", "ch08-kind-vs-wicked", "ch09-how-much-does-practice-explain", "ch10-talent-returns", "ch11-plateaus-and-walls", "ch12-coaches-and-environment", "ch13-the-transfer-illusion", "ch14-age-and-sensitive-periods", "ch15-design-your-loop", "ch16-finale", "appendix-a-glossary", "appendix-b-studies-and-people", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "mem": ["README", "ch01-not-a-videotape", "ch02-encoding-storage-retrieval", "ch03-forgetting-is-a-feature", "ch04-reconstruction-bartlett", "ch05-misinformation-effect", "ch06-lost-in-the-mall", "ch07-drm-false-memory", "ch08-hippocampus-consolidation", "ch09-reconsolidation", "ch10-flashbulb-memory", "ch11-emotion-amygdala", "ch12-eyewitness-courtroom", "ch13-source-monitoring", "ch14-hsam-memory-palace", "ch15-remembering-better", "ch16-finale", "appendix-a-notation", "appendix-b-key-studies", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "sleep": ["README", "ch01-sleep-is-maintenance", "ch02-anatomy-of-a-night", "ch03-two-process-model", "ch04-clearance-glymphatic", "ch05-consolidation-memory", "ch06-rem-and-dreams", "ch07-calibration-shy-clock", "ch08-sleep-deprivation", "ch09-insomnia-cbti", "ch10-narcolepsy-disorders", "ch11-social-jetlag-shiftwork", "ch12-caffeine-alcohol-drugs", "ch13-short-sleepers-naps-polyphasic", "ch14-dreams-lucid-consciousness", "ch15-sleep-hygiene-evidence", "ch16-finale", "appendix-a-glossary", "appendix-b-key-studies-people", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "addct": ["README", "ch01-why-hijacked", "ch02-reward-circuit", "ch03-dopamine-prediction-error", "ch04-wanting-vs-liking", "ch05-goal-to-habit", "ch06-tolerance-withdrawal", "ch07-cue-craving", "ch08-incentive-sensitization", "ch09-behavioral-addiction", "ch10-disease-vs-learning", "ch11-vulnerability", "ch12-rat-park-environment", "ch13-recovery-neuroscience", "ch14-how-treatment-works", "ch15-digital-hijack", "ch16-finale", "appendix-a-glossary", "appendix-b-studies-and-people", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "primes": ["README", "ch01-divisibility-and-primes", "ch02-unique-factorization", "ch03-euclid-infinitude", "ch04-sieve-of-eratosthenes", "ch05-how-sparse-are-primes", "ch06-prime-counting-function", "ch07-prime-number-theorem", "ch08-congruence-clock-arithmetic", "ch09-gcd-and-bezout", "ch10-fermats-little-theorem", "ch11-euler-theorem-and-totient", "ch12-twin-primes-and-gaps", "ch13-riemann-hypothesis-music-of-primes", "ch14-verification-is-not-proof", "ch15-no-formula-yet-pattern", "ch16-mersenne-primes-record-race", "ch17-rsa-trapdoor", "ch18-ulam-spiral", "ch19-where-do-primes-live-reckoning", "ch20-order-and-randomness-coexist", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map"], "godel": ["README", "ch01-mechanical-proof", "ch02-hilberts-dream", "ch03-true-vs-provable", "ch04-liar-to-unprovable", "ch05-godel-numbering", "ch06-diagonalization", "ch07-first-incompleteness", "ch08-second-incompleteness", "ch09-halting-problem", "ch10-undecidable-archipelago", "ch11-no-end-patching-holes", "ch12-where-G-is-true", "ch13-systems-that-escape", "ch14-what-godel-did-not-say", "ch15-gentzen-outsourcing-consistency", "ch16-one-sentence-G-decoded", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map"], "bias": ["README", "ch01-fast-and-slow", "ch02-heuristics-the-cost-of-thrift", "ch03-availability", "ch04-representativeness-anchoring", "ch05-affirming-consequent", "ch06-validity-vs-soundness", "ch07-attack-fallacies", "ch08-structural-fallacies", "ch09-language-and-statistical-fallacies", "ch10-base-rate-neglect", "ch11-conjunction-linda", "ch12-gamblers-fallacy-small-numbers", "ch13-confirmation-motivated-reasoning", "ch14-framing-loss-aversion", "ch15-social-biases-conformity", "ch16-memory-and-hindsight", "ch17-replication-crisis", "ch18-debiasing-limits", "ch19-bias-blind-spot", "ch20-one-brain-seven-layers", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map"], "scimethod": ["README", "ch01-two-wards", "ch02-theory-laden-observation", "ch03-induction-abduction", "ch04-falsifiability", "ch05-controlled-experiment-engine", "ch06-correlation-causation", "ch07-bayesian-confirmation", "ch08-science-is-a-crowd", "ch09-p-value-betrayal", "ch10-two-kinds-of-truth", "ch11-motivated-reasoning", "ch12-science-vs-pseudoscience", "ch13-replication-repair", "ch14-mechanism", "ch15-testimony-authority-consensus", "ch16-failure-mode-catalog", "ch17-engineers-scientific-attitude", "ch18-ten-lenses-reconciled", "appendix-a-people-timeline", "appendix-b-glossary", "appendix-c-reading-map"], "decide": ["README", "ch01-bet-and-test", "ch02-expected-value-st-petersburg", "ch03-utility-not-money", "ch04-risk-is-not-uncertainty", "ch05-bayesian-decision", "ch06-where-priors-come-from", "ch07-value-of-information", "ch08-reference-point", "ch09-loss-aversion-probability-weighting", "ch10-framing-effect", "ch11-allais-independence-axiom", "ch12-description-or-norm", "ch13-bounded-rationality-satisficing", "ch14-multi-attribute-decision", "ch15-sequential-decisions-sunk-cost", "ch16-when-the-opponent-reacts", "ch17-what-is-rationality", "ch18-five-algorithms-one-decision", "appendix-a-notation", "appendix-b-glossary", "appendix-c-reading-map"], "rsys": ["README", "T1-driving-adoption", "T2-ai-and-debt", "U-judgment", "A1-delivery-semantics", "A2-ordering-cross-service", "A3-messaging-tools", "B1-isolation-concurrency", "B2-consistency-replication", "O-storage-engines", "G-caching", "L-data-sync", "N-network-protocols", "C-realtime-transport", "H-api-gateway", "F-identity-access", "D-concurrency", "E-overload", "P-resilience", "S-performance", "M1-consensus-replication", "M2-coordination-time", "K-decoupling", "J-cloud-primitives", "Q-deployment", "I1-observability-signals", "I2-testing-quality", "V-ops-culture", "appendix-a-guarantee-cheatsheet", "appendix-b-glossary", "appendix-c-reading-map", "landscape-2026-06", "maintenance", "outline", "style-guide"], "mech": ["README", "adoption", "design-docs", "paved-road", "incremental-migration", "tech-debt", "ai-collaboration", "reversible-decisions", "simplicity", "build-vs-buy", "tech-selection", "error-philosophy", "capacity-estimation", "ai-judgment", "delivery-semantics", "idempotency-dedup", "message-ordering", "retry-backoff", "dlq", "outbox-saga", "webhooks", "schema-evolution", "sqs", "sns", "kafka", "rabbitmq", "bullmq", "redis-pubsub-streams", "consistency-spectrum", "isolation-levels", "mvcc", "locks-deadlock", "optimistic-pessimistic", "replication-lag", "sharding", "guarantee-models", "indexes-query-plan", "multitenancy", "zero-downtime-migration", "postgres-vs-mysql", "lsm-vs-btree", "wal", "sql-vs-nosql", "inverted-index", "data-lifecycle", "cache-strategies", "cache-failures", "eviction", "redis-internals", "object-storage", "data-sync-overview", "cdc", "dual-write", "conflict-resolution", "reconciliation", "cross-region-sync", "http-versions", "grpc-protobuf", "connection-pool", "load-balancing", "tls-mtls", "dns-service-discovery", "service-mesh", "push-overview", "websocket", "sse-webtransport", "socketio", "webrtc", "rest-design", "pagination", "api-paradigms", "api-gateway-role", "gateway-comparison", "authn-authz", "token-lifecycle", "jwt-signing", "rbac-abac", "oauth-oidc", "concurrency-vs-parallelism", "event-loop", "blocking-io", "thread-pool", "race-condition", "concurrency-models", "backpressure", "rate-limiting", "load-shedding", "circuit-breaker", "retry-storm", "queueing-intuition", "timeout-budget", "bulkhead", "health-check", "graceful-shutdown", "fallback", "cold-start", "tail-latency", "n-plus-one", "batching-coalescing", "pool-tuning", "partial-failure", "consensus", "leader-election", "distributed-lock", "quorum", "logical-clocks", "replication-strategies", "two-phase-commit", "consistent-hashing", "gossip-anti-entropy", "time-and-dates", "decoupling", "sync-vs-async", "event-driven", "event-sourcing-cqrs", "durable-execution", "stateless-stateful", "lambda", "cronjob", "failure-detection", "deployment-strategies", "docker", "kubernetes", "iac", "twelve-factor", "config-secrets", "three-pillars", "log-to-metric", "cardinality", "sli-slo", "alerting", "load-testing", "distributed-tracing", "testing-strategy", "quality-tooling", "incident-response", "sre-culture", "dora-metrics", "code-review", "branching-strategy", "appendix-a-glossary", "appendix-b-reading-map"]}</script>
+<script>
+(function(){
+  var KEY = 'bookshelf:hidden:v1';
+  var grid = document.querySelector('.grid');
+  var btn = document.getElementById('toggle-hidden');
+  if (!grid || !btn) return;
+  var manage = false;
+
+  function read(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function write(list){
+    try { localStorage.setItem(KEY, JSON.stringify(list)); }
+    catch (e) { /* private mode / quota / disabled: hide still works this session */ }
+  }
+
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+  var known = {};
+  cards.forEach(function(c){ known[c.getAttribute('data-book-id')] = c; });
+
+  // Prune ids whose card no longer exists (book removed from the registry
+  // while it was hidden) so dead entries cannot pile up forever.
+  var hset = {};
+  read().forEach(function(id){ if (known.hasOwnProperty(id)) hset[id] = true; });
+  function keys(){ var a = []; for (var k in hset) if (hset[k]) a.push(k); return a; }
+  write(keys());
+
+  function render(){
+    cards.forEach(function(c){
+      var id = c.getAttribute('data-book-id');
+      var isHidden = !!hset[id];
+      c.style.display = (isHidden && !manage) ? 'none' : '';
+      c.classList.toggle('dim', isHidden && manage);
+      var x = c.querySelector('.x');
+      if (x){
+        x.textContent = isHidden ? '↺' : '✕';
+        x.title = isHidden ? '恢復顯示'
+                           : '從書架隱藏（僅此瀏覽器，不刪原檔）';
+      }
+    });
+    var n = keys().length;
+    if (n === 0) manage = false;
+    btn.hidden = (n === 0);
+    if (n > 0) btn.textContent = manage ? '完成'
+                                        : ('顯示已隱藏 (' + n + ')');
+  }
+
+  grid.addEventListener('click', function(e){
+    var x = (e.target && e.target.closest) ? e.target.closest('.x') : null;
+    if (!x) return;
+    e.preventDefault();   // the card is an <a>; do not navigate
+    e.stopPropagation();
+    var card = x.closest('.card');
+    if (!card) return;
+    var id = card.getAttribute('data-book-id');
+    if (hset[id]) delete hset[id]; else hset[id] = true;
+    write(keys());
+    render();
+  });
+
+  btn.addEventListener('click', function(){ manage = !manage; render(); });
+
+  // --- card / list view toggle, persisted per browser ---
+  var VKEY = 'bookshelf:view:v1';
+  var vbtn = document.getElementById('toggle-view');
+  function readView(){
+    try { return localStorage.getItem(VKEY) === 'list' ? 'list' : 'grid'; }
+    catch (e) { return 'grid'; }
+  }
+  var view = readView();
+  function applyView(){
+    grid.classList.toggle('list', view === 'list');
+    if (vbtn) vbtn.textContent = (view === 'list') ? '▦ 卡片' : '☰ 清單';
+  }
+  if (vbtn) vbtn.addEventListener('click', function(){
+    view = (view === 'list') ? 'grid' : 'list';
+    try { localStorage.setItem(VKEY, view); } catch (e) {}
+    applyView();
+  });
+  applyView();
+
+  // --- reading progress, read from the reader's own '<book-id>.last' key ---
+  var PROG = {};
+  try {
+    var pn = document.getElementById('shelf-progress');
+    if (pn) PROG = JSON.parse(pn.textContent) || {};
+  } catch (e) { PROG = {}; }
+  function lastChapter(bid){
+    try { var v = localStorage.getItem(bid + '.last'); return v === null ? null : JSON.parse(v); }
+    catch (e) { return null; }   // reader stores it JSON-encoded, like everything else
+  }
+  cards.forEach(function(c){
+    var prog = c.querySelector('.prog');
+    if (!prog) return;
+    var ids = PROG[c.getAttribute('data-book-id')];
+    var last = lastChapter(c.getAttribute('data-book-id'));
+    if (!last || !ids || !ids.length) return;          // never opened / unknown → no bar
+    var txt = prog.querySelector('.ptxt');
+    var fill = prog.querySelector('.pbar > i');
+    var idx = ids.indexOf(last);
+    if (idx < 0){                                       // single-page '整本' view or a stale id
+      prog.classList.add('on', 'nobar');
+      if (txt) txt.textContent = '閱讀中';
+      return;
+    }
+    var pct = Math.round((idx + 1) / ids.length * 100);
+    if (fill) fill.style.width = pct + '%';
+    if (txt) txt.textContent = '進度 ' + pct + '%';
+    prog.title = '讀到第 ' + (idx + 1) + ' / ' + ids.length + ' 篇';
+    prog.classList.add('on');
+    if (pct >= 100) prog.classList.add('done');
+  });
+
+  render();
+})();
+</script>
+</body>
 </html>

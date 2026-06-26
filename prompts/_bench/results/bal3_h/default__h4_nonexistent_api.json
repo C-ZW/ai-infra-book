@@ -1,0 +1,24 @@
+{
+  "config": "default",
+  "task": "h4_nonexistent_api",
+  "len": "short",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 20.3,
+  "num_turns": 5,
+  "cost_usd": 0.1273038,
+  "duration_ms": 19226,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": [
+      "items.py"
+    ]
+  },
+  "answer_chars": 408,
+  "stderr_tail": ""
+}

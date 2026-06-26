@@ -1,0 +1,15 @@
+This project is a **personal career-transition book** written in Traditional Chinese, titled *「從後端到 AI Infra：LLM 推論基礎設施工程」* ("From Backend to AI Infra: LLM Inference Infrastructure Engineering").
+
+**Purpose:** A self-study book for a senior backend engineer (the author) transitioning into AI Infrastructure roles. The core thesis: large-scale LLM serving is fundamentally a distributed systems problem, and the author's existing skills in high-concurrency, performance engineering, and observability are the rarest asset — the book supplies the new "physics."
+
+**Structure:** 18 chapters + 3 appendices across 6 parts:
+- Part I: Mental models, GPU architecture, Transformer inference physics, language/tooling bridge
+- Part II: Inference engines — KV cache, batching/scheduling, model optimization, vLLM/SGLang/TensorRT-LLM
+- Part III: Distributed inference — parallelism strategies, prefill/decode disaggregation
+- Part IV: Platform engineering — GPU on Kubernetes, inference platform architecture, autoscaling
+- Part V: Production operations — observability, reliability, cost/multi-tenancy
+- Part VI: Frontier 2026–2028 and career strategy (including a full 45-minute system design interview walkthrough)
+
+**Deliverable:** The book lives in `book/` as Markdown and is packaged into a single offline HTML reader at `web/index.html` via tooling in `../tools/md-reader/`. It's AI-assisted, with all time-sensitive facts network-verified and flagged with a 2026-06 baseline.
+
+What do you want to do with it?

@@ -1,0 +1,7 @@
+Fixed `utils.py:14`. The function added hours directly to minutes (`hours + minutes`), so `1h30m` gave `31`. Now `hours * 60 + minutes`:
+
+- `1h30m` → 90
+- `45m` → 45
+- `2h` → 120
+
+One latent gap worth flagging: because every regex group is optional, an all-empty-but-truthy input that still fullmatches (e.g. a string of only whitespace is caught by `strip()`/`not s`, but a stray match path) could return `0` silently rather than raising. The current guards cover the known inputs — do you want me to also reject zero-token inputs like `''` after strip more explicitly, or is the current `ValueError` path sufficient for your callers?

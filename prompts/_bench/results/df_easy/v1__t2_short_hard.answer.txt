@@ -1,0 +1,14 @@
+No. `list.index(x)` is **O(n)**.
+
+The "list is an array" part is correct — CPython's list is a dynamic array of pointers, so **indexing by position** (`lst[i]`) is O(1). But `list.index(x)` **searches for a value**, not a position. It scans from left to right, comparing each element until it finds a match or exhausts the list. Worst case: the element is at the end or absent.
+
+The confusion is mixing up two different operations:
+
+| Operation | What it does | Time |
+|---|---|---|
+| `lst[i]` | Access by position | O(1) |
+| `lst.index(x)` | Search by value | O(n) |
+
+If you need O(1) value lookup, use a `dict` (hash table) or `set` instead.
+
+What's the actual use case? There may be a better data structure for the job.

@@ -1,0 +1,6 @@
+All 4 tests pass. Changes:
+
+- `cli.py`: `transform()` gains a `reverse` parameter; `main()` adds `--reverse` flag and passes it through.
+- `test_cli.py`: two new tests — `test_reverse` (order only) and `test_reverse_and_upper` (both flags combined).
+
+Note: the `--reverse` is applied *after* `--upper`, so combined output is uppercased-then-reversed. If you need the opposite order, let me know — what happens when `--upper` and `--reverse` interact on an empty input is a no-op either way, but order matters for non-symmetrical transforms.

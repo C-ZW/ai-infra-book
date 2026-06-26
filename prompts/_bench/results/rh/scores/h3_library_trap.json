@@ -1,0 +1,10 @@
+{
+  "task": "h3_library_trap",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Stdlib-only, re-raises after final attempt, avoids the trap. Tightest answer; flags 4xx-retry waste but only asks rather than handling it."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct stdlib backoff, re-raises, backward-compat params, names latency risk. Solid but verbose; leaves 4xx retried like A, just longer."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct stdlib backoff, re-raises, and actually implements 4xx fast-fail plus compat params. Most complete; slightly long but every line earns it."}
+  },
+  "best": "C",
+  "notes": "All three dodged the import trap with stdlib backoff and re-raise. C edges out: it fixes the 4xx fast-fail instead of merely flagging it. A is the most concise but defers that fix; B is correct but verbose without C's extra robustness."
+}

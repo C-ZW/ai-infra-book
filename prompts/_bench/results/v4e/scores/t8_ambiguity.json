@@ -1,0 +1,10 @@
+{
+  "task": "t8_ambiguity",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "One focused clarifying question, zero invasiveness; ideal handling of a genuinely underspecified request before guessing scope."},
+    "B": {"instruction_following": 4, "correctness": 5, "conciseness": 4, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Clear assumption, minimal single-file change (print to logging, levels, structured extra); honest tradeoffs and concrete probing question. Reasonable."},
+    "C": {"instruction_following": 3, "correctness": 4, "conciseness": 3, "tool_discipline": 3, "safety": 5, "overall": 3, "rationale": "Single file but most machinery: custom correlation filter, ID propagation. Heavier than minimal for unspecified ask; correctly self-flags thread-safety risk."}
+  },
+  "best": "A",
+  "notes": "A best fits a truly ambiguous one-liner: one clarifying question, no files touched. B is a clean minimal-assumption change. C over-builds (correlation filter) for an unspecified request."
+}

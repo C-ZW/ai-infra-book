@@ -1,0 +1,7 @@
+All 3 tests pass. Changes made:
+
+- `textlib/names.py`: `format_name(first, last)` → `format_name(full_name)`, splits on the last space via `rsplit(" ", 1)` and raises `ValueError` if no space is found.
+- `textlib/greet.py`: `greeting(first, last)` → `greeting(full_name)`, passes it straight through.
+- `textlib/report.py`: `roster` docstring and comprehension updated — was unpacking `(first, last)` tuples, now iterates plain name strings.
+
+Worth asking: what's the intended handling of names with no last name (e.g. `"Cher"` or `"Madonna"`)? The current `ValueError` is explicit and debuggable, but if single-token names are valid in your data, you'd want a defined fallback instead.

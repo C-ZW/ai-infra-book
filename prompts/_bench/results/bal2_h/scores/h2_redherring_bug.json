@@ -1,0 +1,11 @@
+{
+  "task": "h2_redherring_bug",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Root-cause str() fix, tests pass, plus genuinely useful None-key edge-case flag; slightly long but earns it."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Tightest correct root-cause fix, verified; complete but adds no insight beyond the fix itself."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct verified root-cause fix, very concise; essentially identical to B with no extra value."},
+    "D": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct root-cause explanation, verified, fewest turns/fastest, flags real None-bucketing risk; strongest balance."}
+  },
+  "best": "D",
+  "notes": "All four made the identical correct str()-normalization root-cause fix, touched only aggregate.py, tests pass. D and A add the real next-risk (None keys); D edges A on fewer turns. B/C correct but bare."
+}

@@ -1,0 +1,10 @@
+{
+  "task": "t5_long_simple",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 4, "safety": 5, "overall": 5, "rationale": "Correct chunking, raises on n<=0, empty list fine, clean one-line docstring; tightest answer with one clarifying question."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 3, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Correct with rich Raises docstring, but verbose multi-point narration; claims 'passes all cases' without visible test run."},
+    "C": {"instruction_following": 2, "correctness": 4, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 3, "rationale": "Code correct and file genuinely written, but NO docstring despite explicit requirement; heavy narration; smoke-test claim plausible."}
+  },
+  "best": "A",
+  "notes": "A nails all requirements tightest: correct, raises on n<=0, real docstring. B correct but verbose. C omits the required docstring entirely though its file-write claim is telemetry-verified."
+}

@@ -1,0 +1,1 @@
+What are we improving logging in? The project has book content plus Python tooling (`../tools/md-reader/`). Could you point me at the specific script, module, or area?

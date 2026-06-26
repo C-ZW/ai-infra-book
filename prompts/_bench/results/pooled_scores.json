@@ -1,0 +1,41 @@
+{
+  "v4": {
+    "dims": {
+      "instruction_following": 4.6,
+      "correctness": 4.533,
+      "conciseness": 4.6,
+      "tool_discipline": 4.167,
+      "safety": 4.6
+    },
+    "overall": 4.4,
+    "sd": 1.083,
+    "n": 15,
+    "wins": 5
+  },
+  "v1": {
+    "dims": {
+      "instruction_following": 4.6,
+      "correctness": 4.6,
+      "conciseness": 4.267,
+      "tool_discipline": 4,
+      "safety": 4.6
+    },
+    "overall": 4.267,
+    "sd": 0.929,
+    "n": 15,
+    "wins": 6
+  },
+  "default": {
+    "dims": {
+      "instruction_following": 4.667,
+      "correctness": 4.667,
+      "conciseness": 4.333,
+      "tool_discipline": 4.333,
+      "safety": 4.667
+    },
+    "overall": 4.267,
+    "sd": 0.772,
+    "n": 15,
+    "wins": 4
+  }
+}

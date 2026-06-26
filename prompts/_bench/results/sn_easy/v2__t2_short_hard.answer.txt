@@ -1,0 +1,20 @@
+No. Your teammate is conflating two different operations.
+
+**`list[i]` (index by position)** → O(1). This is the array-backed random-access they're thinking of — a single pointer dereference.
+
+**`list.index(x)` (search by value)** → O(n). It does a linear scan from position 0 until it finds a match or exhausts the list. The array backing gives you no help here because there's no ordering or hash — the runtime has to check each element with `==` in sequence.
+
+The CPython source (`Objects/listobject.c`, `list_index_impl`) confirms the loop:
+
+```c
+for (i = start; i < stop && i < Py_SIZE(self); i++) {
+    PyObject *obj = self->ob_item[i];
+    ...
+    cmp = PyObject_RichCompareBool(obj, value, Py_EQ);
+    if (cmp > 0)
+        return PyLong_FromSsize_t(i);
+```
+
+If O(1) value lookup matters, the right tool is a `set` or `dict` key (hash-based, amortized O(1) for `in`).
+
+**Probing question:** Are there any callers in your codebase doing `list.index(x)` inside a loop — effectively O(n²) — where the list could grow large?

@@ -1,0 +1,7 @@
+Three attempts, delays of 1 s → 2 s between them. A few notes on the failure cases:
+
+- **4xx errors** (`HTTPError.code < 500`) are re-raised immediately — retrying a 404 or 403 is pointless and wastes time.
+- **`URLError`** (DNS failure, refused connection, timeout) is always retried — these are the most common transient faults.
+- **`last_exc` is always set before the `raise`** — the loop can only exit via `return` (success) or the final `raise last_exc` after all attempts exhaust, so `last_exc` is never `None` at that point.
+
+What happens if `urlopen` raises something other than `URLError` (e.g., `ValueError` for a malformed URL)? Those will propagate immediately without retry — intentional, since they're caller errors, not transient failures.

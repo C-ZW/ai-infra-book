@@ -1,0 +1,19 @@
+The docstring on `compute_checksum` explicitly forbids this:
+
+```
+PURE FUNCTION — must stay free of side effects. It is memoized by callers and
+invoked inside hot retry loops; any I/O or logging here would break those
+callers and add overhead on the hot path. Do not add side effects.
+```
+
+Adding logging directly to the function would:
+1. **Break memoization** — a memoized call wouldn't re-fire the log on cache hits, making the log count wrong and giving callers a silent lie about invocations.
+2. **Add I/O on the hot path** — every iteration of those retry loops pays a log write.
+
+**Better alternatives:**
+
+- **Log at each call site** — the callers already invoke it; logging there gives accurate context (which code path triggered it, with what data length, etc.).
+- **Wrap it** — create `compute_checksum_traced(data)` that logs then delegates to the pure function; callers that need observability opt in explicitly.
+- **Instrument at a higher level** — if you need aggregate call counts, a metrics counter (e.g. Prometheus `Counter`) incremented at the call site is cheaper than structured log I/O per call.
+
+Which approach fits your use case? (If this is for debugging a specific caller rather than production observability, logging at the call site is the lowest-risk move.)

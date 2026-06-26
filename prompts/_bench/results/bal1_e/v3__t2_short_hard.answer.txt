@@ -1,0 +1,12 @@
+No, that's wrong. `list.index(x)` is O(n) — it does a linear scan from the front until it finds `x` (or exhausts the list).
+
+Your teammate is confusing two different operations:
+
+- `list[i]` — indexing **by position** → O(1), because CPython lists are dynamic arrays with pointer arithmetic
+- `list.index(x)` — searching **by value** → O(n), because it must check each element sequentially
+
+The O(1) part is correct only for the underlying memory access once the position is known. Finding the position by value is a separate, linear problem. If you need O(1) lookup by value, use a `set` or `dict`.
+
+You can verify this in CPython's source: `Objects/listobject.c`, function `list_index_impl`, loops with `Py_EQ` comparisons one at a time.
+
+What happens when the value appears at index `n-1` — is there a path in your code where that worst case matters?

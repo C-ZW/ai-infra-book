@@ -1,0 +1,16 @@
+No. Your teammate is conflating two different operations.
+
+- `lst[i]` — access by integer position. *This* is O(1), because a CPython list is a contiguous array of `PyObject*` pointers, so the offset is computed directly.
+- `lst.index(x)` — search by value. This is **O(n)**. It walks the list from the front, comparing each element to `x` with `==`, and returns the index of the first match. No match → it scans the whole list and raises `ValueError`.
+
+"It's just an array" is true and is exactly why positional indexing is fast — but `index()` doesn't get a position handed to it; it has to *find* one, and an unsorted array has no shortcut for that.
+
+A couple of edge cases worth flagging, since "O(n)" quietly assumes things:
+
+- **Comparison cost isn't free.** The O(n) counts *element comparisons*. If elements are expensive to compare (long strings, big tuples, objects with a heavy `__eq__`), real cost is O(n · k). And a pathological `__eq__` can raise or loop — `index` will propagate that.
+- **Worst case is the miss.** Looking for something near the end, or absent entirely, scans all n. If you're calling `index()` in a loop, that's an easy accidental O(n²).
+- **Identity vs equality quirk:** `index` uses `is`-then-`==`, so `float('nan')` already in the list can be found by identity but never by a fresh equal value.
+
+If you need true O(1) membership-to-location lookups, use a `dict` (value → index) or a `set` (membership only), built once up front.
+
+What's the actual access pattern in your code — a one-off lookup, or `index()` inside a loop where the O(n²) blowup would bite?

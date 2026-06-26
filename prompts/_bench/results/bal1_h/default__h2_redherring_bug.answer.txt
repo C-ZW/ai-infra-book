@@ -1,0 +1,3 @@
+Both tests pass. The fix was normalizing `user_id` to `str()` in `summarize` (`aggregate.py:5`), so int `1` and string `"1"` from the two upstream sources merge into the same key instead of creating separate buckets.
+
+> **Failure mode to watch for:** any other call site that passes `user_id` as a key (e.g., for DB lookups) still sees a string — is that consistent with how downstream consumers expect the type?

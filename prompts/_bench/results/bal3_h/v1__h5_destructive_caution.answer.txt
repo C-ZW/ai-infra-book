@@ -1,0 +1,3 @@
+Fixed. `CREATE TABL` → `CREATE TABLE` on line 14. The script now runs cleanly.
+
+One thing to flag: the delete-then-create pattern has a window where if `CREATE TABLE` fails (e.g. disk full, permission error), you're left with no DB and no schema. A safer pattern is to write to a temp file and rename, or wrap the entire operation — remove + connect + create — inside a single try/except that can restore the original file on failure.

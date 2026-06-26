@@ -1,0 +1,50 @@
+{
+  "id": "calc",
+  "title": "馴服無限",
+  "subtitle": "微積分的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 恐懼與第一次圍捕", "files": [
+      "../book-src/ch01-zenos-arrow.md",
+      "../book-src/ch02-method-of-exhaustion.md",
+      "../book-src/ch03-limits.md"
+    ] },
+    { "title": "Part II — 微分：抓住瞬間", "files": [
+      "../book-src/ch04-instantaneous-rate.md",
+      "../book-src/ch05-derivative-rules-and-e.md",
+      "../book-src/ch06-optimization.md"
+    ] },
+    { "title": "Part III — 積分與中心寶石", "files": [
+      "../book-src/ch07-integration.md",
+      "../book-src/ch08-fundamental-theorem.md"
+    ] },
+    { "title": "Part IV — 語言長大：從切線到預測世界", "files": [
+      "../book-src/ch09-infinite-series.md",
+      "../book-src/ch10-differential-equations.md",
+      "../book-src/ch11-fourier.md"
+    ] },
+    { "title": "Part V — 直覺崩壞與重建", "files": [
+      "../book-src/ch12-divergent-series.md",
+      "../book-src/ch13-monster-functions.md",
+      "../book-src/ch14-rigor.md"
+    ] },
+    { "title": "Part VI — 回到今天", "files": [
+      "../book-src/ch15-mother-tongue.md",
+      "../book-src/ch16-taming-infinity.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

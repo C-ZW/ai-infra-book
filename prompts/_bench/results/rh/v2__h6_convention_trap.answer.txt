@@ -1,0 +1,5 @@
+Added `delete_item` at `handlers.py:14`, mirroring `get_item`'s conventions: `@route` decorator, `err()` returned (not raised) on miss, `str.format()` over f-strings, `ok()` with the deleted item. Verified the miss path, the delete, and that the row is gone afterward.
+
+One failure mode worth flagging: `framework.route` keys `_ROUTES` by **path only** (`_ROUTES[path] = fn`), and it has no concept of HTTP methods. So `delete_item` and `get_item` both register under `"/items/{id}"`, and whichever is defined last wins — `delete_item` now silently shadows `get_item` in the dispatch table. My direct-call test passes because it bypasses the registry, but a real request router built on `_ROUTES` would no longer reach GET. The framework simply can't express "DELETE /items/{id}" distinctly from "GET /items/{id}".
+
+Do you want me to extend `route` to take a method (e.g. `@route("/items/{id}", method="DELETE")`) so GET and DELETE can coexist — which means touching `framework.py` and the existing handlers — or is direct-call dispatch all this needs?

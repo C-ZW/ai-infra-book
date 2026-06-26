@@ -1,0 +1,3 @@
+`core.py` now has a `compute_checksum_logged` wrapper at the bottom. Call sites that want observability use the wrapper; hot-path/memoized callers keep calling the pure function.
+
+One sharp open question: do you need to log **every logical checksum request** (including memoized cache hits the callers never forward to `compute_checksum`)? If yes, the logging has to move into the callers' cache layer, not here.

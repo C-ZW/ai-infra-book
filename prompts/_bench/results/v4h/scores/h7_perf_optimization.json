@@ -1,0 +1,10 @@
+{
+  "task": "h7_perf_optimization",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 4, "conciseness": 3, "tool_discipline": 5, "safety": 5, "overall": 4, "rationale": "Correct O(n) seen-set fix, tests pass; but the hashability caveat visibly self-contradicts (\"would fail — actually no\") and is the longest answer."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct linear seen-set rewrite, order preserved, tests pass; clean accurate hashability note, no-regression framing. Tight and complete."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Correct O(n) seen-set fix verified by passing tests; shortest, single tight paragraph, accurate hashability/no-regression note. Best signal per token."}
+  },
+  "best": "C",
+  "notes": "All three: correct O(n) seen-set, order preserved, 3 tests pass, only dedup.py touched. C and B equivalent in correctness; C wins on conciseness. A penalized for a confused self-contradicting hashability caveat and extra length."
+}

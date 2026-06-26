@@ -1,0 +1,11 @@
+This is a **personal AI Infrastructure career-transition book** written in Traditional Chinese. In short:
+
+- **What it is**: A 18-chapter technical book titled *"從後端到 AI Infra：LLM 推論基礎設施工程"* (From Backend to AI Infra: LLM Inference Infrastructure Engineering), authored with AI assistance for a senior backend engineer (the author themselves) pivoting into AI infra roles.
+
+- **Core thesis**: Large-scale LLM serving is a *distributed systems problem*, not a model problem — the reader's existing skills in high-concurrency, performance engineering, and observability are the rare foundation; the book fills in the new physics (GPU architecture, KV cache math, inference engines, etc.).
+
+- **Structure**: 6 parts across 18 chapters — foundations → inference engines → distributed inference → platform engineering (K8s/GPU) → production operations → frontier topics & career. Plus 3 appendices: 52 hands-on labs, a 193-term glossary, and cheat sheets.
+
+- **Three reading tracks**: full (8–12 weeks), job-search fast lane (9 key chapters), and pre-interview cram.
+
+The repo also contains a companion `plan.md` (skill-building roadmap), tooling under `../tools/md-reader/` (a standalone offline HTML reader builder), and a growing `books/` directory with a dozen other personal interest books (TLA+, calculus, probability, queueing theory, etc.).

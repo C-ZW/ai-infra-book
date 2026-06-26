@@ -1,0 +1,14 @@
+No README at the project root. The CLAUDE.md serves as the project's primary documentation. Based on it:
+
+**AI Infra 轉職書** is a personal "AI Infrastructure career-transition book" written in Traditional Chinese, paired with an offline single-file HTML reader. It's both a book and a toolchain:
+
+- **`book/`** — 18 chapters + appendices of Markdown content covering AI infrastructure topics, aimed at helping the author (Chewei Chen) transition careers into AI infra roles.
+- **`plan.md`** — a companion "training roadmap" that mirrors the book's chapters but is independent.
+- **`books/<slug>/`** — additional books on other topics (TLA+, linear algebra, probability, calculus, queuing theory, etc.) all built with the same toolchain.
+- **`../tools/md-reader/`** — a shared Python toolchain (`build_reader.py`, `build_shelf.py`, `check_diagrams.py`) that packages Markdown into a self-contained offline HTML reader with a bookshelf index.
+- **`web/`** — reader config files and generated HTML output (`index.html`, `plan.html`).
+- **`bookshelf.html`** — a generated book index linking all books.
+
+The core idea: a personal knowledge library of interest books (math, CS theory, AI infra) written by and for the author, readable offline via a custom HTML reader, with CJK-aware ASCII diagram alignment and light-mode paper styling.
+
+What's the most dangerous unhandled case here? The generated HTML files (`web/index.html`, `bookshelf.html`) are explicitly marked **do not hand-edit** — if `build_reader.py` or `build_shelf.py` silently fails mid-run, you'd have a partially-overwritten output with no easy way to detect it without re-running the validator.

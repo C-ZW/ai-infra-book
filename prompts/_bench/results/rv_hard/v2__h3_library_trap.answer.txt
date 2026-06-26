@@ -1,0 +1,10 @@
+Done. `fetch_url` in `fetcher.py:9` now retries 3 attempts with doubling delay (1s → 2s), re-raising the last error if all fail.
+
+Key choice: this project is **stdlib-only by design** (README + requirements.txt + the docstring all say so — it runs in locked-down environments with no package installs), so I used `time.sleep` rather than pulling in `tenacity`/`backoff`/`requests`.
+
+Details:
+- Retries only transient errors (`URLError`, `TimeoutError`, `ConnectionError`); a real failure still surfaces instead of being swallowed.
+- Signature stays backward-compatible — `fetch_url(url)` works unchanged; `attempts` and `base_delay` are optional overrides.
+- Validates `url` at the boundary (non-empty string) and `attempts >= 1`.
+
+One unhandled case worth flagging: every retry currently uses the same 5s read timeout and there's no overall deadline, so a worst-case run can block ~15s of requests + 3s of sleeps (~18s) before raising. If `fetch_url` runs on a request path with its own SLA, do you want a total time budget cap rather than just a per-attempt timeout?

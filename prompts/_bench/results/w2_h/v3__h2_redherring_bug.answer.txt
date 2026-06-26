@@ -1,0 +1,1 @@
+Both tests pass. `aggregate.py:5` — changed `uid = e["user_id"]` to `uid = str(e["user_id"])` so mixed int/str ids from the two upstream sources merge into the same bucket.

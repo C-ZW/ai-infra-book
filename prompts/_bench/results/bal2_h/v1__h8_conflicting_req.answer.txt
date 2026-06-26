@@ -1,0 +1,7 @@
+The tool didn't capture a selection. To move forward, let me know which approach you want:
+
+1. **Logging wrapper** — rename original to `_compute_checksum`, expose a new public `compute_checksum` that logs then delegates. Every call is recorded; the pure core stays cacheable.
+2. **Call-site logging** — leave `core.py` untouched, add logging where the function is called.
+3. **Direct logging** — add logging inside `compute_checksum` as-is (breaks memoization, adds hot-path I/O).
+
+What's it going to be?

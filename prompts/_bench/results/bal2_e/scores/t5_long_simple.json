@@ -1,0 +1,11 @@
+{
+  "task": "t5_long_simple",
+  "scores": {
+    "A": {"instruction_following": 4, "correctness": 5, "conciseness": 3, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Correct code, leaner docstring but no Args/Returns; longest narrative tail (failure-modes section + question) is narration beyond the ask."},
+    "B": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": null, "safety": 5, "overall": 5, "rationale": "Correct, full Args/Returns/Raises docstring, {n!r}; tightest output with brief edge note and one question. Best signal per token."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Same strong docstring and guard as B; edge-case list adds slight narration, marginally longer but well-organized and accurate."},
+    "D": {"instruction_following": 4, "correctness": 4, "conciseness": 4, "tool_discipline": null, "safety": 5, "overall": 4, "rationale": "Adds isinstance(n,int) beyond the n<=0 ask; rejects valid int-like types (numpy ints) and broadens documented behavior. Otherwise clean and concise."}
+  },
+  "best": "B",
+  "notes": "All four share the correct one-line comprehension. B wins: complete docstring, repr in error, tightest tail. C ties on quality but slightly wordier. A's docstring lacks Args/Returns and has the longest narration. D's isinstance check overreaches the spec."
+}

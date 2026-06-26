@@ -1,0 +1,36 @@
+```python
+def chunk(lst, n):
+    """Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter if len(lst) is not a multiple of n.
+
+    Args:
+        lst: A sequence (list, tuple, str, ...) supporting slicing.
+        n: Positive integer chunk size.
+
+    Returns:
+        A list of slices of lst, each of length n except possibly the last.
+        An empty input yields an empty list.
+
+    Raises:
+        TypeError: If n is not an integer (bool is rejected too).
+        ValueError: If n <= 0.
+    """
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise TypeError(f"n must be an int, got {type(n).__name__}")
+    if n <= 0:
+        raise ValueError(f"n must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+Design notes on the failure cases, since they're the whole point here:
+
+- **`n <= 0`** → `ValueError`. Returning `[]` or `[lst]` would silently swallow a caller bug (e.g. a miscomputed batch size); raising forces it to surface. `range(0, len, 0)` would also throw a less informative `ValueError` anyway.
+- **non-int `n`** (e.g. `2.0`, `"2"`) → `TypeError`. A float would make `lst[i:i+n]` raise a cryptic slice error deep in the comprehension; catching it at the boundary gives a clear message.
+- **`bool` rejected** — `True`/`False` are `int` subclasses, so without the explicit guard `chunk(x, True)` would "work" as `n=1`. Almost always a bug, so it's blocked.
+- **empty `lst`** → `[]`, naturally.
+- Works on any sliceable sequence (`str`, `tuple`, `list`); chunks preserve the input type.
+
+One thing I did *not* do: handle generators/iterators. This relies on slicing and `len()`, so a lazy iterator would raise `TypeError` on `len()`.
+
+Do you need a variant that consumes arbitrary iterables (generators, streams) lazily via `itertools.islice`, or is sliceable-sequence input the contract you want?

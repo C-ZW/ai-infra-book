@@ -1,0 +1,8 @@
+Done. Key decisions:
+
+- **4xx errors are not retried** — those are caller faults (bad URL, auth), not transient; retrying wastes time and can trigger rate-limits.
+- **5xx and `URLError`** (DNS failure, connection refused, timeout) are retried — these are transient.
+- Delays: 1 s → 2 s → 4 s (attempt 0 sleeps 1 s, attempt 1 sleeps 2 s, no sleep after the final attempt).
+- `last_exc` is always set before being raised, so the caller gets the actual failure, not a generic message.
+
+Probing question: if the server returns HTTP 429 (rate-limited), should it be retried — and should the `Retry-After` header be respected rather than using the fixed backoff?

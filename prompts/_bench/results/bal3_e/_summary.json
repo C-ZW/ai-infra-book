@@ -1,0 +1,34 @@
+{
+  "v1": {
+    "runs": 7,
+    "errors": 1,
+    "timeouts": 1,
+    "chars": 4025,
+    "turns": 11,
+    "cost": 0.11153790000000001
+  },
+  "v4": {
+    "runs": 7,
+    "errors": 1,
+    "timeouts": 1,
+    "chars": 3758,
+    "turns": 13,
+    "cost": 0.1457772
+  },
+  "v3": {
+    "runs": 7,
+    "errors": 0,
+    "timeouts": 0,
+    "chars": 5588,
+    "turns": 26,
+    "cost": 0.6323391000000002
+  },
+  "default": {
+    "runs": 7,
+    "errors": 0,
+    "timeouts": 0,
+    "chars": 4900,
+    "turns": 24,
+    "cost": 1.02588
+  }
+}

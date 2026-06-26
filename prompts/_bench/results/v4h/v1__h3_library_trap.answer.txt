@@ -1,0 +1,6 @@
+Done. The retry loop:
+- Catches `urllib.error.URLError` and `OSError` (covers DNS failures, connection refused, socket timeouts, etc. — not HTTP 4xx/5xx, which arrive as successful responses)
+- Sleeps `base_delay` then doubles before each retry (`1s → 2s` for 3 attempts)
+- Re-raises the last exception if all attempts are exhausted — no silent swallowing
+
+One probing question: should HTTP error responses (4xx/5xx, which arrive as `urllib.error.HTTPError`) also trigger a retry? Right now they're not caught, so a 503 would propagate immediately on the first attempt.

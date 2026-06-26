@@ -1,0 +1,8 @@
+Changes made:
+- `print()` → `logging` module with timestamps and levels (`INFO`/`DEBUG`)
+- Log format includes `asctime`, `levelname`, and message — reconstructable without re-running
+- Entry log includes `order_count` so you know input size before any iteration
+- Exit log includes the computed `total` — previously you'd have to infer it from the per-item prints
+- Per-item logs are `DEBUG` so they're suppressed in production by default; set `level=logging.DEBUG` to restore them
+
+What's the most dangerous unhandled case: if `orders` contains a non-numeric value, `total += o` raises `TypeError` mid-loop with no log of which value caused it or how far the loop got — worth wrapping in a `try/except` with a `logger.error("invalid order value=%r", o)` if that's a real input risk.

@@ -1,0 +1,1 @@
+The bug was on line 14: `hours + minutes` → `hours * 60 + minutes`. `'1h30m'` now returns `90`, and `'45m'`/`'2h'` still return `45`/`120`.

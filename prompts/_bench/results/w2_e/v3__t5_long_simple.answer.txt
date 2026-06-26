@@ -1,0 +1,18 @@
+```python
+def chunk(lst, n):
+    """
+    Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not divisible by n.
+    Returns an empty list if lst is empty.
+
+    Raises ValueError if n <= 0.
+    """
+    if n <= 0:
+        raise ValueError(f"chunk size must be a positive integer, got {n}")
+    return [lst[i:i + n] for i in range(0, len(lst), n)]
+```
+
+Returning an empty list for an empty `lst` falls out naturally from `range(0, 0, n)` producing no iterations. The `ValueError` is raised eagerly so callers get a clear signal at the boundary rather than a silent empty result or a division-by-zero downstream.
+
+What's the most dangerous unhandled case here? If `lst` is a lazy iterator rather than a sequence, `lst[i:i+n]` will raise `TypeError`—worth adding `list(lst)` at the top if the callers are varied.

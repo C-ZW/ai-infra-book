@@ -1,0 +1,8 @@
+Changes made:
+
+- Swapped bare `print` for `logging` with a timestamped, leveled format
+- `INFO` for the entry/exit boundary (order count, total, elapsed ms) — these are always useful
+- `DEBUG` for per-order detail — noisy in production, silenceable by raising the log level
+- Added `time.monotonic()` so the exit log shows how long the call actually took
+
+One open question: `orders` is trusted to contain addable values right now — if a caller passes mixed types (`[1, "two", 3]`), the `total += o` will raise a `TypeError` that's currently uncaught. Worth adding input validation if this is called from untrusted input.

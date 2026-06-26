@@ -1,0 +1,10 @@
+Fixed. The bug was on line 14 of `utils.py`: hours were added to minutes without converting to minutes first.
+
+```python
+return hours + minutes        # before — '1h30m' → 31
+return hours * 60 + minutes   # after  — '1h30m' → 90
+```
+
+All three cases now pass: `'1h30m'` → 90, `'45m'` → 45, `'2h'` → 120.
+
+One unhandled edge case worth flagging: the regex `(?:(\d+)h)?(?:(\d+)m)?$` uses `fullmatch` with both groups optional, so a string of pure whitespace becomes `''` after `strip()` and is correctly rejected by the `not s` guard — but a malformed input like `'30m15h'` (wrong order) or `'1.5h'` (decimal) raises `ValueError` as intended. The most dangerous remaining case: `parse_duration` assumes `s` is a string — passing `None` or an `int` will throw `AttributeError` on `.strip()` rather than a clean `ValueError`. Do you want input-type validation added at the boundary, or is the string-only contract guaranteed by callers?

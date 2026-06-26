@@ -1,0 +1,3 @@
+Done — but **`ApiClient` has no `patch()` method**, so any call to `update_item` will raise `AttributeError: 'ApiClient' object has no attribute 'patch'`. The client docstring confirms only `GET` and `POST` are supported.
+
+If the backend truly doesn't support PATCH, the realistic fix is to route through `client.post()` with a method-override header or a dedicated update endpoint — or add `patch()` to `ApiClient`. Which is the right path here?

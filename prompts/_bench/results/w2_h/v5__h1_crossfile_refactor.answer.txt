@@ -1,0 +1,7 @@
+All 3 tests pass. Changes made:
+
+- `textlib/names.py`: `format_name(full_name)` — splits on the first space, raises `ValueError` if no space is present (malformed input would otherwise silently return garbage)
+- `textlib/greet.py`: `greeting(full_name)` — passes the string straight through
+- `textlib/report.py`: `roster(people)` — iterates strings instead of unpacking tuples
+
+Worth noting: names with more than one space (e.g. `"Mary Jo Smith"`) will produce `"Jo Smith, Mary"` — the split is on the *first* space only. If compound last names are in scope, the API will need a separator convention.

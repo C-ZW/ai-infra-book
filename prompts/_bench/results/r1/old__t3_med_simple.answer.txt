@@ -1,0 +1,3 @@
+`billing/pricing.py:16`
+
+Only one definition exists — `def compute_total(items, discount_pct=0.0)`. Note that if it's also assigned/aliased elsewhere or shadowed by an import, the call site could resolve to something other than this line; the search found no such case.

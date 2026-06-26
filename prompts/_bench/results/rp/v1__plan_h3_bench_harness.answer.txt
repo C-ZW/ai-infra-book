@@ -1,0 +1,135 @@
+I have what I need. Here's the plan, grounded in the actual `candidates.py`.
+
+---
+
+# Plan: Benchmark Harness with Per-Call Timeout & Exception Isolation
+
+## 1. What the target file actually contains (grounding)
+
+`candidates.py` (24 lines) defines:
+
+- `fast_sum_to(n) = n*(n+1)//2` — O(1), correct for **all** ints incl. negatives (`-1 → 0`).
+- `slow_sum_to(n)` — `while i != n: i += 1` from `i=0`. Correct for `n ≥ 0`; **infinite loop for `n < 0`** because `i` only ever increases and never reaches a negative target. Pure-Python loop (no C extension, no syscall).
+- `CANDIDATES = [fast_sum_to, slow_sum_to]`
+- `TEST_INPUTS = [0, 1, 10, 100, -1]`
+
+The harness must execute the 2×5 = 10 calls. Nine return quickly; `slow_sum_to(-1)` spins forever. This single hang is the entire reason the harness exists, so the timeout mechanism is the load-bearing design decision — everything else is plumbing.
+
+Critical fact for the design: the hang is a **tight pure-Python CPU loop**. That rules out some timeout mechanisms (see §3).
+
+## 2. Failure-mode analysis first (what can break)
+
+Before the happy path, here's what a naive harness gets wrong:
+
+| # | Failure mode | Consequence | Mitigation |
+|---|---|---|---|
+| F1 | Run candidate in-line | `slow_sum_to(-1)` hangs the whole harness; no table ever prints | Out-of-line execution with a hard timeout |
+| F2 | Use a thread + `join(timeout)` | Python threads **cannot be killed**; the runaway loop keeps burning a core, steals the GIL, and **corrupts every subsequent timing** | Use a **separate OS process** that can be `terminate()`/`kill()`-ed |
+| F3 | Use `ProcessPoolExecutor` + `future.result(timeout=)` | Timeout doesn't cancel the running task — the worker stays stuck on the infinite loop and **poisons the pool** for later calls | **Fresh `Process` per call**, not a pool |
+| F4 | `signal.SIGALRM` only | Main-thread + Unix only; a broad `except Exception` in the candidate can **swallow the timeout**; no crash isolation | Acceptable as a lightweight fallback, not the primary path |
+| F5 | `spawn` start method re-imports the module | If module top-level isn't `__main__`-guarded, **fork-bomb** of re-spawning processes | Guard entrypoint; keep target functions importable/picklable |
+| F6 | SIGTERM ignored by child | Child lingers as a zombie consuming CPU | Escalate `terminate()` → grace period → `kill()` |
+| F7 | Harness itself crashes/Ctrl-C mid-run | Orphaned child processes survive | `try/finally` reaper that terminates all live children |
+| F8 | Time the call *including* process spawn | Fast O(1) function looks ~10–50ms slow; comparison is meaningless | Measure **inside the child** with `perf_counter`, send elapsed back; spawn cost excluded |
+| F9 | Queue read ordering / large payloads | Classic `multiprocessing.Queue` join-deadlock | Read result from `Pipe`/`Queue` **before** final `join`; payloads here are tiny |
+| F10 | Crown a fast-but-wrong candidate | Harness times but never checks correctness | Optional oracle column: compare each result to a reference |
+| F11 | Treat "timeout" as a fixed property of the candidate | It's **data-dependent** (`slow_sum_to` is fine at `n=100`, hangs at `n=-1`) | Status is per (candidate, input) cell, never per candidate |
+
+## 3. Timeout mechanism — decision
+
+**Primary: one `multiprocessing.Process` per call, killed on timeout.** This is the only option that (a) actually stops a tight pure-Python loop, (b) isolates crashes (a segfault/OOM/`os._exit` in a candidate won't take the harness down), and (c) keeps timings clean by measuring inside the child.
+
+Flow per call:
+1. Parent creates a `Pipe` (or `Queue`) and a `Process(target=_run_in_child, args=(fn, x, conn, repeats))`.
+2. Child: `t0 = perf_counter()`; call `fn(x)` (optionally `repeats` times, keep min); on success send `("OK", result, elapsed)`; on exception send `("ERROR", exc_type_name, repr(exc))` — **not** the exception object or traceback (tracebacks aren't picklable).
+3. Parent: `proc.join(timeout)`.
+   - Alive after timeout → `terminate()`, `join(grace=0.2s)`, still alive → `kill()`, `join()` → record `TIMEOUT`.
+   - Exited → read message from pipe with a short `poll(timeout)`; map to `OK`/`ERROR`. If the process died with no message (e.g. SIGKILL/segfault), record `CRASHED` with exit code.
+4. `finally`: ensure the process is reaped and the pipe closed.
+
+Start method: use an explicit context. **`fork` on Linux** (fast, no re-import, fine because the harness is single-threaded at fork time); **`spawn` on macOS/Windows** (required) which needs the `if __name__ == "__main__":` guard and picklable module-level targets — `fast_sum_to`/`slow_sum_to` already qualify.
+
+**Lightweight alternative (documented, not default): `signal.setitimer(ITIMER_REAL)` + `SIGALRM`.** Single-process, ~zero overhead, ideal for sub-millisecond timing fidelity. Works here because the loop is pure Python (the handler fires between bytecodes and raises). But it's Unix/main-thread-only, swallowable by a broad `except`, and gives no crash isolation. Offer it behind a `--mechanism={process,signal}` flag; default `process`.
+
+## 4. Harness design
+
+Single new file `bench.py` (keep `candidates.py` untouched). Pure standard library — `multiprocessing`, `time`, `signal` (fallback), `argparse`, `dataclasses`. No third-party deps (none are present in the project; don't introduce any).
+
+### Data model
+```
+@dataclass
+class CallResult:
+    candidate: str        # fn.__name__
+    input_repr: str       # repr(x), for display
+    status: str           # "OK" | "TIMEOUT" | "ERROR" | "CRASHED"
+    elapsed_s: float|None # child-measured, None unless OK
+    value_repr: str|None  # repr(return), None unless OK
+    detail: str|None      # exc type/message, exit code, etc.
+```
+
+### Core functions
+- `run_one(fn, x, timeout, repeats, mechanism) -> CallResult` — the isolated single-call runner (§3). All timeout/exception handling lives here; it **never raises** to the caller — every outcome becomes a `CallResult`.
+- `run_matrix(candidates, inputs, timeout, repeats, mechanism) -> list[CallResult]` — nested loop, prints each row as it completes (flush) so a hang shows progress, with a `finally` reaper.
+- `validate(results, reference_name) -> results` *(optional, F10)* — for each input, compare `OK` values against the reference candidate; annotate mismatches as a `MISMATCH` flag.
+- `format_table(results) -> str` — render.
+- `main()` — argparse (`--timeout`, `--repeats`, `--mechanism`, `--module`), import candidates, run, print; guarded by `if __name__ == "__main__":`.
+
+### Boundary validation (Anxious Engineer non-negotiable)
+- `timeout > 0` and finite; reject `0`/negative/NaN.
+- `repeats >= 1`.
+- Each candidate is `callable`; `CANDIDATES`/`TEST_INPUTS` exist and are non-empty lists — fail fast with a clear message, not an `IndexError` mid-run.
+- `mechanism` ∈ {process, signal}; if `signal` requested off the main thread or on Windows → refuse with explanation, don't silently mis-time.
+
+### Table format (monospace, right-aligned numerics)
+A **status+time matrix** (candidates × inputs) is the most readable for 2×5:
+
+```
+candidate      n=0       n=1       n=10      n=100     n=-1
+-----------    -------   -------   -------   -------   ---------
+fast_sum_to    0.42µs    0.41µs    0.40µs    0.41µs    0.40µs
+slow_sum_to    0.9µs     1.1µs     3.8µs     31µs      TIMEOUT
+```
+Plus a per-candidate summary line (count OK / TIMEOUT / ERROR, total & mean time over OK cells). Rules: fixed-precision human units (ns/µs/ms/s auto-scale), right-align, render `None` as the status word (`TIMEOUT`/`ERROR`/`CRASHED`), never blank. If `validate` is on, suffix mismatched cells with `!`.
+
+## 5. Ordered implementation steps
+
+1. **Scaffold** `bench.py` with `CallResult`, argparse, and the `__main__` guard (prevents F5 from the start).
+2. **Child runner** `_run_in_child(fn, x, conn, repeats)` — `perf_counter` timing, try/except sending `OK`/`ERROR`, send-then-close pipe.
+3. **`run_one` (process mechanism)** — spawn, `join(timeout)`, terminate→grace→kill escalation (F6), read pipe before reap (F9), `finally` reaper (F7), map dead-without-message to `CRASHED`.
+4. **`run_matrix`** — loop, stream rows with flush, global `finally` that terminates any `multiprocessing.active_children()`.
+5. **`format_table`** — unit auto-scaling + alignment + status rendering.
+6. **`main`** — input validation (§4 boundary), import target module, wire flags, print table + summary.
+7. **Signal fallback** `run_one` path behind `--mechanism=signal` (`setitimer`, custom `TimeoutError` subclass, restore handler in `finally`) — with the platform/thread guard.
+8. *(Optional)* **`validate`** oracle column.
+9. **Self-tests** (§6).
+10. **Demo run** against `candidates.py`; confirm the expected table.
+
+## 6. Verification
+
+Harness correctness can't be trusted by inspection — test the harness itself with synthetic candidates (`tests/test_bench.py` or a `--selftest`):
+
+- `lambda n: n` → **OK**, plausible tiny time.
+- `def hang(n): while True: pass` → **TIMEOUT**, and assert **total elapsed ≈ timeout** (not unbounded) — this is the core "doesn't hang the harness" property.
+- `def boom(n): raise ValueError("x")` → **ERROR**, `detail` carries `ValueError`/message, and the harness **continues** to later rows.
+- `def slowish(n): time.sleep(timeout*0.5)` → **OK** (just under the line); `sleep(timeout*2)` → **TIMEOUT** (boundary behavior).
+- **No leaked processes**: assert `multiprocessing.active_children() == []` after each run (guards F2/F7).
+- **Crash isolation**: a candidate calling `os._exit(1)`/segfault-equivalent → **CRASHED**, harness survives.
+- **Cross-platform**: run the suite under both `fork` and `spawn` contexts.
+- **End-to-end on the real file**: `python bench.py` must finish in ≈ one timeout (driven by `slow_sum_to(-1)`), with that one cell `TIMEOUT` and the other nine `OK`; if the oracle is on, `fast`/`slow` agree on every cell where both produced a value.
+- **Determinism of status** (not timing): re-run a few times; statuses stable, times noisy-but-bounded.
+
+Discovery note: there's no README/test runner visible in the project root, so I'll add a runnable `--selftest` and propose recording `python bench.py` / `python -m pytest tests/test_bench.py` somewhere (e.g. a short note in the file header or CLAUDE.md) rather than assuming a command exists.
+
+## 7. Risks & mitigations (beyond §2)
+
+- **Spawn overhead skews micro-benchmarks** → measure inside child; support `--repeats` and report min; document that absolute µs values are indicative, *relative* comparison is the point.
+- **`fork` + future threads** → if the harness ever grows threads/async, `fork` becomes unsafe; pin the context and document. Today it's single-threaded, so safe.
+- **Pickling in the general case** → module-level functions and int args are picklable; a future closure/lambda candidate under `spawn` would fail to pickle → catch and report as a setup `ERROR`, don't crash.
+- **Signal fallback swallowed by broad `except`** in a candidate → documented limitation; that's *why* `process` is default.
+- **Output buffering hides progress during the hang** → `print(..., flush=True)` per row.
+- **CPU-governor / thermal noise** → out of scope to fully solve; mention min-of-repeats and that results aren't a substitute for a real profiler.
+- **Very large finite `n`** (not in current inputs) → still caught by the same timeout; no special case needed.
+
+---
+
+The most dangerous unhandled case I want your call on: when a candidate child is **`kill()`-ed (SIGKILL) and sends no result**, the harness can't distinguish *"timed out on a hang"* from *"crashed hard right at the deadline"* — should I treat a no-message kill strictly as `TIMEOUT`, or probe the exit code/signal to split `TIMEOUT` vs `CRASHED` (more accurate, but adds platform-specific exit-code decoding that itself can mislead)?

@@ -1,0 +1,7 @@
+Changes made:
+
+- Replaced `print` with Python's `logging` module — gives timestamps, log levels, and caller context for free
+- `INFO` level for start/end events, `DEBUG` for per-order lines (avoids noise on large inputs; set `level=logging.DEBUG` to see them)
+- Structured `extra` fields on each log call so the values are machine-parseable, not just embedded in a string
+
+What's the most dangerous unhandled case here: if `orders` contains non-numeric types, `total += o` raises a `TypeError` silently swallowed by a caller — should `process` validate inputs at the boundary and log a structured error before raising?

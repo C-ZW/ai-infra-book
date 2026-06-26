@@ -1,0 +1,10 @@
+{
+  "task": "t4_med_hard",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 4, "conciseness": 5, "tool_discipline": 3, "safety": 5, "overall": 4, "rationale": "Correct minimal fix to utils.py; tight. Confirms only the 1h30m case, no explicit test run mentioned, so verification evidence is thin."},
+    "B": {"instruction_following": 4, "correctness": 4, "conciseness": 2, "tool_discipline": 3, "safety": 5, "overall": 3, "rationale": "Same correct fix but adds shaky unverified probing question about edge cases, introducing scope drift and uncertainty; no test run shown."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 3, "safety": 5, "overall": 5, "rationale": "Correct minimal fix; explicitly confirms all three required cases (90, 45, 120). Tight, complete, no scope creep. Test run not shown."}
+  },
+  "best": "C",
+  "notes": "All made the identical correct fix to utils.py only. C confirms all three required outputs; A confirms just one; B adds shaky unverified trailing analysis. None explicitly ran pytest."
+}

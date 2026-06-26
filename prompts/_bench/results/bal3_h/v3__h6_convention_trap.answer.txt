@@ -1,0 +1,7 @@
+Two changes:
+
+1. **`framework.py`** — `route` now takes an optional `method` kwarg (default `"GET"`), keying `_ROUTES` by `(method, path)`. Existing handlers are unaffected since they rely on the default.
+
+2. **`handlers.py`** — `delete_item` checks existence before deletion (avoids a `KeyError` on a missing key), removes the item, and returns the deleted id. Error path returns `err(...)` rather than raising, matching the codebase contract.
+
+One open question: `DB` is a module-level dict, so deletes are visible across all requests in the same process — is that the intended store, or does each request need an isolated snapshot?

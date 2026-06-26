@@ -1,0 +1,7 @@
+Handler added at `handlers.py:20–24`. Notes on the failure cases:
+
+- **Not found** → `err(...)` returned (not raised), consistent with `get_item`.
+- `dict.pop(id, None)` avoids a double-lookup TOCTOU between the existence check and the delete.
+- Returns the deleted item so callers can confirm what was removed.
+
+One dangerous unhandled case: **concurrent deletes on the same id** — both calls will see the item present, but only one `pop` will return it and the other will hit the `None` branch. If this DB were ever shared across threads, you'd need a lock around the pop-and-check.

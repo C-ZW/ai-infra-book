@@ -1,0 +1,23 @@
+All cases pass. Written to `chunk.py`.
+
+```python
+def chunk(lst, n):
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise TypeError(f"n must be an int, got {type(n).__name__}")
+    if n <= 0:
+        raise ValueError(f"n must be a positive integer, got {n}")
+    try:
+        length = len(lst)
+    except TypeError as exc:
+        raise TypeError(f"lst must be a sized sequence, got {type(lst).__name__}") from exc
+    return [list(lst[i:i + n]) for i in range(0, length, n)]
+```
+
+**Design choices, and why:**
+
+- **`n <= 0` → `ValueError`** (not silent `[]` or a hang). Returning `[]` would mask a caller bug — they asked for an impossible chunk size and got "success" with no data. Raising forces the bug into the open at the call site. This is the "sensible handling" the spec asked for; `n=0` specifically would otherwise be an infinite loop or an opaque `range` error.
+- **`bool` rejected before `int`** — `True == 1` in Python, so `chunk(data, True)` would silently chunk into size-1 pieces. Almost always a mistake, so it's caught.
+- **`lst` validated for `len()`** — a generator has no length and can't be sliced; without the guard you'd get a confusing error deep in the comprehension. Note this is deliberate: the function requires a *re-readable, sized sequence*, not a one-shot iterator.
+- **`list(lst[...])`** normalizes chunks to `list` regardless of input type (so `chunk("abcde", 2)` yields lists of chars, not substrings — consistent return type).
+
+The most dangerous unhandled case left: **if a caller passes a huge `lst`, this materializes every chunk eagerly in memory at once.** Do you need a lazy/generator variant (`yield`ing chunks) for large or streaming inputs, where holding the full result list would be the thing that breaks at 3am?

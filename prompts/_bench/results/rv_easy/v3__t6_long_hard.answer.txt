@@ -1,0 +1,7 @@
+All 5 tests pass and the flag works end-to-end.
+
+- `cli.py:7` — `transform` gained a `reverse=False` param; reverses via `list(reversed(lines))`, so it never mutates the caller's list.
+- `cli.py:17` — registered `--reverse` (store_true) and threaded it through `main`.
+- `test_cli.py` — added `test_reverse`, `test_reverse_does_not_mutate_input`, and `test_upper_and_reverse`.
+
+Existing `--upper` and passthrough behavior is unchanged. One ordering decision worth flagging: with both flags, upper is applied *then* reverse (`["a","b"] → ["B","A"]`); if you intended reverse-then-upper the line content is identical either way, but I locked the order down in a test so it can't drift silently.

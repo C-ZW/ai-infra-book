@@ -1,0 +1,22 @@
+{
+  "config": "v3",
+  "task": "t4_med_hard",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 280.1,
+  "num_turns": 12,
+  "cost_usd": 0.45766290000000004,
+  "duration_ms": 278997,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 1405,
+  "stderr_tail": ""
+}

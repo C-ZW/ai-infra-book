@@ -1,0 +1,70 @@
+{
+  "id": "primes",
+  "title": "乘法的原子",
+  "subtitle": "數論與質數的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "ui_lang": "zh-TW",
+  "inline_images": false,
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 乘法的原子",
+      "files": [
+        "../book-src/ch01-divisibility-and-primes.md",
+        "../book-src/ch02-unique-factorization.md",
+        "../book-src/ch03-euclid-infinitude.md"
+      ]
+    },
+    {
+      "title": "Part II — 質數長在哪裡（上）",
+      "files": [
+        "../book-src/ch04-sieve-of-eratosthenes.md",
+        "../book-src/ch05-how-sparse-are-primes.md",
+        "../book-src/ch06-prime-counting-function.md",
+        "../book-src/ch07-prime-number-theorem.md"
+      ]
+    },
+    {
+      "title": "Part III — 另一個世界：模算術",
+      "files": [
+        "../book-src/ch08-congruence-clock-arithmetic.md",
+        "../book-src/ch09-gcd-and-bezout.md",
+        "../book-src/ch10-fermats-little-theorem.md",
+        "../book-src/ch11-euler-theorem-and-totient.md"
+      ]
+    },
+    {
+      "title": "Part IV — 尚未馴服的謎",
+      "files": [
+        "../book-src/ch12-twin-primes-and-gaps.md",
+        "../book-src/ch13-riemann-hypothesis-music-of-primes.md",
+        "../book-src/ch14-verification-is-not-proof.md",
+        "../book-src/ch15-no-formula-yet-pattern.md"
+      ]
+    },
+    {
+      "title": "Part V — 質數的用處與收束",
+      "files": [
+        "../book-src/ch16-mersenne-primes-record-race.md",
+        "../book-src/ch17-rsa-trapdoor.md",
+        "../book-src/ch18-ulam-spiral.md",
+        "../book-src/ch19-where-do-primes-live-reckoning.md",
+        "../book-src/ch20-order-and-randomness-coexist.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-notation.md",
+        "../book-src/appendix-b-glossary.md",
+        "../book-src/appendix-c-reading-map.md"
+      ]
+    }
+  ]
+}

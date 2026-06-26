@@ -1,0 +1,22 @@
+{
+  "config": "default",
+  "task": "plan_p2_config_refactor",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 93.4,
+  "num_turns": 10,
+  "cost_usd": 0.390551,
+  "duration_ms": 89969,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 6838,
+  "stderr_tail": ""
+}

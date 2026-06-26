@@ -1,0 +1,13 @@
+Done. `app.py` now uses the standard `logging` module instead of `print()`.
+
+What changed and why:
+- **Named module logger** (`getLogger(__name__)`), configured only under `__main__` — so importing `process` elsewhere won't hijack the root logger's config (library best practice).
+- **Levels**: lifecycle messages at `INFO`, per-order detail at `DEBUG` — the noisy per-item line is now opt-in.
+- **Runtime-configurable verbosity** via `LOG_LEVEL` env var (verified at INFO and DEBUG above).
+- **Timestamps + level + logger name** in every line via the formatter.
+- **Lazy `%s` formatting** instead of string concatenation — args aren't rendered unless the line actually emits.
+- **Boundary validation**: non-list/tuple input and non-numeric items (including `bool`, which is a sneaky `int` subclass) now raise a typed, indexed error instead of crashing mid-loop or silently summing garbage.
+
+I kept it on the stdlib `logging` module rather than going to structured JSON logging — appropriate for a script this size. If this is headed for a service where logs get ingested by something (Datadog, CloudWatch, ELK), say so and I'll switch to JSON output with a correlation/trace id.
+
+One unhandled case worth your call: right now a bad order *aborts the whole batch* with the partial work discarded. For real order processing, is fail-fast what you want, or should it log-and-skip the bad order and still total the rest?

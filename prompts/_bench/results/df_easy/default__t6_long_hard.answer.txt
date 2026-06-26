@@ -1,0 +1,1 @@
+All 4 tests pass. Added `--reverse` to both `transform()` (new `reverse=False` parameter) and the argparse setup in `main()`, plus two new tests: `test_reverse` and `test_reverse_and_upper` (which covers flag interaction — upper is applied before reversal).

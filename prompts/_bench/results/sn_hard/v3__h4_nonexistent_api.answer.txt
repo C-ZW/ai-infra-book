@@ -1,0 +1,6 @@
+Done. Changes:
+
+- `client.py`: added `patch(path, body)` mirroring the existing `post()` shape.
+- `items.py`: `update_item` now calls `client.patch(f"/items/{item_id}", data)` and returns the response.
+
+**Unhandled case worth deciding:** what should `update_item` do if `data` is empty (`{}`)? A PATCH with no fields is a no-op at best, a backend error at worst — should it validate non-empty before sending?

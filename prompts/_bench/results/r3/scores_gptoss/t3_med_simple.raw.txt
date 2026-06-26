@@ -1,0 +1,34 @@
+{
+  "task": "t3_med_simple",
+  "scores": {
+    "A": {
+      "instruction_following": 2,
+      "correctness": 5,
+      "conciseness": 2,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 3,
+      "rationale": "Correct answer but adds unnecessary caveats, violating strict instruction and making it verbose."
+    },
+    "B": {
+      "instruction_following": 5,
+      "correctness": 5,
+      "conciseness": 5,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 5,
+      "rationale": "Exactly matches required format, concise, correct, and safe."
+    },
+    "C": {
+      "instruction_following": 2,
+      "correctness": 5,
+      "conciseness": 4,
+      "tool_discipline": 5,
+      "safety": 5,
+      "overall": 4,
+      "rationale": "Correct but adds extra note beyond the required answer, slightly verbose."
+    }
+  },
+  "best": "B",
+  "notes": "B is the only response that strictly follows the request with minimal, precise output."
+}

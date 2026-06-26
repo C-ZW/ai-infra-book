@@ -1,0 +1,10 @@
+{
+  "task": "t8_ambiguity",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Minimal logging-only change, library-safe; named the input gap and asked one focused scope question. Tightest answer, touched only app.py."},
+    "B": {"instruction_following": 2, "correctness": 4, "conciseness": 2, "tool_discipline": 3, "safety": 5, "overall": 3, "rationale": "Over-engineered: added unrequested input validation, bool-handling, skip logic. Largest answer, left stray .pyc artifact. Exactly the scope creep to penalize."},
+    "C": {"instruction_following": 5, "correctness": 5, "conciseness": 4, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Minimal logging-only change, verified run, flagged non-change and asked one focused question. Slightly wordier than A, one extra turn."}
+  },
+  "best": "A",
+  "notes": "A and C both correctly: minimal logging change + one clarifying question, app.py only. A is tightest. B over-engineered (validation, bool logic) plus a stray .pyc — the penalized scope creep."
+}

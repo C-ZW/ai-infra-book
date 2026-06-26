@@ -1,0 +1,56 @@
+{
+  "id": "prob",
+  "title": "馴服隨機",
+  "subtitle": "機率與統計的直覺與驚嘆",
+  "footer": "內容基準 2026-06",
+  "output": "index.html",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 機運的語言", "files": [
+      "../book-src/ch01-why-randomness.md",
+      "../book-src/ch02-three-faces.md",
+      "../book-src/ch03-combining-events.md",
+      "../book-src/ch04-conditional-independence.md"
+    ] },
+    { "title": "Part II — 貝氏：證據改變信念", "files": [
+      "../book-src/ch05-bayes-theorem.md",
+      "../book-src/ch06-bayesian-worldview.md"
+    ] },
+    { "title": "Part III — 隨機變數", "files": [
+      "../book-src/ch07-random-variables.md",
+      "../book-src/ch08-expectation.md",
+      "../book-src/ch09-variance.md",
+      "../book-src/ch10-covariance-correlation.md",
+      "../book-src/ch11-discrete-distributions.md",
+      "../book-src/ch12-continuous-distributions.md"
+    ] },
+    { "title": "Part IV — 兩大定理（秩序從混沌浮現）", "files": [
+      "../book-src/ch13-law-of-large-numbers.md",
+      "../book-src/ch14-central-limit-theorem.md",
+      "../book-src/ch15-normal-distribution.md"
+    ] },
+    { "title": "Part V — 統計推論", "files": [
+      "../book-src/ch16-sampling.md",
+      "../book-src/ch17-confidence-intervals.md",
+      "../book-src/ch18-hypothesis-testing.md",
+      "../book-src/ch19-statistics-breaks.md"
+    ] },
+    { "title": "Part VI — 隨機過程與收官", "files": [
+      "../book-src/ch20-random-walk.md",
+      "../book-src/ch21-markov-chains.md",
+      "../book-src/ch22-brownian-motion.md",
+      "../book-src/ch23-taming-randomness.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

@@ -1,0 +1,15 @@
+No. Your teammate is conflating two different operations.
+
+- `list[i]` — indexing **by position** — is O(1), because a CPython list is a contiguous array of pointers and you jump straight to the slot. That's the fact they're half-remembering.
+- `list.index(x)` — searching **by value** — is O(n). It does a linear scan from the front, comparing each element with `==` until it finds a match, then returns that position. Worst case (element absent, or last) it touches every element and then raises `ValueError`.
+
+So "a list is just an array" is true and still doesn't save you: finding *where* a value lives requires looking, and an unsorted array has no shortcut.
+
+Two failure modes worth naming, since they're where this assumption actually bites:
+
+- **Cost is also hidden in the comparison.** O(n) counts element comparisons, but each `==` isn't necessarily O(1). For a list of large strings, tuples, or objects with an expensive `__eq__`, it's O(n·k). A `list.index` in a hot loop is the classic accidental O(n²).
+- **`==` semantics, not identity.** `index` matches the first element that's *equal*, and it can raise on the way. `float('nan')` won't match itself; `True` equals `1` and `1.0`, so `[1.0].index(True)` returns `0`. If you assumed identity, you get the wrong index, not an error.
+
+If you need O(1) value lookup, you need a different structure: a `dict` (value → index) or a `set` (membership only), both hash-based, both amortized O(1) — at the cost of memory and requiring hashable elements.
+
+What does your teammate actually need — the *position* of a known value (then a side dict), or just "is it in here" (then a set)?

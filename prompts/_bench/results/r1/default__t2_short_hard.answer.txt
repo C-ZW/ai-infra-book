@@ -1,0 +1,30 @@
+No — your teammate is conflating two different operations. The "it's just an array" part is true; the conclusion drawn from it is not.
+
+## The two things being confused
+
+| Operation | What it does | Complexity |
+|---|---|---|
+| `lst[i]` (subscript) | Jump to position `i` | **O(1)** ✅ |
+| `lst.index(x)` (method) | Find the *position of value* `x` | **O(n)** ❌ |
+
+A CPython `list` *is* a contiguous array of pointers, so accessing **by index** (`lst[5]`) is genuine O(1) — that's the fact your teammate is half-remembering. But `lst.index(x)` does the opposite job: you give it a *value* and it has to find *where* that value lives. It does a linear scan from the front, calling `__eq__` on each element until one matches.
+
+From CPython's `listobject.c` (`list_index_impl`), it's literally a `for` loop from `start` to `stop` returning the first `PyObject_RichCompareBool(... Py_EQ)` that's true.
+
+## So the real cost
+
+- **Best case:** O(1) — match is the first element. (This is probably what fooled them: testing with `[1,2,3].index(1)`.)
+- **Average / worst case:** O(n) — match is near the end, or `x` isn't present at all (full scan, then `ValueError`).
+
+## The failure modes hiding in this assumption
+
+This isn't pedantry — the "O(1)" belief breaks code in concrete ways:
+
+1. **`x in lst` then `lst.index(x)`** — a common pattern that scans the list *twice*, O(2n). And calling `.index()` on a value that isn't present raises `ValueError`, not a sentinel — if the happy-path code assumes presence, this throws at runtime.
+2. **`.index()` inside a loop** — `for x in items: positions.append(lst.index(x))` is silently O(n·m). On small test data it "should be fine"; in production it's the hang nobody can explain. If you need value→position lookups repeatedly, build a `dict` once (`{v: i for i, v in enumerate(lst)}`) — O(1) lookups after an O(n) setup. Note the dict keeps the **last** index for duplicates while `.index()` returns the **first**, so they are not drop-in equivalent.
+3. **`__eq__` cost is multiplicative** — for lists of heavy objects (or NumPy arrays, where `==` returns an array and can raise "ambiguous truth value"), each comparison isn't free, so it's O(n × cost-of-compare), not just O(n).
+4. **Float/NaN traps** — `[float('nan')].index(float('nan'))` raises `ValueError` because `nan != nan`, and `[1.0].index(True)` succeeds because `1.0 == True`. Equality semantics, not identity, drive the result.
+
+**Bottom line:** index *access* is O(1); index *search* (`.index()`) is O(n). Tell your teammate to verify it the way that actually matters — `timeit` on `big_list.index(big_list[-1])` vs `big_list.index(big_list[0])` and watch the gap grow with list size.
+
+What does the surrounding code actually do with the result — is `.index()` being called on a value that might not be in the list, and if so, is that `ValueError` handled or about to surface as a 3am crash?

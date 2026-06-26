@@ -1,0 +1,24 @@
+{
+  "config": "v4",
+  "task": "h3_library_trap",
+  "len": "medium",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 21.3,
+  "num_turns": 5,
+  "cost_usd": 0.0582555,
+  "duration_ms": 20231,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": [
+      "fetcher.py"
+    ]
+  },
+  "answer_chars": 761,
+  "stderr_tail": ""
+}

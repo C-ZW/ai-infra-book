@@ -1,0 +1,29 @@
+No, the teammate is conflating two different operations.
+
+**The teammate is half right about the underlying structure:** Python lists are backed by a dynamic array, so **index access by position** (`lst[i]`) is O(1) — direct pointer arithmetic.
+
+**But `list.index(x)` searches by value, not position.** There's no hash table or sorted index — CPython has to scan elements one by one until it finds a match:
+
+```python
+# What index() is essentially doing:
+for i, elem in enumerate(lst):
+    if elem == x:
+        return i
+raise ValueError
+```
+
+- **Best case:** `x` is at position 0 → O(1)
+- **Worst case / average case:** `x` is near the end or absent → **O(n)**
+
+The confusion is a classic mix-up:
+
+| Operation | What it does | Complexity |
+|---|---|---|
+| `lst[i]` | Access by position | O(1) — array offset |
+| `lst.index(x)` | Search for value | O(n) — linear scan |
+
+If you need O(1) value lookup, the right structure is a `set` or `dict`, not a list.
+
+---
+
+The dangerous unhandled case: if your teammate is calling `list.index(x)` inside a loop (e.g., deduplication or intersection logic), you have an O(n²) algorithm that will look fine on small test data and fall apart silently in production. Worth auditing the callsites.

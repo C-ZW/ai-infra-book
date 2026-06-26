@@ -1,0 +1,3 @@
+Bug: `return hours + minutes` — treated hours and minutes as the same unit. Fixed to `hours * 60 + minutes`. All three cases now return correct values (90, 45, 120 minutes respectively).
+
+What happens if someone passes a string with only `h` and no `m` suffix, like `"2hours"`? The regex rejects it cleanly, but worth confirming the error message is surfaced to callers rather than swallowed.

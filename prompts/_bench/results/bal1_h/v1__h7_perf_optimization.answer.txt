@@ -1,0 +1,3 @@
+O(n²) → O(n). The `set` tracks seen items for O(1) average membership tests; the list preserves insertion order.
+
+One caveat: items must be **hashable**. If the caller ever passes unhashable types (e.g. lists, dicts), this will raise `TypeError` where the old code silently handled them — is that a case you need to support?

@@ -1,0 +1,18 @@
+No. Your teammate is conflating two different operations.
+
+- `lst[i]` — indexing *by position* — is O(1), because a CPython list is a contiguous array of pointers and the address is a direct offset. That's the part they're right about.
+- `lst.index(x)` — searching *for a value* — is **O(n)**. It does a linear scan from the front comparing each element to `x` until it finds the first match (`list_index_impl` → `PyObject_RichCompareBool` in a loop). No index structure, no sort assumption, so it can't do better than walking the list.
+
+The naming collision is the trap: "index" here means "find the position of this value," not "access by index."
+
+Failure modes worth flagging to your teammate:
+- **Worst case is the whole list.** `x` absent, or last → n comparisons. Inside a loop over the same list, that's the classic accidental O(n²).
+- **It raises, not returns.** `index` throws `ValueError` if `x` isn't present — not `-1`. Guard with `in` first, or use `try/except`, or `next((i for i,v in enumerate(lst) if v==x), None)`.
+- **Comparison cost isn't free.** Each step is a rich `==`; for elements with an expensive `__eq__`, the constant factor is real.
+- **First match only.** Duplicates → you get the lowest index, silently.
+
+If lookups are hot and you need O(1), the right structure is a `dict` mapping value → index (or a `set` for pure membership), built once — at the cost of keeping it in sync on mutation.
+
+Quick proof you can show them: `python -m timeit -s "l=list(range(1000000))" "l.index(999999)"` versus `"l.index(0)"` — the times differ by orders of magnitude, which they couldn't if it were O(1).
+
+What's the actual access pattern that started this — repeated value lookups in a loop, or a one-off find?

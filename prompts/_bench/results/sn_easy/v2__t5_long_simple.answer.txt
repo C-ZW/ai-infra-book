@@ -1,0 +1,27 @@
+```python
+def chunk(lst, n):
+    """Split lst into consecutive chunks of size n.
+
+    The final chunk may be shorter than n if len(lst) is not a multiple of n.
+
+    Args:
+        lst: Any sequence (list, tuple, str, etc.).
+        n:   Chunk size. Must be a positive integer.
+
+    Returns:
+        A list of sub-lists.
+
+    Raises:
+        ValueError: If n is less than or equal to 0.
+    """
+    if not isinstance(n, int) or n <= 0:
+        raise ValueError(f"Chunk size must be a positive integer, got {n!r}")
+    return [lst[i : i + n] for i in range(0, len(lst), n)]
+```
+
+Failure modes considered:
+- `n <= 0` would cause `range(0, len(lst), 0)` to raise a cryptic `ValueError: range() arg 3 must not be zero` — replaced with an explicit, descriptive raise.
+- `n` as a float (e.g. `2.0`) passes a truthiness check but breaks `range()`; the `isinstance(n, int)` guard catches it.
+- Empty `lst` returns `[]` cleanly — `range(0, 0, n)` produces no iterations.
+
+What's the most dangerous unhandled case for your use? If `lst` is a lazy iterator (generator), `lst[i:i+n]` silently fails — worth adding `lst = list(lst)` at the top if that's a possible input.

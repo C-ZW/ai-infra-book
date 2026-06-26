@@ -1,0 +1,7 @@
+All 3 tests pass. Summary of changes:
+
+- **`names.py`**: `format_name(first, last)` → `format_name(full_name)`, splits on whitespace and raises `ValueError` for anything that isn't exactly two tokens.
+- **`greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes the string straight through.
+- **`report.py`**: `roster` now iterates over a list of strings instead of `(first, last)` tuples.
+
+One sharp edge: the `ValueError` guard rejects names like `"Mary Jane Watson"` (three tokens) or `""`. If multi-part names are a future requirement, the split logic will need to change to peel off only the last token.

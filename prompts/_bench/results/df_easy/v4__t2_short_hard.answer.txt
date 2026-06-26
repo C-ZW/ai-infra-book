@@ -1,0 +1,15 @@
+No, that's wrong — but the error is subtle.
+
+Python's `list` **is** backed by a contiguous array, so **indexing by position** (`lst[i]`) is O(1). That part of your teammate's reasoning is correct.
+
+But `list.index(x)` searches **by value**, not position. It does a linear scan from the front until it finds a match. That's O(n) — worst case it touches every element.
+
+```python
+lst = [1, 2, 3, ..., n]
+lst[42]        # O(1) — direct memory offset
+lst.index(42)  # O(n) — scans until it finds 42
+```
+
+The confusion is conflating two different operations: *index access* (fast) vs. *value search* (slow). Same array, completely different algorithm.
+
+If you need O(1) value lookup, use a `dict` or `set`.

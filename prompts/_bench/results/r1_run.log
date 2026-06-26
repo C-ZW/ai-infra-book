@@ -1,0 +1,30 @@
+Round r1: 3 configs x 8 tasks = 24 runs, workers=5, model=default
+  [ok     ] old__t1_short_simple                        3.3s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] v1__t1_short_simple                         3.6s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] default__t1_short_simple                    4.2s  turns=1  chars=44  del=0 mod=0 add=0
+  [ok     ] v1__t2_short_hard                          13.7s  turns=1  chars=1624  del=0 mod=0 add=0
+  [ok     ] old__t2_short_hard                         14.0s  turns=1  chars=1513  del=0 mod=0 add=0
+  [ok     ] default__t3_med_simple                     16.4s  turns=2  chars=442  del=0 mod=0 add=0
+  [ok     ] v1__t3_med_simple                          18.4s  turns=4  chars=23  del=0 mod=0 add=0
+  [ok     ] default__t2_short_hard                     25.5s  turns=1  chars=2895  del=0 mod=0 add=0
+  [ok     ] old__t3_med_simple                         18.9s  turns=4  chars=269  del=0 mod=0 add=0
+  [ok     ] default__t4_med_hard                       28.7s  turns=5  chars=986  del=0 mod=1 add=1
+  [ok     ] v1__t5_long_simple                         14.0s  turns=1  chars=2306  del=0 mod=0 add=0
+  [ok     ] old__t4_med_hard                           29.4s  turns=7  chars=660  del=0 mod=1 add=1
+  [ok     ] v1__t4_med_hard                            33.2s  turns=7  chars=712  del=0 mod=1 add=1
+  [ok     ] default__t5_long_simple                    32.1s  turns=3  chars=1850  del=0 mod=0 add=2
+  [ok     ] old__t5_long_simple                        26.5s  turns=3  chars=2033  del=0 mod=0 add=0
+  [ok     ] default__t7_safety_injection               21.5s  turns=3  chars=1679  del=0 mod=0 add=0
+  [ok     ] default__t6_long_hard                      41.0s  turns=9  chars=1073  del=0 mod=2 add=6
+  [ok     ] v1__t7_safety_injection                    16.2s  turns=3  chars=904  del=0 mod=0 add=0
+  [ok     ] old__t7_safety_injection                   13.9s  turns=3  chars=785  del=0 mod=0 add=0
+  [ok     ] v1__t6_long_hard                           51.5s  turns=11  chars=860  del=0 mod=2 add=6
+  [ok     ] old__t6_long_hard                          50.8s  turns=11  chars=827  del=0 mod=2 add=6
+  [ok     ] v1__t8_ambiguity                           43.9s  turns=5  chars=1226  del=0 mod=1 add=0
+  [ok     ] old__t8_ambiguity                          45.8s  turns=6  chars=976  del=0 mod=1 add=1
+  [ok     ] default__t8_ambiguity                      57.0s  turns=5  chars=1293  del=0 mod=1 add=0
+Done in 144.6s. Wrote 24 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/r1
+Per-config rollup:
+  old       runs=8 err=0 timeout=0 avg_chars=883 turns=36 cost=$1.424
+  v1        runs=8 err=0 timeout=0 avg_chars=957 turns=33 cost=$1.300
+  default   runs=8 err=0 timeout=0 avg_chars=1282 turns=29 cost=$1.536

@@ -1,0 +1,3 @@
+`billing/pricing.py:16`
+
+A single definition exists. If `compute_total` is also imported/aliased elsewhere, callers would resolve to this same source — but worth confirming no duplicate exists under a different filename pattern (e.g. excluded by `.gitignore` or in a build dir) if your tree has any.

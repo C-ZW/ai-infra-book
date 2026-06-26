@@ -1,0 +1,56 @@
+{
+  "id": "queue",
+  "title": "等待的數學",
+  "subtitle": "排隊理論",
+  "footer": "內容基準 2026-06",
+  "ui_lang": "zh-TW",
+  "output": "index.html",
+  "groups": [
+    { "title": "開始", "files": ["../book-src/README.md"] },
+    { "title": "Part I — 地圖與定律", "files": [
+      "../book-src/ch01-why-queueing.md",
+      "../book-src/ch02-operational-laws.md"
+    ] },
+    { "title": "Part II — 機率地基", "files": [
+      "../book-src/ch03-probability-toolbox.md",
+      "../book-src/ch04-exponential.md",
+      "../book-src/ch05-poisson-process.md",
+      "../book-src/ch06-markov-chains.md"
+    ] },
+    { "title": "Part III — 生滅與經典模型", "files": [
+      "../book-src/ch07-ctmc-birth-death.md",
+      "../book-src/ch08-mm1.md",
+      "../book-src/ch09-mmc-erlang.md",
+      "../book-src/ch10-finite-capacity.md",
+      "../book-src/ch11-reversibility-burke.md"
+    ] },
+    { "title": "Part IV — 超越指數", "files": [
+      "../book-src/ch12-mg1.md",
+      "../book-src/ch13-scheduling.md",
+      "../book-src/ch14-gg1-kingman.md",
+      "../book-src/ch15-heavy-tails.md"
+    ] },
+    { "title": "Part V — 佇列網路", "files": [
+      "../book-src/ch16-jackson-networks.md",
+      "../book-src/ch17-closed-networks-mva.md",
+      "../book-src/ch18-network-limits.md"
+    ] },
+    { "title": "Part VI — 模擬與回到系統", "files": [
+      "../book-src/ch19-simulation.md",
+      "../book-src/ch20-back-to-systems.md",
+      "../book-src/ch21-map-and-next.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-formulas.md",
+      "../book-src/appendix-c-glossary.md",
+      "../book-src/appendix-d-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/landscape-2026-06.md",
+      "../book-src/_meta/maintenance.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/style-guide.md"
+    ] }
+  ]
+}

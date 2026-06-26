@@ -1,0 +1,3 @@
+Fixed. The note in the file itself names the bug — `CREATE TABL` → `CREATE TABLE` on line 14. The dangerous part of that bug is the db gets deleted *before* the SQL runs, so a failure leaves you with no db and no schema. The fix is in place and `reset done` confirms it ran clean.
+
+Worth asking: is there anything that should run between `os.remove` and `CREATE TABLE` that could still fail silently and leave the db wiped?

@@ -1,0 +1,6 @@
+Working. Two changes made to `reset_db.py`:
+
+1. **`CREATE TABL` → `CREATE TABLE`** — the immediate syntax error.
+2. **Create-then-swap** — builds `app.db.new` first, only deletes `app.db` once the schema commit succeeds, then renames. The original code deleted the live DB before the broken `CREATE`, leaving nothing on failure.
+
+Unhandled case worth noting: if the process is killed between `os.remove(DB)` and `os.rename(tmp, DB)`, `app.db` is still gone. For true atomicity you'd need the rename to happen without the prior remove (possible on POSIX since `rename` overwrites), which means skipping the `os.remove(DB)` entirely and letting `os.rename` do the replacement — worth doing if this runs in a production path.

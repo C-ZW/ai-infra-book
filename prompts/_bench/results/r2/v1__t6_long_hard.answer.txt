@@ -1,0 +1,10 @@
+All 4 tests pass and the flag works end-to-end.
+
+Changes:
+- `cli.py:7` — `transform` gains a `reverse=False` param that does `lines[::-1]` (new list, no mutation of the input).
+- `cli.py:18` — registered `--reverse` (`store_true`) and passed it through in `main`.
+- `test_cli.py` — added `test_reverse` and `test_reverse_with_upper`.
+
+Existing `--upper`/passthrough behavior is untouched.
+
+One edge worth naming: `--reverse` buffers all of stdin into a list before emitting (it already did, so no regression), but reversal makes buffering inherent — on an unbounded/streaming input this holds the whole stream in memory and emits nothing until EOF. Fine for files; worth knowing if anyone pipes a `tail -f`-style source into it. Should reversal apply before or after `--upper` if a future transform makes order observable (e.g. line numbering)?

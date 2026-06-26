@@ -1,0 +1,3 @@
+Done. `fetch_url` now retries up to 3 times on `URLError` or `TimeoutError`, with delays of 1 s → 2 s before the 2nd and 3rd attempts. On the final failure the original exception propagates unchanged.
+
+What's the most dangerous unhandled case here: a server that returns HTTP 5xx — `urlopen` raises `HTTPError` (a subclass of `URLError`) so those are caught and retried, but a 429 with a `Retry-After` header is silently ignored. If rate-limiting is possible, you'll want to parse that header and honour it instead of blindly doubling.

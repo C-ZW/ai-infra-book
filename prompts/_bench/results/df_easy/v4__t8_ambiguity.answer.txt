@@ -1,0 +1,7 @@
+What specifically do you want better logging on? There are several candidates here:
+
+1. **`build_reader.py`** — the main book builder
+2. **`lint_book.py`** / **`verify_book.py`** — quality gate scripts
+3. **`build_shelf.py`** / `check_diagrams.py` — smaller utilities
+
+Which script(s), and what's the pain point — too quiet (silent failures), too noisy, no timestamps, hard to correlate errors to source files, or something else?

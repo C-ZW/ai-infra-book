@@ -1,0 +1,7 @@
+All 3 tests pass. Changes made:
+
+- `names.py`: `format_name(first, last)` → `format_name(full_name)`, splits on the rightmost space (`rsplit(" ", 1)`) so middle names attach to the first name. Added explicit `ValueError`/`TypeError` for bad inputs.
+- `greet.py`: `greeting(first, last)` → `greeting(full_name)`, passes through to `format_name`.
+- `report.py`: `roster` now iterates over strings instead of `(first, last)` tuples.
+
+Edge case worth noting: if callers anywhere pass names with prefixes like `"Dr. Ada Lovelace"`, `rsplit` will produce `last="Lovelace"` and `first="Dr. Ada"` — probably the right behavior, but worth confirming if the data ever includes honorifics.

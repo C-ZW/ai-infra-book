@@ -1,0 +1,3 @@
+Changed `x in result` (O(n) list scan) to `x in seen` (O(1) set lookup), bringing overall complexity from O(n²) to O(n). Output is identical — same first-seen order, same elements.
+
+What's the most dangerous unhashable element that could appear in `items`? If callers ever pass lists or dicts, `seen.add(x)` will raise `TypeError` — the old code silently handled them via `==` equality. Worth adding a guard if the input isn't guaranteed to be hashable.

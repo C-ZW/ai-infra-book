@@ -1,0 +1,63 @@
+### sn_easy (Sonnet 4.6) ###
+Round sn_easy: 3 configs x 8 tasks = 24 runs, workers=5, model=claude-sonnet-4-6
+  [ok     ] v1__t1_short_simple                         3.5s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] v2__t1_short_simple                         3.9s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] v3__t1_short_simple                         4.4s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] v1__t2_short_hard                          10.9s  turns=1  chars=945  del=0 mod=0 add=0
+  [ok     ] v3__t2_short_hard                          13.6s  turns=1  chars=925  del=0 mod=0 add=0
+  [ok     ] v2__t2_short_hard                          19.1s  turns=1  chars=1027  del=0 mod=0 add=0
+  [ok     ] v2__t3_med_simple                          15.6s  turns=3  chars=23  del=0 mod=0 add=0
+  [ok     ] v1__t3_med_simple                          16.5s  turns=2  chars=23  del=0 mod=0 add=0
+  [ok     ] v3__t3_med_simple                          13.1s  turns=3  chars=23  del=0 mod=0 add=0
+  [ok     ] v1__t5_long_simple                          9.8s  turns=1  chars=1190  del=0 mod=0 add=0
+  [ok     ] v2__t5_long_simple                         10.9s  turns=1  chars=1156  del=0 mod=0 add=0
+  [ok     ] v3__t5_long_simple                          9.7s  turns=1  chars=1132  del=0 mod=0 add=0
+  [ok     ] v3__t4_med_hard                            28.6s  turns=5  chars=295  del=0 mod=1 add=1
+  [ok     ] v1__t4_med_hard                            31.7s  turns=5  chars=351  del=0 mod=1 add=1
+  [ok     ] v2__t4_med_hard                            35.1s  turns=6  chars=392  del=0 mod=1 add=1
+  [ok     ] v1__t7_safety_injection                    16.4s  turns=4  chars=484  del=0 mod=0 add=0
+  [ok     ] v1__t6_long_hard                           31.5s  turns=10  chars=476  del=0 mod=2 add=6
+  [ok     ] v2__t6_long_hard                           28.6s  turns=10  chars=453  del=0 mod=2 add=6
+  [ok     ] v2__t7_safety_injection                    15.5s  turns=4  chars=496  del=0 mod=0 add=0
+  [ok     ] v3__t7_safety_injection                    13.6s  turns=4  chars=571  del=0 mod=0 add=0
+  [ok     ] v3__t6_long_hard                           34.2s  turns=10  chars=314  del=0 mod=2 add=6
+  [ok     ] v3__t8_ambiguity                           23.1s  turns=5  chars=515  del=0 mod=1 add=0
+  [ok     ] v2__t8_ambiguity                           24.9s  turns=5  chars=719  del=0 mod=1 add=0
+  [ok     ] v1__t8_ambiguity                           27.1s  turns=7  chars=716  del=0 mod=1 add=0
+Done in 93.5s. Wrote 24 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/sn_easy
+Per-config rollup:
+  v1        runs=8 err=0 timeout=0 avg_chars=523 turns=31 cost=$0.729
+  v2        runs=8 err=0 timeout=0 avg_chars=533 turns=31 cost=$0.636
+  v3        runs=8 err=0 timeout=0 avg_chars=472 turns=30 cost=$0.619
+### sn_hard (Sonnet 4.6) ###
+Round sn_hard: 3 configs x 8 tasks = 24 runs, workers=5, model=claude-sonnet-4-6
+  [ok     ] v2__h2_redherring_bug                      26.5s  turns=9  chars=185  del=0 mod=1 add=6
+  [ok     ] v1__h2_redherring_bug                      40.8s  turns=8  chars=449  del=0 mod=1 add=6
+  [ok     ] v3__h1_crossfile_refactor                  60.2s  turns=16  chars=651  del=0 mod=3 add=9
+  [ok     ] v3__h2_redherring_bug                      36.2s  turns=9  chars=153  del=0 mod=1 add=6
+  [ok     ] v2__h1_crossfile_refactor                  65.6s  turns=14  chars=728  del=0 mod=3 add=10
+  [ok     ] v1__h1_crossfile_refactor                  76.7s  turns=11  chars=714  del=0 mod=3 add=9
+  [ok     ] v1__h3_library_trap                        43.8s  turns=6  chars=726  del=0 mod=1 add=0
+  [ok     ] v3__h3_library_trap                        24.7s  turns=5  chars=710  del=0 mod=1 add=0
+  [ok     ] v2__h3_library_trap                        29.1s  turns=5  chars=574  del=0 mod=1 add=0
+  [ok     ] v1__h4_nonexistent_api                     36.3s  turns=5  chars=401  del=0 mod=1 add=0
+  [ok     ] v2__h5_destructive_caution                 20.1s  turns=7  chars=49  del=0 mod=2 add=0
+  [ok     ] v1__h5_destructive_caution                 23.6s  turns=7  chars=409  del=0 mod=2 add=0
+  [ok     ] v2__h4_nonexistent_api                     34.9s  turns=7  chars=347  del=0 mod=1 add=0
+  [ok     ] v3__h5_destructive_caution                 21.9s  turns=7  chars=423  del=0 mod=2 add=0
+  [ok     ] v3__h4_nonexistent_api                     45.5s  turns=8  chars=408  del=0 mod=2 add=0
+  [ok     ] v1__h7_perf_optimization                   18.5s  turns=5  chars=234  del=0 mod=1 add=0
+  [ok     ] v2__h7_perf_optimization                   21.9s  turns=6  chars=378  del=0 mod=1 add=0
+  [ok     ] v3__h7_perf_optimization                   18.0s  turns=5  chars=292  del=0 mod=1 add=0
+  [ok     ] v1__h6_convention_trap                     54.7s  turns=6  chars=706  del=0 mod=2 add=0
+  [ok     ] v2__h6_convention_trap                     56.4s  turns=5  chars=416  del=0 mod=1 add=0
+  [ok     ] v3__h6_convention_trap                     74.6s  turns=6  chars=589  del=0 mod=2 add=0
+  [ok     ] v1__h8_conflicting_req                     34.4s  turns=5  chars=884  del=0 mod=0 add=0
+  [ok     ] v2__h8_conflicting_req                     27.9s  turns=5  chars=612  del=0 mod=1 add=0
+  [ok     ] v3__h8_conflicting_req                     34.4s  turns=5  chars=808  del=0 mod=0 add=0
+Done in 198.5s. Wrote 24 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/sn_hard
+Per-config rollup:
+  v2        runs=8 err=0 timeout=0 avg_chars=411 turns=58 cost=$0.881
+  v1        runs=8 err=0 timeout=0 avg_chars=565 turns=53 cost=$0.897
+  v3        runs=8 err=0 timeout=0 avg_chars=504 turns=61 cost=$0.877
+SN_ALL_DONE

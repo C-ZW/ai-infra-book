@@ -1,0 +1,3 @@
+Done — `update_item` calls `client.patch(f"/items/{item_id}", data)` as specified.
+
+**Danger:** `ApiClient.patch()` doesn't exist. Every call to `update_item` will raise `AttributeError` until `patch()` is added to `ApiClient`. Should `ApiClient` gain that method, or should this fall back to `post()`?

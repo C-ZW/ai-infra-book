@@ -1,0 +1,7 @@
+All 3 tests pass. Here's what changed across the three files:
+
+- **`names.py`**: `format_name(first, last)` → `format_name(full_name)`, splits on the last space with `rsplit(' ', 1)` to derive first/last internally.
+- **`greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes the single string through to `format_name`.
+- **`report.py`**: `roster` now expects a list of full name strings instead of `(first, last)` tuples; iterates with `for name in people`.
+
+One probing question: what's the intended behavior when `full_name` contains no space (e.g. a mononym like `"Cher"`)? `rsplit(' ', 1)` will raise a `ValueError` on unpacking — callers should validate or the function should define an explicit fallback for that case.

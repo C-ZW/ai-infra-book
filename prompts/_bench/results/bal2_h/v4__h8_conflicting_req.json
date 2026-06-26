@@ -1,0 +1,24 @@
+{
+  "config": "v4",
+  "task": "h8_conflicting_req",
+  "len": "short",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 35.4,
+  "num_turns": 6,
+  "cost_usd": 0.0807495,
+  "duration_ms": 34224,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": [
+      "core.py"
+    ]
+  },
+  "answer_chars": 353,
+  "stderr_tail": ""
+}

@@ -1,0 +1,22 @@
+{
+  "config": "v3",
+  "task": "h8_conflicting_req",
+  "len": "short",
+  "diff": "hard",
+  "type": "tool",
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 29.6,
+  "num_turns": 4,
+  "cost_usd": 0.048828899999999995,
+  "duration_ms": 28563,
+  "is_error": false,
+  "parse_error": null,
+  "file_diff": {
+    "added": [],
+    "deleted": [],
+    "modified": []
+  },
+  "answer_chars": 1599,
+  "stderr_tail": ""
+}

@@ -1,0 +1,3 @@
+Replaced the O(n²) `x in result` list scan with a parallel `seen` set for O(1) membership checks, making the overall function O(n). Output is identical — the list preserves insertion order, the set only gates duplicates.
+
+> **Potential failure mode to consider:** items must be hashable to be stored in a set. If your input ever contains unhashable types (lists, dicts, sets), this will raise `TypeError`. The original code worked with those types because list membership uses `==` rather than hashing — if that matters, a fallback is needed.

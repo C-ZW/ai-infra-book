@@ -1,0 +1,1 @@
+Working. One residual risk worth knowing: the script deletes the old database *before* creating the new one, so a failure mid-reset (disk full, permission error, etc.) will leave you with no database at all. If that matters, wrapping the creation in a try/except that restores the original file would be the safe fix.

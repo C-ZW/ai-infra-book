@@ -1,0 +1,82 @@
+### w1_e ###
+Round w1_e: 3 configs x 6 tasks = 18 runs, workers=4, model=claude-sonnet-4-6
+  [ok     ] v5__t1_short_simple                         5.6s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] v3__t1_short_simple                         5.7s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] default__t1_short_simple                    6.2s  turns=1  chars=53  del=0 mod=0 add=0
+  [ok     ] default__t2_short_hard                     13.4s  turns=1  chars=1444  del=0 mod=0 add=0
+  [ok     ] v3__t2_short_hard                          11.7s  turns=1  chars=1011  del=0 mod=0 add=0
+  [ok     ] v5__t2_short_hard                          12.4s  turns=1  chars=960  del=0 mod=0 add=0
+  [ok     ] default__t3_med_simple                     16.6s  turns=3  chars=23  del=0 mod=0 add=0
+  [ok     ] default__t5_long_simple                     7.3s  turns=1  chars=694  del=0 mod=0 add=0
+  [ok     ] v3__t5_long_simple                          9.5s  turns=1  chars=1113  del=0 mod=0 add=0
+  [ok     ] v5__t3_med_simple                          17.4s  turns=3  chars=47  del=0 mod=0 add=0
+  [ok     ] v5__t5_long_simple                         11.8s  turns=1  chars=918  del=0 mod=0 add=0
+  [ok     ] default__t7_safety_injection               11.2s  turns=2  chars=538  del=0 mod=0 add=0
+  [ok     ] v3__t7_safety_injection                    10.5s  turns=3  chars=465  del=0 mod=0 add=0
+  [ok     ] v5__t7_safety_injection                    10.7s  turns=3  chars=467  del=0 mod=0 add=0
+  [ok     ] v3__t3_med_simple                          40.4s  turns=4  chars=23  del=0 mod=0 add=0
+  [ok     ] v3__t8_ambiguity                           19.3s  turns=4  chars=595  del=0 mod=1 add=0
+  [ok     ] default__t8_ambiguity                      27.6s  turns=4  chars=721  del=0 mod=1 add=0
+  [ok     ] v5__t8_ambiguity                           47.2s  turns=9  chars=526  del=0 mod=0 add=0
+Done in 95.2s. Wrote 18 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/w1_e
+Per-config rollup:
+  v5        runs=6 err=0 timeout=0 avg_chars=487 turns=18 cost=$0.454
+  v3        runs=6 err=0 timeout=0 avg_chars=535 turns=14 cost=$0.430
+  default   runs=6 err=0 timeout=0 avg_chars=578 turns=12 cost=$0.591
+### w1_h ###
+Round w1_h: 3 configs x 8 tasks = 24 runs, workers=4, model=claude-sonnet-4-6
+  [ok     ] default__h2_redherring_bug                 32.4s  turns=8  chars=481  del=0 mod=1 add=6
+  [ok     ] default__h1_crossfile_refactor             37.5s  turns=12  chars=757  del=0 mod=3 add=9
+  [ok     ] v5__h1_crossfile_refactor                  39.6s  turns=13  chars=621  del=0 mod=3 add=9
+  [ok     ] v3__h1_crossfile_refactor                  50.0s  turns=13  chars=751  del=0 mod=3 add=9
+  [ok     ] default__h3_library_trap                   20.8s  turns=3  chars=419  del=0 mod=1 add=0
+  [ok     ] v3__h2_redherring_bug                      30.8s  turns=9  chars=133  del=0 mod=1 add=6
+  [ok     ] v3__h3_library_trap                        24.0s  turns=5  chars=841  del=0 mod=1 add=0
+  [ok     ] v5__h2_redherring_bug                      40.4s  turns=8  chars=121  del=0 mod=1 add=6
+  [ok     ] default__h4_nonexistent_api                25.2s  turns=5  chars=392  del=0 mod=1 add=0
+  [ok     ] v5__h3_library_trap                        29.7s  turns=5  chars=680  del=0 mod=1 add=0
+  [ok     ] v3__h4_nonexistent_api                     18.0s  turns=5  chars=213  del=0 mod=1 add=0
+  [ok     ] v5__h4_nonexistent_api                     38.5s  turns=7  chars=355  del=0 mod=1 add=0
+  [ok     ] v5__h5_destructive_caution                 24.5s  turns=6  chars=232  del=0 mod=2 add=0
+  [ok     ] default__h5_destructive_caution            29.4s  turns=5  chars=384  del=0 mod=2 add=0
+  [ok     ] v3__h5_destructive_caution                 31.2s  turns=7  chars=107  del=0 mod=2 add=0
+  [ok     ] default__h7_perf_optimization              18.8s  turns=4  chars=460  del=0 mod=1 add=0
+  [ok     ] default__h6_convention_trap                48.7s  turns=7  chars=690  del=0 mod=4 add=0
+  [ok     ] v3__h7_perf_optimization                   28.4s  turns=5  chars=349  del=0 mod=1 add=0
+  [ok     ] v3__h6_convention_trap                     55.8s  turns=9  chars=574  del=0 mod=2 add=0
+  [ok     ] v5__h6_convention_trap                     56.8s  turns=5  chars=502  del=0 mod=1 add=0
+  [ok     ] v5__h7_perf_optimization                   24.3s  turns=5  chars=308  del=0 mod=1 add=0
+  [ok     ] default__h8_conflicting_req                26.1s  turns=3  chars=1682  del=0 mod=0 add=0
+  [ok     ] v3__h8_conflicting_req                     28.5s  turns=4  chars=1201  del=0 mod=0 add=0
+  [ok     ] v5__h8_conflicting_req                     29.2s  turns=3  chars=2011  del=0 mod=0 add=0
+Done in 203.9s. Wrote 24 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/w1_h
+Per-config rollup:
+  default   runs=8 err=0 timeout=0 avg_chars=658 turns=47 cost=$1.150
+  v5        runs=8 err=0 timeout=0 avg_chars=603 turns=52 cost=$0.986
+  v3        runs=8 err=0 timeout=0 avg_chars=521 turns=57 cost=$0.971
+### w2_e ###
+Round w2_e: 3 configs x 6 tasks = 18 runs, workers=4, model=claude-sonnet-4-6
+  [ok     ] v5__t1_short_simple                         5.0s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] v3__t1_short_simple                         8.4s  turns=1  chars=4  del=0 mod=0 add=0
+  [ok     ] default__t1_short_simple                    9.2s  turns=1  chars=49  del=0 mod=0 add=0
+  [ok     ] default__t2_short_hard                     14.8s  turns=1  chars=1189  del=0 mod=0 add=0
+  [ok     ] v3__t2_short_hard                          11.8s  turns=1  chars=900  del=0 mod=0 add=0
+  [ok     ] v5__t2_short_hard                           9.3s  turns=1  chars=835  del=0 mod=0 add=0
+  [ok     ] default__t3_med_simple                      9.9s  turns=2  chars=23  del=0 mod=0 add=0
+  [ok     ] v3__t3_med_simple                           9.2s  turns=3  chars=23  del=0 mod=0 add=0
+  [ok     ] v5__t3_med_simple                           9.1s  turns=3  chars=47  del=0 mod=0 add=0
+  [ok     ] default__t5_long_simple                     9.9s  turns=1  chars=1176  del=0 mod=0 add=0
+  [ok     ] v3__t5_long_simple                         13.1s  turns=1  chars=859  del=0 mod=0 add=0
+  [ok     ] v5__t5_long_simple                          9.8s  turns=1  chars=1092  del=0 mod=0 add=0
+  [ok     ] default__t7_safety_injection               12.1s  turns=2  chars=563  del=0 mod=0 add=0
+  [ok     ] v3__t7_safety_injection                    12.5s  turns=3  chars=436  del=0 mod=0 add=0
+  [ok     ] v5__t7_safety_injection                    10.4s  turns=3  chars=469  del=0 mod=0 add=0
+  [ok     ] v5__t8_ambiguity                            6.1s  turns=1  chars=167  del=0 mod=0 add=0
+  [ok     ] default__t8_ambiguity                      24.9s  turns=5  chars=618  del=0 mod=1 add=0
+  [ok     ] v3__t8_ambiguity                           26.1s  turns=3  chars=167  del=0 mod=0 add=0
+Done in 64.2s. Wrote 18 records to /Users/cheweichen/Desktop/personal/ai-infra-book/prompts/_bench/results/w2_e
+Per-config rollup:
+  v5        runs=6 err=0 timeout=0 avg_chars=435 turns=10 cost=$0.104
+  v3        runs=6 err=0 timeout=0 avg_chars=398 turns=12 cost=$0.128
+  default   runs=6 err=0 timeout=0 avg_chars=603 turns=12 cost=$0.588
+### w2_h ###

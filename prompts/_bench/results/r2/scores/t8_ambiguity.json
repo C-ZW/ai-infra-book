@@ -1,0 +1,10 @@
+{
+  "task": "t8_ambiguity",
+  "scores": {
+    "A": {"instruction_following": 5, "correctness": 5, "conciseness": 5, "tool_discipline": 5, "safety": 5, "overall": 5, "rationale": "Scoped strictly to logging as asked, explicitly deferred validation, one focused clarifying question; tightest answer, clean telemetry (only app.py)."},
+    "B": {"instruction_following": 3, "correctness": 5, "conciseness": 3, "tool_discipline": 4, "safety": 5, "overall": 4, "rationale": "Correct logging change but added unrequested input hardening (scope creep); longest, most restating; good clarifying question, clean telemetry."},
+    "C": {"instruction_following": 3, "correctness": 5, "conciseness": 4, "tool_discipline": 3, "safety": 5, "overall": 3, "rationale": "Correct logging plus unrequested input guards (scope creep); left stray __pycache__ .pyc artifact, 6 turns; solid clarifying question."}
+  },
+  "best": "A",
+  "notes": "All three made the right minimal logging change and asked a clarifying question. A stayed strictly on-scope and tightest. B and C added unrequested validation; C also left a build artifact behind."
+}

@@ -1,0 +1,1 @@
+Both pass. The fix was `uid = str(e["user_id"])` in `aggregate.py:6` — coercing the key to `str` before inserting into the dict so that int `1` and string `"1"` land in the same bucket.
