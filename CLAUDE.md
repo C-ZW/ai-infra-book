@@ -12,6 +12,7 @@
 
 ## 修改後，必跑
 
+- 動到任何章節文字：`python3 ../tools/md-reader/gate_book.py book`（Tier-1 lint，exit 0 才算過；發佈前加 `--verify` 跑 Tier-2 跨模型驗算，三家模型獨立重算載重數字）。經 write-book skill 產的書，P3/P4 兩階段閘門為**硬性要求**。
 - 動到 ASCII 圖：`python3 ../tools/md-reader/check_diagrams.py book`（CJK=2 欄對齊規則，exit 0 才算過）
 - 動到任何 book/ 內容：`python3 ../tools/md-reader/build_reader.py web/book.config.json` 重新打包；書架有變動先跑 `python3 ../tools/md-reader/build_shelf.py`（閱讀器的「⌂ 書架」按鈕會自動連到最近的上層 bookshelf.html，所以書架要先存在）
 - `web/index.html`、`web/plan.html`、`bookshelf.html`（專案根）是產生物，**不要手改**；書架位置由 `../profile/books.json` 的 `shelf_output` 欄位決定
