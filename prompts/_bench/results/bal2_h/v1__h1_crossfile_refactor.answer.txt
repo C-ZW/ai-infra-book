@@ -1,7 +1,0 @@
-All 3 tests pass. Changes made:
-
-- **`textlib/names.py`**: `format_name(first, last)` → `format_name(full_name)`, using `rsplit(" ", 1)` to split on the rightmost space. Raises `ValueError` on a single-token name (no detectable last name).
-- **`textlib/greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes it straight through to `format_name`.
-- **`textlib/report.py`**: `roster` now iterates over full-name strings instead of `(first, last)` tuples.
-
-Probing question: what should happen with names like `"Cher"` or `"Madonna"`? Right now `format_name` raises — is that the desired behavior, or should single-token names pass through unchanged (e.g. `"Cher"` → `"Cher"`)?

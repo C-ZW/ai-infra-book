@@ -1,3 +1,0 @@
-O(n²) → O(n). The `seen` set gives O(1) membership tests so each element is touched once.
-
-**Caveat:** items must be hashable (same requirement as before — unhashable types would have failed the list's `__eq__` loop too, just slower).

@@ -1,1 +1,0 @@
-The bug was on line 14: `hours + minutes` should be `hours * 60 + minutes`. The hours were never converted to minutes before addition, so `'1h30m'` returned `31` instead of `90`. All three cases now pass.

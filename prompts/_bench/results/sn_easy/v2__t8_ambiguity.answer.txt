@@ -1,8 +1,0 @@
-Replaced the bare `print` calls with `logging`:
-
-- Uses `logging.basicConfig` with a timestamp + level + name format
-- `logger = logging.getLogger(__name__)` — name scoped to the module, composable with any caller's logging config
-- Start/end messages are `INFO` with structured `extra` fields (`order_count`, `total`)
-- Per-order trace is `DEBUG` — won't appear at default `INFO` level, but available when needed
-
-What's the most dangerous unhandled case here: if `orders` contains non-numeric types, `total += o` raises `TypeError` with no logging of which order caused it. Worth adding a try/except inside the loop with `logger.error("invalid order", extra={"order": o, "error": str(e)})` if mixed input is possible.

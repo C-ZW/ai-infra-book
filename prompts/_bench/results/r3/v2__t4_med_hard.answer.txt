@@ -1,3 +1,0 @@
-Fixed at `utils.py:14`: changed `hours + minutes` to `hours * 60 + minutes`. All three cases now return total minutes correctly — `1h30m → 90`, `45m → 45`, `2h → 120`.
-
-One unhandled case worth flagging: the regex makes both groups optional, so a stray non-duration token like `"h"` or `"m"` (and the empty string, currently caught only by the `not s` guard) can slip through `fullmatch` as a zero-value match rather than raising `ValueError`. Do you want `parse_duration` to reject inputs that contain no actual digits?

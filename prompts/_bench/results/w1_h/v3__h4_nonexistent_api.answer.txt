@@ -1,3 +1,0 @@
-Done. `update_item` now calls `client.patch(f"/items/{item_id}", data)` and returns the result.
-
-What does `client.patch()` return on a 404 or network error — does it raise, or return a sentinel you need to check?

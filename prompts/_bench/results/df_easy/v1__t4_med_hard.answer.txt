@@ -1,1 +1,0 @@
-Bug: `return hours + minutes` was adding raw hour and minute counts together. Fixed to `return hours * 60 + minutes`. All three cases pass.

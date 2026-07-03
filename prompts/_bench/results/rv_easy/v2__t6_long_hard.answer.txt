@@ -1,9 +1,0 @@
-Done. Tests pass (4/4) and `--reverse` works end to end.
-
-- `cli.py:7` — `transform` gains a `reverse=False` param that reverses after the optional uppercase step.
-- `cli.py:16` — registered `--reverse` flag, wired into the `transform` call.
-- `test_cli.py` — added `test_reverse` and `test_reverse_with_upper`.
-
-Default behavior is unchanged: `reverse` defaults to `False`, so existing callers and the no-flag path are untouched.
-
-One edge worth naming: order matters in `transform` — upper runs before reverse, so `--upper --reverse` uppercases then flips. Output-line order is independent of casing, so the result is the same either way here; if you ever add an order-sensitive transform, should it run before or after the reverse?

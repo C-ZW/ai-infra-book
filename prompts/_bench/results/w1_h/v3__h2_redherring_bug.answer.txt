@@ -1,1 +1,0 @@
-Both tests pass. The fix is `aggregate.py:5` — `str(e["user_id"])` normalizes int and string IDs to the same key before accumulating.

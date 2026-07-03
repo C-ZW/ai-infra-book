@@ -1,3 +1,0 @@
-Done. `fetch_url` now retries up to 3 times on any `URLError`/`OSError`, sleeping 1 s, then 2 s between attempts (doubling each time). On the third failure it re-raises the last exception rather than swallowing it.
-
-One probing question: what's the intended behavior when the server returns a non-2xx HTTP response (e.g. 503)? `urlopen` raises `HTTPError` (a subclass of `URLError`) in that case, so it will retry — but a 404 will also retry, which is probably wasteful. Should non-retryable HTTP status codes (4xx) be excluded?

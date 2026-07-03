@@ -1,7 +1,0 @@
-Done. Two changes:
-
-**`framework.py`** — `route(path, method="GET")` now keys routes by `(method.upper(), path)`. Existing handlers unaffected (default stays `"GET"`).
-
-**`handlers.py`** — `delete_item` uses `DB.pop(id, None)`: if the key is absent, `pop` returns `None` without raising, and we return `err(...)` consistent with `get_item`. If found, removes it in-place and returns `ok({"deleted": id})`.
-
-One open question: is `id` always an `int` at the call site, or could a router pass it as a string? `DB.get("1")` would silently miss `DB[1]` and return a phantom 404.

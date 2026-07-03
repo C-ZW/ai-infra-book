@@ -1,5 +1,0 @@
-Fixed `utils.py:14` — it was `hours + minutes`, treating an hour as one minute. Now `hours * 60 + minutes`.
-
-All pass: `1h30m`→90, `45m`→45, `2h`→120, and invalid input still raises `ValueError`. Note `45m` only looked correct before because hours was 0; `2h` was actually wrong too (returned 2).
-
-One unhandled case worth flagging: the regex makes every component optional, so `parse_duration("")`-after-strip is caught by the `not s` guard, but a stray ordering like `"30m1h"` simply fails to match and raises — intended. Do you want `parse_duration` to also reject zero-length-after-valid quirks like `"0h0m"` (currently returns 0), or is 0 an acceptable result there?

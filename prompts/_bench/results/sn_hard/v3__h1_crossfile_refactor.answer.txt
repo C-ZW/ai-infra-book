@@ -1,7 +1,0 @@
-All 3 tests pass. Changes made:
-
-- `textlib/names.py` — `format_name(first, last)` → `format_name(full_name)`, uses `rsplit(" ", 1)` to split on the last space (handles multi-word first names like "Mary Lou Williams" correctly)
-- `textlib/greet.py` — `greeting(first, last)` → `greeting(full_name)`, passes through to `format_name`
-- `textlib/report.py` — `roster(people)` now iterates over full-name strings instead of unpacking `(first, last)` tuples
-
-One edge case to be aware of: `format_name` will raise `ValueError` if given a name with no space (e.g., `"Madonna"`). If single-token names are a real input possibility, you'll want a guard there.

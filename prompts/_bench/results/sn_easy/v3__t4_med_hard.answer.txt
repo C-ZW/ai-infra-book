@@ -1,1 +1,0 @@
-Fixed. The root cause was `return hours + minutes` — it added the raw integers instead of converting hours to minutes first. Changed to `hours * 60 + minutes`. Also tightened the empty-match guard (`not m.group(0)`) since the regex can match an empty string when both optional groups are absent.

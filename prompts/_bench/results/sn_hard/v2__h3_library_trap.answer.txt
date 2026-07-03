@@ -1,7 +1,0 @@
-Key decisions:
-- **4xx HTTP errors** are not retried — they're client errors and won't resolve on retry.
-- **5xx and `URLError`** (network failures, socket timeouts wrapped by urllib) are retried.
-- Delays: 1s before attempt 2, 2s before attempt 3 (doubles each time).
-- `last_exc` is always set before the final raise, so exhaustion always propagates the real cause rather than swallowing it.
-
-What happens if the server returns a non-decodable body (wrong encoding) after a successful fetch — should the `decode()` call specify a fallback encoding like `errors='replace'`?

@@ -1,8 +1,0 @@
-Changes made:
-
-- `print()` → `logging` with `DEBUG`/`INFO`/`ERROR` levels — callers in prod can set `WARNING` to silence the per-item noise
-- Timestamps and logger name in every line
-- Invalid order values are caught and logged with index, value, and type instead of crashing
-- `extra={}` carries structured context (order count, index, total) — a JSON handler (e.g. `python-json-logger`) picks these up as first-class fields; `basicConfig` silently ignores them, which is intentional
-
-**Probing question:** What happens when `orders` is `None`? Right now `len(orders)` raises `TypeError` before the first log line fires — should the boundary check live here or in the caller?

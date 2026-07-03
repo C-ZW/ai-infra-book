@@ -1,8 +1,0 @@
-Changes made:
-
-- **`print` → `logging`** — structured, leveled, timestamped; `DEBUG` lines for per-item processing are suppressed at the default `INFO` level but available when needed.
-- **Trace ID** — auto-generated UUID per call (or injectable from outside), threaded through every log line so a 3am failure can be correlated end-to-end.
-- **Structured fields** — `key=value` tokens (`order_count`, `index`, `total`) instead of free-form strings, so they're greppable and parseable by log aggregators.
-- **Input validation** — `TypeError` on a non-list, warning + skip on non-numeric entries, rather than letting `+=` blow up with a cryptic `TypeError` mid-loop.
-
-What calls `process()` — is a trace ID being threaded in from the request layer, or does each call need to mint its own?

@@ -1,3 +1,0 @@
-Both tests pass. The fix was `uid = str(e["user_id"])` in `aggregate.py:5` — the int `1` and string `"1"` were hashing to different dict keys, so they accumulated separately instead of merging to 30.
-
-> **Probing question:** what happens if `user_id` is `None` or missing from an event? `str(None)` silently produces `"None"` and it accumulates — should the boundary validate that `user_id` is a non-null int or string before it enters `summarize`?

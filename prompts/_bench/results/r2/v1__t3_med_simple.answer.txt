@@ -1,3 +1,0 @@
-`billing/pricing.py:16`
-
-That's the sole definition (`def compute_total(items, discount_pct=0.0)`); the other two hits in `billing/__init__.py` are just the re-export, not a definition.

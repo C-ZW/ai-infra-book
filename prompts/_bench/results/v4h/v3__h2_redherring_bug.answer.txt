@@ -1,1 +1,0 @@
-Both tests pass. The bug was in `aggregate.py:5` — `user_id` was used as-is, so int `1` and string `"1"` landed in separate buckets. Normalizing to `str()` at ingestion merges them correctly.

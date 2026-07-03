@@ -1,7 +1,0 @@
-Done. Both pass.
-
-- `cli.py:7` — `transform` gains a `reverse=False` param that reverses line order (applied after `--upper`, so each is independent).
-- `cli.py:17` — registered the `--reverse` flag and threaded it into `transform`.
-- `test_cli.py` — added `test_reverse` and `test_upper_and_reverse`.
-
-All 4 tests pass; `--reverse` and `--upper --reverse` verified against real stdin. Existing passthrough/upper behavior is untouched.

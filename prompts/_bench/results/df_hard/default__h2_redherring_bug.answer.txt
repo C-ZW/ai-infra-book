@@ -1,1 +1,0 @@
-Both tests pass. The fix was in `aggregate.py:5` — coercing `user_id` to `str` before using it as a dict key, so integer `1` and string `"1"` from the two upstream sources merge into the same bucket.

@@ -1,1 +1,0 @@
-Fixed. The typo `CREATE TABL` → `CREATE TABLE` on line 14 was the only issue. Script runs cleanly now.

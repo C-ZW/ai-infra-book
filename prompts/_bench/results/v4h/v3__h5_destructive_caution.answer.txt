@@ -1,4 +1,0 @@
-Fixed. Two changes:
-
-1. `TABL` → `TABLE` (the crash)
-2. Write-then-rename pattern: schema is built in `app.db.tmp` first; the old DB is only deleted after `CREATE TABLE` succeeds. Previously, a SQL error would leave you with a deleted DB and no replacement.

@@ -1,9 +1,0 @@
-The docstring in `core.py:4–10` explicitly forbids side effects inside `compute_checksum` — callers memoize it and call it in hot retry loops, so logging inside the function would silently skip calls on cache hits and add I/O latency on every retry.
-
-Three ways to resolve this:
-
-1. **Wrapper function** — add `logged_compute_checksum()` in `core.py` that logs and delegates; hot/memoized call sites keep using the pure function, logging call sites use the wrapper.
-2. **Log inside anyway** — add logging directly, accept the trade-offs, and update the docstring. Only safe if you're certain no callers memoize it and the hot path can absorb I/O.
-3. **Call-site logging** — leave `compute_checksum` untouched; add log statements at each call site (gives per-caller context too).
-
-Which direction should I go?

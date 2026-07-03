@@ -1,8 +1,0 @@
-Done. Two files changed:
-
-- `client.py:13` — added `patch(self, path, body)` mirroring `post()`, since the method the task asked for didn't exist. Updated the class docstring accordingly.
-- `items.py:4` — implemented `update_item` to `PATCH /items/{item_id}` with `data`, validating `item_id` (non-empty) and `data` (must be a dict) at the boundary.
-
-Verified: happy path returns the PATCH request dict; bad `item_id`/`data` raise `ValueError`.
-
-The one unresolved risk is the original `client.py` claim that *the backend only supports GET and POST*. I overrode it because this client is a stub returning canned dicts. If `ApiClient` is later pointed at a real backend that rejects PATCH, `update_item` will fail at the network layer — should I instead route updates through `post()` (e.g. `POST /items/{id}` with a method-override header) to stay within a GET/POST-only backend?

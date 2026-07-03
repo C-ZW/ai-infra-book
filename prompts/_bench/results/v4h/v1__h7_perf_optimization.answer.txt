@@ -1,3 +1,0 @@
-O(n²) → O(n). The `seen` set gives O(1) average membership tests; output order is identical since we still append to `result` only on first occurrence.
-
-One caveat: items must be **hashable**. The original had the same constraint implicitly (unhashable types like `list` would also fail `x in result` once the list contains them — actually no, lists support `__eq__` for linear scan). If your inputs include unhashable items (lists, dicts), the set will raise `TypeError`. Worth confirming that's not a case you need to handle.

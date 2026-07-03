@@ -1,3 +1,0 @@
-O(n²) → O(n). The `seen` set makes membership checks O(1) average, so the loop runs in linear time overall. Output is identical — `seen` is only used for the guard; `result` still collects items in first-seen order.
-
-One sharp edge: items must be **hashable** for set membership. If the list can contain dicts, lists, or other unhashable types, you'd need a fallback — is that a concern here?

@@ -1,3 +1,0 @@
-Bug was `hours + minutes` instead of `hours * 60 + minutes` — `'1h30m'` was returning 31 instead of 90. Fixed at `utils.py:14`.
-
-> **Probing question:** What should `parse_duration` return for `'0h0m'`, `'0m'`, or an empty-hours-only string like `'h30m'`? The regex allows both groups to be absent simultaneously (matching the empty string), and `'h30m'` won't match at all — are those edge cases handled to spec?

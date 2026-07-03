@@ -1,0 +1,8 @@
+{
+  "_comment": "Per-book lint config for the paradoxes book. Raises depth-signalling checks from WARN to ERROR so the Tier-1 gate actually enforces a worked example (a fenced block) and exercise difficulty/time markers in every chapter. Deep-merged over lint_book.py DEFAULT_CONFIG + zh-TW lang pack.",
+  "severity": {
+    "worked_example": "error",
+    "difficulty": "error",
+    "time": "error"
+  }
+}

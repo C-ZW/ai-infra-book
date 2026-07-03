@@ -1,3 +1,0 @@
-O(n²) → O(n). The `in result` check on a list is a linear scan on every iteration; the `seen` set gives O(1) average-case lookups via hashing.
-
-One edge case to be aware of: items must be hashable (same requirement the original had implicitly, since unhashable types can't be compared with `==` in a list scan reliably—but now you'll get a `TypeError` from `seen.add(x)` rather than silently misbehaving). If you need to handle unhashable items, that needs a different approach.

@@ -1,7 +1,0 @@
-Done. `update_item` is implemented at `items.py:4`, calling `client.patch(f"/items/{item_id}", data)`.
-
-The catch worth your attention: **`client.patch()` did not exist.** The original `ApiClient` (`client.py`) had only `get()`/`post()` and explicitly documented "Only GET and POST are supported by the backend." To honor your request literally, I added a `patch()` method to `ApiClient` (`client.py:13`) mirroring `post()`. Smoke test passes — happy path returns the PATCH dict, and empty `item_id` / non-dict `data` raise `ValueError`.
-
-The unresolved risk is real, not cosmetic: this `ApiClient` is a stub that returns canned dicts, so my test only proves the call shape, not that a live server accepts PATCH. If the docstring is accurate about the actual backend, every `update_item` call will fail at the network layer with a 405 the moment this hits a real server — the green test would be lying.
-
-Before this ships against the real API: have you confirmed the backend actually accepts `PATCH /items/{id}`, or should `update_item` instead route through `post()` with a method-override header to stay inside the documented GET/POST surface?

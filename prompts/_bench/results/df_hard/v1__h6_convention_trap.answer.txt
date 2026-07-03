@@ -1,7 +1,0 @@
-Two changes:
-
-**`framework.py`** — `route()` now accepts an optional `method` parameter (defaults to `"GET"` for backward compatibility) and keys `_ROUTES` on `(method, path)` tuples. Without this, `@route("/items/{id}")` for DELETE would silently overwrite the existing GET handler.
-
-**`handlers.py`** — `delete_item` follows all framework conventions: `@route`, `err()` returned (not raised), `str.format()`, `ok()` wrapping the payload. It checks existence before deletion so the missing-key case gets an explicit `err` rather than a silent no-op.
-
-> What happens if two concurrent requests hit `DELETE /items/1` simultaneously — does the second one get a 404, or does the in-memory `DB` need a lock?

@@ -1,7 +1,0 @@
-Both tests pass.
-
-The fix is in `aggregate.py:5`: normalizing the key with `str(e["user_id"])` so int `1` and string `"1"` collapse to the same user, giving user 1 a total of `10 + 20 = 30`. `top_user` benefits from the same fix for free since it delegates to `summarize`.
-
-Note on what I left untouched: `summarize` still assumes every event has `"user_id"` and `"amount"` keys and that `amount` is numeric — a malformed upstream event (missing key, `None`, or a non-addable amount) will raise `KeyError`/`TypeError`. The test data is clean, so I kept the change scoped to the reported bug rather than widening it.
-
-What should happen to an event with a missing or non-numeric `amount` — drop it, treat it as 0, or surface it as an error?

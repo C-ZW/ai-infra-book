@@ -1,6 +1,0 @@
-Everything works. Here's what changed:
-
-- **`framework.py`** — `route()` now accepts an optional `method=` parameter (defaults to `"GET"`) and keys `_ROUTES` on `(method, path)` tuples, so `GET /items/{id}` and `DELETE /items/{id}` can coexist.
-- **`handlers.py`** — added `delete_item` at `handlers.py:21`, decorated with `@route("/items/{id}", method="DELETE")`. Returns `err(...)` if the id is absent, otherwise deletes and returns `ok({"deleted": id})` — following the existing `ok`/`err`, `str.format()` conventions throughout.
-
-What happens if the same `id` is sent twice to the delete endpoint — should the second call return 404 (idempotent but transparent), or silently return 200?

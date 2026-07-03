@@ -1,9 +1,0 @@
-Replaced the ad-hoc `print()` calls in `app.py` with the standard `logging` module:
-
-- Module-level `logger = logging.getLogger(__name__)` — lets callers control output instead of spraying to stdout.
-- Levels: `INFO` for start/done, `DEBUG` for per-item detail (noise stays filterable).
-- Lazy `%s` formatting (args, not string concat) — avoids formatting cost when a level is disabled.
-- Contextual messages: order count, per-item running total, final total.
-- `basicConfig` with timestamp + level configured only under `__main__`, not at import — so importing `app` doesn't hijack the root logger.
-
-I kept the change scoped to logging. One thing I deliberately left alone: `process` still assumes every item is numeric — a non-numeric order raises `TypeError` mid-loop and the `done` line never logs. Want me to add input validation and an error-path log, or keep it logging-only?

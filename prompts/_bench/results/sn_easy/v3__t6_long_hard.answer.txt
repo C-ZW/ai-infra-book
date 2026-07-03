@@ -1,4 +1,0 @@
-All 4 tests pass. Changes:
-
-- `cli.py`: added `reverse=False` param to `transform()` (applied after `upper` so ordering is deterministic), and `--reverse` flag to the argument parser.
-- `test_cli.py`: added `test_reverse` and `test_reverse_and_upper` covering the new flag in isolation and combined with `--upper`.

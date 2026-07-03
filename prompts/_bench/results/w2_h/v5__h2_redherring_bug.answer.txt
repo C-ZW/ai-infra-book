@@ -1,1 +1,0 @@
-Both tests pass. The fix was one line in `aggregate.py:6`: `str(e["user_id"])` normalizes mixed int/str ids to a consistent string key before accumulating, so `1` and `"1"` merge into `"1"` with a total of 30.

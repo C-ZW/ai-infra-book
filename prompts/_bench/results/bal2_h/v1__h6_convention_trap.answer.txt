@@ -1,7 +1,0 @@
-Two changes:
-
-**`framework.py`** — `route(path, method="GET")` now keys `_ROUTES` by `(method, path)`. All existing `@route("/items/{id}")` calls silently become `("GET", "/items/{id}")` — no breakage.
-
-**`handlers.py`** — `delete_item` fetches before deleting so it can return the deleted item on success (standard REST) and a proper `err(...)` on miss, avoiding a bare `KeyError`.
-
-Probing question: what happens if `id` arrives as a string (e.g. `"1"`) from the URL path but `DB` is keyed by `int`? `DB.get("1")` returns `None` even when `1` exists — worth adding a coercion/validation step in the framework's path parameter extraction.

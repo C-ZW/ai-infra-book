@@ -1,7 +1,0 @@
-Key changes:
-- `print` → `logging` with timestamps and level labels
-- `INFO` for lifecycle events, `DEBUG` for per-item noise (suppress at `INFO` level in production)
-- Structured key=value fields on each message so log scrapers can extract them without regex gymnastics
-- Module-level `logger` instead of root logger so the caller can filter by name
-
-One unhandled case: if `orders` contains a non-numeric value, `total += o` will `TypeError` silently breaking the accumulation. Worth a `try/except` with `logger.warning("skipping invalid order value=%s", o)` if the input source isn't trusted.

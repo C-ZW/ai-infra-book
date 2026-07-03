@@ -1,5 +1,0 @@
-Done — `fetcher.py:5`. Kept it stdlib-only (the docstring mandates it), so no `tenacity`/`backoff` dependency.
-
-Behavior: 3 attempts, sleeping `1s` then `2s` between them (doubling); succeeds early on first good response; re-raises the last error after the final attempt. Only retries `URLError`/`TimeoutError` — not programmer errors like a malformed URL type.
-
-One unhandled case worth naming: an `HTTPError` 4xx (e.g. 404, 401) is a subclass of `URLError`, so it currently gets retried too even though it'll never succeed — wasting ~3s. Want me to skip retries on 4xx and only back off on 5xx/connection failures?

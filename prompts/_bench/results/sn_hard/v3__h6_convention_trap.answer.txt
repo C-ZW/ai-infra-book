@@ -1,7 +1,0 @@
-Two changes:
-
-1. **`framework.py`**: `route(path)` → `route(path, method="GET")`, registry key changed from `path` string to `(method, path)` tuple. Without this, `delete_item` would silently clobber `get_item` — same path, last writer wins.
-
-2. **`handlers.py`**: Existing handlers now pass explicit `method="GET"`, `delete_item` checks for existence before deleting (returns the same `"item {} not found"` error on miss), then removes from `DB` and returns `{"deleted": id}`.
-
-What happens if `delete_item` is called twice on the same id — should the second call return 404 or 200/no-op?

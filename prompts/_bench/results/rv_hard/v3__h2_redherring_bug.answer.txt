@@ -1,5 +1,0 @@
-Both tests pass.
-
-The fix is at `aggregate.py:5` — `uid = str(e["user_id"])` coalesces the int `1` and string `"1"` ids into one key, so user 1's total comes out as 30.
-
-One caveat worth naming: this assumes string is the canonical id form (the test and `top_user` both expect `"1"`). If any real `user_id` can be `None` or a float like `1.0`, `str()` will produce `"None"`/`"1.0"` and silently collide-or-split differently — fine for this data, but the normalization belongs at ingestion if the upstream type contract is shakier than two clean sources.

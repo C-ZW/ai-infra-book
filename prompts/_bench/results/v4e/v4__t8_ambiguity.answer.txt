@@ -1,1 +1,0 @@
-Which scripts are you targeting? The `tools/md-reader/` tools (build_reader, lint_book, etc.), the `prompts/_bench/` scripts, or something else?

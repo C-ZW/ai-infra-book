@@ -1,3 +1,0 @@
-O(n²) → O(n). The `seen` set makes membership checks O(1) instead of scanning the growing `result` list on each iteration.
-
-One edge: items must be hashable for `set` membership. If your inputs include unhashable types (lists, dicts), the original was also broken for those — but if that's a real concern, let me know and we can add a fallback path.

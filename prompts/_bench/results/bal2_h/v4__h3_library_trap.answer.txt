@@ -1,7 +1,0 @@
-Three things worth noting:
-
-- **4xx errors are re-raised immediately** — retrying a 404 or 401 is pointless and would only mask misconfiguration.
-- **Delays**: attempt 0 → 1 s, attempt 1 → 2 s (the third attempt fires immediately after the second sleep, then raises on failure).
-- **`base_delay` is a keyword-only arg** so existing call sites (`fetch_url(url)`) are unaffected.
-
-What's the most dangerous unhandled case here: a server that accepts the connection and streams a response *very slowly* — the 5-second `timeout` applies to the socket read per chunk, not the total transfer. If the response body is large, it can still hang for minutes per attempt. Worth adding `http.client.IncompleteRead` handling or a threading timeout if payloads are unbounded.

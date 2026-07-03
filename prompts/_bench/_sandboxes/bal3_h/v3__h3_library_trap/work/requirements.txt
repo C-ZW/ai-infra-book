@@ -1,2 +1,0 @@
-# This project intentionally has no third-party dependencies.
-# Standard library only.

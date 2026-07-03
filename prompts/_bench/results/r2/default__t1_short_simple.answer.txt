@@ -1,3 +1,0 @@
-17 is prime.
-
-Its only divisors are 1 and itself — no integer from 2 up to √17 (≈4.12), i.e. 2, 3, or 4, divides it evenly.

@@ -1,1 +1,0 @@
-Which file(s) are you referring to? The current session's working directory is `prompts/_bench/_sandboxes/…` — are you talking about the bench scripts, the md-reader tools, or something else?

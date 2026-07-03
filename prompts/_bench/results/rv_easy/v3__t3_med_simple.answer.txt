@@ -1,3 +1,0 @@
-`billing/pricing.py:16`
-
-That's the only definition in the project (a Python function `def compute_total(items, discount_pct=0.0)`).

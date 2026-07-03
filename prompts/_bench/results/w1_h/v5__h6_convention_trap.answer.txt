@@ -1,3 +1,0 @@
-Done. One caveat: `framework.py` keys `_ROUTES` by path alone with no method field, so a second `@route("/items/{id}")` would silently overwrite `get_item`. I used `/items/{id}/delete` as the path to avoid that collision — if the framework is extended to carry an HTTP method (e.g., `_ROUTES[(method, path)] = fn`), the path should revert to `/items/{id}`.
-
-What happens if `delete_item` is called concurrently with `get_item` — is `DB` protected by any lock, or can a read race a delete mid-iteration?

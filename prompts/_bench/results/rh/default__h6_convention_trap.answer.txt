@@ -1,5 +1,0 @@
-Done. Added `delete_item` to `handlers.py`, following the four conventions from `framework.py` exactly — `@route` decorator, `err()` returned (not raised) for the missing case, `ok()` for success, and `str.format()` instead of an f-string. It mirrors `get_item`'s not-found guard, then deletes and returns the removed item. The smoke test confirms all three paths: missing id, successful delete, and idempotent re-delete.
-
-One failure mode worth flagging, since it's baked into the framework rather than my handler: **`@route` keys `_ROUTES` by path only, with no HTTP-method dimension.** `get_item` and `delete_item` both register `"/items/{id}"`, so whichever module-loads second silently clobbers the first in the dispatch table — there's no GET-vs-DELETE distinction for the router to use. My handler matches the existing convention faithfully, but the convention itself can't express "DELETE /items/{id}" as distinct from "GET /items/{id}".
-
-Do you want me to extend `route()` to take a method (e.g. `@route("/items/{id}", method="DELETE")`) and key `_ROUTES` on `(method, path)` — or is the single-path-keyed router intentional for now?

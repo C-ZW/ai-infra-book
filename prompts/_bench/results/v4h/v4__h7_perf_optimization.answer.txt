@@ -1,1 +1,0 @@
-`seen` set makes membership check O(1) instead of O(n), bringing the overall loop from O(n²) to O(n). The only constraint this adds: items must be hashable — same constraint the original silently had for anything used as a dict key, and any unhashable element (e.g. a list) would have crashed the `in result` check too, so no regression there.

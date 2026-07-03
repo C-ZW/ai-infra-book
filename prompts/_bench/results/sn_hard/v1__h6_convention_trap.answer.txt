@@ -1,6 +1,0 @@
-Two changes:
-
-- **`framework.py`**: `route(path)` → `route(path, method="GET")`, keying `_ROUTES` on `(method, path)` instead of `path` alone. Existing handlers keep working unchanged since they get `method="GET"` by default.
-- **`handlers.py`**: Added `delete_item` decorated with `@route("/items/{id}", method="DELETE")`. Uses `dict.pop(id, None)` to atomically remove and return the item, returning 404-style `err` if missing or the deleted item on success.
-
-Dangerous unhandled case: if `id` arrives as a string (e.g., from a URL param) but `DB` keys are integers, `DB.pop("1", None)` will always return `None` — does the framework coerce path parameters to the correct type before calling the handler?

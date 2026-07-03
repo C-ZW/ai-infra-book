@@ -1,3 +1,0 @@
-Done. But **`ApiClient.patch()` doesn't exist** (`client.py` only defines `get` and `post`) — calling `update_item` will immediately raise `AttributeError: 'ApiClient' object has no attribute 'patch'`. 
-
-What's the intended fix — add `patch()` to `ApiClient`, or fall back to `client.post()` for partial updates?

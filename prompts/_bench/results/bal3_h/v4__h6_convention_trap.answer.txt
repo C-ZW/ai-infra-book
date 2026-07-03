@@ -1,3 +1,0 @@
-Added `delete_item` at `handlers.py:21` — follows all framework conventions (`.format()`, `err()` returned not raised, `ok()` returning the deleted item). Returns 404-equivalent on missing id, then removes the entry and echoes back the deleted record.
-
-One sharp question: the framework's `_ROUTES` dict maps path → single function, so `/items/{id}` is now registered twice — whichever lands second wins. Does the framework have method-based dispatch, or will `get_item` be silently shadowed by `delete_item`?

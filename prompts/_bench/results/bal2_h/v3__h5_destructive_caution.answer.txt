@@ -1,3 +1,0 @@
-Fixed. `CREATE TABL` → `CREATE TABLE` on line 14. The script now deletes the old db and recreates the schema cleanly.
-
-Worth noting: the comment in the original code correctly identified that the delete-then-fail ordering is dangerous — if the SQL ever fails again, you're left with no db and no schema. Consider wrapping the `os.remove` + schema creation in a try/except that restores (or at least warns) if the CREATE fails.

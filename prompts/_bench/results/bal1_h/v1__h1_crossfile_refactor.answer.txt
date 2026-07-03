@@ -1,7 +1,0 @@
-All 3 tests pass. Here's what changed:
-
-- **`textlib/names.py`**: `format_name(first, last)` → `format_name(full_name)`. Uses `rsplit(" ", 1)` so middle names stay with the first name (e.g. `"Ada Augusta Lovelace"` → `"Lovelace, Ada Augusta"`). Raises `ValueError` on a name with no space rather than silently producing a wrong result.
-- **`textlib/greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes the string straight through.
-- **`textlib/report.py`**: `roster` now iterates over strings instead of `(first, last)` tuples.
-
-What's the most dangerous unhandled case? A caller passing an empty string — `format_name("")` raises `ValueError: ... got: ''`, which is fine, but callers that swallow that exception will silently drop names from rosters. Worth adding an explicit empty-string guard if `roster` is ever called with untrusted input.

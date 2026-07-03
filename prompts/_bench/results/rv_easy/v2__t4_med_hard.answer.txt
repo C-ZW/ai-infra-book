@@ -1,3 +1,0 @@
-Fixed `utils.py:14`: `hours + minutes` → `hours * 60 + minutes`. Verified: `1h30m`→90, `45m`→45, `2h`→120.
-
-One unhandled edge worth flagging: the regex makes both groups optional and anchors only at the end, so an empty-after-strip string is caught by the `not s` guard — but a bare-number input like `'30'`? That fails to match (`m` is `None`) and raises correctly. What's the intended behavior for a seconds suffix like `'90s'` — silently rejected (current) or supported?

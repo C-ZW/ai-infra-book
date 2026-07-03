@@ -1,8 +1,0 @@
-All 3 tests pass. The refactor:
-
-- `textlib/names.py:1` — `format_name(full_name)` splits on whitespace, treats the last token as the surname and the rest as the given name(s), returning `'Last, First'`. Empty/whitespace input → `""`; single-token names returned as-is (no dangling comma).
-- `textlib/greet.py:4` — `greeting(full_name)` now passes the single string through.
-- `textlib/report.py:4` — `roster(people)` now takes a list of full-name strings.
-- `textlib/__init__.py` needed no change (re-exports the same symbol).
-
-One behavioral edge worth flagging: a three-part name like `"Ada King Lovelace"` becomes `"Lovelace, Ada King"` — the surname is assumed to be the final token. If your data has multi-word surnames (e.g. `"Ada Van Gogh"` → `"Gogh, Ada Van"`), that assumption breaks. Do any of your callers pass names where the last word isn't the surname?

@@ -1,3 +1,0 @@
-Done — but `ApiClient` in `client.py` only defines `get()` and `post()`; it has no `patch()` method. Calling `update_item` at runtime will raise `AttributeError: 'ApiClient' object has no attribute 'patch'`.
-
-Either `ApiClient` needs a `patch()` method added, or the update should be routed through `post()` (e.g. a POST to `/items/{id}` with an `_method: PATCH` convention). Which is the intended approach?

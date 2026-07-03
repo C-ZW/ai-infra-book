@@ -1,9 +1,0 @@
-The definition is at `billing/pricing.py:16`:
-
-```python
-def compute_total(items, discount_pct=0.0):
-```
-
-(The other two hits in `billing/__init__.py` are just a re-export, not the definition.)
-
-One thing worth confirming before you rely on this: I searched the common source extensions, so this is the only `compute_total` *definition* in those. If your project also has it shadowed in an untracked file or a non-standard extension (e.g. `.pyi` stub, a notebook), do you want me to widen the search to catch a second definition that could override this one?

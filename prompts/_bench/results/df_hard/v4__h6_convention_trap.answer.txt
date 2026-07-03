@@ -1,3 +1,0 @@
-Done. Added `delete_item` at `handlers.py:20–25` following the framework conventions: `@route`, `str.format()` for the error string, return `err(...)` / `ok(...)` (never raise).
-
-One thing worth noting: `_ROUTES` is a plain dict keyed by path string — both `get_item` and `delete_item` register under `"/items/{id}"`, so the second registration overwrites the first. If the framework doesn't distinguish HTTP methods in its routing key, you'll need to verify `_ROUTES` supports method-scoped keys (e.g. `("DELETE", "/items/{id}")`) or the GET handler will silently disappear.

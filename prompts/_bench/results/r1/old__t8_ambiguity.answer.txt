@@ -1,9 +1,0 @@
-Done. Changes:
-
-- Replaced `print()` with the stdlib `logging` module — a named `orders` logger, with levels (`info`/`debug`/`error`) and timestamped formatted output configured at the entrypoint, not in library code.
-- Structured context via `extra=` (counts, indices, totals) instead of string concatenation.
-- The loop now validates each item and **skips + logs** non-numbers instead of crashing — the original `total += o` would have thrown on any non-numeric order. Note `True` is excluded too, since `bool` is an `int` subclass.
-
-Verified: happy path logs with timestamps; `[1, 'x', 2, True, 3.5]` logs two skips and returns `6.5` instead of raising.
-
-One deliberate scope call: library code doesn't call `basicConfig` (only the `__main__` block does), which is why the bad-input test prints bare messages — the caller owns handler config. If you'd rather this emit JSON lines for ingestion (Datadog/CloudWatch/etc.), that's a different formatter — want me to switch it?

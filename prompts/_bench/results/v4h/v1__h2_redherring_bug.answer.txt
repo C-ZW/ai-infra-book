@@ -1,3 +1,0 @@
-Both tests pass. One-line fix in `aggregate.py:5`: `uid = str(e["user_id"])` — coerces int/str variants of the same ID to a single canonical key before accumulating.
-
-> ⚠️ Probing question: what happens if `user_id` is `None` or a dict (malformed event)? `str(None)` becomes the literal string `"None"` and silently groups all null-ID events together — is that the intended behavior, or should the function raise on invalid IDs at the boundary?

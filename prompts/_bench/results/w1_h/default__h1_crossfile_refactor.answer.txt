@@ -1,8 +1,0 @@
-All 3 tests pass. Here's what changed across the four files:
-
-- **`names.py`**: `format_name(first, last)` → `format_name(full_name)`, splits on the last space with `rsplit(" ", 1)`
-- **`greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes the single string through
-- **`report.py`**: `roster` no longer unpacks `(first, last)` tuples — iterates over name strings directly
-- **`__init__.py`**: no change needed (just re-exports `format_name`)
-
-One edge case to be aware of: `rsplit(" ", 1)` handles names with middle names correctly (`"Mary Anne Smith"` → `"Smith, Mary Anne"`), but names with no space will raise a `ValueError`. If the input can ever come from user-supplied data, a boundary check on the split result would be worth adding.

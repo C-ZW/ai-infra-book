@@ -1,3 +1,0 @@
-Changed from O(n²) to O(n) by tracking seen elements in a `set` (O(1) average-case lookup) instead of scanning `result` (O(n) per element). Output is identical — same first-seen order, same deduplication semantics.
-
-One probing question: does `items` ever contain unhashable elements (e.g., lists, dicts)? If so, `set.add` will raise a `TypeError` — the original O(n²) list-scan would have silently handled them, so you'd need a fallback for that case.

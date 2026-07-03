@@ -1,8 +1,0 @@
-Key decisions made:
-
-- **4xx errors are not retried** — they indicate a client error (bad URL, auth failure) that won't resolve on retry; only `URLError` (network/DNS) and HTTP 5xx are transient.
-- **Delays fire before the retry, not after a success**, so a first-try success pays no delay.
-- **Last exception is re-raised** unchanged, preserving the original type and message for the caller — no swallowing.
-- Parameters are keyword-only underscored (`_attempts`, `_base_delay`) to signal they're for testing, not part of the public API.
-
-What's the hardest failure case here: if the server returns a malformed response body (bad encoding), `decode()` will raise `UnicodeDecodeError`, which is *not* caught — it propagates immediately. Is that the right behavior, or should we retry on decode failures too?

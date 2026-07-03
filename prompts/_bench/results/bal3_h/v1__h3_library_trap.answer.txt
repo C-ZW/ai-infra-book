@@ -1,7 +1,0 @@
-Key decisions:
-- **4xx errors are re-raised immediately** — they're caller errors, retrying won't help.
-- **5xx and `URLError`** (network-level failures, DNS, timeouts) are retried.
-- Delays: 1s → 2s → 4s (3 attempts, no sleep after the final failure).
-- `last_exc` is always set before `raise` so you never get a confusing `NoneType` traceback.
-
-What's the most dangerous unhandled case here: if the server returns a `200 OK` but the connection drops mid-body, `resp.read()` raises a plain `OSError` — not a `URLError`. Should that also be retried?

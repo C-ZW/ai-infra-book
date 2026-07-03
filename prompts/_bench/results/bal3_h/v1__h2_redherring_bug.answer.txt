@@ -1,3 +1,0 @@
-Both tests pass. The fix was one line in `aggregate.py:5`: `uid = str(e["user_id"])` normalizes int/string user IDs to the same key so the 10 and 20 amounts merge correctly.
-
-> **Probing question:** What's the defined behavior if `user_id` is `None` or missing entirely? `str(None)` produces the string `"None"` and silently buckets those events together — probably not intended.

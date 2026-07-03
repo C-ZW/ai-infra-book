@@ -1,3 +1,0 @@
-Done. `fetch_url` now retries on `URLError`, `TimeoutError`, `OSError`, and 5xx `HTTPError` — sleeping 1 s, then 2 s before the third attempt. 4xx errors raise immediately (no point retrying a bad request). If all three attempts fail, the last exception propagates unchanged so callers see the real cause.
-
-Unhandled case worth considering: what happens if the response body decodes mid-stream and the connection drops mid-read? `resp.read()` will raise an `OSError`, which is caught and retried — but you'll retry the whole request, not the partial read, so that's fine as long as the endpoint is idempotent. If it isn't, callers need to know retries can fire multiple times on a successful-but-slow response.

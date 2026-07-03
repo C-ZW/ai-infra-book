@@ -1,1 +1,0 @@
-O(n²) → O(n). The `seen` set gives O(1) average membership tests; `result` list preserves insertion order. Output is identical — unhashable items (dicts, lists) would still raise `TypeError` from the `set.add`, same as before since they'd also fail `__hash__` in the old `list.__contains__`.

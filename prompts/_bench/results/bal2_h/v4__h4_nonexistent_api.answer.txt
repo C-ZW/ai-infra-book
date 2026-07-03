@@ -1,1 +1,0 @@
-Done. What does `client.patch()` return on a 404 — does it raise, or return `None`? If it swallows missing-item responses silently, callers won't know the update was a no-op.

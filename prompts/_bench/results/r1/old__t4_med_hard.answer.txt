@@ -1,3 +1,0 @@
-Fixed. `'1h30m'` → 90, `'45m'` → 45, `'2h'` → 120, all correct.
-
-One unhandled case still worth naming: the regex `(?:(\d+)h)?(?:(\d+)m)?$` matches the *empty* string and strings like `'h'` or `'m'` (both groups optional), but the `not s` check only guards a fully-empty input. An input like `'  '` (stripped to empty) raises correctly, yet `parse_duration('hello m')`-style junk before a valid tail won't match thanks to `fullmatch`. The sharper gap: `parse_duration('30m15h')` (reversed order) returns 15 silently instead of erroring — should the parser reject out-of-order or unit-less input rather than quietly accepting whatever the optional groups catch?

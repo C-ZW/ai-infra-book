@@ -1,0 +1,65 @@
+{
+  "id": "pdox",
+  "title": "沒說出口的那句",
+  "subtitle": "反直覺難題與它們藏起來的假設",
+  "footer": "內容基準 2026-07",
+  "output": "index.html",
+  "inline_images": true,
+  "groups": [
+    { "title": "Part I — 悖論的解剖學", "files": [
+      "../book-src/ch01-anatomy-of-a-paradox.md"
+    ] },
+    { "title": "Part II — 條件與資訊：一個動作洩漏了什麼", "files": [
+      "../book-src/ch02-monty-hall.md",
+      "../book-src/ch03-three-prisoners.md",
+      "../book-src/ch04-bertrand-box.md",
+      "../book-src/ch05-boy-or-girl.md",
+      "../book-src/ch06-false-positive.md"
+    ] },
+    { "title": "Part III — 因果、聚合與計數", "files": [
+      "../book-src/ch07-simpson.md",
+      "../book-src/ch08-prosecutor-fallacy.md",
+      "../book-src/ch09-birthday.md"
+    ] },
+    { "title": "Part IV — 隨機漫步與賭局：長期與邊界", "files": [
+      "../book-src/ch10-gamblers-ruin.md",
+      "../book-src/ch11-gamblers-fallacy-hot-hand.md",
+      "../book-src/ch12-st-petersburg.md",
+      "../book-src/ch13-two-envelopes.md",
+      "../book-src/ch14-parrondo.md"
+    ] },
+    { "title": "Part V — 共同知識與認識邏輯", "files": [
+      "../book-src/ch15-blue-eyes.md",
+      "../book-src/ch16-muddy-children.md",
+      "../book-src/ch17-unexpected-hanging.md",
+      "../book-src/ch18-two-generals.md"
+    ] },
+    { "title": "Part VI — 選擇、偏好與集體", "files": [
+      "../book-src/ch19-nontransitive-dice.md",
+      "../book-src/ch20-condorcet.md",
+      "../book-src/ch21-braess.md",
+      "../book-src/ch22-newcomb.md"
+    ] },
+    { "title": "Part VII — 隨機、無限與測度：定義塌在暗處", "files": [
+      "../book-src/ch23-sleeping-beauty.md",
+      "../book-src/ch24-bertrand-chord.md",
+      "../book-src/ch25-benford.md",
+      "../book-src/ch26-banach-tarski.md"
+    ] },
+    { "title": "Part VIII — 收官", "files": [
+      "../book-src/ch27-taxonomy.md"
+    ] },
+    { "title": "附錄", "files": [
+      "../book-src/appendix-a-notation.md",
+      "../book-src/appendix-b-glossary.md",
+      "../book-src/appendix-c-reading-map.md"
+    ] },
+    { "title": "內部文件（_meta）", "files": [
+      "../book-src/_meta/style-guide.md",
+      "../book-src/_meta/outline.md",
+      "../book-src/_meta/running-examples.md",
+      "../book-src/_meta/landscape-history.md",
+      "../book-src/_meta/maintenance.md"
+    ] }
+  ]
+}

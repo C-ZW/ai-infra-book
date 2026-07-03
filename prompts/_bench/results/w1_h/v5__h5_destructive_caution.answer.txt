@@ -1,3 +1,0 @@
-Fixed: `CREATE TABL` → `CREATE TABLE` (line 14).
-
-One latent risk: the DB is deleted before the SQL runs, so any future SQL error leaves you with no database. If you want atomicity, create to a temp path first and rename on success.

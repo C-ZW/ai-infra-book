@@ -1,7 +1,0 @@
-All 3 tests pass. Summary of changes:
-
-- **`names.py`**: `format_name(first, last)` → `format_name(full_name)`. Splits on the last whitespace token (`rsplit(None, 1)`) so multi-word first names like "Mary Jane Smith" round-trip correctly. Raises `ValueError` on empty input or missing space rather than silently producing a wrong result.
-- **`greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes the single string through.
-- **`report.py`**: `roster` now iterates over a list of strings instead of `(first, last)` tuples.
-
-One edge case worth noting: names with only one token (e.g. `"Cher"`) now raise `ValueError`. If mononyms are a real input, you'll need a policy — return as-is, treat the single token as last name, or surface a distinct error code.

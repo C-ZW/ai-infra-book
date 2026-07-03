@@ -1,6 +1,0 @@
-Done. Two changes:
-
-- **`framework.py`**: `route()` now accepts an optional `method="GET"` parameter; routes are keyed by `(method, path)` tuples. Existing `@route(path)` calls default to `"GET"` with no breakage.
-- **`handlers.py`**: `delete_item` checks existence first (returning `err` if missing), removes the item, and returns `ok({"id": id, "deleted": True})` — follows the project's conventions (`str.format()`, `ok`/`err`, no raw dicts).
-
-One thing to verify: whatever dispatches `_ROUTES` will need to pass the method alongside the path when looking up `(method, path)` — that lookup site isn't visible here, so confirm it's updated too.

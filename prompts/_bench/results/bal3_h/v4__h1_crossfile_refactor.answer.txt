@@ -1,7 +1,0 @@
-All 3 tests pass. Here's what changed:
-
-- `textlib/names.py` — `format_name(first, last)` → `format_name(full_name)`, splits on the last space via `rsplit(" ", 1)`, raises `ValueError` if fewer than two tokens are found
-- `textlib/greet.py` — `greeting(first, last)` → `greeting(full_name)`, passes through directly
-- `textlib/report.py` — `roster` now iterates over a flat list of strings rather than `(first, last)` tuples
-
-One edge case to be aware of: names with a surname suffix or compound last name (e.g. `'Mary van der Berg'`) will be split as `first='Mary van der'`, `last='Berg'` — the rightmost token becomes the last name. If that's not the desired behavior for your data, you'll need a more sophisticated name parser.

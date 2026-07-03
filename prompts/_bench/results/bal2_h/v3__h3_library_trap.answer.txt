@@ -1,7 +1,0 @@
-Done. Key decisions:
-
-- **3 attempts**, delays of 1 s → 2 s before attempts 2 and 3 (exponential doubling, no sleep after the final failure).
-- **4xx errors are not retried** — a 404 or 403 won't get better on its own; only `URLError` (network-level, DNS, timeout) and HTTP 5xx are considered transient.
-- `_base_delay` and `_attempts` are keyword-only private params so tests can patch them without monkey-patching `time.sleep` globally.
-
-What's the most dangerous unhandled case here: if the server responds slowly and each of the three 5-second `urlopen` timeouts fires, the worst-case wall time is `3×5 s + 1 s + 2 s = 18 s` — is that acceptable for callers that might be running on a tight outer deadline?

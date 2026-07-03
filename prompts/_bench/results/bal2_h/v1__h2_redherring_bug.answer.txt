@@ -1,3 +1,0 @@
-Both tests pass. The fix was one line in `aggregate.py:5`: `uid = str(e["user_id"])` normalizes int and string IDs to the same key so the two events for user 1 merge correctly into 30.
-
-> **Dangerous unhandled case:** what if `user_id` is `None` or a dict? `str(None)` → `"None"`, silently bucketing null IDs together. Worth a boundary check at entry if upstream can ever produce missing/malformed IDs.

@@ -1,3 +1,0 @@
-O(n²) → O(n). The `seen` set makes membership checks O(1) instead of O(n), so large inputs that were quadratic are now linear.
-
-One failure mode to confirm: items must be hashable. If `items` can contain unhashable types (dicts, lists, sets), the old O(n²) version would handle them silently while this one raises `TypeError` on `seen.add(x)`. Is that a concern for your inputs?

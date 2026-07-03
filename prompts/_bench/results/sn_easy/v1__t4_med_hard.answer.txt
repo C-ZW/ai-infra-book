@@ -1,3 +1,0 @@
-Fixed. The bug was on line 14: `hours + minutes` treated hours and minutes as the same unit. Changed to `hours * 60 + minutes` so `1h30m` → 90, `2h` → 120, `45m` → 45.
-
-What's the most dangerous unhandled case here? A string like `"0h0m"` returns 0 — callers that treat 0 as "no duration set" will silently misbehave if they don't validate the result.

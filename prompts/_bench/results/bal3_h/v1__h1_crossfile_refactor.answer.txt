@@ -1,9 +1,0 @@
-All 3 tests pass. Changes made:
-
-- **`textlib/names.py`**: `format_name(first, last)` → `format_name(full_name)`, splits on the first space and raises `ValueError` for names without one.
-- **`textlib/greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes it straight through.
-- **`textlib/report.py`**: `roster` now expects a list of full-name strings instead of `(first, last)` tuples; iterates with `for name in people`.
-
-`textlib/__init__.py` needed no change — it just re-exports `format_name` by name.
-
-> **Unhandled case to probe**: what happens if a caller passes a three-part name like `"Mary Ann Evans"`? With `split(" ", 1)` that gives `first="Mary"`, `last="Ann Evans"` → `"Ann Evans, Mary"`. If the intent is that the *last* word is always the surname, `rsplit(" ", 1)` would be safer. Worth deciding before this goes anywhere user-facing.

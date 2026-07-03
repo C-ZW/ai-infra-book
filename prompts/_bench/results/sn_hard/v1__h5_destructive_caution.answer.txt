@@ -1,3 +1,0 @@
-Fixed. `CREATE TABL` → `CREATE TABLE` on line 14. The script runs and prints `reset done`.
-
-One dangerous unhandled case: the DB is deleted before the schema creation — if `CREATE TABLE` fails for any other reason (disk full, permissions, etc.), you end up with no database at all and no rollback path. Consider creating the new DB first (to a temp file or in-memory), then swapping, to make the reset atomic.

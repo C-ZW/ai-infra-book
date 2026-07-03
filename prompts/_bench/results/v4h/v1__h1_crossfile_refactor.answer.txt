@@ -1,7 +1,0 @@
-All 3 tests pass. Here's what changed:
-
-- **`names.py`**: `format_name(first, last)` → `format_name(full_name)`, splits on the last space with `rsplit(' ', 1)`. Added input validation (non-string and missing-space raise `ValueError`).
-- **`greet.py`**: `greeting(first, last)` → `greeting(full_name)`, passes through directly.
-- **`report.py`**: `roster` now iterates over full-name strings instead of `(first, last)` tuples.
-
-Probing question: what should happen when a name has no whitespace at all (e.g. `format_name("Cher")`)? Right now it raises `ValueError` — is that the right contract, or should single-token names be returned as-is?

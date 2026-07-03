@@ -1,6 +1,0 @@
-All 4 tests pass. Changes made:
-
-- `cli.py`: added `reverse=False` param to `transform()` (applied after `upper` so ordering is deterministic), and `--reverse` flag to the argument parser.
-- `test_cli.py`: added `test_reverse` and `test_reverse_with_upper`.
-
-What's the most dangerous unhandled case here? Empty input — `reversed([])` is fine in Python, but worth confirming the pipeline handles zero lines without blocking on stdin indefinitely if the caller never closes it.

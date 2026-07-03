@@ -1,7 +1,0 @@
-Done. Key decisions:
-
-- **4xx errors are not retried** — they're client errors (bad URL, auth failure) where retrying is pointless and would just mask the real problem.
-- **5xx and `URLError`** (network failures, DNS, timeouts) are retried: attempt 0 → wait 1s → attempt 1 → wait 2s → attempt 2 → raise.
-- The last exception is re-raised verbatim so the caller gets the real error type, not a generic wrapper.
-
-What's the most dangerous unhandled case here: `resp.read().decode()` can still raise `UnicodeDecodeError` if the response body isn't UTF-8. Worth wrapping with an explicit `errors=` argument or catching that separately if the target URLs aren't guaranteed to be UTF-8.

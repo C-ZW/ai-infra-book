@@ -1,1 +1,0 @@
-Both tests pass. The fix was normalizing `uid = str(e["user_id"])` so that `1` (int) and `"1"` (str) from different upstream sources merge into the same key.

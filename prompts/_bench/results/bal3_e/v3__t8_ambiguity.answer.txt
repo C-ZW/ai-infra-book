@@ -1,7 +1,0 @@
-Key changes:
-- Swapped `print` for `logging` — now you get timestamps, levels, and the module name automatically.
-- Used `INFO` for entry/exit boundary events and `DEBUG` for per-item loop noise (so production can silence the loop without losing the boundary signals).
-- Structured key=value pairs (`count=`, `value=`, `total=`) instead of concatenated strings — grep- and splunk-friendly.
-- Format string args passed separately (`%s`, not f-strings) — avoids paying string formatting cost if the level is filtered out.
-
-Probing question: if any element of `orders` is non-numeric, `total += o` raises a `TypeError` with no logged context about *which* order caused it and what its value was — the caller only sees an undecorated exception. Should the loop catch that per-item and log `logger.error("invalid order value=%r, skipping", o)`, or let it propagate?

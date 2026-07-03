@@ -1,8 +1,0 @@
-Done. Key decisions:
-
-- `last_exc` is always set before `raise` — no risk of `raise None`
-- 4xx `HTTPError` re-raises immediately (not retryable); only 5xx and connection-level `URLError` retry
-- Sleep only happens between attempts, not after the final failure
-- Delays: 1 s → 2 s before attempts 2 and 3 (`base_delay * 2⁰`, `base_delay * 2¹`)
-
-What's the most dangerous unhandled case here: a server that returns HTTP 200 but hangs the body stream indefinitely — `urlopen` returns, `resp.read()` never does. The per-call `timeout=5` covers the *connection* phase but not the full read. If that matters for your use case, wrap the call in a `signal.alarm` or a `ThreadPoolExecutor` with `future.result(timeout=N)`.

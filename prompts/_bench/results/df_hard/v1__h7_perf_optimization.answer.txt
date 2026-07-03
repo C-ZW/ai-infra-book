@@ -1,3 +1,0 @@
-`x in result` was an O(n) scan on a list, making the loop O(n²). Switching to a `set` for membership tests makes each lookup O(1), so the whole function is O(n) — with identical output.
-
-One failure mode to be aware of: items must be **hashable**. If `items` ever contains lists, dicts, or other unhashable types, `seen.add(x)` will raise `TypeError`. The original had the same constraint implicitly (unhashable types can't be compared with `==` in a meaningful way for dedup), so this doesn't regress behavior — but worth confirming your input is always hashable.

@@ -1,1 +1,0 @@
-Yes, 17 is prime. Its only divisors are 1 and itself — nothing between 2 and 16 divides it evenly (it's odd, not a multiple of 3, and 4²=16 < 17 < 25=5², so you only need to rule out 2 and 3 as factors).

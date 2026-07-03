@@ -1,3 +1,0 @@
-`billing/pricing.py:16`
-
-Single definition found, in Python: `def compute_total(items, discount_pct=0.0):`.

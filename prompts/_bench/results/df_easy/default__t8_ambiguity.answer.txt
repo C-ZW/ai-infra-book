@@ -1,8 +1,0 @@
-Key improvements:
-
-- **`logging` module** instead of `print()` — output goes to stderr by default, carries timestamps and levels
-- **Log levels**: `INFO` for lifecycle events, `DEBUG` for per-item detail (callers can suppress debug noise with `logging.WARNING`)
-- **`%s` / `%d` formatting** instead of string concatenation — avoids building the string when the log level is filtered out
-- **Named logger** (`__name__`) so the source module is identifiable in larger apps
-
-What's the dangerous unhandled case here: if `orders` contains non-numeric values, `total += o` will raise a `TypeError` after partial accumulation — the INFO "done" log never fires and the caller gets an exception with no log of which order triggered it. Worth adding a per-item `try/except` if order values are untrusted.

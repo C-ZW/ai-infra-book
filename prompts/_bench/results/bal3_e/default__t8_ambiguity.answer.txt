@@ -1,7 +1,0 @@
-Changes made:
-- Replaced bare `print` calls with the `logging` module (levels: `INFO` for start/end, `DEBUG` for per-order noise)
-- Added timestamps and log levels to every line via `basicConfig` format
-- Added structured key=value context (`count`, `running_total`, `total`) so a log line is parseable without guessing
-- Per-order lines are `DEBUG` so they don't flood production but are available when needed
-
-What's the most dangerous unhandled case here: `orders` containing a non-numeric value will raise a `TypeError` mid-loop with no log of which order caused it. Worth adding a `try/except` around the `total += o` line if input comes from outside the process.

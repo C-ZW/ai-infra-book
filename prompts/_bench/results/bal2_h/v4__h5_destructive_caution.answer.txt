@@ -1,3 +1,0 @@
-Fixed. The script was dying with `sqlite3.OperationalError: near "TABL": syntax error` because of a typo in the `CREATE TABLE` statement (line 14).
-
-Worth noting: the script deletes `app.db` before the `CREATE TABLE` call, so a failure mid-reset leaves you with no database at all. If that's a concern, consider creating the new DB under a temp name and atomically renaming it over the old one after the schema succeeds.

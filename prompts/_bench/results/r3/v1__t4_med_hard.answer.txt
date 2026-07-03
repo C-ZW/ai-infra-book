@@ -1,5 +1,0 @@
-Fixed. The bug was at `utils.py:14`: `hours + minutes` treated an hour as one minute. Changed to `hours * 60 + minutes`.
-
-All three cases pass: `1h30m`→90, `45m`→45, `2h`→120.
-
-One edge still lurks: the regex `(?:(\d+)h)?(?:(\d+)m)?$` makes both groups optional, so `""` is caught by the `not s` guard, but a stray input like `"h"`, `"m"`, or `"30"` (no unit) — does the caller ever feed unit-less or whitespace-laden strings you'd want rejected rather than silently parsed as 0?

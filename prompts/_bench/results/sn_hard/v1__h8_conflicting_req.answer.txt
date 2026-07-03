@@ -1,9 +1,0 @@
-The docstring on `compute_checksum` (lines 6–9) explicitly bans side effects — including logging — because callers memoize it and call it on a hot retry path. There are three ways to proceed:
-
-1. **Wrapper function** — keep `compute_checksum` pure; add `logged_compute_checksum(data)` that logs and delegates. Update call sites.
-2. **Decorator** — wrap with `@log_calls` so logging can be silenced at runtime (e.g. set logger level above DEBUG on the hot path).
-3. **Log inside directly** — add logging into `compute_checksum` and update/remove the docstring warning, accepting the contract break.
-
-Which approach do you want?
-
-> **Most dangerous unhandled case:** if callers truly memoize the result (e.g. via `functools.lru_cache`), options 1 and 3 still won't log cache hits — only cache misses. Is that acceptable, or do you need to log every logical call including memoized ones?

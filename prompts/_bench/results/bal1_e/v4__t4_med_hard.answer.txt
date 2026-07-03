@@ -1,1 +1,0 @@
-Bug was `hours + minutes` → `hours * 60 + minutes` on line 14. `'1h30m'` was returning 31 instead of 90.

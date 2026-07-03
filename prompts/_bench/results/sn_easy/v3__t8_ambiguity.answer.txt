@@ -1,7 +1,0 @@
-Replaced `print()` with `logging`:
-
-- `basicConfig` sets a timestamp + level format
-- Start/end use `INFO`; per-item loop uses `DEBUG` (reduces noise in production, enable with `logging.DEBUG` when needed)
-- Both boundary log calls include structured `extra` fields (`order_count`, `total`) so they're grep/parse-friendly
-
-What happens if `orders` contains a non-numeric value — `total += o` will raise a `TypeError` with no log context. Worth adding a `try/except` around the loop body if that's a realistic input?

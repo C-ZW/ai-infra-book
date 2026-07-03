@@ -1,3 +1,0 @@
-`core.py` now has `logged_compute_checksum` — delegates to the pure function, logs `data_len` and `checksum` at DEBUG level. The original function is unchanged; memoized and hot-path callers are unaffected.
-
-Callers that need the logging should import and call `logged_compute_checksum` instead — have you identified which call sites should switch over?

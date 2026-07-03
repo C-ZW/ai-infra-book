@@ -1,1 +1,0 @@
-Both tests pass. `aggregate.py:6` — `uid = str(e["user_id"])` normalizes int/str IDs to the same key before accumulating.

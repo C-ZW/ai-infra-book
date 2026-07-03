@@ -1,1 +1,0 @@
-`return hours + minutes` → `return hours * 60 + minutes`. The hours were never converted to minutes before adding.

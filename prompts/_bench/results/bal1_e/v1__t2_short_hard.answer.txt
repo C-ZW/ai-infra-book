@@ -1,9 +1,0 @@
-No, that's wrong.
-
-`list.index(x)` is O(n) — it does a linear scan from the front until it finds `x` (or exhausts the list). The fact that a list is a contiguous array only makes *indexing by position* (e.g. `lst[3]`) O(1); searching by value is a different operation.
-
-CPython source confirms this: `list.index` calls `PyObject_RichCompareBool` in a loop over every element until a match.
-
-If you need O(1) lookup by value, use a `set` or a `dict`.
-
-What's the most dangerous unhandled case here: if your teammate is using `list.index` inside a loop, you have a silent O(n²) that won't show up until the input is large enough to matter.

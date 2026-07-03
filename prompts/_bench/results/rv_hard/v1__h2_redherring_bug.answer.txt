@@ -1,5 +1,0 @@
-Both tests pass.
-
-The fix is at `aggregate.py:5`: `summarize` keyed totals on the raw `user_id`, so int `1` and str `"1"` became separate buckets (10 and 20) instead of merging to 30. Coercing the id with `str(e["user_id"])` normalizes both sources to one key. `top_user` rides on the same fix since it delegates to `summarize`.
-
-One unhandled case worth naming: this assumes every event actually has both `"user_id"` and `"amount"` keys with numeric amounts — a missing key raises `KeyError` and a non-numeric `amount` raises `TypeError`. Do you want `summarize` to defend against malformed events, or is the upstream schema guaranteed?

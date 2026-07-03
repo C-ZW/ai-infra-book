@@ -1,7 +1,0 @@
-Done. Changes to `fetcher.py`:
-
-- Catches `urllib.error.HTTPError` (retries only 5xx; 4xx re-raises immediately as they're not transient) and `urllib.error.URLError` (network failures).
-- Sleeps `base_delay * 2^(attempt-1)` between attempts (1 s → 2 s by default for 3 attempts).
-- Stores the last exception and raises it once all attempts are exhausted — no silent swallowing.
-
-Dangerous unhandled case: `resp.read().decode()` will raise `UnicodeDecodeError` on a non-UTF-8 body — currently not retried and not documented. Should you pass an explicit encoding or use `decode(errors='replace')`?

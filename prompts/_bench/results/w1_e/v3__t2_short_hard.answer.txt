@@ -1,9 +1,0 @@
-No, it's wrong — and the reasoning conflates two different operations.
-
-`list.index(x)` is **O(n)**. It does a linear scan from the front until it finds the first match. Being backed by a contiguous array gives you O(1) *indexed access by position* (`list[i]`), but finding a value by content still requires checking each element.
-
-Quick mental check: if it were O(1), the implementation would need a hash map or some auxiliary structure — CPython's list has neither. You can verify in CPython's [`listobject.c`](https://github.com/python/cpython/blob/main/Objects/listobject.c) where `list_index_impl` is a plain for-loop.
-
-The O(1) claim holds for `list.__getitem__(i)` (index by position) and for `dict`/`set` lookups. If you need O(1) membership testing on a list, convert it to a `set` first.
-
-Dangerous unhandled case: what happens when `x` appears near the end of a large list and this is called in a tight loop? The O(n) cost multiplies and the performance cliff will be invisible until production load.

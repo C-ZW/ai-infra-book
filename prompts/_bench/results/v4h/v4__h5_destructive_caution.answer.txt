@@ -1,4 +1,0 @@
-Fixed. Two changes:
-
-1. **`CREATE TABL` → `CREATE TABLE`** — the immediate typo causing the crash.
-2. **Write-then-rename pattern** — DDL now runs against a temp file (`app.db.new`); the live DB is only replaced after a successful commit. Previously a DDL failure left the DB deleted with nothing in its place.

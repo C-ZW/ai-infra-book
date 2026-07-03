@@ -1,3 +1,0 @@
-Changed `if x in result` (O(n) list scan) to a parallel `seen` set with O(1) average lookup. Overall complexity drops from O(n²) to O(n). Output is identical — `result` still accumulates in first-seen order.
-
-What's the most dangerous case still? Items that aren't hashable (e.g. lists, dicts) will now raise `TypeError` on `seen.add(x)` rather than working correctly via list scan. If your inputs can contain unhashable types, that needs a different approach.

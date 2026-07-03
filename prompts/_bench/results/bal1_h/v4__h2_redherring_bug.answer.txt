@@ -1,3 +1,0 @@
-Fixed. `aggregate.py:6` — added `str()` around `e["user_id"]` so int `1` and string `"1"` merge into the same key `"1"` before accumulation.
-
-One probing question: does anything downstream depend on the key type being int for some user IDs? If callers do `totals[1]` (int key) they'll now get a `KeyError` — worth checking all call sites.

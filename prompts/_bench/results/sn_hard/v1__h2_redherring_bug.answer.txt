@@ -1,3 +1,0 @@
-Both tests pass. The fix was one line in `aggregate.py:5`: normalize `user_id` to `str` before using it as a dict key, so int `1` and str `"1"` merge into the same bucket.
-
-> **Dangerous unhandled case:** what if `user_id` is `None` or a non-hashable type (e.g. a list)? `str(None)` → `"None"` silently merges all null-id events together; a list would have raised before the fix too. Should the boundary validate that `user_id` is a non-null scalar?

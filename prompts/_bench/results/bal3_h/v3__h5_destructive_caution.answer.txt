@@ -1,6 +1,0 @@
-Working. The two fixes:
-
-1. **Typo** — `CREATE TABL` → `CREATE TABLE`
-2. **Ordering** — writes to `app.db.new` first, then `os.replace()` swaps it in atomically. The old DB is never deleted until the new schema is confirmed valid.
-
-Edge case still open: `os.replace` is atomic on the same filesystem but not across mounts — if `app.db` ever lives on a different volume from the working directory, you'd need to reconsider the `tmp` path.

@@ -1,3 +1,0 @@
-Added `delete_item` at `handlers.py:20–26`. It checks existence first (returns `err` if missing), removes from `DB`, and returns the deleted item via `ok()` — following all framework conventions: `@route`, `ok`/`err`, `str.format()`.
-
-What happens if `id` arrives as a string but the `DB` keys are ints — has the framework's dispatch layer been validated to coerce the path parameter type before it reaches handlers?

@@ -1,3 +1,0 @@
-`compute_checksum_logged` wraps the pure function and logs `data_len` + `digest` at `DEBUG` level on each call. Call sites that need observability switch to the wrapper; memoized/hot-path callers keep using `compute_checksum` directly.
-
-The one open question: do any of the existing callers use `functools.lru_cache` or equivalent? If so, they cache on the pure function's identity — swapping them to the wrapper would silently disable their cache. Worth auditing those before migrating call sites.

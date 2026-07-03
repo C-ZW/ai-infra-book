@@ -1,1 +1,0 @@
-Both tests pass. The fix: `aggregate.py:5` — `uid = str(e["user_id"])` normalizes int/str IDs to a canonical string key before accumulating, so `1` and `"1"` map to the same bucket.

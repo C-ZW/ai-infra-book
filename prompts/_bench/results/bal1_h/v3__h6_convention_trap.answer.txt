@@ -1,3 +1,0 @@
-Done. Added `delete_item` at `handlers.py:21` following the same `@route`, `ok`/`err`, `.format()` conventions as the existing handlers.
-
-One sharp question: does the `@route` decorator distinguish HTTP method, or does it dispatch purely on path? If it's path-only, `get_item` and `delete_item` both match `/items/{id}` and one will silently shadow the other — you'll need a method parameter (e.g. `@route("/items/{id}", method="DELETE")`) before this works correctly.

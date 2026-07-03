@@ -1,8 +1,0 @@
-Done. Key decisions:
-
-- **Retryable exceptions**: `urllib.error.URLError` (DNS, connection refused, HTTP errors) and `OSError` (socket-level failures). Non-retriable things like `ValueError` on a bad URL escape immediately.
-- **No sleep after the last attempt** — avoids a pointless delay before raising.
-- **Named `FetchError`** carries `url`, `attempts`, and the root `cause` so callers can handle or log it precisely.
-- **`base_delay` param** makes the backoff testable without patching `time.sleep` constants.
-
-Dangerous unhandled case: `resp.read().decode()` can raise `UnicodeDecodeError` (e.g. a binary response or Latin-1 page). That bubbles up immediately without retrying — correct behavior, but callers may want to pass `errors='replace'` or inspect `resp.headers.get_content_charset()` first.

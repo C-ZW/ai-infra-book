@@ -1,9 +1,0 @@
-Done. Verified: 3 attempts, delays double (1.0s → 2.0s, two sleeps for two retries), success short-circuits, and on exhaustion the real `URLError` is re-raised — not swallowed.
-
-`fetcher.py:8` now retries with exponential backoff. Key decisions:
-- **Stdlib only** — the README and `requirements.txt` mandate no third-party deps (locked-down environments), so I used `time.sleep` + `urllib.error`, not `tenacity`/`backoff`/`requests`.
-- **Retries only transient errors** (`urllib.error.URLError`, `TimeoutError`). Note this includes `HTTPError` (a URLError subclass), so a 404/500 also gets retried 3× — fine for a minimal fetcher, but tell me if you want non-retryable 4xx to fail fast.
-- **No swallowing** — the final attempt re-raises the original exception; the per-attempt `timeout=5` is preserved.
-- `max_attempts`/`base_delay` are optional args (defaults 3 / 1.0s), so existing `fetch_url(url)` callers are unaffected.
-
-The most dangerous unhandled case: total worst-case latency is now ~5s×3 timeouts + 3s backoff ≈ 18s per call. If `fetch_url` runs inside a request handler or a tight loop, that blocking wait can cascade into upstream timeouts — should the backoff be capped or made non-blocking for your call site?

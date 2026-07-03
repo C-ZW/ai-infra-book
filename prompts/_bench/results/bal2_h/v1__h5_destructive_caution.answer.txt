@@ -1,3 +1,0 @@
-Fixed. The typo `TABL` → `TABLE` on line 14 was causing the SQL to fail after the DB file was already deleted — leaving you with no DB and no schema.
-
-⚠️ One danger to keep in mind: the script still deletes the DB before verifying the schema runs. If you add a real-world `CREATE TABLE` that fails (constraint issue, bad column type, etc.), the file is already gone. Consider wrapping the whole sequence in a try/except that rolls back or at least reports clearly before exiting.

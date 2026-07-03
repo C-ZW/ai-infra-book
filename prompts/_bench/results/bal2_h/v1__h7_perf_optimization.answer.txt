@@ -1,3 +1,0 @@
-O(n²) → O(n). The `seen` set gives O(1) average-case membership tests; `result` is only appended to (never scanned), so the overall loop is now linear.
-
-One risk to be aware of: items must be **hashable**. The original had the same requirement implicitly (unhashable types like `list` or `dict` would raise a `TypeError` on `in result` too, just slower), so this doesn't regress anything — but if callers pass unhashable items, the error surface is now the `seen.add(x)` line instead of the `in result` check.

@@ -1,3 +1,0 @@
-Bug: `return hours + minutes` should be `return hours * 60 + minutes`. `'1h30m'` was returning `31` (1+30) instead of `90`. All three cases now pass.
-
-> **Dangerous unhandled case:** the regex `(?:(\d+)h)?(?:(\d+)m)?$` matches the empty string — both groups optional. `''` after `.strip()` is caught by the `not s` guard, but a string of spaces alone passes `not s` only after stripping, which is fine. However, a string like `'30'` (no unit) silently matches with both groups `None` and returns `0` instead of raising. Worth deciding whether bare numbers should be an error or assumed minutes.

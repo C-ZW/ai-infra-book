@@ -1,3 +1,0 @@
-Done. Each call now logs at `DEBUG` level with the input size and resulting digest via the module-level logger (`core`).
-
-**Risk to watch:** any caller that memoizes `compute_checksum` will now emit one log line on the first call per unique input but silently skip logging on cache hits — call counts in logs will under-report. If accurate call counts matter, memoization wrappers at those call sites need to be removed or they need to log the cache-hit separately.

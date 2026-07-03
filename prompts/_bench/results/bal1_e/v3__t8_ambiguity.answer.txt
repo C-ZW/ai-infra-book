@@ -1,7 +1,0 @@
-Key changes:
-- `logging` module gives timestamps, levels, and goes to `stderr` (stdout stays clean for actual output)
-- Per-item chatter is `DEBUG` so production runs stay quiet — flip to `DEBUG` level only when troubleshooting
-- Structured key=value pairs in messages make them grep- and log-parser-friendly
-- Named logger (`__name__`) means callers can filter by module when this is imported
-
-One open question: if `orders` contains a non-numeric value, `total += o` raises `TypeError` and the caller gets no logged context about which item caused it. Worth wrapping in a `try/except` with `logger.error("process failed order=%s error=%s", o, e)` and either skipping or re-raising?

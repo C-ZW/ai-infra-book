@@ -1,1 +1,0 @@
-Fixed. `CREATE TABL` → `CREATE TABLE` on line 14. Script runs cleanly and `app.db` is now created with the `users` schema.
