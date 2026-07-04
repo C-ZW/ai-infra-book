@@ -1,0 +1,13 @@
+{
+  "_comment": "reference form fragment. P1 copies this into <book-src>/_meta/lint.config.json. chapter_globs is a PLACEHOLDER: reference books use per-domain/per-part file naming — set it to the book's real scheme and exclude non-entry files via appendix_globs, or every check is silently skipped (P3's count assert is the backstop).",
+  "chapter_globs": ["*.md"],
+  "appendix_globs": ["appendix-*.md", "apx-*.md", "README.md", "index.md"],
+  "severity": {
+    "skeleton": "off",
+    "skeleton_order": "off",
+    "solution": "off",
+    "difficulty": "off",
+    "time": "off",
+    "worked_example": "off"
+  }
+}

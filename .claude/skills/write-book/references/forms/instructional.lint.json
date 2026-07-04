@@ -1,0 +1,8 @@
+{
+  "_comment": "instructional form fragment. P1 copies this into <book-src>/_meta/lint.config.json, then pins per-book values: skeleton_slots (ONE dialect variant per slot, from the language pack's variants) and chapter_globs if the book deviates from ch*.md naming.",
+  "severity": {
+    "worked_example": "error",
+    "difficulty": "error",
+    "time": "error"
+  }
+}

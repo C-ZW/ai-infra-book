@@ -1,0 +1,8 @@
+{
+  "_comment": "write-book engine v3 local configuration (see .claude/skills/write-book/SKILL.md §Setup). Paths are relative to this file. arbiter_model intentionally unset: the adjudication arbiter defaults to the session model (decision 2026-07-03).",
+  "tools_path": "../tools/md-reader",
+  "book_root": "books",
+  "book_src_layout": "books/<slug>/book-src",
+  "default_language": "zh-TW",
+  "profile_path": "../profile"
+}

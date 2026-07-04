@@ -1,0 +1,13 @@
+{
+  "_comment": "narrative form fragment. P1 copies this into <book-src>/_meta/lint.config.json. chapter_globs below is a PLACEHOLDER DEFAULT: it MUST be reviewed against the book's real file naming (topic-named chapters need e.g. [\"*.md\"] plus appendix_globs exclusions), or every chapter check is silently skipped. P3's chapter-count assert catches a mismatch.",
+  "chapter_globs": ["ch*.md"],
+  "appendix_globs": ["appendix-*.md", "apx-*.md", "README.md", "index.md"],
+  "severity": {
+    "skeleton": "off",
+    "skeleton_order": "off",
+    "solution": "off",
+    "difficulty": "off",
+    "time": "off",
+    "worked_example": "warn"
+  }
+}

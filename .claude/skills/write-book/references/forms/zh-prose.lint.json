@@ -1,0 +1,13 @@
+{
+  "_comment": "zh-TW translationese WARN patterns (see references/zh-prose.md). P1 merges this into the book's lint config for every zh-TW book, AFTER the form fragment. IMPORTANT: deep_merge REPLACES lists, so this list must also carry the language pack's own vocab_regex_warn entries (currently the 算法 rule) — dropping them would silently disable pack rules. All entries here are WARN-only: style needs a human eye, never a mass replace.",
+  "vocab_regex_warn": [
+    { "pattern": "(?<![演計運])算法", "term": "算法", "replace": "演算法" },
+    { "pattern": "進行[了]?[一-鿿]{2,4}", "term": "進行＋動作名詞", "replace": "直接用動詞（進行分析→分析）" },
+    { "pattern": "加以[一-鿿]{2,4}", "term": "加以＋動作名詞", "replace": "直接用動詞" },
+    { "pattern": "透過[^，。；]{1,14}的方式", "term": "透過…的方式", "replace": "用／靠／以" },
+    { "pattern": "在[^，。；]{1,12}的情況下", "term": "在…的情況下", "replace": "當／若／…時" },
+    { "pattern": "對於[^，。；]{1,10}而言", "term": "對於…而言", "replace": "對…" },
+    { "pattern": "存在著", "term": "存在著", "replace": "有" },
+    { "pattern": "作為一個", "term": "作為一個…", "replace": "換主語直述" }
+  ]
+}

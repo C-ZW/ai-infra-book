@@ -19,7 +19,7 @@
 
 工具已抽至 `../tools/md-reader/`（通用打包器，說明見該處 README；程式一律英文）。本 repo 只保留 reader 設定檔（`web/*.config.json`）與輸出。**每本書設定檔的 `id` 必須全域唯一**（localStorage 命名空間，重複會讓閱讀進度互相覆蓋）。
 
-個人上下文中樞在 `../profile/`（建書與個人化任務先讀其 README）；書籍登記簿 `../profile/books.json`；寫新書用 `write-book` skill。**所有書集中放在本專案 `books/<slug>/` 下**（2026-06-12 決定；如 `books/tlaplus/`，各有自己的 CLAUDE.md），只有本書（AI Infra 轉職書）因歷史因素留在 repo 根的 `book/`。
+個人上下文中樞在 `../profile/`（建書與個人化任務先讀其 README）；書籍登記簿 `../profile/books.json`；寫新書用 `write-book` skill（v3，2026-07-03 重設計：引擎設定在 repo 根 `write-book.config.json`；phase 規格／書型 pack／prompt 模板／陷阱庫在 skill 的 `references/`、P2/P4 workflow scripts 在 `scripts/`；重設計計劃見 `write-book-redesign-plan.md`）。**所有書集中放在本專案 `books/<slug>/` 下**（2026-06-12 決定；如 `books/tlaplus/`，各有自己的 CLAUDE.md），只有本書（AI Infra 轉職書）因歷史因素留在 repo 根的 `book/`。
 
 ## 慣例
 
