@@ -1,0 +1,345 @@
+{
+  "date": "2026-10-06",
+  "reviewer": "write_limits_evidence",
+  "independence": "Reviewer authoredch09–ch12, not either reviewed chapter. Same-model independent reviewer, not cross-model consensus. No external evaluator or Lean rebuild was run.",
+  "scope": [
+    "Read completech17andch18source text and footnotes.",
+    "Read fact-auditor and arbiter templates, pitfalls, running-examples and landscape.",
+    "Attempted refutation of benchmark timing, translation, verification, publication chronology and LeanNat.subclaims using primary sources.",
+    "Recomputed chapter-defined elementary mathematics separately from external factual checks.",
+    "Read-only review of chapter files; only thisJSONreport written."
+  ],
+  "template_adaptation": "Uses refutation-oriented primary-source checking and independent closed-book arithmetic principles. Verdict primary_source_supported means inspected primary material supports the wording, not that two independent primary origins or experimental replication were obtained. Multiple pages from one team are explicitly not treated as independent sources. This is not a claim that legacy P4 or strict two-origin confirmation ran.",
+  "snapshots": [
+    {
+      "file": "books/proof-evolution/book-src/ch17-ai-and-proof.md",
+      "sha256": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398"
+    },
+    {
+      "file": "books/proof-evolution/book-src/ch18-responsibility-of-proof.md",
+      "sha256": "42d251805ec85d3d9dc4b0339779178556ed8ca8d2491acd8ff9eec19c88bdfb"
+    }
+  ],
+  "material_findings": [],
+  "optional_findings": [
+    {
+      "id": "ch17-timing-precision",
+      "severity": "nonblocking_precision",
+      "chapter": 17,
+      "exact_passage": "公告稱符合 4.5 小時競賽時限，免去人手翻成專門形式語言的步驟",
+      "issue": "The passage accurately attributes the4.5-hour phrase to the team announcement, so it is not refuted. Without giving the official two-session format, a reader may infer that the human six-problem contest lasts4.5hours in total.",
+      "sources": [
+        "gemini2025",
+        "imo2025schedule",
+        "imoRules"
+      ],
+      "suggested_fix": "Add after the table:「IMO 正式賽制為兩日、每日三題，各 4.5 小時；此處 4.5 小時保留團隊公告的措辭，不據此推定其六題排程。」Cite the2025host schedule page or official regulations§5.1. Preserve the existing distinction between scored answers and unaudited generation process.",
+      "chapter_changed_by_reviewer": false,
+      "status": "resolved_by_author_and_independently_read_back",
+      "resolution": {
+        "author": "write_ai_and_synthesis",
+        "verified_by": "write_limits_evidence",
+        "exact_added_passage": "讀表時還要分清楚正式賽制與系統報告的時間。IMO 正式比賽分連續兩日舉行，每日三題，每日作答時間各為 4.5 小時。本表保留 Gemini 團隊公告中的「4.5 小時」措辭，不據此推定系統對全部六題的實際排程或合計求解時間。[^ch17-imo-format]",
+        "sources_rechecked_by_reviewer": [
+          "https://www.imo-official.org/documents/RegulationsIMO.pdf",
+          "https://imo2025.au/work-with-us/"
+        ],
+        "read_back_sha256": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398",
+        "assessment": "Passage separates the official two-session format from the team announcement and declines unsupported inference about total AI schedule; appropriate source footnote present."
+      }
+    }
+  ],
+  "claims": [
+    {
+      "chapter": 17,
+      "claim": "AlphaGeometry uses language-model auxiliary constructions and a specialized geometry deductive environment, with a restricted class of geometry statements.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "alphaGeometry"
+      ],
+      "note": "The chapter appropriately avoids equating this with Lean kernel verification."
+    },
+    {
+      "chapter": 17,
+      "claim": "The generalized IMO2004P1 statement only guarantees collinearity and does not automatically preserve original betweenness.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "alphaGeometry"
+      ],
+      "note": "Figure5 and extended figure2 directly state this distinction."
+    },
+    {
+      "chapter": 17,
+      "claim": "AlphaProof publication online in November2025, formal volume in2026, experiment IMO2024; final independent standard-Lean and axiom checks.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "alphaProof"
+      ],
+      "note": "Dates and final check match the original article; primary-reported verification, not this reviewer's rebuild."
+    },
+    {
+      "chapter": 17,
+      "claim": "AlphaProof plus AlphaGeometry2 reported 4/6 solutions and28/42, human translation and computation up to3days.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "imo2024",
+        "alphaProof"
+      ],
+      "note": "Two documents from the same research origin are not counted as independent replications."
+    },
+    {
+      "chapter": 17,
+      "claim": "Advanced Gemini DeepThink reported5/6 solutions,35/42 and natural-language proofs; IMO review of answers did not audit system processes.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "gemini2025",
+        "imo2025scope"
+      ],
+      "note": "Results remain clearly attributed to team announcement. Direct organizer statement confirms the limitation of assessment, not an independently inspected generation process."
+    },
+    {
+      "chapter": 17,
+      "claim": "The official2025 human contest used two4.5-hour sessions, three problems per session.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "imo2025schedule",
+        "imoRules",
+        "imo2024"
+      ],
+      "note": "Needed precision adjacent to the Gemini announcement wording; see optional clarification finding."
+    },
+    {
+      "chapter": 17,
+      "claim": "Aristotle v1 reports5/6 formally verified solutions; humans formalized original statements; intermediate lemmas autoformalized; repository advertises1–5Lean proofs.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "aristotleV1",
+        "aristotleRepo"
+      ],
+      "note": "Same research origin; total time equivalence was not established, and manuscript correctly declines to claim it. Repository entry only, no build."
+    },
+    {
+      "chapter": 17,
+      "claim": "AlphaGeometry2 expands representable geometry and improves symbolic deduction.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "alphaGeometry2"
+      ],
+      "note": "Sections2/4 support the restrained methodological statement."
+    },
+    {
+      "chapter": 18,
+      "claim": "Lean4.19Nat.sub returns0when mathematical integer subtraction would be negative.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "leanNat419"
+      ],
+      "note": "Definition and examples directly support the inventory counterexample."
+    },
+    {
+      "chapter": 18,
+      "claim": "Lean can reveal theorem axiom dependencies using#print axioms.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "leanAxioms",
+        "alphaProof"
+      ],
+      "note": "Official manual gives the mechanism; application relevance still requires specification review."
+    },
+    {
+      "chapter": 18,
+      "claim": "EuclidIX.20 separately handles the constructed number being prime or nonprime.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "euclidIX20"
+      ],
+      "note": "Chapter does not attribute the modern30031example to Euclid."
+    },
+    {
+      "chapter": 18,
+      "claim": "NASEM2019 distinguishes same-data computational reproducibility and new-data consistency, and discusses confidence through converging evidence.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "nasem3",
+        "nasem7"
+      ],
+      "note": "Institutional definitions are attributed; no universal naming convention asserted."
+    },
+    {
+      "chapter": 18,
+      "claim": "Thurston1994 discusses social communication and gaps between formal records and working mathematical understanding.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "thurston"
+      ],
+      "note": "Source is explicitly first-person reflection, not an empirical effect-size study."
+    },
+    {
+      "chapter": 18,
+      "claim": "Lamport2011/2012 advocates naming and hierarchical structure to expose steps and dependencies.",
+      "verdict": "primary_source_supported",
+      "sources": [
+        "lamport"
+      ],
+      "note": "Draft and revision dates match; manuscript does not claim hierarchy alone guarantees correctness."
+    }
+  ],
+  "mathematical_recomputation": [
+    {
+      "chapter": 17,
+      "claim": "n²+n+41counterexamples and factorization",
+      "verdict": "recomputed_correct",
+      "reasoning": "Atn40:1600+40+41=1681=41². Forn41k:1681k²+41k+41=41(41k²+k+1), andk≥1makes both factors>1. No prime assumption on the second factor is needed."
+    },
+    {
+      "chapter": 17,
+      "claim": "Oddness and collinear-versus-between examples",
+      "verdict": "recomputed_correct",
+      "reasoning": "One of consecutive integersn,n+1is even, son(n+1)+41is odd. On a real lineB0,C1,P2are collinear but2∉[0,1]."
+    },
+    {
+      "chapter": 18,
+      "claim": "Odd sums and product-plus-one counterexample",
+      "verdict": "recomputed_correct",
+      "reasoning": "1+3+5+7+9=25.2·3·5·7·11·13=30030;59·509=30031. New prime divisor argument does not require the constructed number itself to be prime."
+    },
+    {
+      "chapter": 18,
+      "claim": "Invariant interval[0,1]forx_next=(x+u)/2",
+      "verdict": "recomputed_correct",
+      "reasoning": "Givenx,u∈[0,1],their sum lies in[0,2],thus their average lies in[0,1]. Base hypothesisx0∈[0,1]and all-time input condition are explicit. Unrestricted-input counterexample gives(1+1.2)/2=1.1."
+    },
+    {
+      "chapter": 18,
+      "claim": "Additive error interval[−2η,1+2η]",
+      "verdict": "recomputed_correct",
+      "reasoning": "Forη≥0,x∈[−2η,1+2η],u∈[0,1],e∈[−η,η],minimum update is(−2η+0)/2−η=−2η;maximum is(1+2η+1)/2+η=1+2η. Initial membership is explicitly required."
+    },
+    {
+      "chapter": 18,
+      "claim": "Natural subtraction inventory counterexample and strengthened invariant",
+      "verdict": "recomputed_correct",
+      "reasoning": "Nat.sub(3,5)=max(3−5,0)=0,so nonnegative display does not implyd≤s. Underd≤s,s−d+d=s. Thus(s−d)+(W+d)=s+W=R. Receipt step increases boths,Rbyr. With initial invariant and every legal atomic step preserving it,s≥0impliesW≤R. Concurrency and real-record correspondence are explicitly outside this simplified invariant."
+    }
+  ],
+  "sources": [
+    {
+      "id": "gemini2025",
+      "url": "https://deepmind.google/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/",
+      "scope": "Reopened official article. Read July 21 2025 date, results section, 4.5-hour sentence, natural-language method, final IMO review limitation."
+    },
+    {
+      "id": "imo2025scope",
+      "url": "https://imo2025.au/wp-content/uploads/2025/07/IMO-2025_ClosingDayStatement-19072025.pdf",
+      "scope": "Reopened and read one-page July 19 2025 official statement; compute, human involvement and reproducibility are explicitly outside IMO validation."
+    },
+    {
+      "id": "imo2025schedule",
+      "url": "https://imo2025.au/work-with-us/",
+      "scope": "Read contemporary host recruitment page; invigilation is 4.5 hours each day for two days, July 15–16 2025."
+    },
+    {
+      "id": "imoRules",
+      "url": "https://www.imo-official.org/documents/RegulationsIMO.pdf",
+      "scope": "Read §5.1: two consecutive days, each four and a half hours and three problems. No other legal or participation rules audited."
+    },
+    {
+      "id": "imo2024",
+      "url": "https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/",
+      "scope": "Reopened results, human translation, per-problem duration, score and human contest timing."
+    },
+    {
+      "id": "alphaProof",
+      "url": "https://www.nature.com/articles/s41586-025-09833-y",
+      "scope": "Reopened bibliographic record, abstract and methods final proof check; published November 12 2025, Nature651607–613(2026), standard Lean final check and three-axiom dependency check."
+    },
+    {
+      "id": "alphaGeometry",
+      "url": "https://www.nature.com/articles/s41586-023-06747-5",
+      "scope": "Reopened methods Geometry representation, Figure5 caption and extended figure2 caption. Checked specialized language and failure of generalized statement to guarantee betweenness."
+    },
+    {
+      "id": "aristotleV1",
+      "url": "https://arxiv.org/html/2510.01346v1",
+      "scope": "Reopened original version, §3.1 and test-time training section. Read hand-formalized problem statements and model-generated/formalized lemmas; no total IMO wall-clock protocol found in cited section."
+    },
+    {
+      "id": "aristotleRepo",
+      "url": "https://github.com/harmonic-ai/IMO2025",
+      "scope": "Reopened repository entry and README identifying Lean statements/proofs for Problems1–5. Folder click produced retrieval error; no proof files executed, no rebuild claimed."
+    },
+    {
+      "id": "alphaGeometry2",
+      "url": "https://arxiv.org/html/2502.03544v1",
+      "scope": "Reopened §§2 and4; expanded language, new predicates and stronger symbolic engine are documented. No current leaderboard assertion assessed."
+    },
+    {
+      "id": "leanNat419",
+      "url": "https://lean-lang.org/doc/reference/4.19.0/Basic-Types/Natural-Numbers/",
+      "scope": "Read version-pinned Nat.sub definition and examples; subtraction is truncated at zero."
+    },
+    {
+      "id": "leanAxioms",
+      "url": "https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/",
+      "scope": "Read axiom dependency discussion and #print axioms example. Did not execute Lean."
+    },
+    {
+      "id": "euclidIX20",
+      "url": "https://mathcs.clarku.edu/~djoyce/java/elements/bookIX/propIX20.html",
+      "scope": "Read translated original proof with explicit prime/nonprime cases and Joyce commentary distinguishing least common multiple from a modern product restatement."
+    },
+    {
+      "id": "nasem3",
+      "url": "https://www.nationalacademies.org/read/25303/chapter/6",
+      "scope": "Read Chapter3 definition section, Conclusion3-1, same-data computational reproducibility versus new-data replicability and disciplinary terminology variation."
+    },
+    {
+      "id": "nasem7",
+      "url": "https://www.nationalacademies.org/read/25303/chapter/10",
+      "scope": "Read Chapter7 opening discussion and Conclusion7-2 on multiple lines of evidence; not the complete long chapter."
+    },
+    {
+      "id": "thurston",
+      "url": "https://arxiv.org/html/math/9404236v1",
+      "scope": "Read §§3–4 discussion of communication, community understanding and distinction between formal records and actual thinking."
+    },
+    {
+      "id": "lamport",
+      "url": "https://lamport.azurewebsites.net/pubs/proof.pdf",
+      "scope": "Read front matter, introduction and hierarchy section; November23 2011 draft, January15 2012 minor revision."
+    }
+  ],
+  "limitations": [
+    "No model systems or published proof repositories were executed.",
+    "Aristotle proof-file folder retrieval failed after successfulREADMEentry read.",
+    "No claim to exhaustively cover AI systems or papers after the explicitly dated cases.",
+    "One primary document can establish what its author reports; it does not independently establish all generation conditions."
+  ],
+  "summary": "No material factual or mathematical error identified in reviewed scope. Fourteen source-supported claim groups and six independently recomputed elementary argument groups. One timing precision suggestion was accepted, revised by the chapter author, and independently read back; no unresolved findings.",
+  "initial_review_snapshots": [
+    {
+      "file": "books/proof-evolution/book-src/ch17-ai-and-proof.md",
+      "sha256": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398"
+    },
+    {
+      "file": "books/proof-evolution/book-src/ch18-responsibility-of-proof.md",
+      "sha256": "42d251805ec85d3d9dc4b0339779178556ed8ca8d2491acd8ff9eec19c88bdfb"
+    }
+  ],
+  "revision_history": [
+    {
+      "event": "proposed_timing_clarification",
+      "description": "Reviewer identified potential inference from4.5-hourannouncement to total human contest time and sent primary sources to root."
+    },
+    {
+      "event": "author_revision",
+      "description": "Chapter author added two-day, three-problem,4.5-hour-each-dayformat and kept system total schedule unspecified."
+    },
+    {
+      "event": "independent_read_back",
+      "sha256": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398",
+      "description": "Verified actual added passage and new footnote against sources already opened by this reviewer; chapter text not edited by reviewer."
+    }
+  ],
+  "export_note": "Source URLs, access limits, findings and final file digests are retained. Conversation-only tool reference IDs are omitted, and workspace paths are normalized."
+}

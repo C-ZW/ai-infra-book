@@ -1,0 +1,143 @@
+{
+  "title": "Read-only scoped review of appendices B and D",
+  "reviewer": "/root/write_ai_and_synthesis",
+  "date": "2026-10-06",
+  "status": "complete_all_findings_resolved",
+  "independence": "Appendices were written by root. Reviewer wrote chapters17–18 and independently reviewed13–16; no claim of cross-model review.",
+  "scope": "Full appendices read. Timeline facts in the reviewer’s previously verified modern material were compared with inspected original sources. Earlier historical entries were checked only for internal date/edition distinctions and valid chapter routing, without reauditing all ancient or early-modern history.",
+  "files": {
+    "appendix-b-timeline.md": {
+      "file": "books/proof-evolution/book-src/appendix-b-timeline.md",
+      "sha256_at_review": "a20effd3ec4e6842293b3d150cff1374bea9af9a097f69078b9650bc0af0e61b",
+      "read_scope": "Entire appendix, including all table rows and explanatory prose.",
+      "relative_links_checked": 78,
+      "broken_relative_links": [],
+      "external_links": 0,
+      "external_urls_missing_from_chapter_sources": [],
+      "sha256_initial_review": "2fcace4c8f6b22901b71be51e3f8a28cff319fe2245098376523789eab86576c",
+      "sha256_final": "a20effd3ec4e6842293b3d150cff1374bea9af9a097f69078b9650bc0af0e61b"
+    },
+    "appendix-d-sources.md": {
+      "file": "books/proof-evolution/book-src/appendix-d-sources.md",
+      "sha256_at_review": "bbd84f16182066746198b26c6f99ee6f168512e8e07656777936de06055412f9",
+      "read_scope": "Entire appendix, including all table rows and explanatory prose.",
+      "relative_links_checked": 39,
+      "broken_relative_links": [],
+      "external_links": 33,
+      "external_urls_missing_from_chapter_sources": [],
+      "sha256_initial_review": "aad212e8400a23cc2ae94ef5465d2031663dcc4a65d2b14d7027bb6585864332",
+      "sha256_final": "bbd84f16182066746198b26c6f99ee6f168512e8e07656777936de06055412f9"
+    }
+  },
+  "material_findings": [],
+  "optional_findings": [
+    {
+      "id": "appendix-b-completeness-term",
+      "severity": "minor terminology and precision",
+      "file": "appendix-b-timeline.md",
+      "exact_quote": "| 完整性 | 在互動協定中，真主張的誠實參與者按規則應可通過 | 一階邏輯的完備性 |",
+      "proposed_correction": "| 完備性（互動證明） | 在指定互動協定中，真主張的誠實參與者按規則，以協定規定的接受機率通過 | 一階邏輯的完備性 |",
+      "reason": "Chapter16 consistently calls this 完備性 and distinguishes its graph protocol’s 完美完備性 from logical completeness. Explicit acceptance probability preserves the probabilistic definition.",
+      "status": "resolved_by_root_and_independently_verified",
+      "actual_final_passage": "| 完備性（互動證明） | 真主張的誠實參與者按規則，應以協定規定的接受機率通過 | 一階邏輯的完備性 |",
+      "verification": "Read back the final file. The correction resolves the terminology or precision concern; the original passage is absent."
+    },
+    {
+      "id": "appendix-b-soundness-term",
+      "severity": "minor terminology",
+      "file": "appendix-b-timeline.md",
+      "exact_quote": "| 健全性誤差 | 在指定對手模型下，假主張仍被接受的機率上界 |",
+      "proposed_correction": "| 健全性錯誤 | 在指定對手模型下，假主張仍被接受的機率上界 |",
+      "reason": "Matches the chapter16 term 健全性錯誤. The appendix’s mathematical definition is already correct.",
+      "status": "resolved_by_root_and_independently_verified",
+      "actual_final_passage": "| 健全性錯誤 | 在指定對手模型下，假主張仍被接受的機率上界 |",
+      "verification": "Read back the final file. The correction resolves the terminology or precision concern; the original passage is absent."
+    },
+    {
+      "id": "appendix-b-reproducibility",
+      "severity": "minor definition precision",
+      "file": "appendix-b-timeline.md",
+      "exact_quote": "按本書採用的用語，以相同資料與程序重得相同結果",
+      "proposed_correction": "按本書採用的用語，以相同資料、程式、方法與分析條件，取得一致的計算結果",
+      "reason": "NASEM2019 and chapter13 use consistent computational results rather than requiring literal identity of every output number. The proposed wording also states the adopted operational conditions.",
+      "sources": [
+        "https://www.nationalacademies.org/read/25303/chapter/3"
+      ],
+      "status": "resolved_by_root_and_independently_verified",
+      "actual_final_passage": "按本書採用的用語，以相同資料與程序取得一致的計算結果",
+      "verification": "Read back the final file. The correction resolves the terminology or precision concern; the original passage is absent."
+    }
+  ],
+  "checked_timeline_claims": [
+    {
+      "claim": "Robinson1965, LCF1970s, Appel–Haken1976/1977, RSST1997, Gonthier2005completion/2008account, SAT2016 and Flyspeck2017paper.",
+      "result": "Consistent with the original source checks recorded in review-ch13-16.json. Completion dates and publication dates are not conflated.",
+      "evidence_log": "<workspace>/review-ch13-16.json"
+    },
+    {
+      "claim": "GMR1985conference and1989journal versions.",
+      "result": "Matches the original scan headers.",
+      "urls": [
+        "https://www.cs.miami.edu/home/burt/learning/csc609.221/goldwasser-micali-rackoff-knoweldge-complexity.pdf",
+        "https://mit6875.github.io/FA23HANDOUTS/GMR-zero-knowledge.pdf"
+      ]
+    },
+    {
+      "claim": "AlphaProof’s2024IMOexperiment,2025onlinepublication and2026journalvolume are separate dates.",
+      "result": "Nature original page independently reopened: published12November2025, volume651 pages607–613(2026), abstract explicitly locates the IMO experiment in2024.",
+      "url": "https://www.nature.com/articles/s41586-025-09833-y",
+      "actually_read": "Header lines20/63 and abstract/main discussion of the2024IMOexperiment."
+    },
+    {
+      "claim": "The2024AlphaGeometry/AlphaProof/AlphaGeometry2 row and the2025Gemini/Aristotle row describe distinct systems and evaluation artifacts.",
+      "result": "Consistent with chapter17’s original source checks. The wording does not identify natural-language grading with Lean kernel verification or make a latest/best claim.",
+      "evidence_log": "<workspace>/research-ai-synthesis.json"
+    }
+  ],
+  "source_pointer_checks": {
+    "appendix_d_external_links": 33,
+    "all_external_links_found_in_chapter_sources": true,
+    "appendix_b_relative_links": 78,
+    "appendix_d_relative_links": 39,
+    "all_relative_targets_exist": true,
+    "network_scope": "This does not assert all33external endpoints were freshly fetched in this appendix pass. Modern references had been independently opened during chapter review; the AlphaProof page was reopened for its publication dates.",
+    "content_alignment": "The contemporary source labels and reading prompts match the inspected source roles: Pearl assumptions/identification; NASEM reproducibility/replicability; RSST reducibility/unavoidability; Gonthier dates/formal statement; Flyspeck cross-system dependencies; Lean statement/proof/runtime trust; AlphaGeometry language boundaries; AlphaProof final checking; Aristotle version/scope; Lamport layered dependency presentation."
+  },
+  "limits": [
+    "No independent confirmation is claimed here for every ancient or early-modern date in the broad timeline.",
+    "AppendixD is a reading guide rather than an exhaustive bibliography; its selected entries route to chapter notes for version and access limitations.",
+    "No appendix was modified by this reviewer."
+  ],
+  "related_ch17_revision": {
+    "file": "books/proof-evolution/book-src/ch17-ai-and-proof.md",
+    "change": "One paragraph after the result table and one footnote clarify that official IMO format has two consecutive days, three problems and4.5hours per day. Gemini’s team-reported4.5hour wording is preserved without inferring its complete six-problem schedule.",
+    "sha256_after_change": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398",
+    "official_sources": [
+      {
+        "url": "https://www.imo-official.org/documents/RegulationsIMO.pdf",
+        "scope": "2025-approvedGeneralRegulations§5.1, PDFp5 lines191–195",
+        "retrieval_ref": "turn207view1"
+      },
+      {
+        "url": "https://imo2025.au/work-with-us/",
+        "scope": "2025hostpage, ExamInvigilators line22",
+        "retrieval_ref": "turn207view0"
+      }
+    ],
+    "independent_verification_requested_from": "/root/write_limits_evidence",
+    "independent_verification_status": "Confirmed by /root/write_limits_evidence after rereading the exact matching SHA-256; its review-ch17-18.json marks the suggestion resolved and reports no outstanding findings."
+  },
+  "unresolved_material_findings": 0,
+  "unresolved_optional_findings": 0,
+  "final_readback": {
+    "date": "2026-10-06",
+    "scope": "Targeted readback only: the three accepted glossary corrections, the coordinated Āryabhaṭīya title, and the Russell source-label clarification. No new historical research performed.",
+    "additional_verified_passages": [
+      "婆什迦羅第一對《阿耶波多書》（Āryabhaṭīya）數學章的注解",
+      "[羅素《數學原理》（The Principles of Mathematics，1903）第 101 節](https://fair-use.org/bertrand-russell/the-principles-of-mathematics/s101)"
+    ],
+    "source_routing": "Russell’s existing section101 URL is unchanged. These are terminology and label clarifications, not new source destinations.",
+    "result": "All three review findings resolved; no remaining material or optional findings."
+  },
+  "export_note": "Source URLs, access limits, findings and final file digests are retained. Conversation-only tool reference IDs are omitted, and workspace paths are normalized."
+}

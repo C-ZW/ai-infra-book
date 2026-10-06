@@ -1,0 +1,362 @@
+{
+  "pass": true,
+  "steps": [
+    {
+      "name": "reader_javascript_syntax",
+      "pass": true,
+      "output": ""
+    },
+    {
+      "name": "tooling_regressions",
+      "pass": true,
+      "output": "✔ a valid complete manifest passes; deleting a chapter cannot produce a vacuous pass (42.516953ms)\n✔ a duplicate or reordered chapter manifest is rejected even when all files exist (12.175745ms)\n✔ depth counts substantive prose without fenced code or footnote padding (0.973507ms)\n✔ footnote definitions inside fenced examples are not extracted as citations (0.837092ms)\n✔ duplicate footnote definitions and missing citation targets fail explicitly (11.398804ms)\n✔ same citation keys in different chapters get separate anchors and every repeated reference gets a return link (1.337466ms)\n✔ relative heading links resolve with duplicate-heading suffixes; code-looking links are not navigable links (0.523419ms)\n✔ unsafe URLs and raw executable HTML never silently become executable reader content (13.301112ms)\n✔ the authored Markdown subset preserves emphasis, nested lists, tables, code and safe URLs (6.111383ms)\n✔ baseline checks preserve trailing bytes and reject a stale maintenance copy (11.786298ms)\n✔ identical source inputs generate byte-identical self-contained HTML (27.188191ms)\nℹ tests 11\nℹ suites 0\nℹ pass 11\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 218.301972"
+    },
+    {
+      "name": "structural_contract",
+      "pass": true,
+      "report": {
+        "id": "proof-evolution-2026",
+        "expected_chapters": 18,
+        "actual_chapters": 18,
+        "documents": [
+          {
+            "id": "readme",
+            "file": "README.md",
+            "is_chapter": false,
+            "han_characters": 1184,
+            "headings": 5,
+            "footnotes": 0,
+            "links": 22
+          },
+          {
+            "id": "ch01",
+            "file": "ch01-why-prove.md",
+            "is_chapter": true,
+            "han_characters": 4533,
+            "headings": 6,
+            "footnotes": 5,
+            "links": 7
+          },
+          {
+            "id": "ch02",
+            "file": "ch02-tablets-and-algorithms.md",
+            "is_chapter": true,
+            "han_characters": 4544,
+            "headings": 7,
+            "footnotes": 5,
+            "links": 8
+          },
+          {
+            "id": "ch03",
+            "file": "ch03-greek-deduction.md",
+            "is_chapter": true,
+            "han_characters": 4544,
+            "headings": 6,
+            "footnotes": 8,
+            "links": 12
+          },
+          {
+            "id": "ch04",
+            "file": "ch04-plural-traditions.md",
+            "is_chapter": true,
+            "han_characters": 4624,
+            "headings": 6,
+            "footnotes": 7,
+            "links": 12
+          },
+          {
+            "id": "ch05",
+            "file": "ch05-algebra-and-symbols.md",
+            "is_chapter": true,
+            "han_characters": 4522,
+            "headings": 6,
+            "footnotes": 5,
+            "links": 10
+          },
+          {
+            "id": "ch06",
+            "file": "ch06-infinity-and-limits.md",
+            "is_chapter": true,
+            "han_characters": 4635,
+            "headings": 7,
+            "footnotes": 7,
+            "links": 10
+          },
+          {
+            "id": "ch07",
+            "file": "ch07-axioms-and-models.md",
+            "is_chapter": true,
+            "han_characters": 4553,
+            "headings": 7,
+            "footnotes": 5,
+            "links": 9
+          },
+          {
+            "id": "ch08",
+            "file": "ch08-logic-and-foundations.md",
+            "is_chapter": true,
+            "han_characters": 4783,
+            "headings": 8,
+            "footnotes": 6,
+            "links": 14
+          },
+          {
+            "id": "ch09",
+            "file": "ch09-incompleteness-and-computation.md",
+            "is_chapter": true,
+            "han_characters": 4604,
+            "headings": 6,
+            "footnotes": 5,
+            "links": 8
+          },
+          {
+            "id": "ch10",
+            "file": "ch10-construction-and-programs.md",
+            "is_chapter": true,
+            "han_characters": 4535,
+            "headings": 6,
+            "footnotes": 6,
+            "links": 11
+          },
+          {
+            "id": "ch11",
+            "file": "ch11-experiment-and-evidence.md",
+            "is_chapter": true,
+            "han_characters": 4523,
+            "headings": 6,
+            "footnotes": 5,
+            "links": 9
+          },
+          {
+            "id": "ch12",
+            "file": "ch12-probability-and-statistics.md",
+            "is_chapter": true,
+            "han_characters": 4596,
+            "headings": 7,
+            "footnotes": 5,
+            "links": 9
+          },
+          {
+            "id": "ch13",
+            "file": "ch13-causality-and-replication.md",
+            "is_chapter": true,
+            "han_characters": 4610,
+            "headings": 6,
+            "footnotes": 6,
+            "links": 8
+          },
+          {
+            "id": "ch14",
+            "file": "ch14-computer-assisted-proofs.md",
+            "is_chapter": true,
+            "han_characters": 4548,
+            "headings": 6,
+            "footnotes": 5,
+            "links": 8
+          },
+          {
+            "id": "ch15",
+            "file": "ch15-proof-assistants.md",
+            "is_chapter": true,
+            "han_characters": 4604,
+            "headings": 7,
+            "footnotes": 8,
+            "links": 12
+          },
+          {
+            "id": "ch16",
+            "file": "ch16-interactive-and-zero-knowledge.md",
+            "is_chapter": true,
+            "han_characters": 4629,
+            "headings": 7,
+            "footnotes": 6,
+            "links": 10
+          },
+          {
+            "id": "ch17",
+            "file": "ch17-ai-and-proof.md",
+            "is_chapter": true,
+            "han_characters": 4862,
+            "headings": 7,
+            "footnotes": 9,
+            "links": 13
+          },
+          {
+            "id": "ch18",
+            "file": "ch18-responsibility-of-proof.md",
+            "is_chapter": true,
+            "han_characters": 4645,
+            "headings": 7,
+            "footnotes": 6,
+            "links": 13
+          },
+          {
+            "id": "appendix-a-methods",
+            "file": "appendix-a-methods.md",
+            "is_chapter": false,
+            "han_characters": 3395,
+            "headings": 6,
+            "footnotes": 0,
+            "links": 11
+          },
+          {
+            "id": "appendix-b-timeline",
+            "file": "appendix-b-timeline.md",
+            "is_chapter": false,
+            "han_characters": 3168,
+            "headings": 4,
+            "footnotes": 0,
+            "links": 78
+          },
+          {
+            "id": "appendix-c-worked-examples",
+            "file": "appendix-c-worked-examples.md",
+            "is_chapter": false,
+            "han_characters": 1620,
+            "headings": 8,
+            "footnotes": 0,
+            "links": 9
+          },
+          {
+            "id": "appendix-d-sources",
+            "file": "appendix-d-sources.md",
+            "is_chapter": false,
+            "han_characters": 2461,
+            "headings": 7,
+            "footnotes": 0,
+            "links": 72
+          }
+        ],
+        "errors": [],
+        "warnings": [],
+        "baseline_sha256": "44bd9d67d89d3fcb6cf7122339744c25104586eb1a7ca8a999d2a05165a6e1ee",
+        "pass": true,
+        "parser": {
+          "name": "marked",
+          "version": "17.0.5",
+          "sha256": "0b4487359ce6b85108708e7a532e1242a27f4718241e7b2de109ac6cd307d2dc"
+        }
+      }
+    },
+    {
+      "name": "canonical_arithmetic",
+      "pass": true,
+      "report": {
+        "pass": true,
+        "checks": [
+          {
+            "id": "ODD",
+            "pass": true,
+            "result": {
+              "first_five_sum": 25,
+              "induction_identity": "n² + (2n + 1) = (n + 1)²; both coefficient lists are [1, 2, 1]"
+            }
+          },
+          {
+            "id": "PRIME",
+            "pass": true,
+            "result": {
+              "product_plus_one": 30031,
+              "factors": [
+                59,
+                509
+              ],
+              "remainders_for_listed_primes": [
+                1,
+                1,
+                1,
+                1,
+                1,
+                1
+              ]
+            }
+          },
+          {
+            "id": "QUADRATIC",
+            "pass": true,
+            "result": {
+              "real_roots": [
+                3,
+                -13
+              ],
+              "positive_magnitude_root": 3,
+              "polynomial_coefficients": [
+                -39,
+                10,
+                1
+              ]
+            }
+          },
+          {
+            "id": "LIMIT",
+            "pass": true,
+            "result": {
+              "analytic_argument": "δ ≤ 1 and |x − 2| < δ imply 1 < x < 3 and |x + 2| < 5; therefore |x² − 4| = |x − 2||x + 2| < 5δ ≤ ε.",
+              "rational_regression_examples": 228,
+              "qualification": "Finite regression examples are not a universal proof; the preceding inequality argument supplies that reasoning."
+            }
+          },
+          {
+            "id": "BAYES",
+            "pass": true,
+            "result": {
+              "expected_true_positives": 90,
+              "expected_false_positives": 495,
+              "posterior": "2/13",
+              "posterior_percent": "15.38%"
+            }
+          },
+          {
+            "id": "MULTIPLE",
+            "pass": true,
+            "result": {
+              "exact_probability": "67267626542454041806644399/104857600000000000000000000",
+              "percent": "64.15%",
+              "assumptions": "20 independent true-null tests; each has Type I error probability exactly 0.05."
+            }
+          },
+          {
+            "id": "INTERACTIVE",
+            "pass": true,
+            "result": {
+              "upper_bound": "1/1048576",
+              "percent": "0.00009537%",
+              "assumptions": "Each round has cheating probability at most 1/2 conditional on the prior transcript; the chain rule gives the repeated bound."
+            }
+          }
+        ],
+        "limitations": [
+          "Checks canonical calculations and required baseline wording; does not prove that every prose occurrence is semantically consistent.",
+          "Does not certify the historical narrative, empirical premises, cryptographic protocol security, or a theorem-prover kernel."
+        ]
+      }
+    },
+    {
+      "name": "reader_freshness",
+      "pass": true,
+      "output": "PASS: Reader matches source bytes (842604 bytes; SHA-256 092c0e80bc70609fe480370a83c9a0aec5e9068cb69b88479e4bdb398572f113)."
+    },
+    {
+      "name": "reader_integrity",
+      "pass": true,
+      "report": {
+        "pass": true,
+        "documents": 23,
+        "chapters": 18,
+        "unique_ids": 466,
+        "internal_links": 590,
+        "separate_resources": 0,
+        "errors": [],
+        "limitations": [
+          "Static HTML integrity checks do not execute JavaScript or establish visual/accessibility correctness; browser-smoke.mjs covers selected browser interactions separately."
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "External URLs are checked for syntax, not fetched by this offline command.",
+    "Deterministic checks do not establish historical accuracy or replace editorial review.",
+    "Arithmetic checks and same-model editorial review are not independent cross-model certification.",
+    "Browser rendering and selected keyboard/interaction checks require the separate browser-smoke.mjs command."
+  ]
+}

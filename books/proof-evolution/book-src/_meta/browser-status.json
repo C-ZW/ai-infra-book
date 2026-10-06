@@ -1,0 +1,16 @@
+{
+  "pass": false,
+  "status": "not_run",
+  "browser": "Chromium",
+  "mode": "file URL; network offline",
+  "checks": [],
+  "screenshots": [],
+  "errors": [
+    "Error: Chromium executable is unavailable. Browser interaction checks and screenshots were not run.\n    at file://books/proof-evolution/scripts/browser-smoke.mjs:63:45\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\n    at async node:internal/modules/esm/loader:643:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)"
+  ],
+  "remote_requests": [],
+  "limitations": [
+    "A focused Chromium regression check, not an accessibility certification or a cross-browser guarantee.",
+    "External source pages are not fetched or validated by this offline test."
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "cutoff": "2026-10-06",
+  "status": {
+    "ch17": "written",
+    "ch18": "written"
+  },
+  "chapter_counts": {
+    "ch17-ai-and-proof.md": {
+      "cjk_prose": 4779,
+      "references": 8
+    },
+    "ch18-responsibility-of-proof.md": {
+      "cjk_prose": 4645,
+      "references": 6
+    }
+  },
+  "sources": [
+    {
+      "chapter": "ch17",
+      "title": "Solving olympiad geometry without human demonstrations",
+      "year": 2024,
+      "url": "https://www.nature.com/articles/s41586-023-06747-5",
+      "support": "Neural auxiliary construction / symbolic deduction; restricted geometry representation; Fig5 collinearity versus betweenness."
+    },
+    {
+      "chapter": "ch17",
+      "title": "Olympiad-level formal mathematical reasoning with reinforcement learning",
+      "date": "online 2025-11-12; volume 651 (2026), 607–613; record 2026-03-13",
+      "url": "https://www.nature.com/articles/s41586-025-09833-y",
+      "support": "Lean environment, final verification including axiom checks, expert formalization for IMO2024; event distinct from publication date."
+    },
+    {
+      "chapter": "ch17",
+      "title": "AI achieves silver-medal standard solving IMO problems",
+      "date": "2024-07-25",
+      "url": "https://deepmind.google/blog/ai-solves-imo-problems-at-silver-medal-level/",
+      "support": "4/6,28/42, expert translation, days of computation, human scoring; no same-time comparison."
+    },
+    {
+      "chapter": "ch17",
+      "title": "Advanced version of Gemini with Deep Think officially achieves gold-medal standard",
+      "date": "2025-07-21",
+      "url": "https://deepmind.google/blog/advanced-version-of-gemini-with-deep-think-officially-achieves-gold-medal-standard-at-the-international-mathematical-olympiad/",
+      "support": "5/6,35/42, natural language, team-reported 4.5h. IMO review validates answers not model/process. No kernel claim."
+    },
+    {
+      "chapter": "ch17",
+      "title": "Aristotle: IMO-level Automated Theorem Proving",
+      "date": "2025-10-01 v1",
+      "url": "https://arxiv.org/html/2510.01346v1",
+      "support": "Hybrid search/formalization; hand formalized original statements; automatic lemma formalization; 5/6 solutions; no wall-clock total supplied in v1."
+    },
+    {
+      "chapter": "ch17",
+      "title": "Harmonic IMO2025 repository",
+      "year": 2025,
+      "url": "https://github.com/harmonic-ai/IMO2025",
+      "support": "README says Lean statements and proofs for problems1–5. Repository was opened, not built or independently rechecked."
+    },
+    {
+      "chapter": "ch17",
+      "title": "Gold-medalist Performance in Solving Olympiad Geometry with AlphaGeometry2",
+      "date": "2025-02-05 v1",
+      "url": "https://arxiv.org/html/2502.03544v1",
+      "support": "Sections2,4: representation breadth and symbolic engine improvements. No general ranking claimed."
+    },
+    {
+      "chapter": "ch17",
+      "title": "Final day of IMO 2025",
+      "date": "2025-07-19",
+      "url": "https://imo2025.au/wp-content/uploads/2025/07/IMO-2025_ClosingDayStatement-19072025.pdf",
+      "support": "IMO cannot validate compute, human involvement, reproducibility, methods. Direct official qualification."
+    },
+    {
+      "chapter": "ch18",
+      "title": "Euclid Elements IX.20",
+      "url": "https://mathcs.clarku.edu/~djoyce/java/elements/bookIX/propIX20.html",
+      "support": "Prime/composite branches in product-plus-one argument; modern numerical example independently worked."
+    },
+    {
+      "chapter": "ch18",
+      "title": "Lean Language Reference 4.19.0 Natural Numbers",
+      "url": "https://lean-lang.org/doc/reference/4.19.0/Basic-Types/Natural-Numbers/",
+      "support": "Nat.sub truncates at zero. Inventory example is original hypothetical; no executable Lean proof claimed."
+    },
+    {
+      "chapter": "ch18",
+      "title": "Theorem Proving in Lean 4 Axioms and Computation",
+      "url": "https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/",
+      "support": "Axiom dependencies and #print axioms; no claims about law or deployed systems."
+    },
+    {
+      "chapter": "ch18",
+      "title": "Reproducibility and Replicability in Science",
+      "year": 2019,
+      "urls": [
+        "https://www.nationalacademies.org/read/25303/chapter/5",
+        "https://www.nationalacademies.org/read/25303/chapter/6",
+        "https://www.nationalacademies.org/read/25303/chapter/10"
+      ],
+      "support": "Chapters2,3,7 on communal inquiry, uncertainty, definitions and varying lines of evidence. Classroom case invented."
+    },
+    {
+      "chapter": "ch18",
+      "title": "On proof and progress in mathematics",
+      "year": 1994,
+      "url": "https://arxiv.org/html/math/9404236v1",
+      "support": "Sections3,4 primary reflection on communication, understanding, expert social practices. Responsibility argument original."
+    },
+    {
+      "chapter": "ch18",
+      "title": "How to Write a 21st Century Proof",
+      "date": "2011 draft,2012-01 revision",
+      "url": "https://lamport.azurewebsites.net/pubs/proof.pdf",
+      "support": "Sections1,3 hierarchical structure and naming. No quotation used."
+    }
+  ],
+  "excluded_leads": [
+    {
+      "url": "https://arxiv.org/abs/2608.02295",
+      "reason": "Fresh search lead MechGeo, direct abstract and fulltext returned Internal Error. Not used."
+    },
+    {
+      "url": "https://www.nature.com/articles/d41586-026-02822-9",
+      "reason": "Fresh secondary-news lead about FLT formalization; not researched to primary source, not used."
+    }
+  ],
+  "verification_limits": [
+    "No large AI proof project rebuilt.",
+    "No claimed contemporary leaderboard or exhaustive AI catalog.",
+    "All constructed mathematical and institutional examples explicitly hypothetical.",
+    "No current jurisdiction-specific law used."
+  ],
+  "terms_defined": {
+    "ch17": [
+      "neural-guided symbolic search",
+      "AI task division among informal reasoning, formal translation, proof generation and checking"
+    ],
+    "ch18": [
+      "responsibility localization as original editorial argument; no new formal technical framework"
+    ]
+  },
+  "export_note": "Author research notes; these are not independent review verdicts. Source URLs and access limits are retained; transient tool reference IDs are omitted."
+}

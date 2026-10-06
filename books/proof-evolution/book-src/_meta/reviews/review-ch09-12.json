@@ -1,0 +1,715 @@
+{
+  "reviewer": "/root/write_origins",
+  "date": "2026-10-06",
+  "scope": [
+    "ch09",
+    "ch10",
+    "ch11",
+    "ch12"
+  ],
+  "status": "complete_all_four_reviewed",
+  "files_edited": "Only this scratch review report; no reviewed chapters edited. ch01–ch04 authoring is a separate task.",
+  "method": {
+    "templates_read": [
+      "fact-auditor.md",
+      "arbiter.md",
+      "pitfalls.md"
+    ],
+    "fact_audit": "Queried counterexamples and original texts. confirmed is reserved here for claims with independent primary research support; single_primary_supported explicitly does not meet the template’s two-independent-source confirmation threshold. A direct report-content claim is kept attributed and is not mislabeled as independently replicated evidence. partially_supported records retrieval limits.",
+    "mathematics": "Derivations recomputed independently from chapter definitions and the canonical baseline before comparing results; no verifier verdicts copied. Historical source support is a separate layer.",
+    "limitations": "Web screenshot calls for image-only PDFs returned literal image placeholders without usable image data. Such scans are not represented as visually read; alternate primary text and explicit limitations are recorded."
+  },
+  "chapters": [
+    {
+      "chapter": "ch09",
+      "path": "books/proof-evolution/book-src/ch09-incompleteness-and-computation.md",
+      "read_status": "complete_revision_readback",
+      "review_status": "complete",
+      "sha256_reviewed": "5b858f3d63b928aa06bd663811e17b82cdb1287a4ab6939beb0f3c02075d1379",
+      "claims": [
+        {
+          "id": "9-F1",
+          "claim": "一致、有效枚舉、古典一階且擴充 PA 的理論有雙向不可證句；原始 G 與 Rosser 版本的相容性要求不同。",
+          "verdict": "confirmed",
+          "sources": [
+            "https://homepages.uc.edu/~martinj/History_of_Logic/Godel/Godel%20%E2%80%93%20On%20Formally%20Undecidable%20Propositions%20of%20Principia%20Mathematica%201931.pdf",
+            "https://www.cambridge.org/core/journals/journal-of-symbolic-logic/article/abs/extensions-of-some-theorems-of-godel-and-church/0461E34DC1F219C459EE84CC2FA89068",
+            "https://link.springer.com/article/10.1007/s10817-021-09599-8"
+          ],
+          "web_refs": [
+            "turn132view2",
+            "turn133view0",
+            "turn144view0"
+          ],
+          "note": "已讀 Gödel 命題 VI 原文、Rosser 作者摘要與後來獨立形式化研究。摘要未冒稱全文。現代 PA 條件只是充分條件，文字沒有誤稱最弱。"
+        },
+        {
+          "id": "9-F2",
+          "claim": "第二不完備定理針對標準 Prov_T 與 Con(T)=¬Prov_T(⌜0=1⌝)，並需可導性條件。",
+          "verdict": "confirmed",
+          "sources": [
+            "https://homepages.uc.edu/~martinj/History_of_Logic/Godel/Godel%20%E2%80%93%20On%20Formally%20Undecidable%20Propositions%20of%20Principia%20Mathematica%201931.pdf",
+            "https://math.umd.edu/~laskow/Pubs/713/Lob.pdf",
+            "https://link.springer.com/article/10.1007/s10817-021-09599-8"
+          ],
+          "web_refs": [
+            "turn132view3",
+            "turn133view1",
+            "turn155view3"
+          ],
+          "note": "原文命題 XI、Löb 條件及 2021 獨立形式化研究互相支持；相容足夠，沒有偷偷要求 T 的所有定理在標準模型都真。"
+        },
+        {
+          "id": "9-F3",
+          "claim": "一階逻輯完備性說的是所有模型中的後承與可導性，不是 T 對每個句子的二分完備。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://arxiv.org/html/2401.13304v1"
+          ],
+          "web_refs": [
+            "turn133view2"
+          ],
+          "note": "已讀 2024 原創研究第1節；模型分歧的推論另在 checks 重算。"
+        },
+        {
+          "id": "9-F4",
+          "claim": "Turing 原文研究 circle-free／是否印出指定符號等問題；本章停機 D(d) 是现代重述。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://theory.stanford.edu/~trevisan/cs172-07/turing36.pdf"
+          ],
+          "web_refs": [
+            "turn132view5"
+          ],
+          "note": "已讀原文第8節及 circular/circle-free 定義。書稿明確區分原問題和教學重寫，避免錯稱原文逐字就是現代停機證明。"
+        },
+        {
+          "id": "9-F5",
+          "claim": "本章具體標準對角構造 G，在 T 相容時於標準自然數為真。",
+          "verdict": "confirmed",
+          "sources": [
+            "https://homepages.uc.edu/~martinj/History_of_Logic/Godel/Godel%20%E2%80%93%20On%20Formally%20Undecidable%20Propositions%20of%20Principia%20Mathematica%201931.pdf",
+            "https://www.saeedsalehi.ir/pdf/papers/JLC-3.pdf",
+            "https://link.springer.com/article/10.1007/s10817-021-09599-8"
+          ],
+          "web_refs": [
+            "turn132view2",
+            "turn142view1",
+            "turn155view3"
+          ],
+          "note": "主動查到任意 Gödelian 句的反例：僅 T 內等價未必保真。本章採具體標準構造，現已補明 PA 證明固定點等價式且該式在標準自然數成立；已讀回修訂，無實質反例。"
+        }
+      ],
+      "checks": [
+        {
+          "id": "9-M1",
+          "claim": "c.e. 公理仍可使用有限可檢查的證明資料。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "把每次引用非立即可判定的公理，附上枚舉器在有限步輸出的計算紀錄；檢查有限轉移和推論。枚舉所有此類證書可半判定 T 的可證句。"
+        },
+        {
+          "id": "9-M2",
+          "claim": "若 T 又相容又對每句完備，搜尋正反證明會成為判定器。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "對 φ 和 ¬φ 的兩項搜尋交錯各走一步。完備保證至少一方有限步成功；相容保證不會兩方都成功。書稿未把普通搜尋久等當獨立性證據。"
+        },
+        {
+          "id": "9-M3",
+          "claim": "2¹ × 3² × 5³ = 2250。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "2 × 9 × 125 =2250。正符號編號與另行約定長度／空串足以避免前綴編碼歧義。"
+        },
+        {
+          "id": "9-M4",
+          "claim": "T 相容則 T 不證 G；另一方向須額外處理。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "若有有限 T 證明 G，算術可證 Prov_T(⌜G⌝)；固定點式與 G 又給否定，矛盾。若 T 證 ¬G，可在 T 內有存在證明碼但沒有標準見證；普通相容不排除逐例否定加存在肯定。ω 相容或 Rosser 改造才完成書稿宣布的雙向限制。"
+        },
+        {
+          "id": "9-M5",
+          "claim": "獨立句有相反真值的 T 模型。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "若所有 T 模型都滿足 φ，完備性给 T⊢φ，違反獨立；若全部滿足 ¬φ 同理。以古典一階邏輯、T 相容為背景，兩種模型均存在。T 未必有標準模型；書稿沒有宣稱有。"
+        },
+        {
+          "id": "9-M6",
+          "claim": "第二定理的骨架 Con(T)⇒G 有效，但內部形式化不能省略。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "在標準可導性條件下，T 證 Prov(G)⇒Prov(⊥)，取逆否得 Con(T)⇒¬Prov(G)，以固定點式得 G。若 T 證 Con(T)，相容性導出的 G 不可證便矛盾。正文明确保留形式化責任。"
+        },
+        {
+          "id": "9-M7",
+          "claim": "D(d) 否定總停機且全正確的 H。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "H(d,d)若判停，D依定義無限迴圈；判不停，D依定義立刻停。D有限可編码；自輸入合法。兩分支均與 H 正確性衝突。"
+        },
+        {
+          "id": "9-M8",
+          "claim": "固定完整狀態空間的確定機器可判定停機。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "無新外部輸入且記憶體預先固定，完整狀態有限；未停而重訪狀態則從該處循環。這不覆蓋無資源上限的通用模型。"
+        },
+        {
+          "id": "9-M9",
+          "claim": "C_T 不停機對應 Con(T)。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "若 T 有矛盾證明，枚舉找到即停；若無，永遠不會觸發停機分支。書稿額外要求 T 內能證枚舉器實現此規格，才用第二定理禁止在 T 內證其不停。"
+        }
+      ],
+      "material_findings": [],
+      "optional_findings": [
+        {
+          "id": "9-O1",
+          "severity": "optional_precision",
+          "exact_passage": "正式證明必須證明這些運算可在算術裡表示，並建立 T ⊢ G ↔ ¬Prov_T(⌜G⌝)。",
+          "finding": "單看 T 內等價式，不足以推出每個 Gödelian 句在標準自然數中為真；本章具體構造已避免錯誤，仍可把相對於較弱且標準可靠的算術之固定點等價說得更清楚。",
+          "suggested_fix": "將此句寫為「對這裡選定的標準構造，PA 已能證明 G ↔ ¬Prov_T(⌜G⌝)，因此 T 也能證明；這個等價式在標準自然數中同樣成立。」",
+          "sources": [
+            "https://www.saeedsalehi.ir/pdf/papers/JLC-3.pdf",
+            "https://link.springer.com/article/10.1007/s10817-021-09599-8"
+          ],
+          "adjudication": "不是原稿實質错误：原稿的 G 是前文以代入操作具体构造者，不是任意仅在不可靠 T 内自称不可证的句子。",
+          "status": "resolved",
+          "resolution": {
+            "resolved_by": "chapter author",
+            "verified_by": "/root/write_origins",
+            "date": "2026-10-06",
+            "exact_revised_passage": "對這個標準構造，皮亞諾算術（PA）已能證明 G ↔ ¬Prov_T(⌜G⌝)，因此包含 PA 的 T 也能證明這個等價式；它也在標準自然數中成立。",
+            "verification": "已讀回固定點構造及前後推論。作者已明說標準構造的固定點等價式可在 PA 證明、包含 PA 的 T 亦可證明，且在標準自然數中成立；建議完整落實。",
+            "sha256_verified": "5b858f3d63b928aa06bd663811e17b82cdb1287a4ab6939beb0f3c02075d1379"
+          }
+        }
+      ],
+      "revision_readback": {
+        "date": "2026-10-06",
+        "scope": "Only the adopted optional wording correction and its immediate proof context; no new review scope.",
+        "previous_sha256_reviewed": "3a41a70b47a3c5bf757c30b2633f6a2b65f96c21c0d1bc50e31dd2f8b374bb10",
+        "sha256_verified": "5b858f3d63b928aa06bd663811e17b82cdb1287a4ab6939beb0f3c02075d1379",
+        "verdict": "passed",
+        "note": "已讀回固定點構造及前後推論。作者已明說標準構造的固定點等價式可在 PA 證明、包含 PA 的 T 亦可證明，且在標準自然數中成立；建議完整落實。"
+      }
+    },
+    {
+      "chapter": "ch10",
+      "path": "books/proof-evolution/book-src/ch10-construction-and-programs.md",
+      "read_status": "complete_revision_readback",
+      "review_status": "complete",
+      "sha256_reviewed": "43fdb591fe6ff7c10026487b8d3e91aef3f765650093cc6845e2b75db94444a1",
+      "claims": [
+        {
+          "id": "10-F1",
+          "claim": "Brouwer 1912 年演講討論構造與無限分支判定。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.math.ru.nl/werkgroepen/gmfw/bronnen/brouwer3.html"
+          ],
+          "web_refs": [
+            "turn135view3",
+            "turn135view4"
+          ],
+          "note": "已讀荷蘭文原稿轉錄，抬頭日期1912-10-14與pp26–29對應內容。沒有把整個直覺主義等同某現代型別系統。"
+        },
+        {
+          "id": "10-F2",
+          "claim": "Erdős 1947 年以對全部圖計數取得存在結果。",
+          "verdict": "partially_supported",
+          "sources": [
+            "https://www.renyi.hu/~p_erdos/1947-09.pdf",
+            "https://www.ams.org/journals/bull/1947-53-04/S0002-9904-1947-08785-1/S0002-9904-1947-08785-1.pdf"
+          ],
+          "web_refs": [
+            "turn133view4",
+            "turn140search1",
+            "turn161search1"
+          ],
+          "note": "原論文 PDF 開啟但無可讀OCR；截圖工具只回文字占位，不能聲稱視讀。AMS 原文搜尋索引明確給出計數所有圖／含指定完全子圖的步驟；這是同一原論文的兩個副本，不計為兩個獨立來源。半數割完全另行重算。"
+        },
+        {
+          "id": "10-F3",
+          "claim": "Martin-Löf 的自然數引入、消去與計算規則給出歸納與遞迴。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://archive-pml.github.io/martin-lof/pdfs/Bibliopolis-Book-retypeset-1984.pdf"
+          ],
+          "web_refs": [
+            "turn153view5"
+          ],
+          "note": "已讀原講義重排版pp38–40的N引入／N消去／Mathematical induction，以及前文命題證據對應表。"
+        },
+        {
+          "id": "10-F4",
+          "claim": "Dijkstra EWD472 中區分不變量與終止變量。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.cs.utexas.edu/~EWD/transcriptions/EWD04xx/EWD472.html"
+          ],
+          "web_refs": [
+            "turn141view4",
+            "turn141view5"
+          ],
+          "note": "已讀定理3、4和命名句，原稿回溯公因數程序也呈現正確性及下降工作。出版1975年與原頁資訊一致，無日期反例。"
+        },
+        {
+          "id": "10-F5",
+          "claim": "Howard 1969 手稿、1980出版以及命題／型別、證明／項對應。",
+          "verdict": "partially_supported",
+          "sources": [
+            "https://www.cs.cmu.edu/~crary/819-f09/Howard80.pdf",
+            "https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf",
+            "https://archive-pml.github.io/martin-lof/pdfs/Bibliopolis-Book-retypeset-1984.pdf"
+          ],
+          "web_refs": [
+            "turn135view1",
+            "turn141view2",
+            "turn161view2"
+          ],
+          "note": "Howard PDF開啟但僅影像、截圖通道沒有像素；另一份作者原文索引明說1969私下流傳。Wadler附Howard本人回憶及Martin-Löf自己的構造語義可互核概念。沒有冒稱本審查逐頁視讀 Howard 掃描。"
+        },
+        {
+          "id": "10-F6",
+          "claim": "任意排中律不提供有效選枝器；允許一般遞迴的有型程式未必交出值。",
+          "verdict": "confirmed",
+          "sources": [
+            "https://archive-pml.github.io/martin-lof/pdfs/Bibliopolis-Book-retypeset-1984.pdf",
+            "https://homepages.inf.ed.ac.uk/wadler/papers/propositions-as-types/propositions-as-types.pdf"
+          ],
+          "web_refs": [
+            "turn161view2",
+            "turn161view3",
+            "turn141view3"
+          ],
+          "note": "兩份原創文本支持構造證據及一般遞迴／古典邏輯的限定；書稿沒有說古典邏輯無計算解讀。"
+        }
+      ],
+      "checks": [
+        {
+          "id": "10-M1",
+          "claim": "任意有限無自環簡單圖有至少 m/2 條跨邊的割。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "每條邊在全部2ⁿ個頂點標法中有一半跨組，交換兩個有限求和次序得平均m/2。不可能每種標法都低於自身平均；奇數m時整數割大小≥ceil(m/2)。n=0,m=0退化情形也成立。"
+        },
+        {
+          "id": "10-M2",
+          "claim": "三角形平均12/8=1.5、最大割2。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "八標法中两同側標法割0，其餘六個割2，總12。三邊全跨會使另兩頂點同側且須異側，矛盾。邊指標相關不影響期望線性。"
+        },
+        {
+          "id": "10-M3",
+          "claim": "逐點條件期望算法交出半數割。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "每步左右候選群等大，兩個條件平均之平均=原平均，選較大即可不下降。新頂點與尚未固定鄰居的邊均貢獻1/2，差異只取決於已固定鄰居數，所以局部跨邊較多規則實現選擇。n步後僅一標法，實際值≥m/2。"
+        },
+        {
+          "id": "10-M4",
+          "claim": "有限平均存在例可以搜索，不是假裝嚴格非建構存在。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "枚舉2ⁿ標法終止；性質可判定；存在性保障找到。正文明确區分尚未寫出見證與無有效見證程序，也區分正確性／效率。"
+        },
+        {
+          "id": "10-M5",
+          "claim": "S(n)=n(n+1)/2 歸納。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "S(0)=0；加上n+1後 n(n+1)/2+n+1=(n+1)(n+2)/2。一般歸納步與基礎均成立，沒有以觀察有限樣本充當推進。"
+        },
+        {
+          "id": "10-M6",
+          "claim": "Euclid 35,22 見證。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "餘數13,9,4,1,0逐次下降；1=9−2(13−9)=3×9−2×13=3×22−5×13=8×22−5×35。176−175=1；共同因數只能為1。"
+        },
+        {
+          "id": "10-M7",
+          "claim": "停機二進位序列分枝的不可判定性。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "模擬一步寫0、見停機後寫1產生可計算序列；若總能正確判全0或某處1，即可總判原程式不停或停。這限制統一算法，不否定古典A∨¬A。"
+        },
+        {
+          "id": "10-M8",
+          "claim": "配對交換、函數合成與相依見證。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "(a,b)↦(b,a)在A×B至B×A；a↦g(f(a))在A→C；存在證據由k及R(k)證明組成。假如一般遞迴無終止，項不必產生值，書稿已說明其與證明閱讀的差異。"
+        }
+      ],
+      "material_findings": [],
+      "optional_findings": [
+        {
+          "id": "10-O1",
+          "severity": "optional_clarity",
+          "exact_passage": "定義 S(0) = 0，並令 S(n + 1) = S(n) + n + 1，也就是把從 1 到 n 的整數加總。",
+          "finding": "最後的「也就是」可能被讀成緊接S(n+1)，造成表面上的差一錯覺；隨後推導實際全部正確。",
+          "suggested_fix": "改成「定義 S(0) = 0，並令 S(n + 1) = S(n) + n + 1。這樣定義的 S(n)，就是從 1 到 n 的整數總和。」",
+          "adjudication": "非數學錯誤，只是指涉更明確。",
+          "status": "resolved",
+          "resolution": {
+            "resolved_by": "chapter author",
+            "verified_by": "/root/write_origins",
+            "date": "2026-10-06",
+            "exact_revised_passage": "定義 S(0) = 0，並令 S(n + 1) = S(n) + n + 1。這樣定義的 S(n)，就是從 1 到 n 的整數總和。",
+            "verification": "已讀回完整歸納例。作者已拆句，明說從 1 到 n 的整數總和是 S(n)，消除原有指涉歧義；其餘基礎及歸納推進保持正確。",
+            "sha256_verified": "43fdb591fe6ff7c10026487b8d3e91aef3f765650093cc6845e2b75db94444a1"
+          }
+        }
+      ],
+      "revision_readback": {
+        "date": "2026-10-06",
+        "scope": "Only the adopted optional wording correction and its immediate proof context; no new review scope.",
+        "previous_sha256_reviewed": "2ef8c4bfe2aed928fd13d8992b5d8266662449608bfd82f24ed965cc2004c8e4",
+        "sha256_verified": "43fdb591fe6ff7c10026487b8d3e91aef3f765650093cc6845e2b75db94444a1",
+        "verdict": "passed",
+        "note": "已讀回完整歸納例。作者已拆句，明說從 1 到 n 的整數總和是 S(n)，消除原有指涉歧義；其餘基礎及歸納推進保持正確。"
+      }
+    },
+    {
+      "chapter": "ch11",
+      "path": "books/proof-evolution/book-src/ch11-experiment-and-evidence.md",
+      "read_status": "complete",
+      "review_status": "complete",
+      "sha256_reviewed": "34c999102f8c23c0f8e7ae850d08189091e51a4fc467dff98702b319b6e7164d",
+      "claims": [
+        {
+          "id": "11-F1",
+          "claim": "1887 報告的裝置、木蓋、水銀浮台、重複反射與調整程序。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.gutenberg.org/cache/epub/70888/pg70888-images.html"
+          ],
+          "web_refs": [
+            "turn147view0"
+          ],
+          "note": "原文裝置段逐項相合；沒把裝置說明當作實驗已排除所有干擾的證明。"
+        },
+        {
+          "id": "11-F2",
+          "claim": "原文11m≈2×10⁷黃光波長，預期轉動位移0.4條紋；實測確定小於1/20、可能小於1/40。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.gutenberg.org/cache/epub/70888/pg70888-images.html",
+            "https://ether-wind.narod.ru/Michelson_Morley_1887_London/457.html"
+          ],
+          "web_refs": [
+            "turn147view0",
+            "turn153view4"
+          ],
+          "note": "兩個原文轉錄互相核對數字，但屬同一研究來源。正文正確標為作者原判斷，不捏造現代信心水準；物理模型重算見checks。"
+        },
+        {
+          "id": "11-F3",
+          "claim": "原報告16方位、約6分鐘一圈、每組6圈，中午及傍晚觀察；較早計算漏垂直光路導致預期减半。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.gutenberg.org/cache/epub/70888/pg70888-images.html"
+          ],
+          "web_refs": [
+            "turn147view0"
+          ],
+          "note": "原文lines43–44與94–97直接支持。"
+        },
+        {
+          "id": "11-F4",
+          "claim": "誤差與測量不確定度不同，修正和標準件也有不確定度。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.bipm.org/documents/20126/2071204/JCGM_100_2008_E.pdf"
+          ],
+          "web_refs": [
+            "turn151view4",
+            "turn151view5"
+          ],
+          "note": "已讀官方GUM2.2.1–2.2.4、AnnexB.2.19；「疑慮」作一般概念也為原指南允許。沒有將不確定度等同真實未知誤差。"
+        },
+        {
+          "id": "11-F5",
+          "claim": "Duhem 1906 討論實驗不能單獨裁決孤立假設。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://fr.wikisource.org/wiki/La_Th%C3%A9orie_physique/SECONDE_PARTIE/Chapitre_VI/II"
+          ],
+          "web_refs": [
+            "turn153view2",
+            "turn155view1"
+          ],
+          "note": "已讀原版對應第二部第六章第二節，頁301–308；正文H&A→O是忠實的現代邏輯重述。"
+        },
+        {
+          "id": "11-F6",
+          "claim": "Morley–Miller 1905 裝置有木構乾燥失調、較剛鋼架、可替换材料的定距杆與磁力／負重干擾測試。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://en.wikisource.org/wiki/Detect_the_Fitzgerald-Lorentz_Effect"
+          ],
+          "web_refs": [
+            "turn155view0",
+            "turn164view0"
+          ],
+          "note": "原報告lines122–131逐項直接支持；作者重疊已明言，不冒稱完全獨立團隊複核。"
+        },
+        {
+          "id": "11-F7",
+          "claim": "Einstein 1905從相對性及光速條件出發，該理論不需要絕對靜止以太。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://sites.pitt.edu/~jdnorton/teaching/HPS_0410/2020_Fall/assignments/03_origins/On-the_electrodynamics/index.html"
+          ],
+          "web_refs": [
+            "turn155view2"
+          ],
+          "note": "已讀英譯導言與第1–2節；書稿不據此判定Michelson–Morley的特定歷史影響。"
+        }
+      ],
+      "checks": [
+        {
+          "id": "11-M1",
+          "claim": "理想靜止以太模型的平行與垂直來回時間。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "平行去回時間相加 L/(c−v)+L/(c+v)=2Lc/(c²−v²)。垂直方向的有效分量由c²=v²+w²得w=√(c²−v²)，因此來回2L/w。0≤v<c確保分母有效，L是正臂長。"
+        },
+        {
+          "id": "11-M2",
+          "claim": "低速轉動預期0.4條紋。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "令β=v/c；(1−β²)⁻¹=1+β²+O(β⁴)，(1−β²)⁻¹ᐟ²=1+β²/2+O(β⁴)。時間差≈Lv²/c³，90°轉動變化為兩倍；除以λ/c得2(L/λ)β²。L/λ=2×10⁷、β=10⁻⁴時得0.4。"
+        },
+        {
+          "id": "11-M3",
+          "claim": "1/20與1/40對應0.02、0.01條紋。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "0.4/20=0.02，0.4/40=0.01；沒有把這兩個非統計字眼換成95%或其他信賴界線。"
+        },
+        {
+          "id": "11-M4",
+          "claim": "重複101,102,103不消除尺規共同偏差。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "均值(101+102+103)/3=102；相對虛構真值100，均值仍高2。反覆取平均不能使固定加性偏移消失，校正需另外資訊。"
+        },
+        {
+          "id": "11-M5",
+          "claim": "觀察反駁H&A不能唯一定位H。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "從(H∧A)⇒O與¬O得¬(H∧A)，等價¬H∨¬A；沒有足夠前提選定哪一支。書稿並未推成任何理論都不可反駁。"
+        },
+        {
+          "id": "11-M6",
+          "claim": "有限點資料的兩模型例。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "x=0,1,2時x(x−1)(x−2)=0，所以f與g均給1,3,5。x=3時f=7,g=7+3×2×1=13。新點能區分兩個既定模型；不宣稱任意擬合模型都同等可信。"
+        }
+      ],
+      "material_findings": [],
+      "optional_findings": []
+    },
+    {
+      "chapter": "ch12",
+      "path": "books/proof-evolution/book-src/ch12-probability-and-statistics.md",
+      "read_status": "complete_final_revision",
+      "review_status": "complete",
+      "sha256_reviewed": "b20818befe44ed557855080cec56fb3bfa367843eca1a76b1b3576a7ae1af2cd",
+      "claims": [
+        {
+          "id": "12-F1",
+          "claim": "Bayes 1763 身後論文由 Price 附信提交，討論觀察成功失敗後的未知機率與先前分布。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.gtfp.cs.rhul.ac.uk/pulskamp/Bayes/bayesessay-rjp.pdf"
+          ],
+          "web_refs": [
+            "turn182view0"
+          ],
+          "note": "已讀原文重排版 Price 附信、Problem 與第一節。讀會日期1763-12-23、附信1763-11-10；書稿只寫1763，不混同兩個日期。未把現代條件機率公式原封歸給原文。"
+        },
+        {
+          "id": "12-F2",
+          "claim": "Fisher 1925 以假設下觀察偏離的尾端機率進行顯著性檢查；p值不是假設後驗。",
+          "verdict": "confirmed",
+          "sources": [
+            "https://psychclassics.yorku.ca/Fisher/Methods/chap4.htm",
+            "https://www.amstat.org/asa/files/pdfs/p-valuestatement.pdf"
+          ],
+          "web_refs": [
+            "turn185view0",
+            "turn189view0",
+            "turn189view1"
+          ],
+          "note": "已讀1925第四章20節的卡方尾端與0.05敘述；ASA六原則明確排除假設真值機率解讀。兩來源的不同統計取向未被抹成同一學派。"
+        },
+        {
+          "id": "12-F3",
+          "claim": "Neyman–Pearson 1933 研究競爭假設、概似比較、臨界域與兩類錯誤控制。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://errorstatistics.com/wp-content/uploads/2014/08/neyman-pearson-1933_on-the-problem-of-the-most-efficient-tests-of-statistical-hypotheses.pdf"
+          ],
+          "web_refs": [
+            "turn185view2",
+            "turn189view2"
+          ],
+          "note": "原文第II節直接討論樣本空間與臨界域、概似比較及真H0誤拒／假H0誤接受。書稿已標明現代術語重述，不將檢定說成假設後驗。"
+        },
+        {
+          "id": "12-F4",
+          "claim": "ASA 2016 指出p值不是假設為真機率、不能只靠门檻且不表示效應大小。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://www.amstat.org/asa/files/pdfs/p-valuestatement.pdf"
+          ],
+          "web_refs": [
+            "turn185view1",
+            "turn189view0"
+          ],
+          "note": "已讀官方2016-03-07發布文件所列六原則，腳註準確稱發布文件，未冒稱它就是另一篇全文。"
+        },
+        {
+          "id": "12-F5",
+          "claim": "Neyman 1937 信賴限是依樣本而變的量，涵蓋固定參數的比例不是固定區間內參數後驗。",
+          "verdict": "single_primary_supported",
+          "sources": [
+            "https://wwwusers.ts.infn.it/~milotti/Didattica/StatisticaAvanzata/Neyman_1937.pdf"
+          ],
+          "web_refs": [
+            "turn185view4",
+            "turn185view5"
+          ],
+          "note": "已讀原文式131與隨後解釋，以及早前confidence coefficient定義。書稿对频率和贝氏區間的區別准确。"
+        }
+      ],
+      "checks": [
+        {
+          "id": "12-M1",
+          "claim": "BAYES canonical table。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "母體10000×1%=100有缺陷、9900無缺陷；預期陽性100×.9=90、9900×.05=495，陰性10與9405，總陽性585、陰性9415。合計均相符，且明說是虛構模型與預期頻數。"
+        },
+        {
+          "id": "12-M2",
+          "claim": "陽性後P(D|+)=2/13≈15.38%。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "P(D且+)=.01×.9=.009；P(+)=.009+.99×.05=.0585；相除.009/.0585=90/585=2/13。未交換P(+|D)與P(D|+)。"
+        },
+        {
+          "id": "12-M3",
+          "claim": "概似比18與先驗勝算1:99更新。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": ".9/.05=18；後驗勝算18:99=2:11；轉機率2/(2+11)=2/13。一般比例r時，後驗.9r/[.9r+.05(1−r)]；作比例的r在[0,1]內，分母正。"
+        },
+        {
+          "id": "12-M4",
+          "claim": "九次正面的預先指定雙尾p=22/1024。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "公平獨立十次共有1024等概序列。|X−5|≥4 iff X∈{0,1,9,10}；序列數1+10+10+1=22，p=.021484375≈2.15%。給定某一條序列的概率1/1024不等於尾端檢查。"
+        },
+        {
+          "id": "12-M5",
+          "claim": "二模型概似比39.67與後驗28.61%。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "Pθ(X=9)=10θ⁹(1−θ)。θ=.5時為10/1024=.009765625；θ=.9時為.387420489。比值39.6718580736；若偏向／公平先驗勝算1:99且僅兩模型，後驗=39.6718580736/(99+39.6718580736)≈0.286084419901，四捨五入28.61%。"
+        },
+        {
+          "id": "12-M6",
+          "claim": "同一九次門檻規則的錯誤率與當次p值不同。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "拒絕域固定{0,1,9,10}，在H0機率22/1024；若觀察X=10，本次|X−5|≥5尾端{0,10}的p=2/1024。資料變更p，不變更已訂拒絕域的Type I error。"
+        },
+        {
+          "id": "12-M7",
+          "claim": "θ=.9時九次門檻規則檢定力73.61%、漏拒26.39%。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "把k=0,1,9,10的binomial(10,.9)機率相加：.1¹⁰+10×.9×.1⁹+10×.9⁹×.1+.9¹⁰=.7360989382；一減為.2639010618。未拒絕不能保證θ=.5。"
+        },
+        {
+          "id": "12-M8",
+          "claim": "縮小拒絕域使Type I error與固定替代下power都不增加。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "若R₂⊆R₁，對任何機率分布均P(R₂)≤P(R₁)。分別以虛無與替代分布代入，即得正文的兩種不增加關係；没有承诺無資料代价同时改善。"
+        },
+        {
+          "id": "12-M9",
+          "claim": "涵蓋率与後驗區間的不同承諾。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "頻率陳述對每個固定θ要求Pθ(θ∈C(X))=.95或所宣告水準，隨機性在X及C(X)。給定觀察x後C(x)與θ固定，原有涵蓋式未定義θ的後驗分布；需另加先驗才得到該類後驗主張。"
+        },
+        {
+          "id": "12-M10",
+          "claim": "p值、後驗與效應大小不可互換。",
+          "verdict": "passed",
+          "confidence": "high",
+          "independent_recomputation": "同一九次正面給尾端2.15%，指定兩模型及先驗才給28.61%偏向後驗；資料p式沒有先驗參數，後驗會隨先驗改變。統計量與樣本量也進入尾端，故小p本身不足以指定效應大小。"
+        }
+      ],
+      "numeric_recomputations": {
+        "true_positives": "90",
+        "false_positives": "495",
+        "canonical_posterior_exact": "2/13",
+        "canonical_posterior_decimal": 0.15384615384615385,
+        "p_9_exact": "11/512",
+        "p_9_decimal": 0.021484375,
+        "p_10_exact": "1/512",
+        "likelihood_fair": 0.009765625,
+        "likelihood_biased": 0.387420489,
+        "likelihood_ratio": 39.6718580736,
+        "two_model_posterior": 0.2860844199011467,
+        "power_theta_0_9": 0.7360989382,
+        "type_ii_theta_0_9": 0.2639010618
+      },
+      "material_findings": [],
+      "optional_findings": []
+    }
+  ],
+  "summary": {
+    "complete_chapters": 4,
+    "pending_chapters": [],
+    "mathematical_checks": 33,
+    "material_findings": 0,
+    "optional_findings": 2,
+    "source_access_limitations": [
+      "Erdős image-only original: opened, but rendered screenshots not available to reviewer; directly relevant original AMS search-index excerpt checked.",
+      "Howard image-only scan: opened, but rendered screenshots not available; original text search excerpt plus Howard recollection in Wadler and Martin-Löf primary construction rules checked."
+    ],
+    "can_claim_all_four_reviewed": true,
+    "recommendation": "Both optional wording improvements have been applied by the chapter author and verified by readback. No open material or optional findings remain. Preserve explicit primary-source access notes.",
+    "resolved_optional_findings": 2,
+    "open_optional_findings": 0
+  },
+  "last_revision_readback": {
+    "date": "2026-10-06",
+    "chapters": [
+      "ch09",
+      "ch10"
+    ],
+    "status": "both_adopted_corrections_verified",
+    "mathematical_checks_unchanged": 33,
+    "review_scope_expanded": false
+  },
+  "export_note": "Source URLs, access limits, findings and final file digests are retained. Conversation-only tool reference IDs are omitted, and workspace paths are normalized."
+}

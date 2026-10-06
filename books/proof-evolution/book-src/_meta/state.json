@@ -1,0 +1,208 @@
+{
+  "date": "2026-10-06",
+  "form": "narrative",
+  "lang": "zh-TW",
+  "reader_register": "general",
+  "outline_authorization": {
+    "basis": "User requested complete book and PR and permitted improved workflow. No separate outline approval was obtained.",
+    "status": "autonomous_execution_authorized"
+  },
+  "chapters": {
+    "ch01": {
+      "file": "ch01-why-prove.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "9441d2baea3e620c9b00eeab68b9bcba29acdc4152ef8311d000f33c8f729e49",
+      "review_report": "reviews/review-ch01-04-appendices.json",
+      "substantive_han": 4533
+    },
+    "ch02": {
+      "file": "ch02-tablets-and-algorithms.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "b6cb778346afa2d4dc1c7fb83ef57c197551815042c9867d6926cbcb73f14c0e",
+      "review_report": "reviews/review-ch01-04-appendices.json",
+      "substantive_han": 4544
+    },
+    "ch03": {
+      "file": "ch03-greek-deduction.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "ceb0afe50d776efd3b1a049d81e60a8cc65c1e1ab639d7aa0eb498f51c31e184",
+      "review_report": "reviews/review-ch01-04-appendices.json",
+      "substantive_han": 4544
+    },
+    "ch04": {
+      "file": "ch04-plural-traditions.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "0ca4d0e5684ae5d52c707f18d8f3a1184a0cb9654d9d72c1ca99646408dabac9",
+      "review_report": "reviews/review-ch01-04-appendices.json",
+      "substantive_han": 4624
+    },
+    "ch05": {
+      "file": "ch05-algebra-and-symbols.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "1394fadb779c321345557398a5a51e9efbf03c883ac4e0c8becf2f34c254b6b5",
+      "review_report": "reviews/review-ch05-08.json",
+      "substantive_han": 4522
+    },
+    "ch06": {
+      "file": "ch06-infinity-and-limits.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "9f06289da95d885586e17a1ae353c11c7ba9fdda5b85f880bf8583457132b3ec",
+      "review_report": "reviews/review-ch05-08.json",
+      "substantive_han": 4635
+    },
+    "ch07": {
+      "file": "ch07-axioms-and-models.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "a625f32397a4c5615494347c7f62cf7208036ea54864ef4ba920457dcc33a721",
+      "review_report": "reviews/review-ch05-08.json",
+      "substantive_han": 4553
+    },
+    "ch08": {
+      "file": "ch08-logic-and-foundations.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "4375a0caae2ecbd77fc2afb41c1f89b243f42cd248926cd0cc303eb1c0c69593",
+      "review_report": "reviews/review-ch05-08.json",
+      "substantive_han": 4783
+    },
+    "ch09": {
+      "file": "ch09-incompleteness-and-computation.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "5b858f3d63b928aa06bd663811e17b82cdb1287a4ab6939beb0f3c02075d1379",
+      "review_report": "reviews/review-ch09-12.json",
+      "substantive_han": 4604
+    },
+    "ch10": {
+      "file": "ch10-construction-and-programs.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "43fdb591fe6ff7c10026487b8d3e91aef3f765650093cc6845e2b75db94444a1",
+      "review_report": "reviews/review-ch09-12.json",
+      "substantive_han": 4535
+    },
+    "ch11": {
+      "file": "ch11-experiment-and-evidence.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "34c999102f8c23c0f8e7ae850d08189091e51a4fc467dff98702b319b6e7164d",
+      "review_report": "reviews/review-ch09-12.json",
+      "substantive_han": 4523
+    },
+    "ch12": {
+      "file": "ch12-probability-and-statistics.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "b20818befe44ed557855080cec56fb3bfa367843eca1a76b1b3576a7ae1af2cd",
+      "review_report": "reviews/review-ch09-12.json",
+      "substantive_han": 4596
+    },
+    "ch13": {
+      "file": "ch13-causality-and-replication.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "2063ba2de07ae5c4e4df0037f399d3c1d335a2ad7df577e53f08356882875fc4",
+      "review_report": "reviews/review-ch13-16.json",
+      "substantive_han": 4610
+    },
+    "ch14": {
+      "file": "ch14-computer-assisted-proofs.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "0ca194cfafb5b2ad5f0bb817ecf4f9bde02ba606315f367236ae8e82ce7a3504",
+      "review_report": "reviews/review-ch13-16.json",
+      "substantive_han": 4548
+    },
+    "ch15": {
+      "file": "ch15-proof-assistants.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "45c8d371a687aa9ae0ad35975cfb74a1629aa6ad2b0261ab401c063745a59add",
+      "review_report": "reviews/review-ch13-16.json",
+      "substantive_han": 4604
+    },
+    "ch16": {
+      "file": "ch16-interactive-and-zero-knowledge.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "d9ddd227774a2765e8ee9c975a170d01296e64dcfad8307436e87c0cf1de5760",
+      "review_report": "reviews/review-ch13-16.json",
+      "substantive_han": 4629
+    },
+    "ch17": {
+      "file": "ch17-ai-and-proof.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398",
+      "review_report": "reviews/review-ch17-18.json",
+      "substantive_han": 4862
+    },
+    "ch18": {
+      "file": "ch18-responsibility-of-proof.md",
+      "status": "complete",
+      "review_status": "reviewed_final_version",
+      "sha256": "42d251805ec85d3d9dc4b0339779178556ed8ca8d2491acd8ff9eec19c88bdfb",
+      "review_report": "reviews/review-ch17-18.json",
+      "substantive_han": 4645
+    }
+  },
+  "gates": {
+    "legacy_cross_model_tier2": {
+      "status": "not_run",
+      "reason": "Original sibling toolchain and separate model-family providers unavailable; adapted independent review is tracked separately."
+    },
+    "repository_preflight": {
+      "status": "completed",
+      "base_commit": "3bd1c08c3c72b6d12a71cbde572a5c2f0642d983",
+      "reader_configs_checked": 27,
+      "reader_id_collision": false,
+      "external_toolchain_present": false,
+      "external_profile_present": false,
+      "workflow": "adapted_as_authorized"
+    },
+    "outline": {
+      "status": "recorded",
+      "chapter_count": 18,
+      "separate_user_approval_obtained": false
+    },
+    "adapted_independent_review": {
+      "status": "completed",
+      "chapters": 18,
+      "appendices": 4,
+      "unresolved_findings": 0,
+      "independence": "Different author roles, same model family",
+      "record": "reviews/index.json"
+    },
+    "source_review": {
+      "status": "completed_with_documented_access_limits",
+      "records": "source-audits/ and reviews/",
+      "legacy_two_independent_primary_origins_claimed": false
+    },
+    "offline_verification": {
+      "status": "passed",
+      "record": "offline-verification.json",
+      "tooling_tests": 11,
+      "canonical_calculations": 7,
+      "source_reader_byte_identity": true
+    },
+    "browser_runtime": {
+      "status": "not_run",
+      "reason": "Chromium executable unavailable; no interaction or visual result claimed.",
+      "record": "browser-status.json"
+    },
+    "package": {
+      "status": "complete",
+      "reader_sha256": "092c0e80bc70609fe480370a83c9a0aec5e9068cb69b88479e4bdb398572f113",
+      "source_snapshot": "source-snapshot.json"
+    }
+  },
+  "status": "book_complete_reviewed_and_packaged",
+  "revision_date": "2026-10-06"
+}

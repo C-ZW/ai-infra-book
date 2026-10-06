@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "title": "第一至四章及附錄 A、C 的獨立內容審閱",
+  "reviewer": "/root/write_formalization",
+  "reviewed_at_utc": "2026-10-06",
+  "repository": "C-ZW/ai-infra-book",
+  "book_source": "books/proof-evolution/book-src",
+  "scope": {
+    "requested": [
+      "ch01-why-prove.md",
+      "ch02-tablets-and-algorithms.md",
+      "ch03-greek-deduction.md",
+      "ch04-plural-traditions.md",
+      "appendix-a-methods.md",
+      "appendix-c-worked-examples.md"
+    ],
+    "actually_read": "六個檔案的全部正文、各節及來源註；歷史來源按下列 evidence 實際重新開啟或檢索相關段落。",
+    "method": [
+      "先以章內明示假設及共同範例重算數學，再對歷史敘述尋找反例、原典段落與研究的適用限制。",
+      "採 fact-auditor.md 的反駁導向與 arbiter.md 的逐步重算原則；未把同一原典的兩個網站副本當成兩份獨立史料。",
+      "supported_by_direct_text 表示直接讀到支持段落，不表示滿足每項主張兩個獨立第一手來源的更強門檻；沒有使用 confirmed 標籤假裝完成該門檻。",
+      "這是另一位撰寫者的獨立審閱回合，並非不同模型間的交叉驗證。",
+      "未修改受審六檔；附錄 C、第四章及附錄 A 的三項回報已由統稿者修正，均已再次讀檔確認。",
+      "不重做由統稿者負責的全書自動化註腳與連結檢查。"
+    ]
+  },
+  "overall": {
+    "disposition": "可接受；本輪三項回報均已由統稿者修正並讀回確認。",
+    "unresolved_material_findings": 0,
+    "resolved_findings": 3,
+    "optional_open_findings": 0,
+    "assurance_limit": "沒有證明全書所有歷史主張皆無誤；本報告提供實際讀過的範圍、可重現的重算與來源取得限制。"
+  },
+  "reviewed_files": [
+    {
+      "file": "ch01-why-prove.md",
+      "sha256": "9441d2baea3e620c9b00eeab68b9bcba29acdc4152ef8311d000f33c8f729e49",
+      "sections": [
+        "二十五之後，問題才開始",
+        "圖形要回答的問題",
+        "條件不是附帶小字",
+        "說服、作證與證明",
+        "發現留下痕跡，理由留下入口"
+      ],
+      "finding": "奇數和由有限例子走到一般結構的論證完整；圖形的覆蓋、不重疊及定義域有明確交代。",
+      "source_scope": "Poincaré、Euclid、Aristotle、Thurston 的相關原文已重新開啟；Chemla 2012 導論未完整重讀。"
+    },
+    {
+      "file": "ch02-tablets-and-algorithms.md",
+      "sha256": "b6cb778346afa2d4dc1c7fb83ef57c197551815042c9867d6926cbcb73f14c0e",
+      "sections": [
+        "能讀出數字，才能讀出問題",
+        "一個近似數，怎樣取得可靠的界線",
+        "可以重建的方法，未必就是當年的方法",
+        "紙草上的圓，不是小數競賽",
+        "做得出來，與教得出去",
+        "殘存材料怎樣改變我們能問的問題"
+      ],
+      "finding": "泥板記錄、現代有理數誤差界及平均更新的歷史地位已分開；未把今日可重建算法稱作泥板作者實際採用的方法。紙草算法與現代 π 比較亦有清楚區別。"
+    },
+    {
+      "file": "ch03-greek-deduction.md",
+      "sha256": "ceb0afe50d776efd3b1a049d81e60a8cc65c1e1ab639d7aa0eb498f51c31e184",
+      "sections": [
+        "一個三角形，幾種不同的起點",
+        "圖形讓一般關係有了位置",
+        "任何一張質數名單，都可以被超過",
+        "反證不是宣布對方荒謬",
+        "依據公開以後，批評也有了秩序"
+      ],
+      "finding": "已辨識 I.1 圓交點存在未完全由明文公設供應；IX.20 原文公倍數與現代乘積版本分開，未犯『乘積加一總是質數』錯誤；√2 證明的最簡分數與奇偶引理已交代。"
+    },
+    {
+      "file": "ch04-plural-traditions.md",
+      "sha256": "0ca4d0e5684ae5d52c707f18d8f3a1184a0cb9654d9d72c1ca99646408dabac9",
+      "sections": [
+        "經典的大字，注釋的小字",
+        "印度注釋中的一束光",
+        "三十九如何變成六十四",
+        "相似的理由，不是傳播的收據",
+        "注釋為什麼能改變經典"
+      ],
+      "finding": "中國、印度、阿拉伯文材料均縮限到具名文本與段落；沒有把類似方法當成傳播證據。原文數值與現代自行選定的圖形、燈影數值及一般證明有明示區別。三角形端點情形已補。"
+    },
+    {
+      "file": "appendix-a-methods.md",
+      "sha256": "7a9ae831f9ac198fc009925dc5f83892266523df97334b223b1373dd8a68bd04",
+      "sections": [
+        "從前提走到結論",
+        "處理無窮多個有限對象",
+        "證明「有」，以及交出「哪一個」",
+        "對付無限、模型與不可決定性",
+        "檢查機器與評估世界"
+      ],
+      "finding": "正確區分由 A 導出矛盾而得到 ¬A 的否定引入，與由 ¬A 導出矛盾再得到 A 的雙重否定消去；沒有把所有矛盾論證都說成建構邏輯禁止。其他方法例子與適用條件一致。"
+    },
+    {
+      "file": "appendix-c-worked-examples.md",
+      "sha256": "cda582c2c90bbebb9c3205c08a96de2924192afac4104634761279ab6f0ffcb3",
+      "sections": [
+        "奇數和：五個例子與所有正整數",
+        "乘積加一：新的質因數，不一定是新的質數",
+        "完成平方：題目範圍決定保留哪些解",
+        "基準率：分母不能只留下真正有特徵的對象",
+        "多重檢定：每次五個百分點，並不等於整組五個百分點",
+        "二十輪挑戰：小機率的保證也有精確範圍",
+        "四行表格與一份可檢查的矛盾證書"
+      ],
+      "finding": "所有數值與四行真值表、歸結證書重算相符；奇數配對的『兩項』措辭已修正為『兩項相加』。"
+    }
+  ],
+  "recomputations": [
+    {
+      "id": "R01",
+      "sections": [
+        "ch01 奇數和",
+        "appendix-c 奇數和"
+      ],
+      "input": "第 k 層的格點由 max(a,b)=k 分類；配對第 k 個奇數與第 n−k+1 個奇數。",
+      "result": "每層有 k+(k−1)=2k−1 點，互斥且覆蓋 1≤a,b≤n；(2k−1)+(2(n−k)+1)=2n，n 對給 2S=2n²。",
+      "status": "pass_after_wording_correction"
+    },
+    {
+      "id": "R02",
+      "sections": [
+        "ch02 泥板數值"
+      ],
+      "input": "q=1+24/60+51/3600+10/216000",
+      "result": "q=30547/21600；q²=933119209/466560000=2−791/466560000；30q=30547/720=42+25/60+35/3600。",
+      "status": "pass_exact_fraction"
+    },
+    {
+      "id": "R03",
+      "sections": [
+        "ch02 誤差界"
+      ],
+      "input": "q>0 且 q²<2；以 2/q 為另一端。",
+      "result": "q<√2<2/q；界寬 2/q−q=791/659815200<0.0000012。q≈1.41421296296296296296296296296，上端≈1.41421416178348119291583461551。",
+      "status": "pass_exact_inequality"
+    },
+    {
+      "id": "R04",
+      "sections": [
+        "ch02 平均更新"
+      ],
+      "input": "u=3/2，v=2/u；重複平均。",
+      "result": "第一次平均17/12，平方−2=1/144；第二次577/408，平方−2=1/166464。恆等式 ((u+v)/2)²−uv=(u−v)²/4 支持上界；u>√2 時 v<u，使平均下降而仍在上方。",
+      "status": "pass"
+    },
+    {
+      "id": "R05",
+      "sections": [
+        "ch02 林德紙草"
+      ],
+      "input": "d=9，扣除 d/9 後平方。",
+      "result": "面積估計64；現代理想圓面積81π/4≈63.617251，差約0.382749，相對誤差約0.6016%；有效比例256/81。d 改成18時面積估計256，縮放4倍，相對誤差不變。13×12=13×8+13×4=104+52=156。",
+      "status": "pass"
+    },
+    {
+      "id": "R06",
+      "sections": [
+        "ch03 質數",
+        "appendix-a 最小反例",
+        "appendix-c 乘積加一"
+      ],
+      "input": "有限非空質數表乘積 P，N=P+1；N>1 的最小大於1因數 q。",
+      "result": "若 q 合成則存在更小的大於1因數，矛盾，故 q 質；若 q 已列則 q 同時整除 P,N，從而整除1，矛盾。2×3×5×7×11×13+1=30031=59×509，直接反駁 N 必質。",
+      "status": "pass"
+    },
+    {
+      "id": "R07",
+      "sections": [
+        "ch03 √2 反證"
+      ],
+      "input": "√2=a/b，a,b 正整數且無公因數。",
+      "result": "a²=2b²⇒a 偶⇒a=2k⇒b²=2k²⇒b 偶，違反最簡分數。選最簡表示可由正分母嚴格下降或最小分母保證，不依賴未證的無窮下降終止。",
+      "status": "pass"
+    },
+    {
+      "id": "R08",
+      "sections": [
+        "ch04 面積"
+      ],
+      "input": "底12、高21；一般底b、高h。",
+      "result": "等腰例可重組為6×21=126。內垂足分割為 uh/2+vh/2=bh/2；外垂足作兩直角三角形面積差；端點為直角三角形。最新文本三種情形已完整。",
+      "status": "pass_after_boundary_clarification"
+    },
+    {
+      "id": "R09",
+      "sections": [
+        "ch04 燈影"
+      ],
+      "input": "H>h>0，D>0；H=9,h=3,D=6。",
+      "result": "相似三角形 H/(D+s)=h/s⇒s=hD/(H−h)=3。錯配 H/h=D/s 得 s=2，回代9/8≠3/2。H=h 時射線與地面平行，無有限前方影尖；假設限制恰與分母對應。",
+      "status": "pass"
+    },
+    {
+      "id": "R10",
+      "sections": [
+        "ch04 配方",
+        "appendix-c 配方"
+      ],
+      "input": "x²+10x=39。",
+      "result": "(x+5)²=64⇒x=3 或−13；兩者均滿足實數等式。正長度問題只容3；正域上x²+10x嚴格遞增，唯一性也成立。",
+      "status": "pass"
+    },
+    {
+      "id": "R11",
+      "sections": [
+        "appendix-a 直接與間接證明"
+      ],
+      "input": "n=2k+1，k∈ℤ；否定引入、逆否與雙重否定。",
+      "result": "n²=2(2k²+2k)+1 對負整數同樣成立。A⇒⊥ 可推出 ¬A；從 ¬A⇒⊥ 得 ¬¬A 到 A 是另一步經典原則。正文已明示經典邏輯的逆否範圍。",
+      "status": "pass"
+    },
+    {
+      "id": "R12",
+      "sections": [
+        "appendix-a 歸納、不變量、下降"
+      ],
+      "input": "基礎步、承接步；每次增加2；正整數與正實數下降。",
+      "result": "只有錯誤命題 n=n+1 的承接推演不給基礎步，不能證全稱命題。增加2保偶數但不保證所有偶數都可達；正整數嚴格下降終止，正實數 x/2 可無窮下降。",
+      "status": "pass"
+    },
+    {
+      "id": "R13",
+      "sections": [
+        "appendix-a 鴿籠、雙重計數、機率法"
+      ],
+      "input": "13人分12月份；無向簡單圖 m 條邊；各頂點獨立隨機二色。",
+      "result": "鴿籠結論成立；度數和2m；每條邊跨兩色機率1/2，切割大小期望m/2，有限平均保證存在至少m/2的切割。不需假定各邊事件彼此獨立。",
+      "status": "pass"
+    },
+    {
+      "id": "R14",
+      "sections": [
+        "appendix-a 極限、對角線、模型"
+      ],
+      "input": "ε>0，δ=min(1,ε/5)；二進位無窮序列；T 模型使命題 φ 假。",
+      "result": "0<|x−2|<δ 時 |x+2|<5，|x²−4|<ε。翻轉第 n 個序列第 n 位得到不在表中之序列，不依賴有重複表示的小數。反模型排除可證性須推導系統健全，正文條件已在。",
+      "status": "pass"
+    },
+    {
+      "id": "R15",
+      "sections": [
+        "appendix-c 基準率"
+      ],
+      "input": "10000人，100人具特徵，靈敏度90%，其餘5%誤報。",
+      "result": "真陽90、偽陰10、偽陽495、真陰9405；陽性585；90/585=2/13≈15.3846%。",
+      "status": "pass"
+    },
+    {
+      "id": "R16",
+      "sections": [
+        "appendix-c 多重檢定"
+      ],
+      "input": "20次獨立檢定，各α=0.05；另以各α=0.0025做聯集界。",
+      "result": "1−0.95²⁰≈0.6415140776。聯集上界20×0.0025=0.05不需獨立。兩個不同推導的假設區別明確。",
+      "status": "pass"
+    },
+    {
+      "id": "R17",
+      "sections": [
+        "appendix-c 二十輪挑戰"
+      ],
+      "input": "任一可到達歷史下，下一輪錯誤接受條件機率≤1/2。",
+      "result": "P(E_t)≤P(E_(t−1))/2⇒P(E_20)≤2⁻²⁰=0.00000095367431640625；百分比0.000095367431640625%。條件式容許回應策略隨歷史改變，毋須錯稱各輪事件無條件獨立。",
+      "status": "pass"
+    },
+    {
+      "id": "R18",
+      "sections": [
+        "appendix-c 真值表與歸結"
+      ],
+      "input": "(P∨Q)∧(¬P∨Q)∧(P∨¬Q)∧(¬P∨¬Q)。",
+      "result": "四種P,Q賦值各使相應一子句為假；前兩子句歸結Q，後兩子句歸結¬Q，再得空子句。真值表及矛盾證書相符。",
+      "status": "pass"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E01",
+      "claims": "Poincaré 對歸納、重複推理與一般性的討論；本章未採其全部心靈哲學。",
+      "source": "Henri Poincaré, Science and Hypothesis, 1905 English translation, ch. I, V–VII",
+      "url": "https://brocku.ca/MeadProject/Poincare/Poincare_1905_02.html",
+      "access": "relevant_primary_translation_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E02",
+      "claims": "共同概念的相等、同量相加相減。",
+      "source": "Euclid, Elements I, Common Notions",
+      "url": "https://mathcs.clarku.edu/~djoyce/elements/bookI/cn.html",
+      "access": "primary_translation_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E03",
+      "claims": "亞里斯多德的證明起點與無窮後退問題。",
+      "source": "Aristotle, Posterior Analytics I.2–3",
+      "url": "https://classics.mit.edu/Aristotle/posterior.1.i.html",
+      "access": "primary_translation_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E04",
+      "claims": "數學實踐中的理解與交流，不把形式化與人的理解混同。",
+      "source": "William P. Thurston, On Proof and Progress in Mathematics, 1994, §3",
+      "url": "https://arxiv.org/pdf/math/9404236",
+      "access": "primary_essay_relevant_sections_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E05",
+      "claims": "YBC 7289 概略年代及不確定出土地。",
+      "source": "ISAW, Before Pythagoras exhibition object catalogue, YBC 7289",
+      "url": "https://isaw.nyu.edu/exhibitions/before-pythagoras/items/ybc-7289/",
+      "access": "museum_catalogue_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E06",
+      "claims": "泥板六十進位數值、書吏訓練及算法歸屬的不確定。",
+      "source": "David Fowler and Eleanor Robson, Square Root Approximations in Old Babylonian Mathematics: YBC 7289 in Context, 1998",
+      "url": "https://www.ux1.eiu.edu/~cidelman/Classes/4900/Class%20Notes/Babylonian%20Approximations.pdf",
+      "access": "original_research_relevant_text_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E07",
+      "claims": "林德紙草第50題直徑9、扣除1、8的平方64，及倍增算表。",
+      "source": "Arnold Buffum Chace et al., The Rhind Mathematical Papyrus, Volume I, 1927, printed p.92, Problem 50",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/The_Rhind_Mathematical_Papyrus,_Volume_I.pdf",
+      "access": "primary_edition_translation_read_via_PDF_text",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E08",
+      "claims": "EA10058、Ahmose、第二中間期、約前1550年的館藏標示。正文採較寬第二千紀。",
+      "source": "British Museum, EA10058 catalogue",
+      "url": "https://www.britishmuseum.org/collection/object/Y_EA10058",
+      "access": "direct_open_failed_but_full_indexed_catalogue_text_retrieved",
+      "status": "supported_by_catalogue_excerpt"
+    },
+    {
+      "id": "E09",
+      "claims": "不能只因未出現現代定理格式就斷言算法缺乏理由；原始運算詞與教學解說可作研究材料。",
+      "source": "Jens Høyrup, Mathematical Justification as Non-Conceptualized Practice: the Babylonian Example, 2012, pp.362–383",
+      "url": "https://rucforsk.ruc.dk/ws/portalfiles/portal/37561378/Hoyrup_2012_b_Mathematical_justification_as_non_conceptualized_practice_S_.pdf",
+      "access": "original_research_and_translated_primary_examples_read",
+      "status": "supported_by_direct_text",
+      "caveat": "作者部分解讀具推測或爭論性；本章未把其所有文化比較判斷概括成史實。"
+    },
+    {
+      "id": "E10",
+      "claims": "Euclid I.1 的作圓、交點與等長證明；未明示的交點存在。",
+      "source": "Euclid, Elements I.1; David Joyce editorial guide",
+      "url": "https://mathcs.clarku.edu/~djoyce/elements/bookI/propI1.html",
+      "access": "primary_translation_and_editorial_guide_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E11",
+      "claims": "形式檢查補入 Euclid 原文省略前提及步驟。",
+      "source": "Beeson, Narboux and Wiedijk, Proof-checking Euclid, submitted 2017, revised 2018",
+      "url": "https://arxiv.org/abs/1710.00787",
+      "access": "original_research_abstract_read",
+      "status": "supported_by_direct_text",
+      "caveat": "本輪只核對研究摘要支持的範圍，未重新運行證明檢查器。"
+    },
+    {
+      "id": "E12",
+      "claims": "IX.20 原文以公倍數加一，且另分合數情形；VII.31 有質因數並用遞減終止。",
+      "source": "Euclid, Elements IX.20 and VII.31",
+      "urls": [
+        "https://mathcs.clarku.edu/~djoyce/elements/bookIX/propIX20.html",
+        "https://mathcs.clarku.edu/~djoyce/elements/bookVII/propVII31.html"
+      ],
+      "access": "both_primary_translations_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E13",
+      "claims": "古代文本已有以不可通約導致奇偶矛盾的反證例；無須指定單一發明者。",
+      "source": "Aristotle, Prior Analytics I.23",
+      "url": "https://www.logoslibrary.org/aristotle/prior/123.html",
+      "access": "primary_translation_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E14",
+      "claims": "《九章》編成爭論、劉徽263、李淳風等656、傳抄注層與後續閱讀。",
+      "source": "Karine Chemla, Canon and Commentary in Ancient China, 2008; Reading instructions of the past, 2020",
+      "urls": [
+        "https://www.mpiwg-berlin.mpg.de/Preprints/P344.PDF",
+        "https://www.cambridge.org/core/journals/bjhs-themes/article/reading-instructions-of-the-past-classifying-them-and-reclassifying-them-commentaries-on-the-canon-the-nine-chapters-on-mathematical-procedures-from-the-third-to-the-thirteenth-centuries/F402B3DE252D1799135618C259E5C706"
+      ],
+      "access": "original_research_relevant_sections_read",
+      "status": "supported_by_direct_text",
+      "caveat": "同一研究者的兩篇論文不等於兩份獨立原始史料；『混合』限於其指出的部分注釋。"
+    },
+    {
+      "id": "E15",
+      "claims": "圭田12、21、126，以盈補虛；圓田注對周三徑一的批評。",
+      "source": "九章算術（四部叢刊本）卷第一，圭田、圓田注",
+      "url": "https://zh.wikisource.org/wiki/九章算術_(四部叢刊本)/卷第一",
+      "access": "primary_text_transcription_read",
+      "status": "supported_by_direct_text",
+      "caveat": "本輪讀電子轉錄而非逐字核對所有影印字形；已區分明標『臣淳風等』處與後續劉徽解說脈絡。"
+    },
+    {
+      "id": "E16",
+      "claims": "Bhāskara I 對 Āryabhaṭīya Ab.2.15 的燈影程序以三率解釋。",
+      "source": "Agathe Keller, Dispelling Mathematical Doubts, 2012, pp.492–493 within pp.487–508",
+      "url": "https://www.ms.uky.edu/~sohum/ma330/files/Chemla_K.Ed.-The_history_of_mathematical_proof_in_ancient_traditions-Cambridge_University_Press_2012.pdf",
+      "access": "indexed_relevant_pages_with_primary_commentary_translation_read",
+      "status": "supported_by_primary_passage_in_research",
+      "caveat": "未完整取得整本大PDF或核對梵文原稿；現代符號及9、3、6數值由本書自行選定。"
+    },
+    {
+      "id": "E17",
+      "claims": "花拉子米兩側長條與補25成64的幾何說明。",
+      "source": "Al-Khwarizmi, The Algebra of Mohammed Ben Musa, Frederic Rosen translation, 1831, pp.15–16",
+      "urls": [
+        "https://en.wikisource.org/wiki/Page:The_Algebra_of_Mohammed_Ben_Musa_(1831).djvu/31",
+        "https://en.wikisource.org/wiki/Page:The_Algebra_of_Mohammed_Ben_Musa_(1831).djvu/32"
+      ],
+      "access": "primary_translation_transcription_read",
+      "status": "supported_by_direct_text"
+    },
+    {
+      "id": "E18",
+      "claims": "十二至十三世紀拉丁譯本，約1145、1170，及某些傳本的測量與繼承部分省略。",
+      "source": "Jens Høyrup, The Fifteenth–Seventeenth Century Transformation of Abbacus Algebra, 2011 preprint, Latin Twelfth- to Thirteenth-century Reception",
+      "url": "https://rucforsk.ruc.dk/ws/portalfiles/portal/34964168/Hoyrup_2011_a_15th_17th_c._transformation_of_abbacus_algebra.PDF",
+      "access": "original_research_relevant_sections_read",
+      "status": "supported_by_direct_text",
+      "caveat": "省略可能已在阿拉伯底本，不歸咎於特定譯者；章文已保留此範圍。"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F01",
+      "file": "appendix-c-worked-examples.md",
+      "section": "奇數和：五個例子與所有正整數",
+      "classification": "minor_mathematical_wording",
+      "materiality": "原句字面會把兩個加數各自都說成2n；公式及後段原本正確。",
+      "observed_passage": "同位置的兩項都等於 2n，一共 n 對，所以 2S = n × 2n = 2n²，得到 S = n²。",
+      "proposed_correction": "同位置的兩項相加都等於 2n，一共 n 對，所以 2S = n × 2n = 2n²，得到 S = n²。",
+      "status": "resolved_by_editor_and_reread",
+      "current_passage": "同位置的兩項相加都等於 2n，一共 n 對，所以 2S = n × 2n = 2n²，得到 S = n²。"
+    },
+    {
+      "id": "F02",
+      "file": "ch04-plural-traditions.md",
+      "section": "經典的大字，注釋的小字",
+      "classification": "minor_boundary_clarification",
+      "materiality": "原證明已處理垂足在底內及延長線，宣稱全部非退化三角形時宜明說端點；不是結果錯誤。",
+      "observed_passage": "把兩部分加起來，得到 (u + v)h/2，也就是 bh/2。若垂足落在底邊延長線上，就把原三角形看成較大的直角三角形扣去較小者。",
+      "proposed_correction": "在兩句之間補：垂足若恰好落在底邊端點，原三角形本身就是直角三角形，可直接使用前述拼成長方形的論證，面積同樣是 bh/2。",
+      "status": "resolved_by_editor_and_reread",
+      "current_passage": "把兩部分加起來，得到 (u + v)h/2，也就是 bh/2。垂足若恰好落在底邊端點，原三角形本身就是直角三角形，可直接使用前述拼成長方形的論證，面積同樣是 bh/2。"
+    },
+    {
+      "id": "F03",
+      "file": "appendix-a-methods.md",
+      "section": "對付無限、模型與不可決定性",
+      "classification": "optional_terminology_consistency",
+      "materiality": "概念無誤；建議與第八章同一術語，方便查找。",
+      "observed_passage": "若公理集合 T 的某個模型使命題 φ 不成立，則在相關邏輯的可靠性前提下，T 不能推出 φ",
+      "proposed_correction": "若公理集合 T 的某個模型使命題 φ 不成立，則在相關推導規則的健全性前提下，T 不能推出 φ",
+      "status": "resolved_by_editor_and_reread",
+      "current_passage": "若公理集合 T 的某個模型使命題 φ 不成立，則在相關推導規則的健全性前提下，T 不能推出 φ"
+    }
+  ],
+  "remaining_access_limits": [
+    "Chemla 2012 全書導論及 Fitzpatrick 導論未在本輪逐頁重讀；第1、3章相關一般敘述另有已開啟的原典或研究支持。",
+    "British Museum 網頁直接開啟回報錯誤；以同一官方頁的已索引全文核對，不能冒稱直接載入成功。",
+    "Keller 的大PDF只讀到相關索引頁與原典譯述；未讀全書或檢視原梵文。",
+    "沒有重新辨識泥板楔形文字、紙草僧侶體或所有影印字形；所核對的是學術原始研究及具名版本譯文。",
+    "數學重算並非使用正式證明助理；報告列明可手工查核的恆等式、界線與假設。"
+  ],
+  "additional_consistency_scan": {
+    "scope": "依統稿者追加指示，讀附錄 B、D 全文，僅核對與 ch05–08 的既有來源、日期、版本及已讀 ch04 的書名一致性，未展開新的研究。",
+    "material_inconsistencies": 0,
+    "files": [
+      {
+        "file": "appendix-b-timeline.md",
+        "sha256": "a20effd3ec4e6842293b3d150cff1374bea9af9a097f69078b9650bc0af0e61b"
+      },
+      {
+        "file": "appendix-d-sources.md",
+        "sha256": "bbd84f16182066746198b26c6f99ee6f168512e8e07656777936de06055412f9"
+      }
+    ],
+    "reviewed_points": [
+      "Recorde1557、Viète1591、Descartes1637/1886；Leibniz1684、Newton1687及後出英譯；Berkeley1734、Cauchy1821/1882。",
+      "Lobachevsky1840/1891；Riemann1854/1868與章末1873譯本；Beltrami1868；Hilbert1899/1902及章末1950重印。",
+      "Frege1879；Russell1903/1908與Zermelo1908；來源附錄各入口指向實際引用文本。",
+      "術語表的語義、推導、健全性、邏輯完備與理論完備相符。"
+    ],
+    "optional_findings": [
+      {
+        "id": "B01",
+        "observed_passage": "婆什迦羅第一對《阿里亞巴塔曆數書》數學章的注解",
+        "proposed_correction": "婆什迦羅第一對《阿耶波多書》（Āryabhaṭīya）數學章的注解",
+        "status": "resolved_by_editor_and_reread",
+        "reason": "與第四章書名一致，避免誤認兩書。"
+      },
+      {
+        "id": "D01",
+        "observed_passage": "羅素《數學原理》第 101 節",
+        "proposed_correction": "羅素《數學原理》（The Principles of Mathematics，1903）第 101 節",
+        "status": "resolved_by_editor_and_reread",
+        "reason": "保留正確來源連結，增加英文與日期，與後來Principia Mathematica區別。"
+      }
+    ]
+  },
+  "export_note": "Source URLs, access limits, findings and final file digests are retained. Conversation-only tool reference IDs are omitted, and workspace paths are normalized."
+}

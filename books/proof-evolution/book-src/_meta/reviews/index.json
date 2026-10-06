@@ -1,0 +1,163 @@
+{
+  "date": "2026-10-06",
+  "scope": "18 chapters and 4 appendices",
+  "independence": "Different author roles using the same model family; not cross-model verification.",
+  "final_file_hashes_match": true,
+  "unresolved_findings": 0,
+  "files": [
+    {
+      "file": "ch01-why-prove.md",
+      "sha256": "9441d2baea3e620c9b00eeab68b9bcba29acdc4152ef8311d000f33c8f729e49",
+      "report": "review-ch01-04-appendices.json",
+      "reviewer": "/root/write_formalization",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch02-tablets-and-algorithms.md",
+      "sha256": "b6cb778346afa2d4dc1c7fb83ef57c197551815042c9867d6926cbcb73f14c0e",
+      "report": "review-ch01-04-appendices.json",
+      "reviewer": "/root/write_formalization",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch03-greek-deduction.md",
+      "sha256": "ceb0afe50d776efd3b1a049d81e60a8cc65c1e1ab639d7aa0eb498f51c31e184",
+      "report": "review-ch01-04-appendices.json",
+      "reviewer": "/root/write_formalization",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch04-plural-traditions.md",
+      "sha256": "0ca4d0e5684ae5d52c707f18d8f3a1184a0cb9654d9d72c1ca99646408dabac9",
+      "report": "review-ch01-04-appendices.json",
+      "reviewer": "/root/write_formalization",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "appendix-a-methods.md",
+      "sha256": "7a9ae831f9ac198fc009925dc5f83892266523df97334b223b1373dd8a68bd04",
+      "report": "review-ch01-04-appendices.json",
+      "reviewer": "/root/write_formalization",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "appendix-c-worked-examples.md",
+      "sha256": "cda582c2c90bbebb9c3205c08a96de2924192afac4104634761279ab6f0ffcb3",
+      "report": "review-ch01-04-appendices.json",
+      "reviewer": "/root/write_formalization",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch05-algebra-and-symbols.md",
+      "sha256": "1394fadb779c321345557398a5a51e9efbf03c883ac4e0c8becf2f34c254b6b5",
+      "report": "review-ch05-08.json",
+      "reviewer": "/root/write_machine_methods",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch06-infinity-and-limits.md",
+      "sha256": "9f06289da95d885586e17a1ae353c11c7ba9fdda5b85f880bf8583457132b3ec",
+      "report": "review-ch05-08.json",
+      "reviewer": "/root/write_machine_methods",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch07-axioms-and-models.md",
+      "sha256": "a625f32397a4c5615494347c7f62cf7208036ea54864ef4ba920457dcc33a721",
+      "report": "review-ch05-08.json",
+      "reviewer": "/root/write_machine_methods",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch08-logic-and-foundations.md",
+      "sha256": "4375a0caae2ecbd77fc2afb41c1f89b243f42cd248926cd0cc303eb1c0c69593",
+      "report": "review-ch05-08.json",
+      "reviewer": "/root/write_machine_methods",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch09-incompleteness-and-computation.md",
+      "sha256": "5b858f3d63b928aa06bd663811e17b82cdb1287a4ab6939beb0f3c02075d1379",
+      "report": "review-ch09-12.json",
+      "reviewer": "/root/write_origins",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch10-construction-and-programs.md",
+      "sha256": "43fdb591fe6ff7c10026487b8d3e91aef3f765650093cc6845e2b75db94444a1",
+      "report": "review-ch09-12.json",
+      "reviewer": "/root/write_origins",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch11-experiment-and-evidence.md",
+      "sha256": "34c999102f8c23c0f8e7ae850d08189091e51a4fc467dff98702b319b6e7164d",
+      "report": "review-ch09-12.json",
+      "reviewer": "/root/write_origins",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch12-probability-and-statistics.md",
+      "sha256": "b20818befe44ed557855080cec56fb3bfa367843eca1a76b1b3576a7ae1af2cd",
+      "report": "review-ch09-12.json",
+      "reviewer": "/root/write_origins",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch13-causality-and-replication.md",
+      "sha256": "2063ba2de07ae5c4e4df0037f399d3c1d335a2ad7df577e53f08356882875fc4",
+      "report": "review-ch13-16.json",
+      "reviewer": "/root/write_ai_and_synthesis",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch14-computer-assisted-proofs.md",
+      "sha256": "0ca194cfafb5b2ad5f0bb817ecf4f9bde02ba606315f367236ae8e82ce7a3504",
+      "report": "review-ch13-16.json",
+      "reviewer": "/root/write_ai_and_synthesis",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch15-proof-assistants.md",
+      "sha256": "45c8d371a687aa9ae0ad35975cfb74a1629aa6ad2b0261ab401c063745a59add",
+      "report": "review-ch13-16.json",
+      "reviewer": "/root/write_ai_and_synthesis",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch16-interactive-and-zero-knowledge.md",
+      "sha256": "d9ddd227774a2765e8ee9c975a170d01296e64dcfad8307436e87c0cf1de5760",
+      "report": "review-ch13-16.json",
+      "reviewer": "/root/write_ai_and_synthesis",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch17-ai-and-proof.md",
+      "sha256": "e9f6a498f9d82ac214f18ca91a6f37545ad8664ed7478ae0ed34588720da3398",
+      "report": "review-ch17-18.json",
+      "reviewer": "write_limits_evidence",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "ch18-responsibility-of-proof.md",
+      "sha256": "42d251805ec85d3d9dc4b0339779178556ed8ca8d2491acd8ff9eec19c88bdfb",
+      "report": "review-ch17-18.json",
+      "reviewer": "write_limits_evidence",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "appendix-b-timeline.md",
+      "sha256": "a20effd3ec4e6842293b3d150cff1374bea9af9a097f69078b9650bc0af0e61b",
+      "report": "review-appendix-b-d.json",
+      "reviewer": "/root/write_ai_and_synthesis",
+      "status": "reviewed_final_version"
+    },
+    {
+      "file": "appendix-d-sources.md",
+      "sha256": "bbd84f16182066746198b26c6f99ee6f168512e8e07656777936de06055412f9",
+      "report": "review-appendix-b-d.json",
+      "reviewer": "/root/write_ai_and_synthesis",
+      "status": "reviewed_final_version"
+    }
+  ]
+}

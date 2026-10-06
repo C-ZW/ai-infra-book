@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "title": "第五至八章寫作與來源紀錄",
+  "authoring_agent": "/root/write_formalization",
+  "date": "2026-10-06",
+  "repo": "C-ZW/ai-infra-book",
+  "book_source": "books/proof-evolution/book-src",
+  "workflow": {
+    "templates_read": [
+      "chapter-writer.md",
+      "forms/narrative.md",
+      "pitfalls.md",
+      "zh-prose.md",
+      "figures-math.md"
+    ],
+    "shared_metadata_read": [
+      "style-guide.md",
+      "outline.md",
+      "running-examples.md",
+      "landscape-2026-10-06.md"
+    ],
+    "adaptation": "依使用者已授權的更新方法完成章節；不因過期兄弟路徑、指定模型或舊審批流程停止。",
+    "ownership": "只寫本組四個章節與獨立報告；未寫GitHub、Library或其他作者章節。",
+    "composition": "每章先形成完整論證與實例，再原子寫入；Unicode數學，無LaTeX、HTML、Mermaid或虛構圖片。"
+  },
+  "character_count": {
+    "method": "只計首個章末註腳定義之前的CJK Unified Ideographs/Extension A字元；來源註、Latin數字與符號不計入，無程式碼正文。",
+    "regex": "[\\u3400-\\u4dbf\\u4e00-\\u9fff]",
+    "hard_minimum_per_chapter": 4000,
+    "total_body_cjk": 18486
+  },
+  "chapters": [
+    {
+      "file": "ch05-algebra-and-symbols.md",
+      "title": "第五章　字母接手圖形：代數、座標與一般性",
+      "body_cjk": 4522,
+      "source_notes": 5,
+      "sha256": "1394fadb779c321345557398a5a51e9efbf03c883ac4e0c8becf2f34c254b6b5",
+      "argument": "字母把運算推廣到整類問題，也要求讀者明示量的領域、除法條件與變形方向；座標方法還須交代代數解與幾何對象之間的雙向對應。",
+      "worked_cases": [
+        "x²+10x=39 的正量與實數兩種解集",
+        "ax+b=c 的 a=0 與 a≠0 分支",
+        "√(x+6)=x 的候選根3與−2及回代排除",
+        "x²=x 除以x失去0解；偽證明中的除以零",
+        "一般二次方程的配方、判別式與根的分類",
+        "圓x²+y²=25與y=x+1的兩交點，以及y=x+c的參數分類"
+      ],
+      "terms": [
+        "未知量與已知參數",
+        "定義域",
+        "蘊涵與等價變形",
+        "非負平方根記號",
+        "座標表示的雙向對應"
+      ],
+      "historical_limits": [
+        "Viète 原文的元音與子音安排及齊次性，不等同現代任意實數代數。",
+        "Recorde 的等號說明不作全人類唯一首創宣稱。",
+        "Descartes 原著1637與1886重排版及編者改動記號分開。",
+        "Euler1770原著與1822英譯分開，未把原本術語等同現代複數定義。"
+      ]
+    },
+    {
+      "file": "ch06-infinity-and-limits.md",
+      "title": "第六章　把無限說清楚：窮竭法、微積分與極限",
+      "body_cjk": 4635,
+      "source_notes": 7,
+      "sha256": "9f06289da95d885586e17a1ae353c11c7ba9fdda5b85f880bf8583457132b3ec",
+      "argument": "無限過程的責任在於控制任意指定誤差；量詞的依賴關係決定一份證明究竟保證一點、每一點，還是整個區間。",
+      "worked_cases": [
+        "阿基米德四分之一級數的有限和 S_n=4A/3−A/(3×4ⁿ)",
+        "x²在2的極限：每個ε>0取δ=min(1,ε/5)，逐步證明 |x²−4|<ε",
+        "顛倒量詞順序的反例構造",
+        "差商((2+h)²−4)/h=4+h，h≠0，極限4",
+        "|x|在0的左右差商",
+        "xⁿ在[0,1]的逐點極限、非一致收斂及[0,r]上一致收斂",
+        "兩個極限交換得0或1"
+      ],
+      "terms": [
+        "窮竭法的有限剩餘",
+        "ε與δ的依賴順序",
+        "函數值與極限",
+        "連續與可微",
+        "逐點收斂與一致收斂"
+      ],
+      "historical_limits": [
+        "沒有把古代窮竭論證等同十九世紀實數定義。",
+        "Leibniz1684與Newton1687作品只定位公開文本，不裁決發現優先權。",
+        "Newton 實讀1729英譯，不倒推每個細節到1687初版。",
+        "Cauchy1821透過1882重刊閱讀，不宣稱原文已完整採今日量詞形式。",
+        "沒有把嚴格證明的起源指定為十九世紀歐洲。"
+      ]
+    },
+    {
+      "file": "ch07-axioms-and-models.md",
+      "title": "第七章　可以換一套公理嗎：非歐幾何與模型",
+      "body_cjk": 4552,
+      "source_notes": 5,
+      "sha256": "a625f32397a4c5615494347c7f62cf7208036ea54864ef4ba920457dcc33a721",
+      "argument": "改變公理的正當性要由明定結構檢驗；同一張圓盤圖可以承載不同幾何，模型存在所供應的是對背景理論的相對保證。",
+      "worked_cases": [
+        "開圓盤的點、弦線與兩點定一直線",
+        "線段凸性恆等式，減去的t(1−t)‖U−V‖²非負",
+        "P=(0,1/2)經y=mx+1/2與直徑y=0之交會分類；|m|≤1/2皆在盤內不相交",
+        "歐氏平面到圓盤的雙射F(X)=X/(1+‖X‖)及逆函數，說明輸送結構不改變原幾何",
+        "球面N、A、B三直角三角形及對徑點多條大圓",
+        "相對一致性及正反模型對指定公理背景的獨立性意義"
+      ],
+      "terms": [
+        "關聯關係",
+        "模型與背景理論",
+        "相對一致性",
+        "獨立性",
+        "界限平行與其他不相交直線",
+        "度量與物理適用性"
+      ],
+      "historical_limits": [
+        "平行唯一形式與 Euclid 第五公設的等價依賴其餘背景。",
+        "正文只驗證指定的平面圓盤交會性質；距離、全等與完整模型另依Hilbert原書條件。",
+        "球面不能當作滿足其餘全部歐氏公理的反模型，對徑點已有唯一性反例。",
+        "Hilbert1899、Townsend1902、1950重印分開。",
+        "Riemann1854演講、1868刊行、Clifford1873譯文分開。"
+      ],
+      "external_review_fix": {
+        "finding": "原作者將帶負號的最後一項含糊稱為非負。",
+        "resolution": "改為『減去的 t(1 − t)‖U − V‖² 非負，而前兩項之和……』，已通知 /root/write_machine_methods 讀回。",
+        "status": "resolved_and_reread_by_independent_reviewer"
+      }
+    },
+    {
+      "file": "ch08-logic-and-foundations.md",
+      "title": "第八章　證明成為研究對象：邏輯、集合與形式系統",
+      "body_cjk": 4777,
+      "source_notes": 6,
+      "sha256": "4375a0caae2ecbd77fc2afb41c1f89b243f42cd248926cd0cc303eb1c0c69593",
+      "argument": "把證明當作可研究的對象，需要分清符號的形成、模型的解釋及可接受的推導；集合悖論則迫使研究者明確限制形成對象的許可。",
+      "worked_cases": [
+        "實數域∀x∃y(y>x)與∃y∀x(y>x)；有限域改變真值",
+        "四行全稱特例化與肯定前件證明",
+        "肯定後件及由特殊常元全稱一般化的反模型",
+        "一致卻不符合預想偶數模型的理論",
+        "一階邏輯完備與無公理P(a)理論不完備的兩模型例",
+        "無限制概括的Russell矛盾，兩方向逐步推出",
+        "既有A中的分離集合R_A，證¬(R_A∈R_A)及R_A∉A，排除全集"
+      ],
+      "terms": [
+        "語法與語義",
+        "非空論域",
+        "公式、自由變項與句子",
+        "T⊢φ與T⊨φ",
+        "推導規則健全性與理論對指定解釋為真",
+        "一致性",
+        "邏輯完備性與理論完備性",
+        "無限制概括與分離"
+      ],
+      "historical_limits": [
+        "現代一階符號與模型框架不直接歸給Frege1879。",
+        "Russell1903類與謂詞討論以現代集合式重建，結論針對無限制形成許可，非全體數學崩潰。",
+        "Russell1908類型論不等同現代簡單類型論或Zermelo集合論。",
+        "Zermelo1908『確定』條件不逐字等同今日一階公理模式。",
+        "不提前敘述Gödel定理，僅保留一致性研究的問題入口。"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "chapters": [
+        5
+      ],
+      "author": "François Viète",
+      "work": "In artem analyticem isagoge",
+      "date": "1591；Witmer英譯1983",
+      "location": "III；V.5",
+      "urls": [
+        "https://gallica.bnf.fr/ark:/12148/bpt6k108865t",
+        "https://www.scribd.com/document/208689325/T-Witmer-Transl-The-Analytic-Art-Francois-Viette"
+      ],
+      "support": "已知、未知字母分工及齊次量要求。",
+      "access": "Gallica直接開啟未成功；書目記錄及Witmer譯文的可檢索原典段落已讀。未聲稱完整讀取影本。"
+    },
+    {
+      "id": "S02",
+      "chapters": [
+        5
+      ],
+      "author": "René Descartes",
+      "work": "La Géométrie",
+      "date": "1637；A. Hermann重排1886",
+      "location": "I開頭及編者記號註",
+      "urls": [
+        "https://www.gutenberg.org/files/26400/26400-pdf.pdf"
+      ],
+      "support": "單位線段、運算幾何化、已知未知命名；重排版現代化等號與部分冪符號。",
+      "access": "82頁PDF可擷取全文，相關原文與編者註已讀。"
+    },
+    {
+      "id": "S03",
+      "chapters": [
+        5
+      ],
+      "author": "Robert Recorde",
+      "work": "The Whetstone of Witte",
+      "date": "1557",
+      "location": "The rule of equation 等號說明",
+      "urls": [
+        "https://commons.wikimedia.org/wiki/File:Equals_sign_in_Robert_Recorde,_The_Whetstone_of_Witte,_London_1557,_p.238.png",
+        "https://www.loc.gov/item/04006305/"
+      ],
+      "support": "以兩條等長線表示等於的原書說明。",
+      "access": "原頁檔案說明及轉錄已讀；LOC直接頁403，檢索可見版本資料。"
+    },
+    {
+      "id": "S04",
+      "chapters": [
+        5
+      ],
+      "author": "Leonhard Euler",
+      "work": "Vollständige Anleitung zur Algebra / Elements of Algebra",
+      "date": "1770；Hewlett英譯1822",
+      "location": "I.I.XIII，139–142",
+      "urls": [
+        "https://www.cambridge.org/core/books/abs/elements-of-algebra/of-impossible-or-imaginary-quantities-which-arise-from-the-same-source/D99B601DE45833E540C710165FD8EE65",
+        "https://scholarlycommons.pacific.edu/euler-works/387/"
+      ],
+      "support": "負量平方根如何引入另一類量；版次資料。",
+      "access": "出版社原文節錄及Euler Archive書目已讀，未取得整份PDF。"
+    },
+    {
+      "id": "S05",
+      "chapters": [
+        5,
+        6
+      ],
+      "author": "Augustin-Louis Cauchy",
+      "work": "Cours d’analyse",
+      "date": "1821；Œuvres complètes重刊1882",
+      "location": "Préliminaires；Chapitre II",
+      "urls": [
+        "https://fr.wikisource.org/wiki/Cours_d’analyse_de_l’école_royale_polytechnique/Préliminaires",
+        "https://fr.wikisource.org/wiki/Cours_d’analyse_de_l’école_royale_polytechnique/Chapitre_II"
+      ],
+      "support": "平方根與所選記號；變量、極限、無窮小與連續原文。",
+      "access": "原文電子轉錄相關各段及卷冊重刊日期已讀。"
+    },
+    {
+      "id": "S06",
+      "chapters": [
+        6
+      ],
+      "author": "Archimedes；T. L. Heath編譯",
+      "work": "Quadrature of the Parabola in The Works of Archimedes",
+      "date": "約前三世紀；英譯1897",
+      "location": "20–24",
+      "urls": [
+        "https://archive.org/stream/worksofarchimede00arch/worksofarchimede00arch_djvu.txt"
+      ],
+      "support": "四分之一面積關係、有限和與剩餘、雙向反證。",
+      "access": "英譯OCR相關命題已讀，非原希臘稿。"
+    },
+    {
+      "id": "S07",
+      "chapters": [
+        6
+      ],
+      "author": "Euclid；David Joyce編本",
+      "work": "Elements X.1",
+      "date": "約前300年；線上編本",
+      "location": "X.1",
+      "urls": [
+        "https://mathcs.clarku.edu/~djoyce/elements/bookX/propX1.html"
+      ],
+      "support": "反覆減去超過一半可小於所給同類量的命題。",
+      "access": "原命題英譯與證明已讀。"
+    },
+    {
+      "id": "S08",
+      "chapters": [
+        6
+      ],
+      "author": "Gottfried Wilhelm Leibniz",
+      "work": "Nova methodus pro maximis et minimis, itemque tangentibus…",
+      "date": "1684-10",
+      "location": "Acta Eruditorum資料頁",
+      "urls": [
+        "https://www.people.iup.edu/gsstoudt/history/images/novamethodus.html"
+      ],
+      "support": "發表日期及微分方法主題。",
+      "access": "原資料頁書目已讀；圖像內全文未作逐字轉錄核對，故只用作日期與主題。"
+    },
+    {
+      "id": "S09",
+      "chapters": [
+        6
+      ],
+      "author": "Isaac Newton；Andrew Motte英譯",
+      "work": "Principia, Book I Section I",
+      "date": "初版1687；英譯1729；Wilkins整理2002",
+      "location": "Lemma I–III；Scholium",
+      "urls": [
+        "https://www.maths.tcd.ie/pub/HistMath/People/Newton/Principia/Bk1Sect1/PrBk1St1.pdf"
+      ],
+      "support": "給定差距、內外逼近及最終比敘述。",
+      "access": "11頁英譯PDF相關全文已讀；不把後譯版本的每一措辭倒置成1687初版。"
+    },
+    {
+      "id": "S10",
+      "chapters": [
+        6
+      ],
+      "author": "George Berkeley",
+      "work": "The Analyst",
+      "date": "1734",
+      "location": "XII–XX",
+      "urls": [
+        "https://www.maths.tcd.ie/pub/HistMath/People/Berkeley/Analyst/Analyst.html"
+      ],
+      "support": "增量假設的變更及其論戰脈絡。",
+      "access": "全文電子整理本相關段落已讀。"
+    },
+    {
+      "id": "S11",
+      "chapters": [
+        6
+      ],
+      "author": "Gilbert Strang、Edwin Herman等",
+      "work": "Calculus Volume 1, OpenStax",
+      "date": "2016",
+      "location": "2.5",
+      "urls": [
+        "https://openstax.org/books/calculus-volume-1/pages/2-5-the-precise-definition-of-a-limit"
+      ],
+      "support": "現代ε–δ定義及量詞順序。",
+      "access": "官方教材章節的可檢索定義已核對；本章ε/5證明自行推導。"
+    },
+    {
+      "id": "S12",
+      "chapters": [
+        7
+      ],
+      "author": "Euclid；David Joyce編本",
+      "work": "Elements I, Postulate 5",
+      "date": "約前300年；線上編本",
+      "location": "I第五公設",
+      "urls": [
+        "https://mathcs.clarku.edu/~djoyce/elements/bookI/post5.html"
+      ],
+      "support": "原始同側內角與延長相交措辭。",
+      "access": "原文英譯已讀。"
+    },
+    {
+      "id": "S13",
+      "chapters": [
+        7
+      ],
+      "author": "Nikolai Lobachevsky；George Bruce Halsted英譯",
+      "work": "Geometrical Researches on the Theory of Parallels",
+      "date": "德文1840；英譯1891",
+      "location": "16",
+      "urls": [
+        "https://archive.org/details/geometricalresea00loba",
+        "https://archive.org/stream/geometricalresea00loba/geometricalresea00loba_djvu.txt"
+      ],
+      "support": "平行作為相交方向界限的用法，原作與譯本日期。",
+      "access": "版本記錄及OCR相關段落已讀。"
+    },
+    {
+      "id": "S14",
+      "chapters": [
+        7
+      ],
+      "author": "David Hilbert；E. J. Townsend英譯",
+      "work": "The Foundations of Geometry",
+      "date": "1899；英譯1902；所讀重印1950",
+      "location": "1、9、10",
+      "urls": [
+        "https://www.gutenberg.org/files/17384/17384-pdf.pdf"
+      ],
+      "support": "公理分組、算術到幾何的相對一致性、球內及重新定全等的非歐模型。",
+      "access": "101頁PDF相關段落及版權頁已讀。"
+    },
+    {
+      "id": "S15",
+      "chapters": [
+        7
+      ],
+      "author": "Eugenio Beltrami",
+      "work": "Saggio di interpretazione della geometria non euclidea",
+      "date": "1868",
+      "location": "開頭幾何解釋與球面例外",
+      "urls": [
+        "https://it.wikisource.org/wiki/Saggio_di_interpretazione_della_geometria_non_euclidea/Saggio"
+      ],
+      "support": "曲面幾何解釋及對徑點不唯一決定大圓的限制。",
+      "access": "義大利原文校讀轉錄相關段已讀。"
+    },
+    {
+      "id": "S16",
+      "chapters": [
+        7
+      ],
+      "author": "Bernhard Riemann；William Kingdon Clifford英譯",
+      "work": "On the Hypotheses which lie at the Bases of Geometry",
+      "date": "演講1854；刊行1868；英譯1873",
+      "location": "III.2–3",
+      "urls": [
+        "https://www.maths.tcd.ie/EMIS/classics/Riemann/index.html",
+        "https://www.maths.tcd.ie/EMIS/classics/Riemann/WKCGeom.pdf"
+      ],
+      "support": "延展與度量條件，數學結構與實際空間適用性。",
+      "access": "版本頁及15頁譯文PDF相關段落已讀。"
+    },
+    {
+      "id": "S17",
+      "chapters": [
+        8
+      ],
+      "author": "Gottlob Frege；Stefan Bauer-Mengelberg英譯",
+      "work": "Begriffsschrift",
+      "date": "1879；英譯1967",
+      "location": "序言；11",
+      "urls": [
+        "https://zenodo.org/records/6330677",
+        "https://logic-teaching.github.io/pred/texts/Frege%201967%20-%20Begriffsschrift.pdf"
+      ],
+      "support": "暴露隱藏前提、專門符號語言目的、一般判斷。",
+      "access": "原版掃描目錄與英譯可檢索原典段落已讀；完整PDF因約12.6MB超讀取限制未成功開啟。"
+    },
+    {
+      "id": "S18",
+      "chapters": [
+        8
+      ],
+      "author": "Open Logic Project",
+      "work": "The Open Logic Text, Complete Build",
+      "date": "build9620cc7，2026-07-12",
+      "location": "15、16；19.11–12；23.8；36.6",
+      "urls": [
+        "https://builds.openlogicproject.org/open-logic-complete.pdf"
+      ],
+      "support": "語法、非空論域、模型、一般化規則、健全性、邏輯完備與理論完備。",
+      "access": "官方1016頁PDF所列相關章節已讀，未聲稱逐頁通讀整份教材。"
+    },
+    {
+      "id": "S19",
+      "chapters": [
+        8
+      ],
+      "author": "Bertrand Russell",
+      "work": "The Principles of Mathematics",
+      "date": "1903",
+      "location": "101、103",
+      "urls": [
+        "https://fair-use.org/bertrand-russell/the-principles-of-mathematics/s101",
+        "https://fair-use.org/bertrand-russell/the-principles-of-mathematics/s103"
+      ],
+      "support": "謂詞、類概念與類的自我套用矛盾。",
+      "access": "原文相關節已讀；書中R記號為現代重建。"
+    },
+    {
+      "id": "S20",
+      "chapters": [
+        8
+      ],
+      "author": "Bertrand Russell",
+      "work": "Mathematical Logic as Based on the Theory of Types",
+      "date": "1908",
+      "location": "I–III及類型討論",
+      "urls": [
+        "https://upload.wikimedia.org/wikipedia/commons/1/1c/Mathematical_Logic_as_Based_on_the_Theory_of_Types_-_Bertrand_Russell_(1908).pdf"
+      ],
+      "support": "任意與全體的區別、類型限制；不等同現代簡單類型論。",
+      "access": "42頁原刊PDF相關段落已讀。"
+    },
+    {
+      "id": "S21",
+      "chapters": [
+        8
+      ],
+      "author": "Ernst Zermelo；Ivonne Pallares Vega原典引文與研究",
+      "work": "Untersuchungen über die Grundlagen der Mengenlehre. I；Sets, Properties and Truth Values: A Category-Theoretic Approach to Zermelo’s Axiom of Separation",
+      "date": "1908；2022",
+      "location": "Axiom III；Vega印本p.7附近原典引文",
+      "urls": [
+        "https://geodesic.mathdoc.fr/item/MAN_1908__65_158344/",
+        "https://zenodo.org/records/1428264",
+        "https://www.athensjournals.gr/philosophy/2022-1-3-2-Vega.pdf"
+      ],
+      "support": "從已給集合分離子集，以及每個集合有非其元素的子集。",
+      "access": "1908原刊書目及掃描記錄已讀；原刊PDF下載逾時或付費壁。實際原公理引文由Vega2022研究PDF讀得，正文數學另獨立推導。",
+      "caveat": "不宣稱完整讀過1908掃描，也不採Vega文章所有哲學判斷。"
+    },
+    {
+      "id": "S22",
+      "chapters": [
+        8
+      ],
+      "author": "David Hilbert；Mary Winston Newson英譯",
+      "work": "Mathematical Problems",
+      "date": "巴黎演講1900；英譯1902",
+      "location": "Problem2, The Compatibility of the Arithmetical Axioms",
+      "urls": [
+        "https://www.gutenberg.org/cache/epub/71655/pg71655-images.html"
+      ],
+      "support": "有限推理不導矛盾的問題，以及幾何一致性轉至算術。",
+      "access": "原譯文第二問題已讀，不代表後來全部Hilbert計畫。"
+    }
+  ],
+  "verification": {
+    "author_checks": "例子與式子均由作者重新推導；這是作者檢查，獨立審閱由其他分工者另寫報告。",
+    "latest_external_fix": "ch07減項非負措辭已修正，正文CJK增加1；/root/write_machine_methods 已讀回確認，並在獨立審查中標記 resolved。",
+    "source_notes": 23,
+    "one_h1_per_chapter": true,
+    "simplified_character_scan": "曾針對常見簡體字清單掃描並修正；此項不等於全面中文校勘。",
+    "readability": "每章有4,500以上實質中文字，正文以連貫敘述與完整計算為主。"
+  },
+  "access_limits": [
+    "沒有把書目記錄當成完整原典閱讀。",
+    "Viète、Frege與Keller部分材料經索引段落讀取；具體範圍見每項access。",
+    "Zermelo原刊未成功全文下載，原公理引文經具名2022原始研究閱讀，註腳已同時交代。",
+    "Firecrawl備援工具曾回報額度不足，未成功讀取；後續使用其他已授權網頁閱讀來源，不聲稱Firecrawl成功。",
+    "未把相同文本的鏡像網站當作獨立史料；未宣稱跨模型驗證或重新執行大型形式證明。"
+  ],
+  "related_review": "<workspace>/review-ch01-04-appendices.json",
+  "export_note": "Author research notes; these are not independent review verdicts. Source URLs and access limits are retained; transient tool reference IDs are omitted."
+}

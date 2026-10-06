@@ -1,0 +1,628 @@
+{
+  "title": "Independent targeted review of chapters13–16",
+  "reviewer": "/root/write_ai_and_synthesis",
+  "date": "2026-10-06",
+  "status": "complete_4_of_4",
+  "author_independence": "Reviewer authored chapters17–18, not13–16. This is independent review by a separate agent using the same model family; no cross-model or cross-family claim.",
+  "instructions_applied": [
+    "fact-auditor.md refutation stance and strict two-independent-primary-origin verdict convention",
+    "arbiter.md internal mathematics recomputation before source comparison",
+    "Read-only on chapter files; proposed changes flow to root and the chapter author"
+  ],
+  "overall_result": "All four chapters read and their load-bearing internal mathematics independently recomputed. No material mathematical or factual error identified within the documented scope. Seven minor edits across four finding records were corrected by the author and independently verified in the final files.",
+  "verdict_convention": {
+    "confirmed": "Atleast2independentprimaryorigins support the scoped claim.",
+    "unverifiable": "The stricttemplate threshold was not established; source_check separately states whether an inspected primary source supports theclaim. This labelalone is not an errorfinding.",
+    "refuted": "Decisive contradictory evidence found; none sofar."
+  },
+  "chapters": [
+    {
+      "file": "books/proof-evolution/book-src/ch13-causality-and-replication.md",
+      "status": "reviewed",
+      "review_scope": "Entire chapter body and notes read. Original pedagogical mathematics recomputed independently before comparing the relevant primary sources. Targeted external facts checked in a refutation frame; no large proof development rerun.",
+      "sha256_at_review": "2063ba2de07ae5c4e4df0037f399d3c1d335a2ad7df577e53f08356882875fc4",
+      "material_findings": [],
+      "optional_findings": [
+        {
+          "id": "ch13-bias-word",
+          "severity": "minor terminology",
+          "exact_quote": "這項推導也顯示「平均無偏」為何容許一次研究出現偏差。",
+          "proposed_correction": "這項推導也顯示「平均無偏」為何容許一次研究出現估計誤差。",
+          "reason": "A single realization can have estimation error while the estimator is unbiased. Using 偏差 in this sentence risks conflating the technical bias of an estimator with random estimation error; the surrounding argument is otherwise sound.",
+          "status": "resolved_by_author_and_independently_verified",
+          "verification": "Proposed replacement occurs in the final chapter; original faulty passage is absent."
+        }
+      ],
+      "source_checks": [
+        {
+          "id": "ch13-rubin",
+          "claim": "Rubin1974 compares causal-effect estimation in randomized and nonrandomized studies.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://dash.harvard.edu/entities/publication/73120378-82c0-6bd4-e053-0100007fdf3b"
+          ],
+          "actually_opened_scope": "Archive abstract and metadata only, especially lines36–38. The chapter itself discloses this limited source scope; the algebra is independently checked.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch13-pearl",
+          "claim": "Causal diagrams encode assumptions; identifiability concerns whether observational distribution and model assumptions determine effects; back-door adjustment requires appropriate graph structure.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://bayes.cs.ucla.edu/R218-B.pdf"
+          ],
+          "actually_opened_scope": "Original paper PDF, introduction and definitions3–4/theorem1 at PDFpp5–6, including identical observational distributions with different causal effects.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch13-simmons",
+          "claim": "Undisclosed flexibility in data collection and analysis can inflate false-positive results.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www2.psych.ubc.ca/~schaller/528Readings/SimmonsNelsonSimonsohn2011.pdf"
+          ],
+          "actually_opened_scope": "Original paper PDF abstract/introduction and simulation framework. Its60.7% figure is not confused with the chapter’s independently derived64.15% example.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch13-nosek",
+          "claim": "Preregistration separates advance prediction from post-data explanation and permits transparently disclosed departures.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.pnas.org/doi/10.1073/pnas.1708274114"
+          ],
+          "actually_opened_scope": "Original article preregistration discussion and Challenge1, including when data were seen and deviations documented.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch13-nasem",
+          "claim": "The2019report defines reproducibility using original input data/code/methods and replicability using new data on the same scientific question, with uncertainty considered.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.nationalacademies.org/read/25303/chapter/3"
+          ],
+          "actually_opened_scope": "Report Summary definitions and paragraphs explaining consistency within uncertainty. The chapter explicitly adopts this report’s terminology.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch13-hernan",
+          "claim": "Conditional exchangeability, positivity and consistency support the stated standardization identification route.",
+          "source_check": "partial_source_access_only",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 0,
+          "urls": [
+            "https://miguelhernan.org/whatifbook",
+            "https://miguelhernan.org/s/hernanrobins_WhatIf_2jan25.pdf"
+          ],
+          "actually_opened_scope": "Author book page opened. The exact2025-01-02 PDF could not be read through this tool. A search excerpt of an older author-text mirror states the three assumptions; not counted as a full independent read. Pearl’s original paper supplies a separately inspected diagrammatic identification result.",
+          "qualification": "The chapter candidly discloses PDF-access limits. No contradictory mathematical condition was identified, but this audit does not pretend to have read TechnicalPoint13.2."
+        }
+      ],
+      "math_checks": [
+        {
+          "claim": "The 200-person table has aggregate pass rates 68% versus 32% but identical within-stratum rates.",
+          "recomputation": "Users: 64/80=4/5 and 4/20=1/5; nonusers:16/20=4/5 and16/80=1/5. Totals:68/100=17/25 and32/100=8/25; difference9/25=36 percentage points.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "The same observations allow both a zero-effect world and a world with average effect 136/200.",
+          "recomputation": "In the stipulated zero-effect world set each missing outcome equal to its observed outcome. For the alternative, treated passers68 have Y(1)=1,Y(0)=0; control failures68 have the same pair. Treated failures32 and control passers32 have zero individual effects. Thus136 benefit and64 do not, preserving all observed cells; ATE=136/200=17/25.",
+          "verdict": "correct",
+          "refutation_attempt": "Tried to locate an incompatible observed outcome or a double-counted person; neither exists. The chapter does not infer no effect merely from equal conditional rates."
+        },
+        {
+          "claim": "Complete random assignment of 100 out of 200 gives an unbiased difference of group means for the fixed-population ATE.",
+          "recomputation": "Let Z_i indicate treatment. E[Z_i]=1/2; fixed denominators100 give E[sum Z_iY_i(1)/100]=sum Y_i(1)/200. Likewise E[sum(1-Z_i)Y_i(0)/100]=sumY_i(0)/200. Subtraction gives the finite-population ATE. Independence of different Z_i is not required.",
+          "verdict": "correct",
+          "refutation_attempt": "Checked fixed group sizes, expectation over assignment rather than a superpopulation, and the distinction between assignment and actual treatment. These are stated."
+        },
+        {
+          "claim": "Standardizing both populations to half stronger and half weaker yields 50% in both arms.",
+          "recomputation": "(1/2)(4/5)+(1/2)(1/5)=1/2. Causal interpretation remains conditional on stated identification assumptions.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "Twenty independent tests of true nulls, each exact type-I error0.05, have 64.15% chance of at least one rejection; Bonferroni0.0025 works without independence.",
+          "recomputation": {
+            "familywise_probability": 0.6415140775914581,
+            "bonferroni_per_test": 0.0025,
+            "union_bound": "P(any false rejection)≤sum of20 error probabilities≤20×0.0025=0.05"
+          },
+          "verdict": "correct",
+          "refutation_attempt": "Checked that64.15% is not presented as a posterior probability, a Simmons empirical result, or a formula valid without independence."
+        },
+        {
+          "claim": "Changing target-population weights can change an average treatment effect even with identical stratum effects.",
+          "recomputation": "For stratum effects τ_strong and τ_weak, the population effect is w×τ_strong+(1−w)×τ_weak. Different w can change the result if the stratum effects differ. In the stipulated all-zero-effects world, both terms remain zero for every weight.",
+          "verdict": "correct",
+          "stage": "final author additions"
+        }
+      ],
+      "limitations": [
+        "No empirical dataset was reanalyzed: all200-person counts are an explicitly hypothetical mathematical construction.",
+        "The hard two-independent-origin template threshold is not achieved for singly attributable original-source claims. These are marked unverifiable rather than falsely confirmed."
+      ],
+      "sha256_first_review": "f8709e87dd86f2ee5d48905e32d41de69695517cf6a47cb11cc68d71b871c381",
+      "final_reinspection": "After the author revisions, the entire chapter was read again. Additional explanatory paragraphs were inspected, and original optional findings were checked against the actual corrected text."
+    },
+    {
+      "file": "books/proof-evolution/book-src/ch14-computer-assisted-proofs.md",
+      "status": "reviewed",
+      "review_scope": "Entire chapter body and notes read. Original pedagogical mathematics recomputed independently before comparing the relevant primary sources. Targeted external facts checked in a refutation frame; no large proof development rerun.",
+      "sha256_at_review": "0ca194cfafb5b2ad5f0bb817ecf4f9bde02ba606315f367236ae8e82ce7a3504",
+      "material_findings": [],
+      "optional_findings": [
+        {
+          "id": "ch14-script",
+          "severity": "minor typography",
+          "exact_quote": "每個開關只有兩態，兩個開關總共只有 2 × 2＝4 態，所以表格確实没有遗漏。",
+          "proposed_correction": "每個開關只有兩態，兩個開關總共只有 2 × 2＝4 態，所以表格確實沒有遺漏。",
+          "reason": "Convert the remaining simplified characters to the book’s zh-TW convention.",
+          "status": "resolved_by_author_and_independently_verified",
+          "verification": "Proposed replacement occurs in the final chapter; original faulty passage is absent."
+        },
+        {
+          "id": "ch14-theorem-number",
+          "severity": "minor source pointer",
+          "exact_quote": "2016，Theorem 1.1、§§3、5及摘要。",
+          "proposed_correction": "2016，Theorem 1、§§3、5及摘要。",
+          "reason": "The opened arXiv PDF1605.00723 labels the7824/7825 statement Theorem1, not Theorem1.1. The mathematical values themselves are correct. If another intended publication uses1.1, cite that exact version instead.",
+          "status": "resolved_by_author_and_independently_verified",
+          "verification": "Proposed replacement occurs in the final chapter; original faulty passage is absent."
+        }
+      ],
+      "source_checks": [
+        {
+          "id": "ch14-history",
+          "claim": "Appel–Haken’s proof dates to1976,1977detailed publication followed, and the1997RSST proof uses633configurations.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://thomas.math.gatech.edu/PAP/fc.pdf",
+            "https://www.cs.ru.nl/~freek/courses/tt-2014/read/tx081101382p.pdf"
+          ],
+          "actually_opened_scope": "Original RSST author PDF introduction/abstract and bibliography; revisedJanuary16,1997. The633count is explicit in the introduction. Gonthier2008 independently describes the earlier proof chronology but the633count is treated as one original result.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch14-formalization",
+          "claim": "Gonthier’s2008author account explicitly dates completion of full four-color formalization to2005 and describes Coq.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.cs.ru.nl/~freek/courses/tt-2014/read/tx081101382p.pdf"
+          ],
+          "actually_opened_scope": "Original2008Notices article PDFp0, lines37–43. Tried to disconfirm the potentially ambiguous2004/2005date; the chapter precisely attributes2005to this author account.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch14-resolution",
+          "claim": "Robinson1965developed resolution-based first-order automated theorem proving; the chapter gives a narrower propositional instance.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://web.stanford.edu/class/linguist289/robinson65.pdf"
+          ],
+          "actually_opened_scope": "Original paper abstract, ground-resolution discussion and resolution theorem. The chapter does not claim its toy example exhausts first-order resolution.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch14-triples",
+          "claim": "The2016BooleanPythagorean result has7824feasible/7825infeasible and reports almost200TBuncompressed proof with68GBcompressed reconstruction certificate.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://arxiv.org/pdf/1605.00723",
+            "https://www.cs.utexas.edu/~marijn/ptn/"
+          ],
+          "actually_opened_scope": "Original paper abstract, Theorem1 atPDFp1, verification/certificate discussion. The author project page was also opened and agrees but is the same origin, not an independent result.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch14-drat",
+          "claim": "DRAT supports specific redundancy/addition/deletion rules and checking may cost an amount comparable to proof-producing SAT solving.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.cs.utexas.edu/~marijn/publications/drat-trim.pdf"
+          ],
+          "actually_opened_scope": "Original2014paper abstract and introduction/rule explanation. The chapter appropriately does not identify all DRATsteps with ordinary resolution or promise universally fast checks.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        }
+      ],
+      "math_checks": [
+        {
+          "claim": "Deleting a degree-at-most-three vertex in a minimal four-color counterexample permits extension after coloring the smaller graph.",
+          "recomputation": "Deletion preserves finite loopless planarity; minimality yields a4-coloring. At most3 colors occur among at most3 neighbors, so one of4 colors remains for the removed vertex.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "The four clauses have no satisfying assignment.",
+          "recomputation": [
+            {
+              "x": 0,
+              "y": 0,
+              "clauses": [
+                false,
+                true,
+                true,
+                true
+              ],
+              "violated": [
+                1
+              ]
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "clauses": [
+                true,
+                true,
+                false,
+                true
+              ],
+              "violated": [
+                3
+              ]
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "clauses": [
+                true,
+                false,
+                true,
+                true
+              ],
+              "violated": [
+                2
+              ]
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "clauses": [
+                true,
+                true,
+                true,
+                false
+              ],
+              "violated": [
+                4
+              ]
+            }
+          ],
+          "verdict": "correct"
+        },
+        {
+          "claim": "Resolution certificate derives y, then not-y, then the empty clause.",
+          "recomputation": "Resolve C1={x,y} with C2={¬x,y} onx to obtain{y}; resolve C3={x,¬y} withC4={¬x,¬y} onx to obtain{¬y}; resolve these on y to obtain the empty set of literals. Clauses use set-like duplicate elimination.",
+          "general_resolution_truth_table_sound": true,
+          "verdict": "correct"
+        },
+        {
+          "claim": "The paired SAT clauses exactly exclude monochromatic positive Pythagorean triples.",
+          "recomputation": "With true=red, x_a∨x_b∨x_c is false only on all-blue; ¬x_a∨¬x_b∨¬x_c is false only on all-red. Every mixed assignment satisfies both. Conjoining all encoded triples preserves both directions.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "Impossibility on1..7825 implies impossibility for all positive integers.",
+          "recomputation": "Any putative infinite valid coloring restricts to a valid coloring of1..7825, contradicting the finite result. Existence on1..7824 alone gives no converse infinite-existence conclusion.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "The four-clause toy formula is minimally unsatisfiable.",
+          "recomputation": "Its truth table has exactly one violated clause for each of the four assignments. Removing C1 permits00; removing C2 permits10; removing C3 permits01; removing C4 permits11. Every proper clause subset is therefore satisfiable.",
+          "verdict": "correct",
+          "stage": "final author additions"
+        },
+        {
+          "claim": "The two-case partition on x covers all possibilities and proves contradiction in each branch.",
+          "recomputation": "If x is true, C2 requires y and C4 requires ¬y. If x is false, C1 requires y and C3 requires ¬y. The x/¬x partition is exhaustive.",
+          "verdict": "correct",
+          "stage": "final author additions"
+        }
+      ],
+      "limitations": [
+        "Did not regenerate or recheck the633-configuration proof or the huge7825SATcertificate.",
+        "The1977publisherPDF endpoint did not provide readable text; the originalRSSTpaper bibliography and originalGonthieraccount were inspected for historical claims."
+      ],
+      "sha256_first_review": "392aa5c1102d431fbc6cd35cdfd9f6a22b521a16b38352e7eefbd235f05a24f5",
+      "final_reinspection": "After the author revisions, the entire chapter was read again. Additional explanatory paragraphs were inspected, and original optional findings were checked against the actual corrected text."
+    },
+    {
+      "file": "books/proof-evolution/book-src/ch15-proof-assistants.md",
+      "status": "reviewed",
+      "review_scope": "Entire chapter body and notes read. Original pedagogical mathematics recomputed independently before comparing the relevant primary sources. Targeted external facts checked in a refutation frame; no large proof development rerun.",
+      "sha256_at_review": "45c8d371a687aa9ae0ad35975cfb74a1629aa6ad2b0261ab401c063745a59add",
+      "material_findings": [],
+      "optional_findings": [],
+      "source_checks": [
+        {
+          "id": "ch15-lcf",
+          "claim": "LCF protects theorem construction with an abstract theorem type and a restricted primitive-inference boundary.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "confirmed",
+          "independent_primary_origins": 2,
+          "urls": [
+            "https://www.cl.cam.ac.uk/archive/mjcg/papers/HolHistory.pdf",
+            "https://www.cl.cam.ac.uk/~jrh13/papers/hollight.pdf"
+          ],
+          "actually_opened_scope": "Gordon original history PDF Stanford/EdinburghLCFsections. Harrison2009original HOLLightpaper independently explains the concrete abstract-type mechanism.",
+          "qualification": null
+        },
+        {
+          "id": "ch15-hol",
+          "claim": "HOLLight’sLCF-style guarantee depends on primitives and OCaml’s type protection; small does not mean assumption-free.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.cl.cam.ac.uk/~jrh13/papers/hollight.pdf"
+          ],
+          "actually_opened_scope": "Original2009paperPDFp3lines113–124andp4lines137–146: abstracttypes, primitiveinference, language/typechecking dependency.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch15-elaboration",
+          "claim": "Lean elaboration constructs core representations that undergo kernel checking; proof-producing tools and the trusted checker have distinct roles.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://lean-lang.org/doc/reference/latest/Elaboration-and-Compilation/",
+            "https://lean-lang.org/papers/lean4.pdf"
+          ],
+          "actually_opened_scope": "Official language reference elaboration/corecheck overview and scope of core language. Lean4original2021paper also opened, but these sameprojectorigins are not counted as independent.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch15-admission",
+          "claim": "RocqQed rechecks a completedproofterm; Admitted declares the originalgoal as an axiom. Lean sorry dependence can be indirect and printaxioms traverses dependencies.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://rocq-prover.org/doc/v9.0/refman/proofs/writing-proofs/proof-mode.html",
+            "https://lean-lang.org/doc/reference/latest/Axioms/"
+          ],
+          "actually_opened_scope": "Rocq9.0.1official Qed/Admitted entries; Leanofficial Axioms sorryAx and PrintingAxioms entries. These are distinct systems, each technicalbehavior remains singly documented. Final addition rechecked: official Rocq lines75–76 explicitly make the checked Qed proof an opaque constant; lines96–100 distinguish Defined transparency and Admitted.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch15-trust",
+          "claim": "Lean’s validation documentation distinguishes checking a formalstatement from its intended meaning and discusses imported artifacts, axiom audits, native computation and additional validation paths.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://lean-lang.org/doc/reference/latest/ValidatingProofs/"
+          ],
+          "actually_opened_scope": "Official page sections covering imports, transitiveadmissions, nativeevaluation and remaining trust. The chapter avoids a permanent claim about any version-specific native tactic name or policy.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        },
+        {
+          "id": "ch15-flyspeck",
+          "claim": "Flyspeck’spublished2017account combinesHOLLightandIsabelle, with manual correspondence and graph-list checks treated as explicit audit obligations.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.cambridge.org/core/journals/forum-of-mathematics-pi/article/formal-proof-of-the-kepler-conjecture/78FBD5E1A3D1BCCB8E0D5B0C463C9FBC",
+            "https://arxiv.org/pdf/1501.02155"
+          ],
+          "actually_opened_scope": "Official2017publicationmetadata/abstract; originalauthorsarXiv1501.02155PDF relevantclassificationdiscussionp13and§10auditp15–16. The2017institutionalPDFfirstloadedbutsubsequenttoolreadsfailed; detailedmanualtranslationverificationusestheauthorsarXivtext, not an invented successful2017PDFread.",
+          "qualification": "The named primary source directly supports this claim, but a second independent primary origin was not established. The fact-auditor template therefore assigns unverifiable; this is a corroboration-limit label, not contrary evidence or a proposed deletion."
+        }
+      ],
+      "math_checks": [
+        {
+          "claim": "Implication composition produces P⇒R from f:P⇒Q and g:Q⇒R.",
+          "recomputation": "Under h:P, f(h):Q and g(f(h)):R. Dischargingh producesP⇒R; dischargingf,g produces(P⇒Q)⇒((Q⇒R)⇒(P⇒R)). f(g(h)) generally fails becausegexpectsQwhilehhasP.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "n<n+1 holds for unbounded naturals but a wrapping8-bit counter violates the intended unrestricted claim.",
+          "recomputation": "Under the chapter’s order definition, choosek=0 so n+1=n+0+1. For the device, next(255)=256mod256=0, and255<0isfalse. Restricting0≤n<255 meansn+1≤255so modulo leaves it unchanged.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "Swapping forall-exists with exists-forall changes a specification.",
+          "recomputation": "A simple countermodel is operationo succeeding exactly wheno=initialstates: eachstatehasanoperation, but for at least2states nooneoperationworksforall. The chapter’s verbal direction of weakening is correct.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "Correct independent components do not imply a correct composition if their intermediate graph catalogues differ.",
+          "recomputation": "Astatement∀g∈A,P(g) and a reduction intoB suffice only with B⊆A (or a proved equivalence/translation). IfBcontainsgoutsideA, both componenttheorems may hold but the conclusion lacks support.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "Definitional abbreviation differs from adding an unproved property, and opaque completed proofs differ from admissions.",
+          "recomputation": "The abbreviation next(n):=n+1 can be eliminated by substitution. An added assertion of termination or existence requires separate support. Rocq Qed opacity affects later unfolding but does not remove the initial proof-term check; Admitted instead introduces an axiom.",
+          "verdict": "correct",
+          "stage": "final author additions"
+        }
+      ],
+      "limitations": [
+        "NoLean,Rocq,HOLLightorFlyspeckprojectwasbuilt; all code-like text in the chapter is explicitly explanatory, not claimed executed.",
+        "The detailedFlyspeckmanualtranslationpassagewascheckedintheauthorsarXivversion; publicationyear2017wascheckedontheofficialpublisherpage. These are one original work, not independent corroborations."
+      ],
+      "sha256_first_review": "63a9e718c40d1bbaf6709a4a09e9952379b1e4ff705757fe0d9e436d3c8e7997",
+      "final_reinspection": "After the author revisions, the entire chapter was read again. Additional explanatory paragraphs were inspected, and original optional findings were checked against the actual corrected text."
+    },
+    {
+      "file": "books/proof-evolution/book-src/ch16-interactive-and-zero-knowledge.md",
+      "status": "reviewed",
+      "review_scope": "Entire chapter body and footnotes read. Graph-isomorphism examples, soundness, simulation and extraction directions independently derived before opening the original papers. All six named original sources opened; targeted definitions and theorem statements examined.",
+      "sha256_at_review": "d9ddd227774a2765e8ee9c975a170d01296e64dcfad8307436e87c0cf1de5760",
+      "material_findings": [],
+      "optional_findings": [
+        {
+          "id": "ch16-script",
+          "severity": "minor typography",
+          "exact_quotes": [
+            "均勻且独立於作弊者",
+            "若两圖其實同構",
+            "整份紀錄一定通過檢查，因为它正是",
+            "NP 可以從短見證理解：对一個長度為 n 的輸入"
+          ],
+          "proposed_corrections": [
+            "均勻且獨立於作弊者",
+            "若兩圖其實同構",
+            "整份紀錄一定通過檢查，因為它正是",
+            "NP 可以從短見證理解：對一個長度為 n 的輸入"
+          ],
+          "reason": "Four remaining simplified-character phrases conflicted with the zh-TW convention.",
+          "status": "resolved_by_author_and_independently_verified"
+        }
+      ],
+      "math_checks": [
+        {
+          "claim": "The responses for f:G₀→G₁ and H=r(G₀) are r for challenge0 and r∘f⁻¹ for challenge1.",
+          "recomputation": "The challenge1 map first sends G₁ through f⁻¹ to G₀, then through r to H. For the stated toy maps, r∘f⁻¹ sends a→v,c→u,b→w; both edges map to v—u and u—w, and the unique nonedge maps to v,w. The two table rows are correct.",
+          "verdict": "correct"
+        },
+        {
+          "claim": "Two accepting responses to the same H yield an isomorphism from G₀ to G₁.",
+          "recomputation": "If φ₀:G₀→H and φ₁:G₁→H are bijective adjacency-preserving maps, then φ₁⁻¹∘φ₀:G₀→G₁ is such a map. In the example this recovers1→a,2→c,3→b.",
+          "verdict": "correct",
+          "refutation_attempt": "Checked the inverse and composition direction, including domains/codomains. No reversal error."
+        },
+        {
+          "claim": "False-input soundness is at most1/2 per round even for an unbounded adaptive prover.",
+          "recomputation": "For nonisomorphic G₀,G₁, a fixed H can be isomorphic to at most one of them, since two maps would compose to a forbidden isomorphism. A fresh fair challenge drawn after H is fixed therefore succeeds with probability at most1/2, conditioned on any possible prior transcript.",
+          "verdict": "correct",
+          "refutation_attempt": "Checked that the argument concerns nonisomorphic public graphs, not merely a prover who initially lacks a witness. The chapter explicitly distinguishes these."
+        },
+        {
+          "claim": "Twenty sequential rounds have false-acceptance bound2⁻²⁰.",
+          "recomputation": {
+            "fraction": "1/1048576",
+            "probability": 9.5367431640625e-07,
+            "percent": 9.5367431640625e-05,
+            "chain_rule": "P(all20 succeed)=product of conditional round-success probabilities≤(1/2)^20. If any conditioning event has probability zero, the conclusion is immediate."
+          },
+          "verdict": "correct",
+          "refutation_attempt": "Verified the percent conversion, continued conditioning on prior transcripts, commit-before-challenge order, and absence of a reversed posterior-probability claim."
+        },
+        {
+          "claim": "The stated simulator exactly reproduces the honest verifier’s view for isomorphic inputs.",
+          "recomputation": "Conditional on b=0, the real response r is uniform over all n! bijections. Conditional on b=1, r∘f⁻¹ is also uniform because composition with fixed f⁻¹ permutes those bijections. In both cases H=response(G_b), and b is uniform. This matches the simulator that chooses b first and then uniform s, outputting(s(G_b),b,s). Graph automorphisms cause no problem because the response map is included in the transcript. Independent fresh choices extend the distribution equality to sequential repetitions.",
+          "verdict": "correct",
+          "refutation_attempt": "Tested the automorphism/multiplicity concern and a malicious challenge chosen as a function of H. The proof handles the former and deliberately restricts its theorem to honest-verifier perfect zero knowledge, without claiming its simple simulator handles the latter."
+        },
+        {
+          "claim": "Public transcripts and knowledge extraction have different access guarantees from an honest live verifier.",
+          "recomputation": "A transcript can be fabricated by choosing b before H, including on false inputs; the live false-input prover lacks that order of choice. Extraction needs two valid responses for the same H, requiring a stronger access model such as rewinding. Reusing r gives responses r and r∘f⁻¹, whose inverse-composition (r∘f⁻¹)⁻¹∘r equals f.",
+          "verdict": "correct",
+          "refutation_attempt": "Checked that algebraic special soundness is not falsely presented as a complete efficient knowledge-extractor theorem. Efficiency and success-gap obligations are explicitly retained."
+        },
+        {
+          "claim": "NP, IP and PCP measure different resources; a single challenge bit does not mean a constant-bit proof check.",
+          "recomputation": "An explicit graph bijection occupies a number of bits growing with the graph; a direct adjacency check examines all relevant vertex pairs. This remains true even though the verifier chooses only one challenge bit. The chapter separates input reading, proof queries, interaction, prover search and information release.",
+          "verdict": "correct"
+        }
+      ],
+      "source_checks": [
+        {
+          "id": "ch16-gmr-dates",
+          "claim": "GMR’s early paper appeared in1985, with the journal treatment in1989; the work formalizes interactive proof and knowledge complexity.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://www.cs.miami.edu/home/burt/learning/csc609.221/goldwasser-micali-rackoff-knoweldge-complexity.pdf",
+            "https://mit6875.github.io/FA23HANDOUTS/GMR-zero-knowledge.pdf"
+          ],
+          "actually_opened_scope": "Original1985scan copyright/header and interactive-machine definition in§2.1; original1989SIAMscan firstpage and§3.3–3.4 zero-knowledge/view definitions. Conference and journal versions are one originating project, not independent confirmations.",
+          "qualification": "The primary source directly supports this claim. A second independent primary origin was not established, so the strict fact-auditor template verdict is unverifiable. This is a corroboration limit, not contradictory evidence."
+        },
+        {
+          "id": "ch16-gi",
+          "claim": "The GMW graph-isomorphism protocol has the described commit/challenge/response structure and a stronger perfect-ZK theorem covering efficient cheating verifiers.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://people.csail.mit.edu/silvio/Selected%20Scientific%20Papers/Zero%20Knowledge/Proofs_That_Yield_Nothing_But_Their_Validity_or_All_Languages_in_NP_Have_Zero-Knowledge_Proof_Systems.pdf"
+          ],
+          "actually_opened_scope": "Original journal Protocol2 and Theorem2 atPDFpp11–15. The chapter only proves the simpler honest-verifier case and explicitly reserves the stronger simulation argument. Bellare–Goldreich§4.4 restates the originating protocol but is not counted as an independent origin.",
+          "qualification": "The primary source directly supports this claim. A second independent primary origin was not established, so the strict fact-auditor template verdict is unverifiable. This is a corroboration limit, not contradictory evidence."
+        },
+        {
+          "id": "ch16-gmw-assumption",
+          "claim": "The general GMW NP zero-knowledge construction can use the existence of one-way functions, without requiring public-key encryption.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://people.csail.mit.edu/silvio/Selected%20Scientific%20Papers/Zero%20Knowledge/Proofs_That_Yield_Nothing_But_Their_Validity_or_All_Languages_in_NP_Have_Zero-Knowledge_Proof_Systems.pdf"
+          ],
+          "actually_opened_scope": "Tried to refute the weaker one-way-function assumption against the abstract’s secure-encryption wording. The original§1.3 explicitly states any one-way function; PDFp21 states bit commitments suffice and credits Naor, Impagliazzo/Levin/Luby and Håstad. The chapter’s assumption is supported.",
+          "qualification": "The primary source directly supports this claim. A second independent primary origin was not established, so the strict fact-auditor template verdict is unverifiable. This is a corroboration limit, not contradictory evidence."
+        },
+        {
+          "id": "ch16-pok",
+          "claim": "Knowledge-extractor efficiency depends on the gap between acceptance probability and knowledge error, with a specifically defined oracle/access model.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://cseweb.ucsd.edu/~mihir/papers/pok.pdf"
+          ],
+          "actually_opened_scope": "Original Definition3.1 atPDFp8 gives expected time bounded by |x|^c/(p(x)−κ(x));§4.3–4.4 discusses access and the single-round graph-isomorphism example. No claim that a single accepting transcript itself yields the witness.",
+          "qualification": "The primary source directly supports this claim. A second independent primary origin was not established, so the strict fact-auditor template verdict is unverifiable. This is a corroboration limit, not contradictory evidence."
+        },
+        {
+          "id": "ch16-ip",
+          "claim": "Shamir’s1992result gives IP=PSPACE with a polynomial-time probabilistic verifier; the general prover is not promised polynomial runtime.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://crypto.cs.mcgill.ca/~crepeau/COMP647/2007/TOPIC01/Shamir-IP=PSPACE.pdf"
+          ],
+          "actually_opened_scope": "Original abstract/introduction, publicationheader1992, and§4. The paper states both containments and the verifier resource conditions.",
+          "qualification": "The primary source directly supports this claim. A second independent primary origin was not established, so the strict fact-auditor template verdict is unverifiable. This is a corroboration limit, not contradictory evidence."
+        },
+        {
+          "id": "ch16-pcp",
+          "claim": "The PCP theorem allows logarithmically many random bits and constant proof-bit queries, with perfect completeness and false-input acceptance at most1/2.",
+          "source_check": "supported_in_opened_primary_source",
+          "strict_template_verdict": "unverifiable",
+          "independent_primary_origins": 1,
+          "urls": [
+            "https://people.csail.mit.edu/madhu/papers/1992/almss-journ.pdf"
+          ],
+          "actually_opened_scope": "Original Definition1 atPDFp3 and main Theorem4 atPDFp4. Definition separately says input can be read fully. The theorem citation would be even more precise if§1.2/Theorem4 were added to the current§1.1 pointer, but the existing abstract plus definition support the stated resources and bounds.",
+          "qualification": "The primary source directly supports this claim. A second independent primary origin was not established, so the strict fact-auditor template verdict is unverifiable. This is a corroboration limit, not contradictory evidence."
+        }
+      ],
+      "limitations": [
+        "This review proves only the chapter’s explicitly scoped honest-verifier simulator and algebraic extraction core; it does not replace a full malicious-verifier or proof-of-knowledge theorem.",
+        "Original source definitions/theorem statements and targeted passages were inspected; the full53-pagePCPconstruction and Shamir’sarithmetization were not rederived.",
+        "The general NP one-way-function assumption is conditional, while the toy graph-isomorphism soundness argument is information-theoretic under the stated ideal random challenge model."
+      ]
+    }
+  ],
+  "unresolved_material_findings": 0,
+  "unresolved_optional_findings": 0,
+  "resolved_minor_edits": 7,
+  "final_reinspection_note": "Author corrections were verified by exact text comparison, and full rereads covered additional paragraphs in13–15. No chapter file was modified by this reviewer.",
+  "export_note": "Source URLs, access limits, findings and final file digests are retained. Conversation-only tool reference IDs are omitted, and workspace paths are normalized."
+}
