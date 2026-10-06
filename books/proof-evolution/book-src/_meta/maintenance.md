@@ -2,7 +2,7 @@
 
 ## Canonical recurring examples
 
-Edit the baseline in outline.md first, then regenerate this exact block and running-examples.md.
+Edit outline.md first; the block below and running-examples.md must retain identical baseline bytes.
 
 <!-- BEGIN BASELINE -->
 | ID | Exact value and meaning | Owner / reuse |
@@ -16,31 +16,24 @@ Edit the baseline in outline.md first, then regenerate this exact block and runn
 | INTERACTIVE | Ideal binary challenges with per-round cheating bound 1/2 conditional on prior transcript, repeated 20 times: bound 2⁻²⁰ = 1/1048576 ≈ 0.00009537% | ch16 / appendix-c |
 <!-- END BASELINE -->
 
-## Fragile facts and evidence boundaries
+## Fragile facts
 
-- Historical dates: keep composition, manuscript witness, edition, translation and reconstruction distinct. Preserve the conservative Rhind dating; do not collapse conflicting catalogue/edition dates into invented precision.
-- ch03: product-plus-one is not always prime; retain the separate prime-divisor argument.
-- ch07: a disk image or spherical picture does not by itself verify every axiom; preserve the relative consistency background.
-- ch08/ch09: keep logic completeness distinct from theory completeness and preserve effective axiomatization, consistency, arithmetic strength and standard provability conditions.
-- ch11/ch13: measurement uncertainty is not identical to realized error; random estimation error is not automatically statistical bias; experimental evidence remains conditional on design and auxiliary assumptions.
-- ch14/ch15: four-color announcement/publication/formalization dates differ; Flyspeck uses multiple systems with an explicit interface, and this book did not rebuild those large projects.
-- ch16: the displayed simulator is an honest-verifier demonstration unless a stronger theorem is explicitly cited; soundness error is not a general secrecy guarantee.
-- ch17: snapshot cutoff 2026-10-06. Selected 2024/2025 events are not an exhaustive ranking. Keep natural-language scoring distinct from formal checking, human translation from automated lemma generation, and solution judging distinct from system/process validation.
-- Current project documentation URLs may evolve. Prefer pinned publications for historical claims and recheck live documentation before describing a version-specific implementation.
+Preserve the distinction between composition, manuscript, edition and reconstruction dates. Keep product-plus-one separate from primality; partial disk-model demonstrations separate from a complete model; logic completeness separate from theory completeness; effective axiomatization and arithmetic hypotheses explicit. Keep measurement uncertainty separate from error, and random estimation error separate from bias. Preserve Flyspeck's cross-system interface and the honest-verifier scope of the zero-knowledge example. AI results are dated reports, not interchangeable competition rankings or independent system audits.
+
+Source-access limitations, earlier corrections and all current findings are consolidated in [verification-report.md](verification-report.md). That is the only retained review report, not a blanket correctness certificate.
 
 ## Update protocol
 
-1. Read style-guide.md, the affected outline entries and chapter footnotes before editing.
-2. Reopen the primary source for changed factual claims; record actual access limits and avoid replacing an original source with a summary silently.
-3. If a recurring value changes, edit outline.md first and regenerate baseline copies, then update each citing chapter and appendix.
-4. Reconcile all 18 ID/file pairs, footnotes, local links and terminology; compile source index from the actual final manuscript.
-5. Run the book-local deterministic gate, arithmetic checks, focused tooling tests, reader build and output checks. See scripts/README.md for commands.
-6. Obtain independent review of changed arguments and record findings and resolutions. Same-model review is not an original cross-provider Tier-2 PASS.
-7. Run browser-smoke.mjs where Chromium/Playwright is available. Record a missing browser as not run, not as visual validation.
-8. Rebuild generated HTML after the last content edit, then update verification-report.md and one dated scan entry. Never hand-edit reader output or root bookshelf.html.
+1. Read the style guide, outline and affected footnotes. Reopen primary sources for changed external claims.
+2. Change canonical numbers in outline.md and regenerate the two baseline copies before changing citing prose.
+3. Reconcile all 18 chapters, four appendices, links, definitions and reader manifest. The editorial sample is separate until deliberately integrated.
+4. Run the documented build, deterministic and browser checks. Temporary JSON and screenshots go to `.review-output/`, not the source tree.
+5. Obtain fresh-context review of changed arguments and reading continuity. Give reviewers only relevant manuscript and neutral criteria, not prior conclusions. Investigate findings before accepting corrections.
+6. Record actual checks, access limits, dispositions and remaining work in verification-report.md. A failed or unexecuted check is not a pass. Do not retain per-agent output files or duplicate logs.
 
 ## Scan log
 
-| Date | Mode | Scope | Result record |
-| --- | --- | --- | --- |
-| 2026-10-06 | Initial full book | 18 chapters, 4 appendices, preface and offline reader | See verification-report.md and state.json for the final actual checks and independent review outcomes. |
+| Date | Mode | Scope / result |
+| --- | --- | --- |
+| 2026-10-06 | Initial book | 18 chapters, four appendices and reader; historical checks and limitations are summarized in verification-report.md. |
+| 2026-10-06 | Retention cleanup and cold review | Removed 22 working-record files, preserved canonical baseline and build inputs, consolidated four new agent reviews; the manuscript remains a draft. |

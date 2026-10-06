@@ -2,39 +2,22 @@
 
 **從計算、論證與實驗，到形式驗證與 AI**
 
-一本以「另一個人憑什麼接受這個理由？」為主線的繁體中文書。十八章從古代計算與注釋、希臘演繹、符號代數與無限，走到公理、不可判定性、統計與因果，再到電腦證書、證明助理、零知識與 AI。數學證明是主軸；實驗與統計保有各自的推論條件。
+目前仍是敘事修訂中的草稿。正文含導讀、18 章與 4 篇附錄；另有開場與前三章的敘事樣章，尚未替換正文與正式閱讀器。檔案完整或測試通過，不代表已適合定稿。
 
-## 閱讀
+[正文與目錄](book-src/README.md) · [離線閱讀器](web/index.html) · [樣章與章名對照](editorial/README.md)
 
-- [導讀與完整目錄](book-src/README.md)：直接在 GitHub 閱讀各章 Markdown。
-- [單檔離線閱讀器](web/index.html)：下載此檔後，用瀏覽器開啟。全書、目錄、搜尋、註腳、閱讀進度與列印樣式都包在檔案內；不需要伺服器。GitHub 的檔案頁只顯示 HTML 原始碼。
-- [驗證與審稿紀錄](book-src/_meta/verification-report.md)：實際執行的檢查、修訂與適用範圍。
+數學證明是主軸，實驗與統計保有各自的推論條件。正文以連續文字敘述為主，圖片只用來補充具體的空間或程序關係。當代案例的原稿查核基準日為 2026-10-06，不是完整的最新系統排名。
 
-全書含導讀、十八章正文與四篇附錄。預設讀者具有高中代數程度；不要求先學過數理邏輯、機率論或程式設計。當代研究的查核基準日為 **2026-10-06**，採具名案例，不宣稱涵蓋所有最新系統。
+## 核對與重建
 
-## 全書結構
-
-| 部分 | 範圍 | 核心問題 |
-| --- | --- | --- |
-| 第一部：理由走向公開 | 第 1–4 章 | 計算、圖形、經典與注釋怎樣保存可以檢查的理由？ |
-| 第二部：新的語言，新的界線 | 第 5–9 章 | 符號、公理與形式語言擴大了什麼，也揭露哪些限制？ |
-| 第三部：不同問題，不同的理由 | 第 10–13 章 | 構造、實驗、統計與因果推論各自需要哪些條件？ |
-| 第四部：機器尺度下的證明 | 第 14–18 章 | 搜尋、證書、可信核心、互動協定與 AI 如何重新分配檢查工作？ |
-| 附錄 A–D | 方法、年代與術語、算例、來源 | 如何比較方法、重做論證、回查文本？ |
-
-各章以具體推導與反例展開，明示古代材料的現代重建、數學定理的前提，以及假想數據的用途。來源列於相應段落的註腳；[附錄 D](book-src/appendix-d-sources.md)提供原典與研究的閱讀入口。
-
-## 維護與重建
-
-來源在 `book-src/`；編輯 Markdown 後重建 `web/index.html`。在本目錄使用 Node.js 20 以上與 Python 3.9 以上執行：
+從本書目錄執行；Node.js 20 以上、Python 3.9 以上，一般建置不需安裝 npm 套件：
 
 ```sh
+python3 scripts/check-math.py
 node scripts/build-reader.mjs
-node scripts/verify.mjs
+node scripts/verify.mjs --json
 ```
 
-一般建置不需要網路或安裝 npm 套件。需要 JSON 報告時加上 `--json`。其他命令、固定的解析器版本與授權見 [scripts/README.md](scripts/README.md)。
+第一個指令重算附錄 C 相關的七組基準算例；成功時輸出 `PASS: seven canonical mathematical checks.`。程式是 [scripts/check-math.py](scripts/check-math.py)，完整使用說明與限制見 [工具說明](scripts/README.md)。它不是全書數學或史實正確性的證明。
 
-有 Playwright 與 Chromium 的環境可另外執行 `node scripts/browser-smoke.mjs`。本次環境缺少 Chromium，因此實際畫面與瀏覽器互動檢查記為 **未執行**；已執行的 HTML 檢查確認結構、連結、內嵌資源與重建一致性。
-
-本書參考專案的 `write-book` v3 skill，依使用者授權調整不可用的外部工具與跨供應商流程，採書內可重建工具及不同作者角色的獨立審稿。這些審稿由同一家模型完成，沒有宣稱通過原流程的跨模型 P4 門檻。詳細決策見 [workflow-adaptation.md](book-src/_meta/workflow-adaptation.md)；後續修訂程序見 [maintenance.md](book-src/_meta/maintenance.md)。
+歷史查核、這次零上下文審閱、未解問題與實際測試範圍，統一記在 [審閱摘要](book-src/_meta/verification-report.md)。後續更新依 [維護規則](book-src/_meta/maintenance.md)。必要的建置工具與測試保留；一次性輸出不納入版本控制。
