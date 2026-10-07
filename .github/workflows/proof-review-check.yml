@@ -1,0 +1,31 @@
+name: Proof book revision checks
+on:
+  push:
+    branches: [book/proof-evolution-20261006]
+    paths:
+      - books/proof-evolution/**
+      - .github/workflows/proof-review-check.yml
+permissions:
+  contents: read
+jobs:
+  check:
+    if: github.repository == 'C-ZW/ai-infra-book'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Build and verify this book only
+        working-directory: books/proof-evolution
+        run: |
+          node scripts/build-reader.mjs
+          node scripts/verify.mjs
+      - name: Package the checked book
+        run: tar --exclude=.review-output -czf "$RUNNER_TEMP/proof-book.tar.gz" books/proof-evolution
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: proof-book-checked
+          path: ${{ runner.temp }}/proof-book.tar.gz
+          retention-days: 2
+          if-no-files-found: error
