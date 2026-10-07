@@ -6,21 +6,41 @@ on:
       - books/proof-evolution/**
       - .github/workflows/proof-review-check.yml
 permissions:
-  contents: read
+  contents: write
 jobs:
   check:
-    if: github.repository == 'C-ZW/ai-infra-book'
+    if: github.repository == 'C-ZW/ai-infra-book' && github.ref == 'refs/heads/book/proof-evolution-20261006'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          persist-credentials: false
+      - name: Apply the scoped manuscript and reader edits
+        run: |
+          set -eu
+          if ! grep -q 'export function readFigure' books/proof-evolution/scripts/book-lib.mjs; then
+            python3 .github/proof-edit-content.py
+            python3 .github/proof-edit-tools.py
+          fi
       - name: Build and verify this book only
         working-directory: books/proof-evolution
         run: |
+          set -eu
+          python3 scripts/build-figures.py
           node scripts/build-reader.mjs
           node scripts/verify.mjs
+          node scripts/build-reader.mjs --check
+      - name: Commit only the checked book to the existing PR branch
+        run: |
+          set -eu
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- books/proof-evolution
+          if ! git diff --cached --quiet; then
+            git diff --cached --name-only | grep -v '^books/proof-evolution/' && exit 1 || true
+            git commit -m 'book: resolve review findings and rebuild with supporting figures'
+            git push origin HEAD:refs/heads/book/proof-evolution-20261006
+          fi
+          git rev-parse HEAD
       - name: Package the checked book
         run: tar --exclude=.review-output -czf "$RUNNER_TEMP/proof-book.tar.gz" books/proof-evolution
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
