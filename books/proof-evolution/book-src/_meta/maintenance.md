@@ -37,3 +37,4 @@ Source-access limitations, earlier corrections and all current findings are cons
 | --- | --- | --- |
 | 2026-10-06 | Initial book | 18 chapters, four appendices and reader; historical checks and limitations are summarized in verification-report.md. |
 | 2026-10-06 | Retention cleanup and cold review | Removed 22 working-record files, preserved canonical baseline and build inputs, consolidated four new agent reviews; the manuscript remains a draft. |
+| 2026-10-07 | Review-driven revisions | Implemented 28 dispositions, added five support figures and image checks; fresh review and actual verification are recorded in verification-report.md. |
