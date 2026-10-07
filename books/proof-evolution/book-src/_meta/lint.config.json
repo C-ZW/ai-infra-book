@@ -1,0 +1,65 @@
+{
+  "_comment": "Narrative zh-TW contract adapted for the book-local deterministic gate; chapter count is independently reconciled against the 18-entry manifest.",
+  "chapter_globs": [
+    "ch[0-9][0-9]-*.md"
+  ],
+  "appendix_globs": [
+    "appendix-*.md",
+    "apx-*.md",
+    "README.md",
+    "index.md"
+  ],
+  "severity": {
+    "skeleton": "off",
+    "skeleton_order": "off",
+    "solution": "off",
+    "difficulty": "off",
+    "time": "off",
+    "worked_example": "warn"
+  },
+  "vocab_regex_warn": [
+    {
+      "pattern": "(?<![演計運])算法",
+      "term": "算法",
+      "replace": "演算法"
+    },
+    {
+      "pattern": "進行[了]?[一-鿿]{2,4}",
+      "term": "進行＋動作名詞",
+      "replace": "直接用動詞（進行分析→分析）"
+    },
+    {
+      "pattern": "加以[一-鿿]{2,4}",
+      "term": "加以＋動作名詞",
+      "replace": "直接用動詞"
+    },
+    {
+      "pattern": "透過[^，。；]{1,14}的方式",
+      "term": "透過…的方式",
+      "replace": "用／靠／以"
+    },
+    {
+      "pattern": "在[^，。；]{1,12}的情況下",
+      "term": "在…的情況下",
+      "replace": "當／若／…時"
+    },
+    {
+      "pattern": "對於[^，。；]{1,10}而言",
+      "term": "對於…而言",
+      "replace": "對…"
+    },
+    {
+      "pattern": "存在著",
+      "term": "存在著",
+      "replace": "有"
+    },
+    {
+      "pattern": "作為一個",
+      "term": "作為一個…",
+      "replace": "換主語直述"
+    }
+  ],
+  "min_cjk_prose_chars": 1800,
+  "expected_chapters": 18,
+  "math_register": "unicode"
+}
