@@ -14,12 +14,19 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Apply the bounded cold-read corrections
+      - name: Clarify the finite-state premise
         run: |
           set -eu
-          if ! grep -q '兩群平均叫 M_左' books/proof-evolution/book-src/ch10-construction-and-programs.md; then
-            python3 .github/proof-cold-followup.py
-          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('books/proof-evolution/book-src/ch09-incompleteness-and-computation.md')
+          t=p.read_text()
+          old='若真的把記憶體限制固定，而且程式沒有新的外部輸入，確定性的機器只剩有限多種完整狀態。'
+          new='若把所有會影響後續運算的狀態都限制在有限集合內——不只是工作記憶體，也包括控制位置、可讀寫檔案與會再被讀取的輸出——而且沒有新的外部輸入，確定性的機器才只剩有限多種完整狀態。'
+          if new not in t:
+              assert t.count(old)==1
+              p.write_text(t.replace(old,new))
+          PY
       - name: Build and verify this book only
         working-directory: books/proof-evolution
         run: |
@@ -36,7 +43,7 @@ jobs:
           git add -- books/proof-evolution
           if ! git diff --cached --quiet; then
             if git diff --cached --name-only | grep -v '^books/proof-evolution/'; then exit 1; fi
-            git commit -m 'book: clarify cold-read findings and rebuild the reader'
+            git commit -m 'book: clarify finite-state assumptions and rebuild checked reader'
             git push origin HEAD:refs/heads/book/proof-evolution-20261006
           fi
           git rev-parse HEAD
