@@ -4,7 +4,7 @@ Traditional Chinese narrative nonfiction. Source: `book-src/`; generated reader:
 
 ## Scope and publication state
 
-The eighteen-chapter manuscript is still an editorial draft. `editorial/narrative-sample.md` is an alternative opening and three chapters, not an integrated edition. Read `editorial/README.md` before integration. Prose remains primary; a figure must clarify a specific relationship, not decorate the page. Technical test success is not evidence of reader comprehension.
+The eighteen-chapter manuscript is still an editorial draft. The introduction and ch01–ch03 were replaced with a problem-led opening on 2026-10-07. The former separate editorial sample is retired; do not recreate a parallel reader. Chapters 4–18 have not yet received the same structural rewrite. Prose remains primary; a figure must clarify a specific relationship, not decorate the page. Technical test success is not evidence of reader comprehension.
 
 ## Retention policy
 

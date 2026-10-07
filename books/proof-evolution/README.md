@@ -2,23 +2,22 @@
 
 **從計算、論證與實驗，到形式驗證與 AI**
 
-目前仍是敘事修訂中的草稿。正文含導讀、18 章與 4 篇附錄；另有開場與前三章的敘事樣章，尚未替換正文與正式閱讀器。檔案完整或測試通過，不代表已適合定稿。
+[正文與目錄](book-src/README.md) · [單檔離線閱讀器](web/index.html)
 
-[正文與目錄](book-src/README.md) · [離線閱讀器](web/index.html) · [樣章與章名對照](editorial/README.md)
+2026-10-07 已把導讀與前三章改寫成問題導向的正文：連對四十次的公式、能保證誤差的近似、找不到與不存在的差別。舊的獨立樣章已退役，不再維持另一個閱讀版本。第四至十八章仍沿用前輪審稿修訂版，沒有宣稱全書已完成相同幅度的重寫。PR 維持 Draft。
 
-數學證明是主軸，實驗與統計保有各自的推論條件。正文以連續文字敘述為主，圖片只用來補充具體的空間或程序關係。當代案例的原稿查核基準日為 2026-10-06，不是完整的最新系統排名。
+正文以文字為主，五張支援圖保留；兩圓作圖移入附錄 A，詳細近似計算和圓田例子移入附錄 C。來源、假設與完整推理仍可沿連結查回。
 
-## 核對與重建
+## 重建與核對
 
-從本書目錄執行；Node.js 20 以上、Python 3.9 以上，一般建置不需安裝 npm 套件：
+從本書目錄執行；一般建置需要 Node.js 20 以上、Python 3.9 以上，不需網路安裝：
 
 ```sh
 python3 scripts/build-figures.py
-python3 scripts/check-math.py
 node scripts/build-reader.mjs
 node scripts/verify.mjs --json
 ```
 
-第二個指令重算附錄 C 相關的七組基準算例；成功時輸出 `PASS: seven canonical mathematical checks.`。程式是 [scripts/check-math.py](scripts/check-math.py)，完整使用說明與限制見 [工具說明](scripts/README.md)。它不是全書數學或史實正確性的證明。
+[scripts/check-math.py](scripts/check-math.py) 重算九組共同算例；成功輸出 `PASS: nine canonical mathematical checks.`。完整使用說明見 [scripts/README.md](scripts/README.md)。測試不取代讀者理解或史料查核。
 
-本輪已針對審稿修訂正文與樣章，加入五張必要的支援圖；樣章仍是獨立替代稿，不代表全書敘事已重寫。歷史查核、零上下文審閱、逐項處置與實際測試範圍，統一記在 [審閱摘要](book-src/_meta/verification-report.md)。後續更新依 [維護規則](book-src/_meta/maintenance.md)。必要的建置工具與測試保留；一次性輸出不納入版本控制。
+維護資料仍只保留八份；新舊審閱的範圍、實際結果與限制統一在 [審閱摘要](book-src/_meta/verification-report.md)，不提交分批 review、debug JSON 或截圖。

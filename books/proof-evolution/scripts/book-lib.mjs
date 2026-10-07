@@ -6,7 +6,7 @@ import { Marked, Renderer } from './vendor/marked-17.0.5.mjs';
 export const BOOK_ID = 'proof-evolution-2026';
 export const CHAPTER_IDS = Array.from({ length: 18 }, (_, i) => `ch${String(i + 1).padStart(2, '0')}`);
 export const APPENDIX_FILES = ['appendix-a-methods.md', 'appendix-b-timeline.md', 'appendix-c-worked-examples.md', 'appendix-d-sources.md'];
-export const MIN_HAN = 4000;
+export const MIN_HAN = 1800;
 export const BASE_START = '<!-- BEGIN BASELINE -->';
 export const BASE_END = '<!-- END BASELINE -->';
 

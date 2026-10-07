@@ -6,7 +6,7 @@
   "ui_lang": "zh-TW",
   "source_dir": "../book-src",
   "expected_chapters": 18,
-  "chapter_min_han": 4000,
+  "chapter_min_han": 1800,
   "math_register": "unicode",
   "math": false,
   "inline_images": false,

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { APPENDIX_FILES, BOOK_ID, CHAPTER_IDS, extractBaseline, extractFootnotes, parseDocument, readBook, readFigure, renderDocument, resolveLink, validateBook } from '../book-lib.mjs';
+import { APPENDIX_FILES, BOOK_ID, CHAPTER_IDS, MIN_HAN, extractBaseline, extractFootnotes, parseDocument, readBook, readFigure, renderDocument, resolveLink, validateBook } from '../book-lib.mjs';
 import { buildHTML } from '../build-reader.mjs';
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -13,7 +13,7 @@ function fixture(t) {
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, 'book-src/_meta'), { recursive: true });
   fs.mkdirSync(path.join(root, 'web'));
-  const config = { id: BOOK_ID, title: '證明的理由', subtitle: '測試閱讀器', footer: '測試', ui_lang: 'zh-TW', expected_chapters: 18, chapter_min_han: 4000, math_register: 'unicode', output: 'index.html', groups: [
+  const config = { id: BOOK_ID, title: '證明的理由', subtitle: '測試閱讀器', footer: '測試', ui_lang: 'zh-TW', expected_chapters: 18, chapter_min_han: MIN_HAN, math_register: 'unicode', output: 'index.html', groups: [
     { title: '開始', files: ['../book-src/README.md'] },
     { title: '正文', files: CHAPTER_IDS.map(id => `../book-src/${id}-chapter.md`) },
     { title: '附錄', files: APPENDIX_FILES.map(file => `../book-src/${file}`) }
@@ -172,4 +172,19 @@ test('changing a figure invalidates generated reader bytes without changing Mark
   const f = figureFixture(t); const first = buildHTML(readBook(f.configPath));
   fs.writeFileSync(path.join(f.dir,'circle.svg'),STATIC_SVG.replace('r="40"','r="35"'));
   assert.notEqual(first,buildHTML(readBook(f.configPath)));
+});
+
+
+test('the narrative missing-content guard is explicit and does not certify readability', t => {
+  const f = fixture(t);
+  assert.equal(MIN_HAN, 1800);
+  const file = path.join(f.root, 'book-src/ch01-chapter.md');
+  fs.writeFileSync(file, '# X\n\n' + '字'.repeat(MIN_HAN - 1) + '\n\n[^a]: https://example.org/a\n[^b]: https://example.org/b\n\nNote.[^a][^b]\n');
+  let report = validateBook(readBook(f.configPath), {checkRegistry: false});
+  assert.match(report.errors.join('\n'), /minimum is 1800/);
+  const config = JSON.parse(fs.readFileSync(f.configPath));
+  config.chapter_min_han = 0;
+  fs.writeFileSync(f.configPath, JSON.stringify(config));
+  report = validateBook(readBook(f.configPath), {checkRegistry: false});
+  assert.match(report.errors.join('\n'), /threshold must be exactly 1800/);
 });

@@ -10,10 +10,10 @@
 | --- | --- | --- |
 | [YBC 7289 藏品說明](https://isaw.nyu.edu/exhibitions/before-pythagoras/items/ybc-7289/) | 泥板上實際留下哪些線與數？哪些是後人的解釋？ | [第二章](ch02-tablets-and-algorithms.md) |
 | [Fowler、Robson 的 YBC 7289 研究](https://www.ux1.eiu.edu/~cidelman/Classes/4900/Class%20Notes/Babylonian%20Approximations.pdf) | 一個高精度數字能支持哪些關於計算與教學的推論，又不能支持哪些？ | [第二章](ch02-tablets-and-algorithms.md) |
-| [Rhind 紙草書的 1927 年編譯本](https://upload.wikimedia.org/wikipedia/commons/7/7b/The_Rhind_Mathematical_Papyrus,_Volume_I.pdf) | 題目操作、譯者記號與現代的 π 比較在哪裡分開？ | [第二章](ch02-tablets-and-algorithms.md) |
+| [Rhind 紙草書的 1927 年編譯本](https://upload.wikimedia.org/wikipedia/commons/7/7b/The_Rhind_Mathematical_Papyrus,_Volume_I.pdf) | 題目操作、譯者記號與現代的 π 比較在哪裡分開？ | [附錄 C](appendix-c-worked-examples.md#乘法完全正確圓田面積仍可能只是近似) |
 | [歐幾里得第九卷第二十命題](https://mathcs.clarku.edu/~djoyce/elements/bookIX/propIX20.html) | 原文在新構造數是質數或合數時，各用了什麼理由？ | [第三章](ch03-greek-deduction.md) |
 | [《九章算術》第一卷的傳世文本轉錄](https://zh.wikisource.org/wiki/%E4%B9%9D%E7%AB%A0%E7%AE%97%E8%A1%93_%28%E5%9B%9B%E9%83%A8%E5%8F%A2%E5%88%8A%E6%9C%AC%29/%E5%8D%B7%E7%AC%AC%E4%B8%80) | 題、術與注釋各交代哪一部分？把它們一起讀，會多出什麼理由？ | [第四章](ch04-plural-traditions.md) |
-| [Chemla 主編的古代證明研究論集](https://www.ms.uky.edu/~sohum/ma330/files/Chemla_K.Ed.-The_history_of_mathematical_proof_in_ancient_traditions-Cambridge_University_Press_2012.pdf) | 先讀序論，再讀 Keller 對婆什迦羅注釋的研究；比較研究者怎樣把詞句、操作與理由連起來 | [第一章](ch01-why-prove.md)、[第四章](ch04-plural-traditions.md) |
+| [Chemla 主編的古代證明研究論集](https://www.ms.uky.edu/~sohum/ma330/files/Chemla_K.Ed.-The_history_of_mathematical_proof_in_ancient_traditions-Cambridge_University_Press_2012.pdf) | 先讀序論，再讀 Keller 對婆什迦羅注釋的研究；比較研究者怎樣把詞句、操作與理由連起來 | [第四章](ch04-plural-traditions.md) |
 | [花拉子米代數論述的 Rosen 英譯，幾何說明頁](https://en.wikisource.org/wiki/Page:The_Algebra_of_Mohammed_Ben_Musa_%281831%29.djvu/31) | 原譯文的正量圖形與現代負根比較，分別回答什麼問題？ | [第四章](ch04-plural-traditions.md) |
 
 數位轉錄讓搜尋變得容易，卻可能有辨字或排版錯誤。當一個字或一條式子承擔重要結論，應回到同頁掃描比對。翻譯也有選擇：同一個詞可能被譯成「數」「量」「邊」或「根」。本書以現代字母重算時會明示這項轉換；它是一種便於檢查的解釋，不能拿來證明原作者已經使用同樣語言。

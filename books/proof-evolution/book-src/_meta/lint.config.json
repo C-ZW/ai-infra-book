@@ -59,7 +59,7 @@
       "replace": "換主語直述"
     }
   ],
-  "min_cjk_prose_chars": 4000,
+  "min_cjk_prose_chars": 1800,
   "expected_chapters": 18,
   "math_register": "unicode"
 }

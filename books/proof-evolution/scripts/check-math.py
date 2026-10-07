@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recompute the book's seven canonical examples with standard-library arithmetic.
+"""Recompute the book's nine canonical examples with standard-library arithmetic.
 
 These checks are evidence for the stated calculations, not a proof assistant or
 an audit of historical claims. The limit check separates its analytic argument
@@ -10,6 +10,7 @@ import argparse
 import json
 from decimal import Decimal, localcontext
 from fractions import Fraction
+from math import isqrt
 from pathlib import Path
 
 
@@ -43,7 +44,7 @@ def verify(outline_path):
                 if cells[0] in rows:
                     raise ValueError(f"Duplicate numerical example id: {cells[0]}")
                 rows[cells[0]] = cells[1]
-    expected_ids = {"ODD", "PRIME", "QUADRATIC", "LIMIT", "BAYES", "MULTIPLE", "INTERACTIVE"}
+    expected_ids = {"ODD", "PRIME", "QUADRATIC", "LIMIT", "BAYES", "MULTIPLE", "INTERACTIVE", "PRIME_TEST", "APPROX"}
     if set(rows) != expected_ids:
         raise ValueError(f"Canonical example ids differ: {sorted(rows)}")
     checks = []
@@ -116,6 +117,29 @@ def verify(outline_path):
            {"upper_bound": str(interactive), "percent": percentage(interactive, 8), "assumptions": "Each round has cheating probability at most 1/2 conditional on the prior transcript; the chain rule gives the repeated bound."},
            ["conditional on prior transcript", "20 times", "1/1048576", "0.00009537%"])
 
+    # Exhaust the explicitly finite domain, without claiming an infinite theorem.
+    def is_prime(value):
+        return value > 1 and all(value % d for d in range(2, isqrt(value) + 1))
+
+    prime_values = [n * n + n + 41 for n in range(40)]
+    record("PRIME_TEST", all(map(is_prime, prime_values)) and 40 * 40 + 40 + 41 == 41 ** 2 == 1681,
+           {"checked_inputs": "0 through 39 inclusive", "prime_count": len(prime_values),
+            "last_checked_prime": prime_values[-1], "first_failure": {"n": 40, "value": 1681, "factors": [41, 41]}},
+           ["n² + n + 41", "0 through 39", "1681 = 41²"])
+
+    lower, upper = Fraction(1414, 1000), Fraction(1415, 1000)
+    q = Fraction(30547, 21600)
+    width = 2 / q - q
+    record("APPROX", lower ** 2 == Fraction(1999396, 1000000) < 2 < Fraction(2002225, 1000000) == upper ** 2
+           and upper - lower == Fraction(1, 1000)
+           and q ** 2 == 2 - Fraction(791, 466560000)
+           and width == Fraction(791, 659815200) < Fraction(12, 10000000)
+           and 30 * q == 42 + Fraction(25, 60) + Fraction(35, 3600),
+           {"elementary_bracket_width": "0.001", "scaled_by_30_width": "0.03",
+            "tablet_fraction": str(q), "exact_squared_gap": str(2-q*q), "exact_bracket_width": str(width),
+            "qualification": "Positive squaring is strictly increasing; q is a lower bound and 2/q is an upper bound. These are modern checks, not an inferred ancient procedure."},
+           ["1.414² = 1.999396", "2.002225 = 1.415²", "30547/21600", "791/659815200"])
+
     return {"pass": True, "checks": checks,
             "limitations": ["Checks canonical calculations and required baseline wording; does not prove that every prose occurrence is semantically consistent.",
                             "Does not certify the historical narrative, empirical premises, cryptographic protocol security, or a theorem-prover kernel."]}
@@ -133,7 +157,7 @@ def main():
     if args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
     else:
-        print("PASS: seven canonical mathematical checks." if report["pass"] else "FAIL: " + "; ".join(report["errors"]))
+        print("PASS: nine canonical mathematical checks." if report["pass"] else "FAIL: " + "; ".join(report["errors"]))
         if report["pass"]:
             for check in report["checks"]:
                 print(f"  {check['id']}: {json.dumps(check['result'], ensure_ascii=False)}")

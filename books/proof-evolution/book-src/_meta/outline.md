@@ -3,21 +3,21 @@
 Title: 人類證明方法的演化
 Subtitle: 從計算、論證與實驗，到形式驗證與 AI
 Form: narrative. Language: zh-TW. Planned chapters: 18.
-Spine: 一個人提出理由，另一個人憑什麼接受？ Each chapter tracks the claim, admissible reasons, the checking procedure, and the remaining assumptions. Chronology is approximate and interwoven with a conceptual arc. Parallel traditions are not stages of one ladder.
+Spine: 答案看起來沒錯，還缺什麼理由？ Begin with an unresolved problem, let a plausible approach make progress and fail or reach its limit, then introduce the method that changes what can be answered. The opening follows one square from counting to approximation to an impossible fraction. This is a conceptual reading route, not a claim of historical transmission. Applied to the introduction and ch01–ch03 on 2026-10-07; later chapters remain the preceding revision, not a claimed completed book-wide rewrite.
 
 ## Part I — Reasons become public
 
-### ch01 — 為什麼還要證明：把「我相信」變成可檢查的理由
+### ch01 — 連對四十次，為什麼還是不算數？
 File: ch01-why-prove.md
-Goal: distinguish a true answer, persuasive testimony, evidence, and a valid proof. Develop odd-number sums from examples to a general structural reason; state assumptions, domain, and the difference between finding and justifying. Introduce the four-question spine with readable examples. Explain why diagrams and communities matter without deciding the whole history in advance. Include the scope choice of mathematical spine and adjacent scientific practices. Do not teach formal logic (ch08), statistical inference (ch12), or rehearse all later chapters.
+Problem and arc: A formula yields primes for n=0 through 39; why cannot we trust n=40? Reveal the explicit counterexample before introducing proof. Contrast this with the odd-sum square: the general growth rule, not additional success, removes the uncertainty. End at the same square's diagonal, where an exact integer count gives way to approximation. Preserve domains, non-overlap and the possibility of genuinely exhaustive finite proof. Move alternate proofs to appendix C; no upfront taxonomy of testimony, implication or historiography.
 
-### ch02 — 泥板與紙草：會算、可教與理由的痕跡
+### ch02 — 算得這麼準了，為什麼還不能收工？
 File: ch02-tablets-and-algorithms.md
-Goal: read ancient computational documents without confusing surviving recipes with absence of reasoning. Discuss selected Babylonian and Egyptian examples, exact versus approximate calculation, recipe generality and school practices. Work the Babylonian square-root approximation or a well-sourced quadratic reconstruction. Explicitly distinguish historians' reconstruction from surviving wording; explain evidence limits. Do not invent an inventor of proof or a universal ancient mindset; Euclid belongs to ch03.
+Problem and arc: How can we know an approximation is good enough without already knowing the exact answer? Start with the unit-square diagonal, meet YBC 7289 as an actual surviving answer, then prove the elementary 1.414/1.415 bracket and examine scaling. The modern bracket is not an attributed Babylonian procedure. End with the plausible idea that a fraction might finish what decimals cannot. Detailed q bounds, averaging and the Rhind contrast live in appendix C, with original citations preserved.
 
-### ch03 — 希臘的演繹秩序：圖形、反證與公理
+### ch03 — 找不到答案，怎樣知道不是還沒找到？
 File: ch03-greek-deduction.md
-Goal: explain Euclidean deduction as an organized public dependency structure. Discuss Elements, definitions/postulates/common notions and the role/limits of diagrams; distinguish Aristotle's account from actual mathematics. Fully prove infinitely many primes (Euclid IX.20, modern notation identified) and √2 irrationality with its assumptions. Emphasize that product-plus-one need not itself be prime. Do not treat Euclid as a modern formal system or claim sole origin of proof; formalization belongs to ch08.
+Problem and arc: A failed search for an exact fraction cannot by itself establish impossibility. Grant a hypothetical solution, reduce it, derive the parity contradiction, and only then name the method and irrationality. Contrast no exact rational solution with no last prime: retain the complete prime-factor argument and 30031 counterexample. Euclidean dependency ordering is a short earned consequence; the full two-circle construction and its missing premise move to appendix A. End by asking whether a geometric operation can itself carry a reason (ch04).
 
 ### ch04 — 多條理由之路：中國、印度與伊斯蘭世界
 File: ch04-plural-traditions.md
@@ -92,13 +92,15 @@ The table between the markers is authoritative. Copies in running-examples.md an
 <!-- BEGIN BASELINE -->
 | ID | Exact value and meaning | Owner / reuse |
 | --- | --- | --- |
-| ODD | 1 + 3 + 5 + 7 + 9 = 25; the first n positive odd numbers sum to n² for positive integer n | ch01 / ch03 / ch18 |
+| ODD | 1 + 3 + 5 + 7 + 9 = 25; the first n positive odd numbers sum to n² for positive integer n | ch01 / ch18 / appendix-c |
 | PRIME | 2 × 3 × 5 × 7 × 11 × 13 + 1 = 30031 = 59 × 509; the product-plus-one construction need not produce a prime | ch03 / ch18 |
 | QUADRATIC | x² + 10x = 39; (x + 5)² = 64; real roots 3 and −13; positive-magnitude interpretation retains 3 | ch04 / ch05 |
 | LIMIT | For f(x) = x² at x = 2, choose δ = min(1, ε/5) for ε > 0; 0 < ∣x − 2∣ < δ implies ∣x² − 4∣ < ε | ch06 / appendix-a |
 | BAYES | Fictional population 10000, condition prevalence 1%, sensitivity 90%, false-positive rate 5%; expected true positives 90, false positives 495, posterior 90/585 = 2/13 ≈ 15.38% | ch12 / appendix-c |
 | MULTIPLE | 20 independent true-null tests each with Type I error probability exactly 0.05: P(at least one false positive) = 1 − 0.95²⁰ ≈ 64.15% | ch13 / appendix-c |
 | INTERACTIVE | Ideal binary challenges with per-round cheating bound 1/2 conditional on prior transcript, repeated 20 times: bound 2⁻²⁰ = 1/1048576 ≈ 0.00009537% | ch16 / appendix-c |
+| PRIME_TEST | f(n) = n² + n + 41; all n = 0 through 39 give primes; f(40) = 1681 = 41² | ch01 / ch17 / appendix-c |
+| APPROX | 1.414² = 1.999396 < 2 < 2.002225 = 1.415²; q = 30547/21600; q² = 2 − 791/466560000; 2/q − q = 791/659815200 < 0.0000012 | ch02 / appendix-c |
 <!-- END BASELINE -->
 
 ## Appendices compiled after chapters

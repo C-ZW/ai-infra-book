@@ -4,15 +4,15 @@
 
 The book is titled **人類證明方法的演化**, subtitled **從計算、論證與實驗，到形式驗證與 AI**. Language: Traditional Chinese, Taiwan usage. Form: narrative nonfiction; general but intellectually curious reader, comfortable with high-school algebra, no assumed logic, probability, programming, or history background. Explain every new technical idea before relying on it. Code, logs, and maintainer metadata are English; book prose and reader UI are zh-TW.
 
-The central question is: **一個人提出理由，另一個人憑什麼接受？** Track how a claim becomes inspectable, what assumptions remain, and who or what can check it. “Evolution” means interacting, branching methods and institutions; it does not mean inevitable progress through a single civilization ladder. Mathematical proof is the spine. Scientific evidence, statistics, and institutional judgment are explicitly adjacent practices with different warrants, never silently equated with deductive proof.
+The central question is: **答案看起來沒錯，還缺什麼理由？** Use the problem-led movement in `books/scientific-method/book-src/README.md` and its opening chapters as a reference for reader experience, not as wording or factual authority to copy. A plausible intuition must face a concrete obstruction before its replacement is named. Start with the problem itself, not a definition or an anecdote pasted in front of an unchanged taxonomy. “Evolution” means interacting, branching methods and institutions; it does not mean inevitable progress through a single civilization ladder. Mathematical proof is the spine. Scientific evidence, statistics, and institutional judgment are explicitly adjacent practices with different warrants, never silently equated with deductive proof.
 
 ## Narrative contract, instantiated
 
-- One argument per chapter, developed in connected prose. Internal headings follow the argument, without a repeated six-slot template.
-- Every paragraph advances understanding: a worked argument, relevant historical context, a distinction, an objection, or its consequence. No chapter-end recap sections or rhetorical padding.
+- Each chapter follows an active question: an initially plausible approach, its particular limit, a better argument, and a consequence that makes the next question necessary. This is not a repeated heading skeleton. Short direct questions, ordinary second-person address and local worked reasoning are appropriate; invented historical dialogue, invented author motives and biographical personalization are not.
+- Every paragraph must change the reader's understanding of the active problem. A true distinction is not sufficient reason to interrupt the argument. Put alternate derivations, extensive source qualification and secondary constructions in appendices with explicit working links. Keep load-bearing hypotheses in the main proof, where they are used.
 - Define a concept in its owning chapter and link back from later chapters. A short recall is allowed when it prevents a reader from losing the argument.
 - Every chapter has at least one fully developed concrete case; mathematical chapters work an example step by step, distinguishing explanation, proof sketch, and complete elementary proof.
-- Target 4,500–6,500 Chinese characters of substantive prose per chapter; minimum 4,000 excluding references, code, and metadata. Length alone never certifies depth.
+- No per-chapter target length. The 2026-10-07 revision explicitly replaces the old 4,000-character floor with an 1,800-Han-character missing-content guard in config, code and tests. This guard is not a teaching or depth certificate; do not pad to meet it. Coverage, retained proof steps and reader comprehension are separate checks.
 - No bridging regime, no compulsory exercises or laboratory work. Optional reader questions must receive enough discussion to be useful.
 - Historical facts and theorem hypotheses still need scrutiny. Narrative freedom does not reduce evidentiary standards.
 
@@ -24,7 +24,7 @@ Use direct, readable Traditional Chinese. Prefer 動詞 over 進行／加以 + a
 
 Browse for niche, historical, technical, and time-sensitive claims. Prefer primary texts in identified editions/translations, mathematical papers, official theorem-prover documentation, original empirical studies, archival collections, and research by historians who inspect the evidence. Popular summaries may locate a source but must not carry technical claims. Do not make priority claims (“the first”) without strong evidence; distinguish a surviving text from the origin of a practice. Distinguish manuscript composition, translation, publication, later reconstruction, and disputed dating.
 
-Use chapter-prefixed footnotes, e.g. `[^ch03-euclid-ix20]`; define every citation at the chapter's end with author, work, year (or qualified date), section/proposition where possible, URL, and one short note about what it supports. Cite next to the claim, not only in a reading list. Prefer 5–9 well-chosen sources per chapter, not source inflation. Paraphrase sparingly from each source; the book's connecting reasoning and worked examples should be original. Label modern reconstructions of historical arguments. Do not invent DOI, page numbers, source quotations, accessed pages, or evidence of independent verification.
+Use chapter-prefixed footnotes, e.g. `[^ch03-euclid-ix20]`; define every citation at the chapter's end with author, work, year (or qualified date), section/proposition where possible, URL, and one short note about what it supports. Cite next to the claim, not only in a reading list. Do not target a source count. Preserve relevant primary citations for claims that remain, and move a citation with its supporting discussion; never add a historical digression merely to fill a citation quota. Paraphrase sparingly from each source; the book's connecting reasoning and worked examples should be original. Label modern reconstructions of historical arguments. Do not invent DOI, page numbers, source quotations, accessed pages, or evidence of independent verification.
 
 Each writer also reports retrieved sources and uncertain claims to the main editor. No personal claims of seeing an original manuscript unless an actual facsimile was opened. Contemporary chapter snapshots use 2026-10-06 as the research cutoff; a source appearing after that date is excluded.
 
@@ -34,8 +34,8 @@ Unicode mathematics only. No LaTeX delimiters (`$$`, `\(`), no HTML, no Mermaid 
 
 | Symbol | Meaning | Owning chapter |
 | --- | --- | --- |
-| n, k | Natural-number indices; state whether zero is included | ch03 |
-| A ⇒ B | Conditional implication | ch01 |
+| n, k | Integer indices; state whether zero is included | ch01 |
+| A ⇒ B | Conditional implication | ch08 |
 | ¬A | Negation | ch08 |
 | ∀, ∃ | Universal and existential quantifiers | ch08 |
 | T ⊢ φ | φ is derivable in formal theory T | ch08 |

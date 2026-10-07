@@ -7,8 +7,8 @@
 | 時間定位 | 本書追蹤的材料或工作 | 它讓什麼問題更清楚 | 回查 |
 | --- | --- | --- | --- |
 | 前第二千紀前半，古巴比倫時期 | YBC 7289 泥板與相關計算材料 | 精確操作、近似值與學習文本可以怎樣留下理由的痕跡 | [第二章](ch02-tablets-and-algorithms.md) |
-| 前第二千紀的現存抄本 | Rhind 數學紙草書；本書不在不同定年之間硬選單一年份 | 計算程序、抄傳與現代重建須分層閱讀 | [第二章](ch02-tablets-and-algorithms.md) |
-| 前四世紀 | 亞里斯多德的分析論著 | 論證、起點與知識要求的關係 | [第一章](ch01-why-prove.md)、[第三章](ch03-greek-deduction.md) |
+| 前第二千紀的現存抄本 | Rhind 數學紙草書；本書不在不同定年之間硬選單一年份 | 計算程序、抄傳與現代重建須分層閱讀 | [附錄 C](appendix-c-worked-examples.md#乘法完全正確圓田面積仍可能只是近似) |
+| 前四世紀 | 亞里斯多德的分析論著 | 論證、起點與知識要求的關係 | [第三章](ch03-greek-deduction.md) |
 | 約前 300 年 | 歐幾里得《幾何原本》 | 以定義、公設、共同概念和既有命題組織理由 | [第三章](ch03-greek-deduction.md) |
 | 前三世紀 | 阿基米德關於拋物線面積的論證 | 有限逼近如何控制任意小的剩餘 | [第六章](ch06-infinity-and-limits.md) |
 | 公元 263 年的傳統紀年；公元 656 年的後續注釋 | 劉徽注與李淳風等人的《九章算術》注釋層 | 算法的意義、割補理由與經典批評如何寫進注釋 | [第四章](ch04-plural-traditions.md) |
@@ -61,7 +61,7 @@
 | 證明 | 在明定前提與推理規則下，交代結論成立的理由 | 大量成功例子、作者信心 | [第一章](ch01-why-prove.md) |
 | 證據 | 支持或反對一個主張的可檢查材料；效力依問題而異 | 無條件、不可修正的保證 | [第十一章](ch11-experiment-and-evidence.md) |
 | 演算法 | 按明確規則執行的程序 | 程序正確性的證明 | [第二章](ch02-tablets-and-algorithms.md)、[第五章](ch05-algebra-and-symbols.md) |
-| 公理 | 在所討論理論中作為起點接受的句子 | 不需說明適用對象的宇宙真理 | [第三章](ch03-greek-deduction.md)、[第八章](ch08-logic-and-foundations.md) |
+| 公理 | 在所討論理論中作為起點接受的句子 | 不需說明適用對象的宇宙真理 | [附錄 A](appendix-a-methods.md#一個理由靠著另一個理由等邊三角形作圖)、[第八章](ch08-logic-and-foundations.md) |
 | 模型 | 讓語言有解釋、並滿足指定公理的結構；科學模型另有應用意義 | 原對象的完整複製品 | [第七章](ch07-axioms-and-models.md)、[第十一章](ch11-experiment-and-evidence.md) |
 | 相容性／一致性 | 在本書古典形式系統中，不會導出互相矛盾的句子 | 每條定理都符合預想的標準對象 | [第八章](ch08-logic-and-foundations.md)、[第九章](ch09-incompleteness-and-computation.md) |
 | 健全性（邏輯） | 推理規則保存相應語義中的真；英文 soundness | 理論回答所有問題 | [第八章](ch08-logic-and-foundations.md) |
