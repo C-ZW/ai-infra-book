@@ -14,12 +14,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - name: Apply the scoped manuscript and reader edits
+      - name: Apply the bounded cold-read corrections
         run: |
           set -eu
-          if ! grep -q 'export function readFigure' books/proof-evolution/scripts/book-lib.mjs; then
-            python3 .github/proof-edit-content.py
-            python3 .github/proof-edit-tools.py
+          if ! grep -q '兩群平均叫 M_左' books/proof-evolution/book-src/ch10-construction-and-programs.md; then
+            python3 .github/proof-cold-followup.py
           fi
       - name: Build and verify this book only
         working-directory: books/proof-evolution
@@ -36,8 +35,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- books/proof-evolution
           if ! git diff --cached --quiet; then
-            git diff --cached --name-only | grep -v '^books/proof-evolution/' && exit 1 || true
-            git commit -m 'book: resolve review findings and rebuild with supporting figures'
+            if git diff --cached --name-only | grep -v '^books/proof-evolution/'; then exit 1; fi
+            git commit -m 'book: clarify cold-read findings and rebuild the reader'
             git push origin HEAD:refs/heads/book/proof-evolution-20261006
           fi
           git rev-parse HEAD
