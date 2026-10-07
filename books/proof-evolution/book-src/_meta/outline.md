@@ -83,7 +83,7 @@ Goal: clearly distinguish informal language-model reasoning, neural-guided symbo
 
 ### ch18 — 什麼理由值得接受：把證明的責任交代清楚
 File: ch18-responsibility-of-proof.md
-Goal: a substantive final argument, not a recap. Compare several live hypothetical disagreements (mathematical claim, simulation, empirical causal claim, AI-generated formal statement), showing what artifact and objection resolve each. Return to the odd-number example and product-plus-one misconception without re-teaching their full proofs. Explain expertise, institutions, peer criticism, accessibility and division of labor. Distinguish institutional decisions under finite resources from mathematical entailment; avoid a separate legal-standards digression. Do not conflate from mathematical certainty only at a conceptual level, no jurisdiction-specific law. End on an actionable ability to identify the claim, assumptions, checking path and residual uncertainty; no empty progress rhetoric.
+Goal: a substantive final argument, not a recap. Compare several live hypothetical disagreements (mathematical claim, simulation, empirical causal claim, AI-generated formal statement), showing what artifact and objection resolve each. Return to the odd-number example and product-plus-one misconception without re-teaching their full proofs. Explain expertise, institutions, peer criticism, accessibility and division of labor. Distinguish institutional decisions under finite resources from mathematical entailment; avoid a separate legal-standards digression. Do not import jurisdiction-specific law into the mathematical argument. End on an actionable ability to identify the claim, assumptions, checking path and residual uncertainty; no empty progress rhetoric.
 
 ## Canonical recurring examples
 

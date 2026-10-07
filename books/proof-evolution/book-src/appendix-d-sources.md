@@ -52,7 +52,7 @@
 | --- | --- | --- |
 | [麥可生—莫雷 1887 年原報告](https://www.gutenberg.org/cache/epub/70888/pg70888-images.html) | 儀器、旋轉、預測量、觀察與作者實際下的結論 | [第十一章](ch11-experiment-and-evidence.md) |
 | [杜恆關於實驗與假設的原文](https://fr.wikisource.org/wiki/La_Th%C3%A9orie_physique/SECONDE_PARTIE/Chapitre_VI/II) | 一次預測失敗碰到的，是哪一組共同工作的假設？ | [第十一章](ch11-experiment-and-evidence.md) |
-| [第十二章的原始統計來源（具名作品、版本與直接網址列於該章註腳，此處不重複列出）](ch12-probability-and-statistics.md) | 貝氏更新、檢定與長期錯誤率，各自要回答什麼？原文所用條件有哪些？ | [第十二章](ch12-probability-and-statistics.md) |
+| [Bayes 1763 年論文之重排全文](https://www.gtfp.cs.rhul.ac.uk/pulskamp/Bayes/bayesessay-rjp.pdf)，第一節；[Fisher 1925 年《Statistical Methods for Research Workers》初版轉錄](https://psychclassics.yorku.ca/Fisher/Methods/chap4.htm)，第 IV 章第 20 節；其他來源見第十二章註腳 | 貝氏更新、檢定與長期錯誤率，各自要回答什麼？原文所用條件有哪些？ | [第十二章](ch12-probability-and-statistics.md) |
 | [Pearl 的因果圖論文](https://bayes.cs.ucla.edu/R218-B.pdf) | 圖表示了哪些假設？調整某變項的理由由哪條路徑得到？ | [第十三章](ch13-causality-and-replication.md) |
 | [Hernán、Robins 的作者書籍頁](https://miguelhernan.org/whatifbook) | 可交換性、正值性與一致性分別保障哪一步？下載版本與讀取範圍見章末註記 | [第十三章](ch13-causality-and-replication.md) |
 | [National Academies 的研究可再現性報告](https://www.nationalacademies.org/read/25303/chapter/3) | 報告怎樣區分同資料重跑與新資料研究？與所在領域慣用詞有何不同？ | [第十三章](ch13-causality-and-replication.md)、[第十八章](ch18-responsibility-of-proof.md) |
@@ -68,7 +68,7 @@
 | [布林畢氏三元組研究論文](https://arxiv.org/abs/1605.00723) | 題目如何變成 SAT？生成與驗證證書分別做了什麼？ | [第十四章](ch14-computer-assisted-proofs.md) |
 | [Flyspeck 正式出版頁](https://www.cambridge.org/core/journals/forum-of-mathematics-pi/article/formal-proof-of-the-kepler-conjecture/78FBD5E1A3D1BCCB8E0D5B0C463C9FBC) | 各系統驗證哪部分，跨系統的陳述由誰對接？ | [第十五章](ch15-proof-assistants.md) |
 | [Lean 官方的證明驗證說明](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) | 「命題符合原意」「證明按規則成立」「執行環境可信」是否分開檢查？ | [第十五章](ch15-proof-assistants.md) |
-| [第十六章的互動證明原始來源](ch16-interactive-and-zero-knowledge.md) | 定義中的驗證者是哪一類？模擬器、錯誤接受與見證抽取是否混成同一件事？ | [第十六章](ch16-interactive-and-zero-knowledge.md) |
+| [Bellare、Goldreich，〈On Defining Proofs of Knowledge〉](https://cseweb.ucsd.edu/~mihir/papers/pok.pdf)，1992-08-26 作者稿，Definition 3.1、§4.4；其他原始來源見第十六章註腳 | 定義中的驗證者是哪一類？模擬器、錯誤接受與見證抽取是否混成同一件事？ | [第十六章](ch16-interactive-and-zero-knowledge.md) |
 | [AlphaGeometry 論文](https://www.nature.com/articles/s41586-023-06747-5) | 語言能表達哪些幾何條件？神經建議與符號推導各自負責什麼？ | [第十七章](ch17-ai-and-proof.md) |
 | [AlphaProof 方法論文](https://www.nature.com/articles/s41586-025-09833-y) | 最終檢查與公理依賴如何交代？比賽、先行出版與卷期日期如何區分？ | [第十七章](ch17-ai-and-proof.md) |
 | [Aristotle 2025 年初稿](https://arxiv.org/html/2510.01346v1) | 原題與中間引理由誰形式化？報告有沒有足夠資料支持時限比較？ | [第十七章](ch17-ai-and-proof.md) |
