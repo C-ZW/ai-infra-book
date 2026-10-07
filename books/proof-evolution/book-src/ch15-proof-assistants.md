@@ -12,7 +12,9 @@
 
 HOL Light 採用 LCF 路線。Harrison 的二〇〇九年說明把核心與外圍分得很清楚：高階推理工具最終仍要使用基本推論，而抽象型別的保護也依賴實作語言及其型別機制正確。小核心不是沒有前提的「絕對可信」；它是一種把必須信任的部分集中、縮小，使審查更可行的設計。[^ch15-hol]
 
-另一條常見路線是保留明確的證明項。在 Lean、Coq 及其後續名稱 Rocq 的常規工作流程中，使用者的策略與較方便的語法，最終建立核心語言中的證明項，再由核心檢查。精化是把省略細節的輸入補成明確的核心表示，例如判定使用哪個加法、補上隱含參數、決定某個引理應套在哪個型別。精化器可能很大、很方便，也可能出錯；因此它產生的內容仍要接受核心檢查。[^ch15-lean-elaboration][^ch15-rocq]
+另一條常見路線是保留明確的證明項。在 Lean，以及 Coq（現名 Rocq）系統的常規工作流程中，使用者的策略與較方便的語法，最終建立核心語言中的證明項，再由核心檢查。精化是把省略細節的輸入補成明確的核心表示，例如判定使用哪個加法、補上隱含參數、決定某個引理應套在哪個型別。精化器可能很大、很方便，也可能出錯；因此它產生的內容仍要接受核心檢查。[^ch15-lean-elaboration][^ch15-rocq]
+
+Coq 與 Rocq 在這裡指同一專案更名前後的名稱，不是兩套彼此獨立的證明架構。官方名稱說明保留了這段沿革。[^ch15-name]
 
 兩種路線不能完全混為一談。LCF 架構可以靠每次建構定理都受約束來保證推導，不必預設總是保存一份完整、獨立的證明樹。明確證明項的系統則有可重新檢查的物件；某些 LCF 系統也另設記錄與匯出功能。共同精神是把找法、寫法與合法性區分，具體可信基礎卻要依系統及使用方式說明。
 
@@ -96,3 +98,5 @@ Flyspeck 提供了一個可以檢視這些責任的大型例子。Hales 與合�
 [^ch15-axioms]: Lean 開發團隊，*The Lean Language Reference*，Axioms 的 Consistency、Standard Axioms及Printing Axioms，檢索基準日2026-10-06。[官方文件](https://lean-lang.org/doc/reference/latest/Axioms/)。支持直接／間接公理依賴、`sorry`與額外計算信任；各版本的特定公理名稱可能不同。
 [^ch15-validation]: Lean 開發團隊，*The Lean Language Reference*，Validating a Lean Proof，檢索基準日2026-10-06。[官方文件](https://lean-lang.org/doc/reference/latest/ValidatingProofs/)。支持形式命題是否正確與其含義是否符合原意的區分，以及核心、匯入內容、外部檢查的不同涵蓋範圍。
 [^ch15-flyspeck]: Thomas Hales 等，〈A Formal Proof of the Kepler Conjecture〉，2017，§§2、8、10，Forum of Mathematics, Pi 5，e2。[原論文PDF之作者機構副本](https://cl-informatik-new.uibk.ac.at/images/publications_pdf/2017/formal_proof_of_the_kepler_conjecture.pdf)，[正式出版頁](https://www.cambridge.org/core/journals/forum-of-mathematics-pi/article/formal-proof-of-the-kepler-conjecture/78FBD5E1A3D1BCCB8E0D5B0C463C9FBC)。支持HOL Light／Isabelle分工及人工對接的審核責任；本書未重新執行Flyspeck。
+
+[^ch15-name]: The Rocq Prover，〈About The Rocq Prover〉，名稱沿革；2026-10-07 查閱。[官方說明](https://rocq-prover.org/about)。支持 Coq 與 Rocq 是同一專案的舊名與現名；此註不比較不同版本的所有功能。

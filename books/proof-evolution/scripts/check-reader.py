@@ -6,6 +6,7 @@ import base64
 import hashlib
 import json
 from collections import Counter
+import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote
@@ -17,6 +18,7 @@ class ReaderAudit(HTMLParser):
         self.ids = []
         self.fragments = []
         self.resources = []
+        self.figures = []
         self.errors = []
         self.chapters = []
         self.csp = ""
@@ -36,7 +38,10 @@ class ReaderAudit(HTMLParser):
         if tag in {"script", "img", "iframe", "audio", "video", "source", "link", "object", "embed"}:
             for key in {"src", "href", "data", "srcset"}:
                 if key in attributes:
-                    self.resources.append({"tag": tag, "attribute": key, "value": attributes[key]})
+                    if tag == "img" and key == "src" and attributes[key].startswith("data:image/svg+xml;base64,"):
+                        self.figures.append(attributes)
+                    else:
+                        self.resources.append({"tag": tag, "attribute": key, "value": attributes[key]})
         if any(key.lower().startswith("on") for key in attributes):
             self.errors.append(f"Inline event handler on <{tag}>.")
         if tag == "meta" and attributes.get("http-equiv", "").lower() == "content-security-policy":
@@ -71,6 +76,21 @@ def audit(path):
     missing = sorted(set(parsed.fragments) - set(parsed.ids))
     if missing:
         errors.append(f"Missing fragment targets: {missing}")
+    for figure in parsed.figures:
+        try:
+            payload = base64.b64decode(figure["src"].split(",", 1)[1], validate=True)
+            root = ET.fromstring(payload)
+            if root.tag != "{http://www.w3.org/2000/svg}svg" or not figure.get("alt"):
+                raise ValueError("Figure lacks SVG root or alt text.")
+            for element in root.iter():
+                if element.tag.split("}")[-1] not in {"svg", "g", "title", "desc", "line", "polyline", "polygon", "circle", "path", "rect", "text"}:
+                    raise ValueError("Unsupported SVG element.")
+                if any(key.lower().startswith("on") or key.split("}")[-1] in {"href", "style"} or "url(" in value.lower() for key, value in element.attrib.items()):
+                    raise ValueError("Active SVG attribute.")
+        except (ValueError, ET.ParseError) as error:
+            errors.append(f"Invalid embedded SVG: {error}")
+    if parsed.figures and "img-src data:" not in parsed.csp:
+        errors.append("CSP must allow embedded data images.")
     if parsed.resources:
         errors.append(f"Reader has external or separate resources: {parsed.resources}")
     chapter_ids = [identifier for identifier in parsed.chapters if identifier.startswith("ch")]
@@ -88,7 +108,7 @@ def audit(path):
         errors.append("Stylesheet contains an import or URL resource.")
     return {"pass": not errors, "documents": len(parsed.chapters), "chapters": len(chapter_ids),
             "unique_ids": len(set(parsed.ids)), "internal_links": len(parsed.fragments),
-            "separate_resources": len(parsed.resources), "errors": errors,
+            "separate_resources": len(parsed.resources), "embedded_figures": len(parsed.figures), "errors": errors,
             "limitations": ["Static HTML integrity checks do not execute JavaScript or establish visual/accessibility correctness; browser-smoke.mjs covers selected browser interactions separately."]}
 
 

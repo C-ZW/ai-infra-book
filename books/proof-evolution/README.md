@@ -13,11 +13,12 @@
 從本書目錄執行；Node.js 20 以上、Python 3.9 以上，一般建置不需安裝 npm 套件：
 
 ```sh
+python3 scripts/build-figures.py
 python3 scripts/check-math.py
 node scripts/build-reader.mjs
 node scripts/verify.mjs --json
 ```
 
-第一個指令重算附錄 C 相關的七組基準算例；成功時輸出 `PASS: seven canonical mathematical checks.`。程式是 [scripts/check-math.py](scripts/check-math.py)，完整使用說明與限制見 [工具說明](scripts/README.md)。它不是全書數學或史實正確性的證明。
+第二個指令重算附錄 C 相關的七組基準算例；成功時輸出 `PASS: seven canonical mathematical checks.`。程式是 [scripts/check-math.py](scripts/check-math.py)，完整使用說明與限制見 [工具說明](scripts/README.md)。它不是全書數學或史實正確性的證明。
 
-歷史查核、這次零上下文審閱、未解問題與實際測試範圍，統一記在 [審閱摘要](book-src/_meta/verification-report.md)。後續更新依 [維護規則](book-src/_meta/maintenance.md)。必要的建置工具與測試保留；一次性輸出不納入版本控制。
+本輪已針對審稿修訂正文與樣章，加入五張必要的支援圖；樣章仍是獨立替代稿，不代表全書敘事已重寫。歷史查核、零上下文審閱、逐項處置與實際測試範圍，統一記在 [審閱摘要](book-src/_meta/verification-report.md)。後續更新依 [維護規則](book-src/_meta/maintenance.md)。必要的建置工具與測試保留；一次性輸出不納入版本控制。

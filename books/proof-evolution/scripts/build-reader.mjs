@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { escapeHTML, hash, readBook, renderDocument, validateBook } from './book-lib.mjs';
+import { escapeHTML, hash, readBook, readFigure, renderDocument, validateBook } from './book-lib.mjs';
 
 const scriptsDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -12,9 +12,10 @@ export function buildHTML(book) {
   const style = fs.readFileSync(path.join(scriptsDir, 'reader.css'), 'utf8');
   const script = fs.readFileSync(path.join(scriptsDir, 'reader.js'), 'utf8');
   const tooling = Object.fromEntries(['book-lib.mjs', 'build-reader.mjs', 'vendor/marked-17.0.5.mjs'].map(file => [file, hash(fs.readFileSync(path.join(scriptsDir, file)))]));
-  const sourceDigest = hash(JSON.stringify({ config, sources: documents.map(document => [path.basename(document.file), document.markdown]), style, script, tooling }));
+  const figures = documents.flatMap(document => document.images.map(href => [href, readFigure(href, document).sha256]));
+  const sourceDigest = hash(JSON.stringify({ config, figures, sources: documents.map(document => [path.basename(document.file), document.markdown]), style, script, tooling }));
   const digest64 = content => crypto.createHash('sha256').update(content).digest('base64');
-  const csp = `default-src 'none'; script-src 'sha256-${digest64(script)}'; style-src 'sha256-${digest64(style)}'; base-uri 'none'; form-action 'none'`;
+  const csp = `default-src 'none'; script-src 'sha256-${digest64(script)}'; style-src 'sha256-${digest64(style)}'; img-src data:; base-uri 'none'; form-action 'none'`;
   const data = JSON.stringify({ id: config.id, title: config.title, documents: documents.map(document => ({ id: document.id, title: document.title, text: document.searchText })) }).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
   const navigation = config.groups.map(group => `<section class="nav-group"><h2>${escapeHTML(group.title)}</h2><ul>${documents.filter(document => document.group === group.title).map(document => `<li><a class="nav-link" data-document="${escapeHTML(document.id)}" href="#${escapeHTML(document.id)}">${escapeHTML(document.title)}</a></li>`).join('')}</ul></section>`).join('\n');
   const content = documents.map(document => `<article class="chapter" id="${escapeHTML(document.id)}" aria-label="${escapeHTML(document.title)}">${renderDocument(document, documents)}</article>`).join('\n');

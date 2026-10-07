@@ -154,6 +154,58 @@ export function resolveLink(href, current, documents) {
   return { href: `#${target.id}${fragment ? `--${fragment}` : ''}`, external: false };
 }
 
+
+// Restrict figures to local, passive SVG. This deliberately small grammar is
+// sufficient for our reproducible diagrams; it is not a general SVG sanitizer.
+export function readFigure(href, document) {
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//') || /[?#]/.test(href)) throw new Error('Figure must be a local SVG path.');
+  let decoded;
+  try { decoded = decodeURIComponent(href); } catch { throw new Error('Invalid figure path encoding.'); }
+  if (path.isAbsolute(decoded) || decoded.includes('\\')) throw new Error('Figure path must be relative.');
+  const dir = path.dirname(document.file);
+  const sourceRoot = path.basename(dir) === 'editorial' ? path.resolve(dir, '../book-src') : dir;
+  const figureRoot = path.join(sourceRoot, 'figures');
+  const file = path.resolve(dir, decoded);
+  if (!file.startsWith(figureRoot + path.sep) || path.extname(file) !== '.svg') throw new Error('Figure must stay inside book-src/figures and use .svg.');
+  if (!fs.existsSync(file) || !fs.statSync(file).isFile()) throw new Error(`Missing SVG figure: ${href}`);
+  const realRoot = fs.realpathSync(figureRoot);
+  if (realRoot !== figureRoot || !fs.realpathSync(file).startsWith(realRoot + path.sep)) throw new Error('Figure symlink escapes its source directory.');
+  const bytes = fs.readFileSync(file);
+  if (bytes.length > 100000) throw new Error('SVG figure exceeds the static size limit.');
+  const xml = bytes.toString('utf8');
+  if (/<!|<\?|url\s*\(/i.test(xml) || /&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-f]+;)/i.test(xml)) throw new Error('Active or unsupported SVG content.');
+  const tags = new Set(['svg', 'title', 'desc', 'g', 'rect', 'line', 'polyline', 'polygon', 'circle', 'path', 'text']);
+  const attrs = new Set(['xmlns', 'viewBox', 'role', 'aria-labelledby', 'id', 'x', 'y', 'x1', 'x2', 'y1', 'y2', 'cx', 'cy', 'r', 'width', 'height', 'd', 'points', 'fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-opacity', 'stroke-dasharray', 'font-family', 'font-size', 'font-weight', 'text-anchor']);
+  const stack = []; let cursor = 0; let roots = 0; let viewBox;
+  for (const token of xml.matchAll(/<([^<>]+)>/g)) {
+    const between = xml.slice(cursor, token.index);
+    if (/[<>]/.test(between) || (!stack.length && between.trim())) throw new Error('Malformed SVG text.');
+    cursor = token.index + token[0].length;
+    const close = token[1].match(/^\/([A-Za-z]+)\s*$/);
+    if (close) { if (stack.pop() !== close[1]) throw new Error('Unbalanced SVG elements.'); continue; }
+    const open = token[1].match(/^([A-Za-z]+)([\s\S]*?)(\/?)$/);
+    if (!open || !tags.has(open[1])) throw new Error('Unsupported SVG element.');
+    const [, tag, rest, selfClose] = open;
+    if (!stack.length) { if (tag !== 'svg' || ++roots !== 1) throw new Error('SVG must have one root.'); }
+    else if (tag === 'svg') throw new Error('Nested SVG roots are unsupported.');
+    const values = {}; let end = 0;
+    for (const match of rest.matchAll(/\s+([A-Za-z][A-Za-z0-9-]*)\s*=\s*("[^"]*"|'[^']*')/g)) {
+      if (rest.slice(end, match.index).trim()) throw new Error('Malformed SVG attributes.');
+      if (!attrs.has(match[1]) || Object.hasOwn(values, match[1])) throw new Error('Unsupported or duplicate SVG attribute.');
+      values[match[1]] = match[2].slice(1, -1); end = match.index + match[0].length;
+    }
+    if (rest.slice(end).trim()) throw new Error('Malformed SVG attributes.');
+    if (tag === 'svg') {
+      if (values.xmlns !== 'http://www.w3.org/2000/svg') throw new Error('SVG namespace is required.');
+      viewBox = values.viewBox?.trim().split(/\s+/).map(Number);
+      if (viewBox?.length !== 4 || viewBox.some(x => !Number.isFinite(x)) || viewBox[2] <= 0 || viewBox[3] <= 0) throw new Error('SVG needs a valid viewBox.');
+    }
+    if (!selfClose) stack.push(tag);
+  }
+  if (roots !== 1 || stack.length || xml.slice(cursor).trim()) throw new Error('Incomplete SVG.');
+  return { file, bytes, sha256: hash(bytes), src: `data:image/svg+xml;base64,${bytes.toString('base64')}`, width: viewBox[2], height: viewBox[3] };
+}
+
 export function renderDocument(document, documents) {
   let headingIndex = 0;
   const noteOrder = [...new Set(document.references)];
@@ -178,7 +230,17 @@ export function renderDocument(document, documents) {
       return `<a href="${escapeHTML(resolved.href)}"${resolved.external ? ' target="_blank" rel="noopener noreferrer"' : ''}${token.title ? ` title="${escapeHTML(token.title)}"` : ''}>${this.parser.parseInline(token.tokens)}</a>`;
     },
     html(token) { return escapeHTML(token.text); },
-    image() { throw new Error('Images are not supported by this text-only reader.'); },
+    image(token) {
+      const figure = readFigure(token.href, document);
+      return `<img src="${figure.src}" alt="${escapeHTML(token.text)}" width="${figure.width}" height="${figure.height}">`;
+    },
+    paragraph(token) {
+      const meaningful = (token.tokens || []).filter(t => t.type !== 'space' && !(t.type === 'text' && !t.raw.trim()));
+      if (meaningful.length === 1 && meaningful[0].type === 'image') {
+        return `<figure class="support-figure">${this.parser.parseInline(meaningful)}<figcaption>${escapeHTML(meaningful[0].text)}</figcaption></figure>\n`;
+      }
+      return Renderer.prototype.paragraph.call(this, token);
+    },
     table(token) { return `<div class="table-scroll" role="region" tabindex="0" aria-label="表格，可水平捲動">${Renderer.prototype.table.call(this, token)}</div>\n`; }
   } });
   const content = parser.parser(document.tokens);
@@ -281,7 +343,9 @@ export function validateBook(book, { checkRegistry = true } = {}) {
     if (/(?:\bTODO\b|\bTBD\b|\bFIXME\b|\blorem ipsum\b|待補(?:上|充|寫)?|待撰|占位文字|佔位文字|此處插入|尚待完成|內容略|待查證)/iu.test(document.markdown)) errors.push(`${label}: Placeholder text detected.`);
     if (/\\\(|\\\)|\\\[|\\\]|\$\$|\\(?:frac|sqrt|begin|end|sum|int)\b/u.test(document.markdown)) errors.push(`${label}: LaTeX delimiters or commands found in the Unicode math register.`);
     if (document.rawHTML.length) errors.push(`${label}: Raw HTML is unsupported; use authored Markdown.`);
-    if (document.images.length) errors.push(`${label}: Images are unsupported in this text-only offline reader.`);
+    for (const href of document.images) {
+      try { readFigure(href, document); } catch (error) { errors.push(`${label}: ${error.message}`); }
+    }
     const referenced = new Set(document.references);
     for (const id of referenced) if (!document.definitions.has(id)) errors.push(`${label}: Missing footnote definition [^${id}].`);
     for (const [id, definition] of document.definitions) {

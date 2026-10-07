@@ -12,6 +12,7 @@ if (args.includes('--help')) {
 }
 const python = process.env.PROOF_BOOK_PYTHON || 'python3';
 const commands = [
+  { name: 'generated_support_figures', command: python, args: [path.join(scriptsDir, 'build-figures.py'), '--check'] },
   { name: 'reader_javascript_syntax', command: process.execPath, args: ['--check', path.join(scriptsDir, 'reader.js')] },
   { name: 'tooling_regressions', command: process.execPath, args: ['--test', path.join(scriptsDir, 'tests/book-tools.test.mjs')] },
   { name: 'structural_contract', command: process.execPath, args: [path.join(scriptsDir, 'validate.mjs'), '--json'], json: true },

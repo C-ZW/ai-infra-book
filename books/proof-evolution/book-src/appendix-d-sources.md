@@ -52,7 +52,7 @@
 | --- | --- | --- |
 | [麥可生—莫雷 1887 年原報告](https://www.gutenberg.org/cache/epub/70888/pg70888-images.html) | 儀器、旋轉、預測量、觀察與作者實際下的結論 | [第十一章](ch11-experiment-and-evidence.md) |
 | [杜恆關於實驗與假設的原文](https://fr.wikisource.org/wiki/La_Th%C3%A9orie_physique/SECONDE_PARTIE/Chapitre_VI/II) | 一次預測失敗碰到的，是哪一組共同工作的假設？ | [第十一章](ch11-experiment-and-evidence.md) |
-| [第十二章的原始統計來源](ch12-probability-and-statistics.md) | 貝氏更新、檢定與長期錯誤率，各自要回答什麼？原文所用條件有哪些？ | [第十二章](ch12-probability-and-statistics.md) |
+| [第十二章的原始統計來源（具名作品、版本與直接網址列於該章註腳，此處不重複列出）](ch12-probability-and-statistics.md) | 貝氏更新、檢定與長期錯誤率，各自要回答什麼？原文所用條件有哪些？ | [第十二章](ch12-probability-and-statistics.md) |
 | [Pearl 的因果圖論文](https://bayes.cs.ucla.edu/R218-B.pdf) | 圖表示了哪些假設？調整某變項的理由由哪條路徑得到？ | [第十三章](ch13-causality-and-replication.md) |
 | [Hernán、Robins 的作者書籍頁](https://miguelhernan.org/whatifbook) | 可交換性、正值性與一致性分別保障哪一步？下載版本與讀取範圍見章末註記 | [第十三章](ch13-causality-and-replication.md) |
 | [National Academies 的研究可再現性報告](https://www.nationalacademies.org/read/25303/chapter/3) | 報告怎樣區分同資料重跑與新資料研究？與所在領域慣用詞有何不同？ | [第十三章](ch13-causality-and-replication.md)、[第十八章](ch18-responsibility-of-proof.md) |

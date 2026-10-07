@@ -122,3 +122,8 @@ tbody tr:nth-child(even) { background: #f3f3eb; }
   .footnotes a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; }
   .footnote-back { display: none; }
 }
+
+/* A support diagram stays with its prose and never becomes a page layout. */
+.support-figure { margin: 1.6rem 0; break-inside: avoid; }
+.support-figure img { display: block; width: 100%; max-width: 680px; height: auto; margin: 0 auto; background: white; }
+.support-figure figcaption { max-width: 42rem; margin: .65rem auto 0; font-size: .9em; line-height: 1.65; }
