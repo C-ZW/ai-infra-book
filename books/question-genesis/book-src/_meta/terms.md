@@ -40,6 +40,21 @@
 | 30 | 位元與資訊熵<br>(Bit and Information Entropy) | ch11 | 以二元對立選擇的提問次數作為客觀度量單位（bit），並以公式 H = −Σ pᵢ log₂ pᵢ 計算系統在接收訊息前平均不確定性的物理概念。 | ch01, ch04, ch07, ch10, ch12 |
 | 31 | 專有名詞的麻醉術<br>(Label Anesthesia) | ch12 | 人們誤以為給未知現象貼上成熟學術標籤（如「那是慣性」「那是通膨」）即等同於理解其本質，因而過早放棄追問的認知防禦習慣。 | ch03 |
 | 32 | 問題顯影地圖<br>(Genesis Lens Map) | ch12 | 將全書十二場突破歷程提煉而成的五大日常提問觸發工具，引導讀者在熟悉環境中辨認常識裂縫並鍛造真問題的方法體系。 | ch01, ch02, ch03, ch04, ch05, ch07, ch08, ch10, ch11 |
+| 33 | 倖存者偏差與缺席分母<br>(Survivorship Bias & Missing Denominator) | ch13 | 當觀測樣本經過特定生存機制篩選時，直覺統計將嚴重誤判母體特徵，唯有找回被淘汰的缺席分母才能看清真實全貌。 | ch12 |
+| 34 | 平均人迷思與可調設計<br>(Myth of the Average Man & Adjustable Design) | ch14 | 揭穿多維度下「根本不存在全項平均人」的事實，將「強迫人去適應固定機器」翻轉為「讓機器提供彈性自由度以適配不同的人」的人體工學哲學。 | ch12 |
+| 35 | 系統性錯誤與心智作業系統<br>(Systematic Error as Cognitive Windows) | ch15 | 不將答錯視為隨機粗心或智力低落，而是從同齡兒童高度一致的答錯模式中，解碼大腦底層運作的特定質性認知結構。 | ch12, ch24 |
+| 36 | 守恆概念<br>(Concept of Conservation) | ch15 | 認識到物體在空間排列、外形或容器改變時，其物理量（質量、體積、數量）保持不變的認知發展里程碑。 | ch12 |
+| 37 | 超慢速地質流動與冰期擦痕<br>(Ultra-Slow Glacial Flow & Striations) | ch16 | 看見超越人類快門速度的固態冰河塑性流動，以稜角漂礫與基岩平行擦痕打破大洪水與冰山漂移假說。 | ch12 |
+| 38 | 沉積時鐘與銥異常<br>(Sedimentation Clock & Iridium Anomaly) | ch17 | 利用外太空宇宙微塵累積率作為地質沉積砂漏，在 1 公分界線黏土中量出數十至上百倍異常，反向鎖定天體撞擊與大滅絕。 | ch12 |
+| 39 | 觀察時間窗盲區<br>(Observation Window Blindspot) | ch18 | 人為設定的檢驗時限（如 48 小時無菌判定）若過於狹窄，將把生長緩慢但客觀存在的真相提前丟進垃圾桶。 | ch12 |
+| 40 | 符號計數法<br>(Sign Frequency & Capacity Analysis) | ch19 | 藉由比較不同語言文本的詞彙量、符號總數與基本符號種類比率，以數學方式判定文字系統是否具備表音成分。 | ch11, ch12 |
+| 41 | 結構留白與預言矩陣<br>(Structural Blank & Predictive Matrix) | ch20 | 當規律排布出現中斷時，不削足適履強塞已知元素，而是為大自然尚未發現的實體保留空格並預言其物理化學性質。 | ch12 |
+| 42 | 交易成本與企業邊界<br>(Transaction Costs & Boundaries of the Firm) | ch21 | 揭露使用價格機制本身所伴隨的搜尋、談判、締約與監督等隱形摩擦成本，以行政命令替代市場交易以解釋企業存在之謎。 | ch12 |
+| 43 | 分子手性與立體化學<br>(Molecular Chirality & Stereochemistry) | ch22 | 突破一維元素配方限制，在三維空間中辨認不可重疊的左手與右手鏡像不對稱晶體，開啟分子幾何構造研究。 | ch12 |
+| 44 | 特徵檢測器與定向選擇性<br>(Feature Detector & Orientation Selectivity) | ch23 | 大腦初級視覺皮層神經元對特定角度傾斜之線條或直邊產生共鳴放電，揭示知覺由低階特徵逐層組合的層級加工假說。 | ch12 |
+| 45 | 均值回歸<br>(Regression to the Mean) | ch24 | 極端表現之後自然趨向平均水平的統計規律，常被人類大腦誤認作獎懲措施的因果回饋。 | ch12 |
+| 46 | 啟發式與直覺偏差<br>(Heuristics and Biases) | ch24 | 大腦在演化中為了快速決策而依賴的心智捷徑（如代表性、可得性、錨定），及其引發的規律性機率與邏輯認知偏差。 | ch12, ch15 |
+| 47 | 展望理論與損失厭惡<br>(Prospect Theory & Loss Aversion) | ch24 | 揭示人類面對收益厭惡風險、面對損失追逐風險，且等額損失引發的心理負擔顯著大於收益快樂（約 2–2.5 倍）的決策模型。 | ch12 |
 
 ---
 

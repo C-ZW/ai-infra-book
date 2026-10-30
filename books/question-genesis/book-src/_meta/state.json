@@ -6,7 +6,7 @@
     "ch01": {
       "status": "verified",
       "file": "ch01-invisible-air.md",
-      "bytes": 31211
+      "bytes": 32934
     },
     "ch02": {
       "status": "verified",
@@ -21,7 +21,7 @@
     "ch04": {
       "status": "verified",
       "file": "ch04-wright-wind-tunnel.md",
-      "bytes": 27765
+      "bytes": 29488
     },
     "ch05": {
       "status": "verified",
@@ -36,7 +36,7 @@
     "ch07": {
       "status": "verified",
       "file": "ch07-vera-rubin-galaxy.md",
-      "bytes": 29725
+      "bytes": 31448
     },
     "ch08": {
       "status": "verified",
@@ -51,7 +51,7 @@
     "ch10": {
       "status": "verified",
       "file": "ch10-coastline-of-britain.md",
-      "bytes": 29719
+      "bytes": 31442
     },
     "ch11": {
       "status": "verified",
@@ -62,6 +62,66 @@
       "status": "verified",
       "file": "ch12-everyday-lenses.md",
       "bytes": 33924
+    },
+    "ch13": {
+      "status": "verified",
+      "file": "ch13-wald-bombers.md",
+      "bytes": 35092
+    },
+    "ch14": {
+      "status": "verified",
+      "file": "ch14-zero-average-man.md",
+      "bytes": 32553
+    },
+    "ch15": {
+      "status": "verified",
+      "file": "ch15-piaget-wrong-answers.md",
+      "bytes": 30152
+    },
+    "ch16": {
+      "status": "verified",
+      "file": "ch16-agassiz-glaciers.md",
+      "bytes": 32874
+    },
+    "ch17": {
+      "status": "verified",
+      "file": "ch17-alvarez-one-cm-clay.md",
+      "bytes": 33711
+    },
+    "ch18": {
+      "status": "verified",
+      "file": "ch18-marshall-easter-petri-dish.md",
+      "bytes": 29910
+    },
+    "ch19": {
+      "status": "verified",
+      "file": "ch19-champollion-rosetta-count.md",
+      "bytes": 26704
+    },
+    "ch20": {
+      "status": "verified",
+      "file": "ch20-mendeleev-blank-cards.md",
+      "bytes": 36799
+    },
+    "ch21": {
+      "status": "verified",
+      "file": "ch21-coase-why-firms-exist.md",
+      "bytes": 31119
+    },
+    "ch22": {
+      "status": "verified",
+      "file": "ch22-pasteur-mirror-crystals.md",
+      "bytes": 31122
+    },
+    "ch23": {
+      "status": "verified",
+      "file": "ch23-hubel-wiesel-slide-edge.md",
+      "bytes": 26102
+    },
+    "ch24": {
+      "status": "verified",
+      "file": "ch24-kahneman-tversky-heuristics.md",
+      "bytes": 32765
     }
   },
   "gates": {
@@ -75,14 +135,16 @@
     },
     "p3": {
       "passed": true,
-      "chapter_count": 12,
+      "chapter_count": 24,
       "date": "2026-10-30"
     },
     "p4": {
       "passed": true,
       "degraded_panel_note": "openai (codex exec) and google (gemini-4-argon-medium) completed 12/12 chapters over 2 rounds; anthropic (claude-opus-5-5-medium) blocked by weekly account quota RESOURCE_EXHAUSTED (code 429). P4 Fact Auditor independently verified 121/121 external historical claims via web search.",
       "fact_audit_claims_confirmed": 121,
-      "date": "2026-10-30"
+      "date": "2026-10-30",
+      "expansion_audit_note": "Codex advisor (OpenAI gpt-6.1-terra / medium reasoning) independently audited all 12 expansion chapters (ch13-ch24) over 2 rounds; verified and adjudicated. Final verdict: PASS.",
+      "model": "gpt-6.1-terra (medium reasoning)"
     },
     "p5": {
       "passed": true,
@@ -105,7 +167,19 @@
       "ch09",
       "ch10",
       "ch11",
-      "ch12"
+      "ch12",
+      "ch13",
+      "ch14",
+      "ch15",
+      "ch16",
+      "ch17",
+      "ch18",
+      "ch19",
+      "ch20",
+      "ch21",
+      "ch22",
+      "ch23",
+      "ch24"
     ]
   }
 }

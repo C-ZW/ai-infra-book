@@ -39,6 +39,38 @@
       ]
     },
     {
+      "title": "Part V — 識破「假裝代表全體的樣本」",
+      "files": [
+        "../book-src/ch13-wald-bombers.md",
+        "../book-src/ch14-zero-average-man.md",
+        "../book-src/ch15-piaget-wrong-answers.md"
+      ]
+    },
+    {
+      "title": "Part VI — 換掉「被卡死的時間鏡頭」",
+      "files": [
+        "../book-src/ch16-agassiz-glaciers.md",
+        "../book-src/ch17-alvarez-one-cm-clay.md",
+        "../book-src/ch18-marshall-easter-petri-dish.md"
+      ]
+    },
+    {
+      "title": "Part VII — 拆穿「名字與符號的催眠」",
+      "files": [
+        "../book-src/ch19-champollion-rosetta-count.md",
+        "../book-src/ch20-mendeleev-blank-cards.md",
+        "../book-src/ch21-coase-why-firms-exist.md"
+      ]
+    },
+    {
+      "title": "Part VIII — 接住「隔壁房間掉下來的鑰匙」",
+      "files": [
+        "../book-src/ch22-pasteur-mirror-crystals.md",
+        "../book-src/ch23-hubel-wiesel-slide-edge.md",
+        "../book-src/ch24-kahneman-tversky-heuristics.md"
+      ]
+    },
+    {
       "title": "附錄",
       "files": [
         "../book-src/appendix-a-timeline.md",
