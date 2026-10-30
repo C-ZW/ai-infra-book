@@ -24,6 +24,22 @@ If the Workflow tool is unavailable, run the same prompt templates via
 parallel Agent calls with the same schemas and retry limits; if subagents are
 unavailable too, halt.
 
+## Cross-agent entry point
+
+This skill's canonical project directory is `.agents/skills/write-book/`.
+The legacy `.claude/skills/write-book/` directory is a relative symlink to it.
+Codex, Gemini CLI, Antigravity, and Cursor discover `.agents/skills/`;
+Claude Code discovers the `.claude/skills/` alias. Maintain one copy only.
+
+Invoke by name in the host's skill picker, or explicitly ask the agent to read
+this `SKILL.md`. Resolve `references/`, `scripts/`, and `skillDir` against this
+skill directory; resolve project config paths against the directory containing
+`write-book.config.json`. When starting in a book subdirectory, locate that
+project config in the repository ancestors first. Host tool names can differ:
+the Agent fallback below means the host's native subagent/delegation tool, with
+the same templates and output schemas. Discovery does not supply missing tools
+or waive any workflow gates.
+
 ## Setup
 
 Read ONE config source, precedence: `write-book.config.{json,yaml}` at the

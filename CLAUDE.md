@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+共用 `write-book` skill 主檔位於 [`.agents/skills/write-book/SKILL.md`](.agents/skills/write-book/SKILL.md)；`.claude/skills/write-book` 是指向該目錄的相對 symbolic link。Codex、Gemini CLI、Antigravity、Cursor 使用共用路徑，Claude Code 保留 `/write-book` 入口。只維護主檔，不另複製版本。
+
 專案性質：個人 AI Infrastructure 轉職書（繁體中文）＋單檔離線閱讀器。非程式專案，主要產出是 `book/` 下的 Markdown。讀者與作者是同一人（背景見 `Chewei_Chen_Resume.md`）；`plan.md` 是配套的練功路線，書與它互相對應但各自獨立。
 
 ## 修改 book/ 內容前，必讀（依序）
