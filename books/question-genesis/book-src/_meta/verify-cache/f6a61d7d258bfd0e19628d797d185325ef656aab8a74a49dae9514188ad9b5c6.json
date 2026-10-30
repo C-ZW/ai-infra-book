@@ -1,0 +1,42 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "在 5,800 K 的太陽大氣中，熱能量 kT 僅有約 0.5 eV。要跨越高達 ΔE = 10.2 eV 的巨大鴻溝，指數項是 exp(−10.2 / 0.5) = exp(−20.4) ≈ 1.4 × 10⁻⁹（若再計入第二能階與基態的統計權重比 g₂/g₁ = 4，n = 2 的中性氫比例亦僅約 5.5 × 10⁻⁹）。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：波茲曼常數 k_B ≈ 8.617 × 10⁻⁵ eV/K，在 T = 5,800 K 時，kT = 8.617 × 10⁻⁵ × 5800 ≈ 0.500 eV。氫原子從基態（n = 1）躍遷至第一激發態（n = 2）所需能量 ΔE = 13.6 × (1 − 1/4) = 10.2 eV。波茲曼因子 exp(−ΔE / kT) = exp(−10.2 / 0.5) = exp(−20.4) ≈ 1.38 × 10⁻⁹（約 1.4 × 10⁻⁹）。計入能階簡併度 g_n = 2n²，統計權重比 g₂/g₁ = 8/2 = 4，故 N₂/N₁ = 4 × exp(−20.4) ≈ 5.53 × 10⁻⁹（約 5.5 × 10⁻⁹），與內文及 source-evidence 完全吻合。",
+      "correct_value": "kT ≈ 0.5 eV，exp(−20.4) ≈ 1.4 × 10⁻⁹，N₂/N₁ ≈ 5.5 × 10⁻⁹"
+    },
+    {
+      "claim": "吸收 10.2 eV 能量對應的光子波長約為 121.6 奈米，落在深遠的紫外線波段。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：根據光子能量與波長關係 λ = hc / ΔE，取 hc ≈ 1239.84 eV·nm，當 ΔE = 10.2 eV 時，λ = 1239.84 / 10.2 ≈ 121.55 nm ≈ 121.6 nm（萊曼 α 線），屬於遠紫外線波段，推導正確。",
+      "correct_value": "λ ≈ 121.6 nm"
+    },
+    {
+      "claim": "恆星大氣中的氫與氦，其原子數量比鐵、鈣等重元素高出了約一百萬倍（10⁶，基準數字 B6）！",
+      "verdict": "correct",
+      "reasoning": "核對 baseline（B6）與 source-evidence：佩恩 1925 年博士論文《恆星大氣》（Stellar Atmospheres）結合薩哈熱游離理論推算出恆星大氣中氫與氦的豐度比鐵等重元素高出約一百萬倍（10⁶），且說明了 1925 年羅素認為「顯然不可能（clearly impossible）」、佩恩被迫註記「幾乎肯定不是真實的（almost certainly not real）」，以及 1929 年羅素獨立重算後發表〈論太陽大氣的成分〉予以平反，皆與基準資料完全一致。",
+      "correct_value": "約 100 萬倍（10⁶）"
+    },
+    {
+      "claim": "1859 年，德國物理學家古斯塔夫・克希荷夫（Gustav Kirchhoff）與化學家羅伯特・本生（Robert Bunsen）奠定了光譜分析法……這就是吸收暗線，也就是光譜學家口中的「夫朗和斐暗線（Fraunhofer lines）」。",
+      "verdict": "imprecise",
+      "reasoning": "baseline 與 source-evidence 僅記載 1925 年前天文學界因太陽吸收光譜中鐵與鈣暗線最顯著而認為太陽成分與地球地殼相似，未提供 1859 年克希荷夫（Gustav Kirchhoff）、本生（Robert Bunsen）與「夫朗和斐暗線（Fraunhofer lines）」的史料記錄，無法僅憑所附證據查核。",
+      "correct_value": "需補充克希荷夫與本生（1859）及夫朗和斐暗線的外部史料來源，或刪減未載於基準材料的細節"
+    },
+    {
+      "claim": "加爾各答大學二十七歲的物理學家梅格納德・薩哈（Meghnad Saha, 1893–1956），在英國《哲學雜誌》（Philosophical Magazine）發表了一篇劃時代論文：〈太陽色球層的游離〉（Ionization in the Solar Chromosphere）。……薩哈將能斯特（Walther Nernst）的化學平衡理論引入原子游離……",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 確認薩哈（Meghnad Saha, 1893–1956）於 1920 年（27 歲）發表熱游離方程式，但未記載「加爾各答大學」、《哲學雜誌》（Philosophical Magazine）、論文標題〈太陽色球層的游離〉（Ionization in the Solar Chromosphere）以及引用「能斯特（Walther Nernst）」化學平衡理論等細節，缺少所附史料支持。",
+      "correct_value": "依現有基準材料僅能確認「印度物理學家薩哈（1893–1956）於 1920 年（27 歲）發表熱游離方程式」，其餘期刊名、篇名與能斯特淵源需補入史料基準後方可採認"
+    },
+    {
+      "claim": "鈣原子的第一游離能相當低，只有大約 6.11 電子伏特（eV）。……而鈣離子從基態向上躍遷所需要吸收的光子能量，對應的波長正好是 393.4 奈米與 396.8 奈米！……計入鈣線強度與游離度後有效吸收比約 1000:1",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 僅記載太陽（G/K 型星，約 5,800 K）中 Ca II 的 H 與 K 線及鐵線很強，並提供氫原子 ΔE = 10.2 eV、N₂/N₁ ≈ 5.5 × 10⁻⁹ 與最終豐度比 10⁶，但並未提供鈣的第一游離能（6.11 eV）、Ca II H/K 線波長（393.4 nm、396.8 nm）及推演框中「有效吸收比約 1000:1」的具體數值依據。",
+      "correct_value": "需在 source-evidence 中補充 Ca I 第一游離能（6.11 eV）、Ca II H/K 波長（393.4 nm / 396.8 nm）與有效吸收比（1000:1）的物理數據來源，或改用基準材料已載明的氫原子激發比例（5.5 × 10⁻⁹）與最終豐度比（10⁶）表述"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "chapter_globs": [
+    "ch*.md"
+  ],
+  "appendix_globs": [
+    "README.md",
+    "index.md",
+    "appendix-*.md",
+    "apx-*.md"
+  ],
+  "depth_unit_pattern": "[\\u3400-\\u4dbf\\u4e00-\\u9fff]",
+  "depth_min": 2500,
+  "skeleton_slots": [
+    [
+      "從你已知的出發"
+    ],
+    [
+      "核心機制",
+      "機制與推導"
+    ],
+    [
+      "故障模式與防禦"
+    ],
+    [
+      "動手做"
+    ],
+    [
+      "自我檢核"
+    ],
+    [
+      "延伸閱讀"
+    ]
+  ],
+  "solution_pattern": "(?m)^###? .*?(解答|詳解|參考解|解題)",
+  "difficulty_pattern": "難度|入門|進階|挑戰",
+  "time_pattern": "[0-9]+\\s*(分鐘|小時|min|hr)",
+  "forbidden_chars": "这为发说学与从对实应现时来会个们过还让无种么线点开关见问题长当两数产进动样间义变气认体边内头没写听读",
+  "vocab_error": {
+    "軟件": "軟體",
+    "硬件": "硬體",
+    "內存": "記憶體",
+    "默認": "預設",
+    "以后": "以後"
+  },
+  "vocab_regex_warn": [
+    {
+      "pattern": "(?<![演計運])算法",
+      "term": "算法",
+      "replace": "演算法"
+    }
+  ],
+  "severity": {
+    "skeleton": "error",
+    "skeleton_order": "error",
+    "depth": "error",
+    "solution": "error",
+    "difficulty": "warn",
+    "time": "warn",
+    "worked_example": "warn",
+    "forbidden_chars": "error",
+    "vocab": "error",
+    "vocab_regex": "warn"
+  }
+}

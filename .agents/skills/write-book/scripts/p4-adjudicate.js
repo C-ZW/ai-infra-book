@@ -33,6 +33,9 @@ if (!A || !A.skillDir || !A.bookSrc || !A.arbiterTemplate || !A.writerFamily ||
     !Array.isArray(A.findings) || A.findings.length === 0) {
   throw new Error('args must include skillDir, bookSrc, arbiterTemplate, writerFamily, and a non-empty findings array')
 }
+if (!['openai', 'google', 'anthropic'].includes(A.writerFamily)) {
+  throw new Error('writerFamily must name an actual supported provider family')
+}
 
 const ARBITER_SCHEMA = {
   type: 'object',
@@ -68,14 +71,17 @@ const FIX_SCHEMA = {
   },
 }
 
-// Tiebreak CLI per excluded family (writer family is anthropic-class, so the
-// tiebreaker is always one of the two non-writer panel CLIs).
+// Choose a family distinct from BOTH the writer and the flagging family.
+// Commands are read from the local panel config instead of pinning stale models.
 function tiebreakCli(flaggingFamily) {
-  if (flaggingFamily === 'openai') {
-    return { family: 'google', how: 'agy --model "Gemini 3.5 Flash (Medium)" -p <prompt>' }
+  const family = ['openai', 'google', 'anthropic'].find(
+    (candidate) => candidate !== flaggingFamily && candidate !== A.writerFamily,
+  )
+  if (!family) throw new Error('No independent tiebreak family')
+  return {
+    family,
+    how: `Read the project write-book.config.json tools_path, then its panel.json. Use the command whose family is ${family}; do not silently substitute another provider. Pass the prompt as an argument or stdin without shell interpolation, and bound the subprocess to 240 seconds.`,
   }
-  // flagged by google or (writer-family) anthropic -> openai
-  return { family: 'openai', how: 'codex exec -m gpt-5.5 --skip-git-repo-check <prompt>' }
 }
 
 function arbiterPrompt(f) {
@@ -100,6 +106,7 @@ function tiebreakPrompt(f, cli) {
     'book chapter. Your job is to obtain ONE independent verdict from a',
     `different model family (${cli.family}) by running its CLI via Bash, then`,
     'report that verdict faithfully. You do NOT judge the claim yourself.',
+    `Read ${A.skillDir}/references/pitfalls.md before proceeding.`,
     '',
     `CLI to use: ${cli.how}`,
     '(Compose the prompt text yourself from the material below; mind shell',
@@ -166,7 +173,7 @@ const records = await pipeline(
       return { ...base, outcome: 'quarantined', reason: (fix && fix.summary) || 'fix agent errored' }
     }
     // Arbiter thinks the book is right.
-    const families = Array.isArray(f.families) ? f.families : []
+    const families = Array.isArray(f.families) ? [...new Set(f.families)] : []
     if (families.length >= 2) {
       return { ...base, outcome: 'quarantined', reason: 'arbiter disagrees with >=2 independent families — no mechanical vote' }
     }
@@ -174,7 +181,7 @@ const records = await pipeline(
     const tb = await agent(tiebreakPrompt(f, cli), {
       label: `tiebreak:${f.file}`, phase: 'Resolve', schema: TIEBREAK_SCHEMA,
     })
-    if (!tb || !tb.ran || tb.verdict === 'inconclusive') {
+    if (!tb || !tb.ran || tb.family !== cli.family || !['book_correct', 'book_wrong'].includes(tb.verdict)) {
       return { ...base, tiebreak: tb, outcome: 'quarantined', reason: 'tiebreak inconclusive or CLI failure' }
     }
     if (tb.verdict === 'book_wrong') {

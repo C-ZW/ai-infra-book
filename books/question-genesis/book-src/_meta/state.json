@@ -1,0 +1,111 @@
+{
+  "form": "narrative",
+  "lang": "zh-TW",
+  "reader_register": "general",
+  "chapters": {
+    "ch01": {
+      "status": "verified",
+      "file": "ch01-invisible-air.md",
+      "bytes": 31211
+    },
+    "ch02": {
+      "status": "verified",
+      "file": "ch02-galileo-stones.md",
+      "bytes": 29617
+    },
+    "ch03": {
+      "status": "verified",
+      "file": "ch03-soho-and-java.md",
+      "bytes": 29015
+    },
+    "ch04": {
+      "status": "verified",
+      "file": "ch04-wright-wind-tunnel.md",
+      "bytes": 27765
+    },
+    "ch05": {
+      "status": "verified",
+      "file": "ch05-cecilia-payne-stars.md",
+      "bytes": 28971
+    },
+    "ch06": {
+      "status": "verified",
+      "file": "ch06-cosmic-hiss.md",
+      "bytes": 24256
+    },
+    "ch07": {
+      "status": "verified",
+      "file": "ch07-vera-rubin-galaxy.md",
+      "bytes": 29725
+    },
+    "ch08": {
+      "status": "verified",
+      "file": "ch08-mcclintock-corn.md",
+      "bytes": 24079
+    },
+    "ch09": {
+      "status": "verified",
+      "file": "ch09-fifth-postulate.md",
+      "bytes": 23084
+    },
+    "ch10": {
+      "status": "verified",
+      "file": "ch10-coastline-of-britain.md",
+      "bytes": 29719
+    },
+    "ch11": {
+      "status": "verified",
+      "file": "ch11-turing-and-shannon.md",
+      "bytes": 33519
+    },
+    "ch12": {
+      "status": "verified",
+      "file": "ch12-everyday-lenses.md",
+      "bytes": 33924
+    }
+  },
+  "gates": {
+    "p3_ch01": {
+      "passed": true,
+      "date": "2026-10-30"
+    },
+    "p2_5": {
+      "passed": true,
+      "date": "2026-10-30"
+    },
+    "p3": {
+      "passed": true,
+      "chapter_count": 12,
+      "date": "2026-10-30"
+    },
+    "p4": {
+      "passed": true,
+      "degraded_panel_note": "openai (codex exec) and google (gemini-4-argon-medium) completed 12/12 chapters over 2 rounds; anthropic (claude-opus-5-5-medium) blocked by weekly account quota RESOURCE_EXHAUSTED (code 429). P4 Fact Auditor independently verified 121/121 external historical claims via web search.",
+      "fact_audit_claims_confirmed": 121,
+      "date": "2026-10-30"
+    },
+    "p5": {
+      "passed": true,
+      "reader_output": "books/question-genesis/web/index.html",
+      "shelf_output": "bookshelf.html",
+      "date": "2026-10-30"
+    }
+  },
+  "outline_approved": {
+    "date": "2026-10-30",
+    "chapters": [
+      "ch01",
+      "ch02",
+      "ch03",
+      "ch04",
+      "ch05",
+      "ch06",
+      "ch07",
+      "ch08",
+      "ch09",
+      "ch10",
+      "ch11",
+      "ch12"
+    ]
+  }
+}

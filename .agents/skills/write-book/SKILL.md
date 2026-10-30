@@ -45,7 +45,7 @@ or waive any workflow gates.
 Read ONE config source, precedence: `write-book.config.{json,yaml}` at the
 project root, else a `## write-book` section in the project CLAUDE.md.
 Recognized keys (all optional): `tools_path`, `book_root`, `book_src_layout`,
-`default_language`, `profile_path`, `arbiter_model` (leave unset — arbiter
+`default_language`, `profile_path`, `registry_path`, `arbiter_model` (leave unset — arbiter
 defaults to the session model). **If no config source exists, or a key you
 need next (`tools_path` for P0.5, `book_root` for P0 step 7) is absent, halt
 and ask the user for it — never guess a default.** Toolchain =
@@ -53,6 +53,13 @@ and ask the user for it — never guess a default.** Toolchain =
 `gate_book.py`, `check_diagrams.py`, `build_reader.py`, `build_shelf.py` under
 `tools_path`. **Missing or non-runnable toolchain at P0.5 = halt with
 diagnostics. There is no manual mode; the gates are the product.**
+
+Local setup (2026-10-29): the toolchain is bundled in `tools/md-reader/`.
+`registry_path` resolves relative to the project root config; this project
+uses `books.json`, independently of profile material. An explicit
+`profile_path: null` records the user's instruction to skip profile
+calibration; use the request's audience and register instead. Do not scan
+the résumé as a substitute.
 
 ## Engine invariants
 

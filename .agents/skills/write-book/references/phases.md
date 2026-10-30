@@ -166,13 +166,16 @@ holds AND base numbers reconcile AND byte-identity holds, before P4.**
 
 ```
 python3 verify_book.py <book-src> --json --timeout 240 \
-    --writer-family anthropic --config <book-src>/_meta/lint.config.json \
+    --writer-family <actual-writer-family> --config <book-src>/_meta/lint.config.json \
     --out <book-src>/_meta/verify-report.json
 ```
 
 - Always pass an explicit `--timeout`. `--writer-family anthropic` is
   mandatory while the writer is any Claude model: PASS then requires ≥2
   conclusive **non-Claude** panelists.
+  For an OpenAI writer use `--writer-family openai`; for a Google writer use
+  `--writer-family google`. In every case PASS requires two conclusive
+  families other than the writer's. Never relabel the writer to obtain quorum.
 - **Exit code is blind to WARN** — parse the JSON. Verdicts: ≥2 families
   `incorrect` → FAIL; exactly 1 `incorrect` or any `imprecise` → WARN
   (resolve, never auto-pass); <2 conclusive (after the writer-family rule) →

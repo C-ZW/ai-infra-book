@@ -1,0 +1,36 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "觀測選定的波長為 7.35 公分，對應頻率 4080 百萬赫（4080 MHz，亦即 4.08 GHz，基準數字 B7）。",
+      "verdict": "correct",
+      "reasoning": "獨立重算電磁波波長與頻率關係：光速 c ≈ 2.9979 × 10^10 cm/s，頻率 f = 4080 MHz = 4.08 × 10^9 Hz，波長 λ = c / f ≈ 2.9979 × 10^10 / 4.08 × 10^9 ≈ 7.348 cm ≈ 7.35 cm。且與 baseline B7 及 source-evidence 記載完全相符。",
+      "correct_value": "波長 7.35 公分，頻率 4080 MHz（4.08 GHz）"
+    },
+    {
+      "claim": "三項已知物理效應相加：2.3 K（大氣）＋ 0.9 K（天線本體）＋ 小於 0.1 K（地面溢出）≈ 3.3 K。這意味著，以 4.2 K 的液態氦冷負載作為基準差分比對時，天線在晴朗天頂量到的總噪聲溫度理應落在 3.3 K 左右（即比 4.2 K 冷負載低約 0.9 K）。天線輸出的噪聲溫度不是 3.3 K，而是將近 6.7 K 到 6.8 K。扣除大氣、天線與地面的所有已知來源後，系統裡頑固地殘留著一段無法解釋的超額雜訊：大約 3.5 K（基準數字 B7，現代精準值為 2.725 K）。",
+      "verdict": "correct",
+      "reasoning": "獨立驗算雜訊預算：已知來源 2.3 K + 0.9 K + (< 0.1 K) ≈ 3.3 K；與 4.2 K 液態氦基準之差為 4.2 K - 3.3 K = 0.9 K；實測 6.7 K ~ 6.8 K 扣除預期 ~3.3 K 得殘差約 3.4 K ~ 3.5 K。與 source-evidence（大氣 ~2.3 K、歐姆損耗 ~0.9 K、地面背瓣 < 0.1 K、合計 ~3.3 K、實測 ~6.7 K、超額 ~3.5 K、現代值 2.725 K）完全一致。",
+      "correct_value": "已知來源合計約 3.3 K（比 4.2 K 冷負載低約 0.9 K），實測約 6.7 K，超額殘差約 3.5 K（現代精確值 2.725 K）"
+    },
+    {
+      "claim": "3.5 K 聽來微小——只比絕對零度高出三度半。在日常生活裡，這相當於攝氏零下 269.65 度的酷寒。但在極低溫微波工程裡，3.5 K 的殘差是一陣震耳欲聾的尖叫。它大於整個地球大氣層的輻射總和，幾乎是天線金屬內耗的四倍。",
+      "verdict": "correct",
+      "reasoning": "獨立換算溫標與倍數：絕對零度 0 K = -273.15 °C，故 3.5 K = 3.5 - 273.15 = -269.65 °C；大氣天頂輻射為 2.3 K，3.5 K > 2.3 K；天線金屬內耗為 0.9 K，3.5 / 0.9 ≈ 3.89，確實「幾乎是四倍」。",
+      "correct_value": "3.5 K 相當於 -269.65 °C，大於天頂大氣輻射（2.3 K），且約為天線內耗（0.9 K）的 3.89 倍（近四倍）"
+    },
+    {
+      "claim": "重新開機，長條紙卷轉動，墨筆劃過——依然是 3.5 K。分毫不差，毫無減損。（以及推演框：「洗淨後依然 3.5 K」）",
+      "verdict": "imprecise",
+      "reasoning": "比較 source-evidence：「trapped two pigeons nesting in the horn throat, scrubbing out their droppings (\"a white dielectric material\") and reassembling the horn—which reduced the noise by only a tiny fraction (~0.1 K)」。清理鴿糞與重組號角後，雜訊實際上微幅降低了約 0.1 K，並非字面上的「分毫不差，毫無減損」，而是僅減少極小比例、3.5 K 的主體殘差依然存在。",
+      "correct_value": "清理鴿糞後雜訊僅微幅下降約 0.1 K，約 3.5 K 的超額殘差依然頑固存在"
+    },
+    {
+      "claim": "為了徹底杜絕干擾，他們只得用霰彈槍永久移除了這對住客。",
+      "verdict": "imprecise",
+      "reasoning": "查核 baseline 與 source-evidence，所提供的基準材料僅記載「爬進號角天線誘捕一對白鴿並刷洗『白色介電物質（鴿糞）』」（baseline）及「trapped two pigeons nesting in the horn throat, scrubbing out their droppings」（source-evidence），並未提供「送至五十公里外惠帕尼野放後飛回、改用霰彈槍撲殺」的史料證據。另外，內文其他細節如「重達十八噸、長達十五公尺」、「童年隨猶太兒童救援行動逃出納粹德國，跟隨查爾斯·湯斯完成博士研究」、「皮布爾斯推算約 10 K、蓋伊特大樓屋頂 3.2 公分波長」、「午餐吃自帶三明治時說出 Well, boys, we have been scooped!」及「大爆炸後三十八萬年、138 億年」等，亦未載於所提供的 source-evidence 中，無法僅由閉卷材料確證。",
+      "correct_value": "依所提供證據，僅能確認他們誘捕（移走）了在號角咽喉築巢的白鴿並刷洗清除鴿糞，其餘未載於基準材料的傳記與軼事細節應標記為待外部史料查證或依現有證據收斂表述"
+    }
+  ]
+}

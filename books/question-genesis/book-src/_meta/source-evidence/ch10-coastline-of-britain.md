@@ -1,0 +1,73 @@
+# 史實與數據基準（內部文件，非書籍內容）
+
+本文件是《問題誕生之前：從理所當然到值得追問》的史實基準表（2026-10-30 查證）。各章寫作與 Tier-2 查核皆以本表為準；未確認的傳說必須在內文標明為傳說。
+
+## 1. 伽利略：落體、綁石頭思想實驗與單擺（ch01, ch02, ch12）
+- **亞里斯多德基準假設**：物體下落速度與重量成正比（重者快、輕者慢），統治自然哲學近兩千年。
+- **綁石頭思想實驗**：伽利略（Galileo Galilei, 1564–1642）約於 **1590 年**在比薩大學任教時撰寫的未出版手稿《論運動》（*De Motu*）已提出核心批判，後於 **1638 年**《兩門新科學的對話》（*Discorsi e dimostrazioni matematiche intorno a due nuove scienze*）正式以對話體發表：假設重石速度為 8、輕石為 4；綁在一起時，因慢石拖累快石，整體速度應 `< 8`；但兩石總重大於重石，依亞里斯多德規則速度又應 `> 8`。同一前提推導出矛盾結論。
+- ⚠️ **比薩斜塔丟鐵球與比薩主教座堂吊燈**：兩者皆出自伽利略晚年學生兼傳記作者**ヴィヴィアーニ**（Vincenzo Viviani, 1654 年成稿）的記載。科學史界普遍視「斜塔公開丟球」與「1583 年 19 歲看吊燈以脈搏計時」為後人浪漫化的**傳說或誇飾軼事**；伽利略本人現存最早嚴謹探討單擺等時性的文獻是 **1602 年 11 月 29 日**致 Guidobaldo del Monte 的信，以及 1590s–1600s 的斜面滾球實驗。**內文引述吊燈與斜塔時，必須明確標示為 Viviani 記載的傳說，不可寫成確鑿史實。**
+- **斜面稀釋重力**：因自由落體太快難以用當時的水鐘與脈搏精確計時，伽利略將問題轉化為「在斜面上滾動銅球」以稀釋重力，量出距離與時間平方成正比（`d ∝ t²`，奇數定律 `1, 3, 5, 7…`）。
+
+## 2. 艾克曼與格林斯：爪哇病雞、白米與「缺席的致病物」（ch01, ch03, ch12）
+- **人物與時間**：荷蘭醫師**克里斯蒂安·艾克曼**（Christiaan Eijkman, 1858–1930）與助手**赫里特·格林斯**（Gerrit Grijns, 1865–1944），**1886–1897 年**於荷屬東印度巴達維亞（Batavia，今印尼雅加達）軍事醫院實驗室研究肆虐亞洲與軍隊的**腳氣病**（beriberi）。
+- **被視為理所當然的前提**：1880 年代正值細菌學說（巴斯德、科赫）大獲全勝的黃金時代，全世界的醫學家都深信：**每一種疾病，必定是由某種「多出來的東西」（細菌、寄生蟲或毒素）引起的**。艾克曼最初也是帶著顯微鏡去爪哇找「腳氣病菌」，卻怎麼找都找不到。
+- **引起注意的細節**（1889–1890 年廚師換米事件）：實驗室飼養的雞群突然集體出現雙腿麻痺、步態不穩、頸部後仰的「多發性神經炎（polyneuritis）」，症狀與人類腳氣病如出一轍；幾個月後，還沒等艾克曼分離出病菌，活著的病雞卻又莫名其妙全數康復！艾克曼追問之下才發現：前任廚師為了省事，拿軍醫院廚房煮給軍官吃的**精製白米**（polished white rice）剩飯餵雞；新來的廚師死守軍規，認為「不該拿軍用白米餵民用實驗雞」，改餵廉價、帶皮的**未精製糙米**（unpolished brown rice），雞竟然就自己好了。
+- **大規模監獄調查**（1897 年 Vorderman 報告）：艾克曼與衛生官**福德曼**（Adolphe Vorderman）隨即調查爪哇與馬都拉共 **101 所監獄**（涵蓋近 30 萬名囚犯）：
+  - 供應**精製白米**的監獄：腳氣病發病率高達 **1/39**（約 2.56%）。
+  - 供應**未精製糙米**的監獄：腳氣病發病率僅 **1/10,725**（約 0.0093%）。
+  - 兩者發病率相差近 **300 倍**（約 275 倍）！
+- **問題的徹底翻轉**：艾克曼起初仍受限於舊框架，猜測是白米澱粉在腸道產生毒素、而米糠（銀皮）含有「解毒劑」；直到 1901 年助手格林斯（Gerrit Grijns）跨出最後一步，把問題從「白米裡多出了什麼毒？」翻轉為「**白米在碾磨時少掉了什麼維持生命不可或缺的微量物質？**」——這直接開啟了「維生素（vitamin，B1 硫胺素）」與營養缺乏症的概念，艾克曼於 **1929 年**獲頒諾貝爾生醫獎。
+
+## 3. 約翰·斯諾：1854 倫敦蘇活區寬街霍亂調查（ch01, ch03, ch12）
+- **人物與時間**：約翰·斯諾（John Snow, 1813–1858），**1854 年 8 月 31 日至 9 月初**倫敦蘇活區（Soho，寬街 Broad Street 與金廣場 Golden Square 一帶）爆發猛烈霍亂。
+- **死亡人數與時間窗**：爆發首週末（截至 9 月 2 日當週）登記 **89 例**死亡（其中 9 月 1–2 日 48 小時內即死 79 人）；整起局部爆發最終造成約 **500–600 人**死亡（斯諾著名的點狀分布圖上標註了 **578 例**死亡）。**1854 年 9 月 8 日**地方委員會依斯諾建議拆下寬街幫浦把手。
+- **關鍵「未發病」異常**（異常的缺席）：
+  1. **波蘭街濟貧院**（Workhouse on Poland Street）：位於疫區核心、被死亡病例包圍，院內 **535 名**收容人中僅 **5 人**死於霍亂——因為院內自有水井，不喝寬街幫浦的水。
+  2. **寬街獅子釀酒廠**（Lion Brewery, Broad Street）：緊鄰幫浦，**70 多名**工人無人死於霍亂——工人獲配發免費麥芽酒（且釀酒廠自有深井），從不喝寬街幫浦生水。
+  3. **遠處的孤立死亡**（漢普斯特德寡婦案，Susannah Eley）：住在遠離蘇活區的 Hampstead（West End），卻在 9 月初死於霍亂——斯諾追查發現她生前極愛寬街幫浦的水，每天派人用大水瓶從寬街運水過去給她喝（連同探望她的姪女也喝了水後死亡）。
+
+## 4. 萊特兄弟：升力公式與斯미頓係數之謎（ch05, ch12）
+- **背景**（1899–1901）：威爾伯與奧維爾·萊特（Wilbur & Orville Wright）依據德國滑翔機先驅**李林塔爾**（Otto Lilienthal）的空氣動力學表與百年工程界奉為圭臬的升力公式，於 1900 與 1901 年在北卡羅來納州小鷹鎮（Kitty Hawk）試飛載人滑翔機。
+- **刺眼的落差**：1901 年滑翔機實際產生的升力只有理論計算值的約**三分之一**。
+- **抓出被盲信 150 年的常數**：當時升力公式中的氣壓常數——**斯米頓係數**（Smeaton coefficient, `k`）——自 1759 年約翰·斯米頓（John Smeaton）以來一直被工程界當作 **`0.005`**。萊特兄弟透過腳踏車前輪改裝的平衡測試裝置與 **1901 年底自建的風洞**（測試逾 200 種機翼剖面），發現真正的係數接近 **`0.0033`**（高估了約 50%），同時找出了李林塔爾曲率數據的適用限制，最終促成 **1903 年 12 月 17 日**動力飛行成功。
+
+## 5. 塞西莉亞·佩恩：太陽與恆星由什麼構成（ch06, ch12）
+- **背景與常識**（1925 前）：天文學界普遍深信「太陽與恆星的化學成分與地球地殼大致相同（以鐵、鈣、矽等重元素為主）」，因為太陽吸收光譜中鐵與鈣的暗線最顯著。
+- **突破**（1925 年博士論文《恆星大氣》*Stellar Atmospheres*）：25 歲的**塞西莉亞·佩恩**（Cecilia Payne-Gaposchkin, 1900–1979）在哈佛大學天文台將印度物理學家**薩哈**（Meghnad Saha, 1920）的熱游離方程式（thermal ionization theory）套用到恆星光譜分類上。她發現光譜線強弱反映的是**表面溫度造成的游離狀態**，而非元素多寡；推算結果顯示恆星中**氫（Hydrogen）與氦（Helium）的含量比鐵等重元素高出約一百萬倍**（`10⁶`），氫與氦佔了恆星絕大部分質量。
+- **權威壓抑與平反**：當時天文學權威**亨利·諾里斯·羅素**（Henry Norris Russell）審閱後認為「顯然不可能（clearly impossible）」，佩恩被迫在 1925 年論文中加註這項氫氦豐度結果「幾乎肯定不是真實的（almost certainly not real）」。四年後（**1929 年**），羅素用獨立方法算出相同結論並發表論文承認佩恩是對的；天文學家 Otto Struve 譽其為「天文學史上最傑出的博士論文」。
+
+## 6. 彭齊亞斯與威爾遜：除不掉的 3.5 K 宇宙雜訊（ch07, ch12）
+- **人物與時間**：貝爾實驗室（Bell Labs, 紐澤西州 Holmdel）射電天文學家**阿諾·彭齊亞斯**（Arno Penzias）與**羅伯特·威爾遜**（Robert Wilson），**1964 年**使用 1959 年建造的 20 英尺號角形反射天線（Holmdel Horn Antenna）。
+- **揮之不去的殘差**：在波長 **7.35 公分**（頻率 4080 MHz）觀測時，即使扣除了地面熱輻射、大氣吸收、液態氦冷卻至 4 K 的參考源誤差，甚至清除了天線內部棲息的**白鴿與鴿糞**（他們戲稱為「白色介電物質」white dielectric material），天線仍持續收到一個不分晝夜、不分季節、各方向完全均勻的額外背景雜訊，等效溫度約 **3.5 K**（當時估計區間約 `3.5 ± 1.0 K`，現代精確值為 **2.725 K**）。
+- **問題的嫁接**：與此同時，僅數十公里外的普林斯頓大學物理學家**羅伯特·迪克（Robert Dicke）、ジム·皮布爾斯**（Jim Peebles）等人正準備尋找大霹靂（Big Bang）留下的宇宙微波背景輻射（CMB）。兩組人馬於 **1965 年**在《天文物理期刊》（*Astrophysical Journal*）同期背靠背發表論文；彭齊亞斯與威爾遜獲 **1978 年**諾貝爾物理學獎。
+
+## 7. 薇拉·魯賓：不肯慢下來的星系邊緣（ch08, ch12）
+- **人物與時間**：**薇拉·魯賓**（Vera Rubin, 1928–2016）與儀器物理學家**肯特·福特**（W. Kent Ford, Jr.），任職於華盛頓卡內基研究所（Carnegie Institution）。
+- **理所當然的預期**：依牛頓萬有引力與克卜勒定律（`v ∝ 1/√r`），螺旋星系的發光質量集中在中心核球，邊緣星光稀疏，因此越往星系外圍，氣體雲與恆星的繞行速度應該越慢（克卜勒式衰減 Keplerian decline）。
+- **關鍵觀測**（1970 年仙女座星系 M31 論文）：利用福特研發的影像管光譜儀（image-tube spectrograph，將曝光時間從數十小時縮短至數小時），他們量測了仙女座星系（M31）從距中心 3 kpc 到 **24 kpc**（千秒差距）共 **67 個**發射區（Hα 氫游離區）的旋轉速度。結果旋轉曲線在高半徑處**完全沒有下降，而是維持平坦**（flat rotation curve，速度維持在約 200 km/s 上下）。繼而在 **1980 年**對 21 個螺旋星系的系統研究中確認這是普遍現象，成為**暗物質**（Dark Matter）暈存在最具說服力的觀測證據。
+
+## 8. 芭芭拉·麥克林托克：玉米粒上的跳躍基因（ch09, ch12）
+- **人物與時間**：遺傳學家**芭芭拉·麥克林托克**（Barbara McClintock, 1902–1992），於冷泉港實驗室（Cold Spring Harbor Laboratory）研究玉米（*Zea mays*）染色體。
+- **被視為理所當然的前提**：1940 年代遺傳學界將染色體視為固定不變的「念珠串」，基因像珠子一樣釘死在固定位置上，只會發生隨機突變或重組，絕不可能自行搬家。
+- **引起注意的細節**（1944–1948）：她觀察玉米籽粒上的色素斑點——不是只看「有色或無色」，而是緊盯**斑點的大小（反映發育早期或晚期發生改變）與分布規律**。她發現第 9 號染色體總在特定位置斷裂，且這套斷裂與恢復由兩個可移動的遺傳控制元件——**解離子**（Ds, Dissociation）與**活化子**（Ac, Activator）——控制，也就是**轉座子**（transposons / jumping genes）。
+- **沉默與平反**：她在 **1951 年**冷泉港研討會發表成果時，台下幾乎無人理解、反應冷淡；直到 1960s–1970s 分子生物學在細菌與其他生物中發現同樣的移動遺傳元件，她才於 **1983 年**（81 歲）獨得諾貝爾生醫獎。
+
+## 9. 博伊亞伊與羅巴切夫斯基：證不出的第五公設（ch10, ch12）
+- **兩千年的執念**：歐幾里得（Euclid, 約 300 BCE）《幾何原本》的**第五公設**（平行公設）文字冗長，不像前四條公設那樣不證自明。兩千年來無數數學家試圖「用前四條公設證明第五公設」。
+- **差一步的先驅——薩凱里**（Girolamo Saccheri, 1667–1733）：1733 年用歸謬法（假設第五公設不成立，尋找矛盾）推導出雙曲幾何的諸多定理，卻因深信歐氏空間是絕對真理，硬宣稱那些反直覺結果「違反直線的本性」，死前以為自己捍衛了歐幾里得。
+- **問題的翻轉**（1820s）：匈牙利年輕軍官**亞諾什·博伊亞伊**（János Bolyai, 1802–1860）與俄國數學家**羅巴切夫斯基**（Nikolai Lobachevsky, 1792–1856，1829 年發表）各自獨立意識到：**為什麼找不到矛盾？因為它本來就沒有矛盾！** 博伊亞伊於 **1823 年 11 月 3 日**寫信給父親 Farkas Bolyai 宣告：「我從虛無中創造了一個奇異的新世界（Out of nothing I have created a strange new universe）」，其成果於 **1832 年**以附錄（*Appendix*）形式發表（高斯 Carl Friedrich Gauss 私下早已得出相同結論但未發表）。
+
+## 10. 曼德博與理查森：英國的海岸線有多長（ch11, ch12）
+- **理查森的邊界怪象**：英國氣象學家與和平研究者**劉易斯·弗萊·理查森**（Lewis Fry Richardson, 1881–1953）在研究「兩國接壤邊界長度與戰爭機率」時，發現西班牙與葡萄牙百科全書記載的共同邊界長度相差超過 **20%**（987 km vs 1214 km）。他用不同長度的分規（尺規步長 `ε`）去量海岸線與國界，發現尺規越短、量出來的總長度 `L(ε)` 呈冪次律無上限暴增（`L(ε) ∝ ε^(1−D)`）。
+- **曼德博的重構**（1967）：**班諾伊特·曼德博**（Benoit Mandelbrot, 1924–2010）在翻閱理查森生前冷門論文後，於 **1967 年**在《科學》（*Science*）發表名作〈英國的海岸線有多長？統計自相似性與分數維度〉（*How Long Is the Coast of Britain? Statistical Self-Similarity and Fractional Dimension*），並於 **1975 年**正式造出「**碎形**（fractal）」一詞。他指出：「英國海岸線有多長」是個問錯的問題，因為自然界的粗糙曲線不具備單一長度，而是具有**分數維度**（英國西海岸 `D ≈ 1.25`）——問題從「量出更準的長度」翻轉成「粗糙度在跨尺度下遵循什麼幾何學」。
+
+## 11. 圖靈與夏農：把人類動詞拆成機械與位元（ch11/ch12 對照或獨立章）
+- **艾倫·圖靈**（Alan Turing, 1912–1954）：面對希爾伯特 1928 年提出的**判定問題**（Entscheidungsproblem）——「是否存在一個機械化程序能判定任意數學命題可證與否」，圖靈在 **1936 年**論文〈論可計算數及其在判定問題上的應用〉（*On Computable Numbers, with an Application to the Entscheidungsproblem*）中沒有直接硬解邏輯公式，而是先退一步問：**當我們說一個人在「計算（compute）」時，他到底在做什麼物理動作？** 他把人類計算員的動作拆解成紙帶（tape）、讀寫頭與有限狀態（圖靈機 a-machine），從而證明停機問題與判定問題不可解，順手奠定現代電腦科學。
+- **克勞德·夏農**（Claude Shannon, 1916–2001）：**1937 年** MIT 碩士論文將布林代數（`0/1`）對應到繼電器開關電路；**1948 年**在《貝爾系統技術期刊》發表〈通訊的數學理論〉（*A Mathematical Theory of Communication*），把原本含糊的「傳遞訊息」切開——**先徹底剝離「語意（meaning）」**，問「如果不管這句話是什麼意思，純粹消除接收端的不確定性需要多少次二元選擇（bit）？」，定義出資訊熵 `H = −Σ pᵢ log₂ pᵢ`。
+
+## Chapter 10 Verified Historical & Mathematical Evidence (Fact Audit 2026-10-30)
+- **Lewis Fry Richardson (1881–1953)**: Quaker mathematician, physicist, pioneer of numerical weather prediction (*Weather Prediction by Numerical Process*, 1922) and mathematical study of war (*Statistics of Deadly Quarrels*).
+- **Border Length Discrepancy (B10)**: While testing whether shared border length correlates with war frequency, Richardson noticed encyclopedias gave Spain–Portugal border as **987 km** (Spanish sources) vs **1,214 km** (Portuguese sources), and Netherlands–Belgium as **380 km** vs **449 km** (>20% discrepancy).
+- **Richardson Divider-Step Law (1951/1961)**: Stepping dividers of opening `ε` along maps of the west coast of Britain, Spain–Portugal border, Australian coast, South African coast, and a circle: while the circle converged rapidly to `2πr` (`s = 0`), natural coastlines obeyed the power law `L(ε) ≈ N(ε) * ε = F * ε^(-s)` on log-log plots (`s ≈ 0.25` for Britain west coast, `s ≈ 0.02` for South Africa). Published posthumously in *General Systems Yearbook* Vol. 6 (1961).
+- **Benoit Mandelbrot (1924–2010)**: Born in Warsaw, studied under Gaston Julia and Paul Lévy in Paris, researcher at IBM Thomas J. Watson Research Center (where he also studied scaling bursts in telephone transmission noise and cotton price fluctuations).
+- **1967 *Science* Paper & 1975 *Fractal* (B10)**: In May 5, 1967 *Science* paper *How Long Is the Coast of Britain? Statistical Self-Similarity and Fractional Dimension*, Mandelbrot identified Richardson exponent with `1 - D`, where `D = 1 + s` is the fractional (Hausdorff–Besicovitch) dimension (**`D ≈ 1.25` for the west coast of Britain**, `D = log 4 / log 3 ≈ 1.2618` for the Koch curve constructed by Helge von Koch in 1904). Coined **fractal** (from Latin *fractus*) in 1975. Replaced the ill-posed scale-blind question "How long is the coastline?" with the scale-invariant dimension `D`.

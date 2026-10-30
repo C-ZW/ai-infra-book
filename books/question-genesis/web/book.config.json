@@ -1,0 +1,60 @@
+{
+  "id": "qgen",
+  "title": "問題誕生之前",
+  "subtitle": "從理所當然到值得追問",
+  "footer": "內容基準 2026-10",
+  "output": "index.html",
+  "inline_images": true,
+  "groups": [
+    {
+      "title": "Part I — 撬開「本來就這樣」",
+      "files": [
+        "../book-src/ch01-invisible-air.md",
+        "../book-src/ch02-galileo-stones.md",
+        "../book-src/ch03-soho-and-java.md"
+      ]
+    },
+    {
+      "title": "Part II — 聽見「不對勁的雜訊」",
+      "files": [
+        "../book-src/ch04-wright-wind-tunnel.md",
+        "../book-src/ch05-cecilia-payne-stars.md",
+        "../book-src/ch06-cosmic-hiss.md"
+      ]
+    },
+    {
+      "title": "Part III — 看穿「沉默的預設」",
+      "files": [
+        "../book-src/ch07-vera-rubin-galaxy.md",
+        "../book-src/ch08-mcclintock-corn.md",
+        "../book-src/ch09-fifth-postulate.md"
+      ]
+    },
+    {
+      "title": "Part IV — 重鑄「問題的形狀」",
+      "files": [
+        "../book-src/ch10-coastline-of-britain.md",
+        "../book-src/ch11-turing-and-shannon.md",
+        "../book-src/ch12-everyday-lenses.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-timeline.md",
+        "../book-src/appendix-b-glossary.md"
+      ]
+    },
+    {
+      "title": "內部文件（_meta）",
+      "files": [
+        "../book-src/_meta/style-guide.md",
+        "../book-src/_meta/outline.md",
+        "../book-src/_meta/running-examples.md",
+        "../book-src/_meta/landscape-2026-10.md",
+        "../book-src/_meta/maintenance.md",
+        "../book-src/_meta/verify-log.md"
+      ]
+    }
+  ]
+}

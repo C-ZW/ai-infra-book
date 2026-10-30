@@ -50,3 +50,5 @@ entries (appended by the P5 retrospective, main loop only):
     quarantined but cost a round) → P0.5's CLI smoke test must be a REAL
     trivial round-trip per family, never just `which`/`--help`; restore auth
     (`codex login`) before P4, not after.
+12. **[2026-10-30] Closed-book Tier-2 panelists flag chapter-specific historical facts as `imprecise` when `_meta/source-evidence/<chapter-stem>.md` is empty** (`verify_prompt.md` instructs panelists to mark any external fact not present in `<baseline>` or `<source-evidence>` as `imprecise`) → for history-heavy or narrative books, populate `_meta/source-evidence/<chapter-stem>.md` from `_meta/landscape-*.md` and the P4 Fact Audit report before running `verify_book.py`.
+13. **[2026-10-30] CommonMark (`marked.js`) leaves `**...**` unrendered or inverts bold spans when `**` wraps CJK punctuation (`「...」`, `（...）`) directly adjacent to CJK characters** (`是**「詞」**` is not left-flanking; `**詞（註）**的` is not right-flanking) → always place outer quotes and trailing parentheticals outside `**...**` (`是「**詞**」`, `**詞**（註）的`) and verify `#_all` in headless Chrome has 0 literal `**` in rendered prose.

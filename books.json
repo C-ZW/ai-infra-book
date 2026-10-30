@@ -1,0 +1,150 @@
+{
+  "shelf_output": "bookshelf.html",
+  "books": [
+    {
+      "id": "aiib",
+      "title": "從後端到 AI Infra",
+      "config": "web/book.config.json"
+    },
+    {
+      "id": "plan",
+      "title": "轉職文件",
+      "config": "web/plan.config.json"
+    },
+    {
+      "id": "tla",
+      "title": "把系統寫成定理",
+      "config": "books/tlaplus/web/book.config.json"
+    },
+    {
+      "id": "calc",
+      "title": "馴服無限",
+      "config": "books/calculus/web/book.config.json"
+    },
+    {
+      "id": "trig",
+      "title": "圓的影子",
+      "config": "books/trig/web/book.config.json"
+    },
+    {
+      "id": "swhist",
+      "title": "複雜度守恆",
+      "config": "books/software-history/web/book.config.json"
+    },
+    {
+      "id": "prob",
+      "title": "馴服隨機",
+      "config": "books/probability/web/book.config.json"
+    },
+    {
+      "id": "linalg",
+      "title": "矩陣是動詞",
+      "config": "books/linear-algebra/web/book.config.json"
+    },
+    {
+      "id": "labs",
+      "title": "藍圖之外",
+      "config": "books/model-labs/web/book.config.json"
+    },
+    {
+      "id": "attn",
+      "title": "注意力機制的原理",
+      "config": "books/attention/web/book.config.json"
+    },
+    {
+      "id": "fail",
+      "title": "正常意外",
+      "config": "books/systems-failure/web/book.config.json"
+    },
+    {
+      "id": "queue",
+      "title": "等待的數學",
+      "config": "books/queueing/web/book.config.json"
+    },
+    {
+      "id": "sets",
+      "title": "不只一種無限",
+      "config": "books/set-theory/web/book.config.json"
+    },
+    {
+      "id": "game",
+      "title": "當理性互相碰撞",
+      "config": "books/game-theory/web/book.config.json"
+    },
+    {
+      "id": "chaos-c",
+      "title": "決定卻測不準",
+      "config": "books/chaos-c/web/book.config.json"
+    },
+    {
+      "id": "chaos-d",
+      "title": "蝴蝶的鐵律",
+      "config": "books/chaos-d/web/book.config.json"
+    },
+    {
+      "id": "expert",
+      "title": "專家是怎麼煉成的",
+      "config": "books/expertise/web/book.config.json"
+    },
+    {
+      "id": "mem",
+      "title": "大腦怎麼編造過去",
+      "config": "books/memory/web/book.config.json"
+    },
+    {
+      "id": "sleep",
+      "title": "大腦每晚的維護工作",
+      "config": "books/sleep/web/book.config.json"
+    },
+    {
+      "id": "addct",
+      "title": "大腦被劫持",
+      "config": "books/addiction/web/book.config.json"
+    },
+    {
+      "id": "primes",
+      "title": "乘法的原子",
+      "config": "books/number-theory/web/book.config.json"
+    },
+    {
+      "id": "godel",
+      "title": "這句話無法被證明",
+      "config": "books/godel/web/book.config.json"
+    },
+    {
+      "id": "bias",
+      "title": "思考的陷阱",
+      "config": "books/fallacies-biases/web/book.config.json"
+    },
+    {
+      "id": "scimethod",
+      "title": "如何不騙自己",
+      "config": "books/scientific-method/web/book.config.json"
+    },
+    {
+      "id": "decide",
+      "title": "在不確定中下注",
+      "config": "books/decision-rationality/web/book.config.json"
+    },
+    {
+      "id": "rsys",
+      "title": "保證與取捨",
+      "config": "books/resume-systems/web/book.config.json"
+    },
+    {
+      "id": "mech",
+      "title": "機制之下",
+      "config": "books/backend-mechanisms/web/book.config.json"
+    },
+    {
+      "id": "pdox",
+      "title": "沒說出口的那句",
+      "config": "books/paradoxes/web/book.config.json"
+    },
+    {
+      "id": "qgen",
+      "title": "問題誕生之前",
+      "config": "books/question-genesis/web/book.config.json"
+    }
+  ]
+}

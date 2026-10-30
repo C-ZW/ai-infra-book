@@ -14,14 +14,14 @@
 
 ## 修改後，必跑
 
-- 動到任何章節文字：`python3 ../tools/md-reader/gate_book.py book`（Tier-1 lint，exit 0 才算過；發佈前加 `--verify` 跑 Tier-2 跨模型驗算，三家模型獨立重算載重數字）。經 write-book skill 產的書，P3/P4 兩階段閘門為**硬性要求**。
-- 動到 ASCII 圖：`python3 ../tools/md-reader/check_diagrams.py book`（CJK=2 欄對齊規則，exit 0 才算過）
-- 動到任何 book/ 內容：`python3 ../tools/md-reader/build_reader.py web/book.config.json` 重新打包；書架有變動先跑 `python3 ../tools/md-reader/build_shelf.py`（閱讀器的「⌂ 書架」按鈕會自動連到最近的上層 bookshelf.html，所以書架要先存在）
-- `web/index.html`、`web/plan.html`、`bookshelf.html`（專案根）是產生物，**不要手改**；書架位置由 `../profile/books.json` 的 `shelf_output` 欄位決定
+- 動到任何章節文字：`python3 tools/md-reader/gate_book.py book`（Tier-1 lint，exit 0 才算過；發佈前加 `--verify --writer-family anthropic` 查核本書的 Claude 原稿；其他書須填實際寫作者家族，三家模型獨立重算載重數字）。經 write-book skill 產的書，P3/P4 兩階段閘門為**硬性要求**。
+- 動到 ASCII 圖：`python3 tools/md-reader/check_diagrams.py book`（CJK=2 欄對齊規則，exit 0 才算過）
+- 動到任何 book/ 內容：`python3 tools/md-reader/build_reader.py web/book.config.json` 重新打包；書架有變動先跑 `python3 tools/md-reader/build_shelf.py`（閱讀器的「⌂ 書架」按鈕會自動連到最近的上層 bookshelf.html，所以書架要先存在）
+- `web/index.html`、`web/plan.html`、`bookshelf.html`（專案根）是產生物，**不要手改**；書架位置由 `books.json` 的 `shelf_output` 欄位決定
 
-工具已抽至 `../tools/md-reader/`（通用打包器，說明見該處 README；程式一律英文）。本 repo 只保留 reader 設定檔（`web/*.config.json`）與輸出。**每本書設定檔的 `id` 必須全域唯一**（localStorage 命名空間，重複會讓閱讀進度互相覆蓋）。
+工具放在專案內 `tools/md-reader/`（說明見該處 README；程式一律英文），不依賴相鄰目錄。**每本書設定檔的 `id` 必須全域唯一**（localStorage 命名空間，重複會讓閱讀進度互相覆蓋）。
 
-個人上下文中樞在 `../profile/`（建書與個人化任務先讀其 README）；書籍登記簿 `../profile/books.json`；寫新書用 `write-book` skill（v3，2026-07-03 重設計：引擎設定在 repo 根 `write-book.config.json`；phase 規格／書型 pack／prompt 模板／陷阱庫在 skill 的 `references/`、P2/P4 workflow scripts 在 `scripts/`；重設計計劃見 `write-book-redesign-plan.md`）。**所有書集中放在本專案 `books/<slug>/` 下**（2026-06-12 決定；如 `books/tlaplus/`，各有自己的 CLAUDE.md），只有本書（AI Infra 轉職書）因歷史因素留在 repo 根的 `book/`。
+目前依使用者指示跳過 profile，不讀取履歷作為新書校準材料；書籍登記簿使用專案內的 `books.json`；寫新書用 `write-book` skill（v3，2026-07-03 重設計：引擎設定在 repo 根 `write-book.config.json`；phase 規格／書型 pack／prompt 模板／陷阱庫在 skill 的 `references/`、P2/P4 workflow scripts 在 `scripts/`；重設計計劃見 `write-book-redesign-plan.md`）。**所有書集中放在本專案 `books/<slug>/` 下**（2026-06-12 決定；如 `books/tlaplus/`，各有自己的 CLAUDE.md），只有本書（AI Infra 轉職書）因歷史因素留在 repo 根的 `book/`。
 
 ## 慣例
 

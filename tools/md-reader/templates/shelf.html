@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>書架</title>
+<link rel="icon" href="data:,">
+<style>
+body{margin:0;background:#f7f2e9;color:#2f2b24;font-family:-apple-system,"PingFang TC",sans-serif;
+ min-height:100vh;padding:40px 20px 80px;box-sizing:border-box}
+.wrap{max-width:880px;margin:0 auto}
+h1{font-size:22px;margin:0 0 4px}
+.sub{color:#8d8474;font-size:13px;margin:0 0 28px}
+h2{font-size:14px;color:#8d8474;font-weight:600;letter-spacing:.05em;margin:34px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{position:relative;display:block;background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;
+ padding:18px 30px 18px 18px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s,opacity .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.07)}
+.card.dim{opacity:.5}
+.x{position:absolute;top:7px;right:8px;width:22px;height:22px;line-height:21px;text-align:center;
+ border-radius:6px;color:#c3b9a4;font-size:13px;cursor:pointer;user-select:none;
+ transition:background .12s,color .12s}
+.x:hover{background:#efe8d7;color:#a05a17}
+.ct{font-weight:700;font-size:16px;margin-bottom:2px}
+.cs{font-size:12.5px;color:#8d8474;margin-bottom:10px}
+.cm{font-size:12px;color:#6f6759;margin-top:3px}
+.muted{color:#8d8474}
+.warn{color:#a05a17;font-weight:600}
+.shelf-actions{margin-top:14px;min-height:1px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:34px 0 12px}
+.sec-head h2{margin:0}
+.shelf-btn{background:#fffdf8;border:1px solid #e2d9c6;border-radius:8px;color:#6f6759;
+ font-size:12.5px;padding:6px 13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.shelf-btn:hover{background:#efe8d7;color:#a05a17}
+.grid.list{display:block}
+.grid.list .card{display:flex;align-items:center;gap:12px;padding:11px 32px 11px 16px;margin-bottom:8px}
+.grid.list .card:hover{transform:none}
+.grid.list .ct{font-size:14px;margin:0;flex:0 0 auto}
+.grid.list .cs{margin:0;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid.list .meta{flex:0 0 auto;display:flex;gap:14px;margin:0;text-align:right}
+.grid.list .meta .cm{margin:0;white-space:nowrap}
+@media (max-width:520px){.grid.list .cs{display:none}.grid.list .meta{gap:10px}}
+.prog{display:none;margin-top:11px}
+.prog.on{display:block}
+.pbar{display:block;height:4px;background:#ece3d2;border-radius:3px;overflow:hidden}
+.pbar > i{display:block;height:100%;width:0;background:#a9874e;border-radius:3px;transition:width .3s}
+.ptxt{display:block;font-size:11px;color:#8d8474;margin-top:4px}
+.prog.done .pbar > i{background:#7d9460}
+.prog.nobar .pbar{display:none}
+.grid.list .prog{flex:0 0 auto;margin:0;order:3}
+.grid.list .prog.on{display:flex;align-items:center;gap:7px}
+.grid.list .meta{order:4}
+.grid.list .pbar{width:46px}
+.grid.list .ptxt{margin:0;white-space:nowrap}
+.panel{background:#fffdf8;border:1px solid #e2d9c6;border-radius:12px;padding:8px 18px}
+.fr{display:flex;justify-content:space-between;font-size:13px;padding:9px 0;border-bottom:1px solid #efe8d7}
+.fr:last-child{border-bottom:none}
+.fr.ok span:last-child{color:#5a7a4a}
+.fr.warn span:last-child{color:#a05a17;font-weight:600}
+.fr.info span:last-child{color:#8d8474}
+.foot{margin-top:30px;font-size:12px;color:#8d8474}
+code{background:#efe8d7;border-radius:4px;padding:1px 5px;font-size:11.5px}
+</style>
+</head>
+<body><div class="wrap">
+<h1>書架</h1>
+<p class="sub">個人書庫</p>
+<div class="sec-head"><h2>書</h2><button id="toggle-view" class="shelf-btn" type="button">☰ 清單</button></div>
+<div class="grid">
+@@CARDS@@
+</div>
+<div class="shelf-actions"><button id="toggle-hidden" class="shelf-btn" type="button" hidden></button></div>
+<p class="foot">卡片右上角 ✕ 可隱藏書籍；閱讀進度儲存在這個瀏覽器。本頁由 tools/md-reader/build_shelf.py 產生。</p>
+</div>
+<script id="shelf-progress" type="application/json">@@PROGRESS@@</script>
+<script>
+(function(){
+  var KEY = 'bookshelf:hidden:v1';
+  var grid = document.querySelector('.grid');
+  var btn = document.getElementById('toggle-hidden');
+  if (!grid || !btn) return;
+  var manage = false;
+
+  function read(){
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function write(list){
+    try { localStorage.setItem(KEY, JSON.stringify(list)); }
+    catch (e) { /* private mode / quota / disabled: hide still works this session */ }
+  }
+
+  var cards = Array.prototype.slice.call(grid.querySelectorAll('.card'));
+  var known = {};
+  cards.forEach(function(c){ known[c.getAttribute('data-book-id')] = c; });
+
+  // Prune ids whose card no longer exists (book removed from the registry
+  // while it was hidden) so dead entries cannot pile up forever.
+  var hset = {};
+  read().forEach(function(id){ if (known.hasOwnProperty(id)) hset[id] = true; });
+  function keys(){ var a = []; for (var k in hset) if (hset[k]) a.push(k); return a; }
+  write(keys());
+
+  function render(){
+    cards.forEach(function(c){
+      var id = c.getAttribute('data-book-id');
+      var isHidden = !!hset[id];
+      c.style.display = (isHidden && !manage) ? 'none' : '';
+      c.classList.toggle('dim', isHidden && manage);
+      var x = c.querySelector('.x');
+      if (x){
+        x.textContent = isHidden ? '↺' : '✕';
+        x.title = isHidden ? '恢復顯示'
+                           : '從書架隱藏（僅此瀏覽器，不刪原檔）';
+      }
+    });
+    var n = keys().length;
+    if (n === 0) manage = false;
+    btn.hidden = (n === 0);
+    if (n > 0) btn.textContent = manage ? '完成'
+                                        : ('顯示已隱藏 (' + n + ')');
+  }
+
+  grid.addEventListener('click', function(e){
+    var x = (e.target && e.target.closest) ? e.target.closest('.x') : null;
+    if (!x) return;
+    e.preventDefault();   // the card is an <a>; do not navigate
+    e.stopPropagation();
+    var card = x.closest('.card');
+    if (!card) return;
+    var id = card.getAttribute('data-book-id');
+    if (hset[id]) delete hset[id]; else hset[id] = true;
+    write(keys());
+    render();
+  });
+
+  btn.addEventListener('click', function(){ manage = !manage; render(); });
+
+  // --- card / list view toggle, persisted per browser ---
+  var VKEY = 'bookshelf:view:v1';
+  var vbtn = document.getElementById('toggle-view');
+  function readView(){
+    try { return localStorage.getItem(VKEY) === 'list' ? 'list' : 'grid'; }
+    catch (e) { return 'grid'; }
+  }
+  var view = readView();
+  function applyView(){
+    grid.classList.toggle('list', view === 'list');
+    if (vbtn) vbtn.textContent = (view === 'list') ? '▦ 卡片' : '☰ 清單';
+  }
+  if (vbtn) vbtn.addEventListener('click', function(){
+    view = (view === 'list') ? 'grid' : 'list';
+    try { localStorage.setItem(VKEY, view); } catch (e) {}
+    applyView();
+  });
+  applyView();
+
+  // --- reading progress, read from the reader's own '<book-id>.last' key ---
+  var PROG = {};
+  try {
+    var pn = document.getElementById('shelf-progress');
+    if (pn) PROG = JSON.parse(pn.textContent) || {};
+  } catch (e) { PROG = {}; }
+  function lastChapter(bid){
+    try { var v = localStorage.getItem(bid + '.last'); return v === null ? null : JSON.parse(v); }
+    catch (e) { return null; }   // reader stores it JSON-encoded, like everything else
+  }
+  cards.forEach(function(c){
+    var prog = c.querySelector('.prog');
+    if (!prog) return;
+    var ids = PROG[c.getAttribute('data-book-id')];
+    var last = lastChapter(c.getAttribute('data-book-id'));
+    if (!last || !ids || !ids.length) return;          // never opened / unknown → no bar
+    var txt = prog.querySelector('.ptxt');
+    var fill = prog.querySelector('.pbar > i');
+    var idx = ids.indexOf(last);
+    if (idx < 0){                                       // single-page '整本' view or a stale id
+      prog.classList.add('on', 'nobar');
+      if (txt) txt.textContent = '閱讀中';
+      return;
+    }
+    var pct = Math.round((idx + 1) / ids.length * 100);
+    if (fill) fill.style.width = pct + '%';
+    if (txt) txt.textContent = '進度 ' + pct + '%';
+    prog.title = '讀到第 ' + (idx + 1) + ' / ' + ids.length + ' 篇';
+    prog.classList.add('on');
+    if (pct >= 100) prog.classList.add('done');
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
