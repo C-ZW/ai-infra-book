@@ -1,0 +1,84 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "相較於「全量 Sonnet、無快取」基準（$152,250/月、$0.1015/筆；若全量 Opus 5.5 同 token 量則為 $304,500/月、$0.203/筆）",
+      "verdict": "correct",
+      "reasoning": "我按 5 回合重算。每回合輸入為 6,000 前綴加上先前累積的對話，即 6,000+1,200×(i−1)，加總是 30,000+12,000=42,000 tokens，輸出 5×350=1,750 tokens。Sonnet 單筆成本為 42,000×$2/M + 1,750×$10/M = $0.084+$0.0175 = $0.1015，每月 ×1,500,000 = $152,250。Opus 5.5 的輸入與輸出單價都正好是 Sonnet 的 2 倍，所以是 $0.203/筆、$304,500/月。",
+      "correct_value": "$0.1015/筆、$152,250/月；Opus 為 $0.203/筆、$304,500/月"
+    },
+    {
+      "claim": "ch08 帳本未套用 Batch 時（$17,399.47/月）相對基準約降 88.57%，套用 Batch 後（$14,789.55/月）約降 90.29%；約 $0.0116/筆",
+      "verdict": "correct",
+      "reasoning": "17,399.47/152,250 = 0.11428，降幅 88.57%。14,789.55/152,250 = 0.09714，降幅 90.29%。17,399.47/1,500,000 = $0.0116，低於 $0.012 的目標，也達到降幅 ≥88% 的要求（$18,000 相當於降 88.18%）。這裡只驗算了比例；兩個月成本底數本身無法從提供的材料驗證。",
+      "correct_value": "88.57% / 90.29% / $0.0116 每筆（底數需由 ch08 驗證）"
+    },
+    {
+      "claim": "該章逐項帳本以縮減後的 3,600-token 前綴與 30% 離線 Batch 折扣計得 $14,789.55/月",
+      "verdict": "imprecise",
+      "reasoning": "14,789.55/17,399.47 = 0.85，也就是總成本只少了 15%。這符合「30% 的流量走 Batch，各享 50% 折扣」，不符合「30% 折扣」（那樣會是 ×0.70）。另外，3,600 正好等於基準表裡 18 個工具 Schema 的大小，這裡的「縮減後前綴」到底怎麼組成，本章沒有交代。",
+      "correct_value": "應改成「30% 離線流量套用 Batch 50% 折扣（整體成本約降 15%）」，並說明 3,600-token 前綴的組成"
+    },
+    {
+      "claim": "每回合皆以 5 分鐘 TTL 重寫 6,000 前綴為 $174,750/月，前綴全命中約為 $66,750/月；30,000 前綴 tokens 全命中僅占 71.43%",
+      "verdict": "correct",
+      "reasoning": "每回合都重寫時，前綴成本為 30,000×$2×1.25/M = $0.075，其餘輸入 12,000×$2/M = $0.024，輸出 $0.0175，合計 $0.1165，×1.5M = $174,750。全部命中時，前綴成本為 30,000×$2×0.05/M = $0.003，合計 $0.0445，×1.5M = $66,750。命中占比為 30,000/42,000 = 71.43%。",
+      "correct_value": "$174,750 / $66,750 / 71.43%"
+    },
+    {
+      "claim": "平均 0.58 req/s、尖峰 12 req/s（約 20×）；持續尖峰約 60 次模型請求/s；8 × 6,000 ms = 48s 已超過 18s",
+      "verdict": "correct",
+      "reasoning": "50,000/86,400 = 0.579 req/s，12/0.579 ≈ 20.7×。若每筆工單呼叫模型 5 次，12×5 = 60 次/s。8×6 = 48 秒，大於 18 秒。",
+      "correct_value": "0.58 req/s、約 20×、60 req/s、48s"
+    },
+    {
+      "claim": "base = 500ms、最多重試 3 次，Full Jitter 等待上限合計 3.5s",
+      "verdict": "correct",
+      "reasoning": "指數退避三次的上限依序是 500、1,000、2,000 ms，合計 3,500 ms，都沒有碰到 8,000 ms 的上限。Full Jitter 只會在 [0, 上限] 之間取值，所以合計上限仍是 3.5 秒。",
+      "correct_value": "3.5s"
+    },
+    {
+      "claim": "場景 B：Input 18K × $1.00/M + Output 3.5K × $5.00/M = $0.0355/份；200 × 30 × $0.0355 = $213.00/月",
+      "verdict": "correct",
+      "reasoning": "Batch 價格下，0.018+0.0175 = $0.0355；200×30 = 6,000 份，×0.0355 = $213。Sonnet 5.5 的 Batch 價格為 $1/$5，與 source-evidence 一致。",
+      "correct_value": "$0.0355/份、$213/月"
+    },
+    {
+      "claim": "改為即時 API 後單份成本 $0.0710；每日 2,000 份月成本從 $2,130 增為 $4,260",
+      "verdict": "correct",
+      "reasoning": "18K×$2/M = $0.036，3.5K×$10/M = $0.035，合計 $0.071。2,000×30×0.0355 = $2,130，2,000×30×0.071 = $4,260。",
+      "correct_value": "$0.0710/份；$2,130 → $4,260/月"
+    },
+    {
+      "claim": "場景 C：24K × $2.00/M + 4K × $10.00/M = $0.0880/次；全 Sonnet $316.80/月；混用 Opus 為 $316.80 × (1 + Opus 比例)，全 Opus 為 $633.60/月",
+      "verdict": "correct",
+      "reasoning": "0.048+0.04 = $0.088；120×30×0.088 = $316.80。Opus 兩項單價都是 Sonnet 的 2 倍，把比例 p 的呼叫換成 Opus 時，成本為 316.8(1−p)+633.6p = 316.8(1+p)。p=1 時為 $633.60。",
+      "correct_value": "$0.088/次、$316.80/月、316.80×(1+p)、$633.60/月"
+    },
+    {
+      "claim": "必須把 cache_control 放在最後一個靜態 system block，才能同時快取工具定義與靜態 System Prompt",
+      "verdict": "correct",
+      "reasoning": "source-evidence 寫明前綴依 tools → system → messages 的順序做精確比對。斷點設在 system 的最後一個靜態 block，涵蓋範圍就包含它前面的 tools 與 system。6,000 tokens 也高於材料列出的所有最低快取門檻。",
+      "correct_value": "成立；但 Sonnet 5.5 的最低門檻需依官方文件確認（材料只列出 Sonnet 5／4.x 為 1,024）"
+    },
+    {
+      "claim": "場景 A 對比表列「6,000 前綴 + Prompt Caching（無Batch）」，同時引用「ch08 未用Batch省88.57%」與 ≤ $0.012/筆",
+      "verdict": "imprecise",
+      "reasoning": "88.57% 是從 ch08 那份 3,600-token 前綴帳本算出來的，表中卻標成 6,000-token 前綴的即時設計，兩者的前提不同。本章正文也承認 6,000-token 設計的實際降幅需要另外計算，所以表格把這兩個前提並列，容易讓讀者誤以為 6,000 前綴的設計已經驗證能達到 ≤$0.012。",
+      "correct_value": "在表內註明 88.57% 對應 3,600-token 帳本；6,000-token 即時設計的單價改為「待完整帳本驗證」"
+    },
+    {
+      "claim": "Batch 結果需待 processing_status === \"ended\"，結果類型含 succeeded、errored、canceled、expired；錯誤碼 529 overloaded_error 與 retry-after 標頭",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 沒有涵蓋 Batch 狀態欄位、結果類型或 HTTP 錯誤碼，閉卷查核無法判定這些細節是否正確。",
+      "correct_value": "需對照官方 Batch API 與 Errors 文件查證後保留"
+    },
+    {
+      "claim": "MCP Connector 需設定 mcp_servers 與 mcp_toolset、OAuth 2.1／Bearer，僅支援遠端 Streamable HTTP（不支援本地 stdio）",
+      "verdict": "correct",
+      "reasoning": "與 source-evidence 第 5 節的描述一致。",
+      "correct_value": "同原文"
+    }
+  ]
+}

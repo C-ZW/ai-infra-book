@@ -1,0 +1,236 @@
+{
+  "chapter": "ch02-recon-and-audit-workflow.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "「十分鐘內就能揪出拖慢整條管線的 SQL 查詢或序列化熱點。」",
+      "verdict": "imprecise",
+      "reasoning": "CPU 火焰圖能從採樣堆疊定位 CPU 熱點，但等待資料庫或網路的時間未必出現在 CPU 採樣中。材料也未提供測試環境、採樣結果或定位耗時。",
+      "correct_value": "CPU 火焰圖可協助定位 CPU 熱點。資料庫等待須結合延遲或追蹤資料判讀，十分鐘只能作為示範時限。"
+    },
+    {
+      "claim": "「兩者都能在 30 分鐘內把審計範圍從數十萬行裁切至幾十條關鍵路徑，砍掉 90% 以上無關的純讀取與輔助函式。」",
+      "verdict": "imprecise",
+      "reasoning": "三個階段分配了 8、10、12 分鐘，合計確為 30 分鐘。但程式碼行數、函式數與呼叫路徑數是不同計量單位，章內沒有初始及篩選後的函式數，也沒有足以驗證涵蓋率的資料。",
+      "correct_value": "30 分鐘是初步分流的時間預算。縮減比例與涵蓋率須以同一計量單位及實際結果計算。"
+    },
+    {
+      "claim": "「執行佔比低於 `0.1%` 的冷分支幾乎不會出現在 Flamegraph 上。但安全漏洞恰好最常藏在極低頻的冷路徑。」",
+      "verdict": "imprecise",
+      "reasoning": "取佔比 0.01% 的分支為例，在獨立且具代表性的採樣假設下，10,000 個樣本的期望命中數為 1，100,000 個樣本則為 10。能否顯示還取決於圖表門檻。材料沒有漏洞分布統計，無法判定漏洞最常出現在冷路徑。",
+      "correct_value": "冷路徑的可見性取決於採樣量與呈現門檻。低執行頻率仍可能伴隨高安全影響。"
+    },
+    {
+      "claim": "NexusPay 採用 `2,000 req/s` 的尖峰基準、`10,000` 分的單戶測試餘額、`10,000` 分的單次提領上限，以及 RS256、`900 s` JWT 有效期與 `300 s` JWKS 快取。",
+      "verdict": "correct",
+      "reasoning": "上述數值與基準表一致。以 100 分換算 1 美元，10,000 分等於 100 美元。章內若將同一限額延伸至轉帳，該部分屬示例另設的前提，因基準表只指定提領。",
+      "correct_value": "尖峰流量為 2,000 req/s，測試餘額與提領上限均為 10,000 分，JWT 採 RS256，有效期 900 秒，JWKS 快取 300 秒。"
+    },
+    {
+      "claim": "「Nginx 預設在 `30 s`（`proxy_read_timeout`）無上游回應時回傳 `504 Gateway Time-out` 搭配特定 HTML 模板，而上游 Node.js 若因 `keepAliveTimeout = 5 s` 提前關閉連線，高頻併發下代理會偶發回傳 `502 Bad Gateway`。」",
+      "verdict": "imprecise",
+      "reasoning": "基準表支持 NexusPay 的 30 秒與 5 秒設定，沒有提供 Nginx 通用預設值或這兩種錯誤的實測紀錄。上游讀取等待與閒置持久連線是不同狀態，兩個計時值本身無法推導 HTTP 狀態碼、回應樣式或部署拓樸。",
+      "correct_value": "將兩個數字標為 NexusPay 設定。狀態碼及錯誤頁須依逾時或斷線發生的階段與閘道設定判定。"
+    },
+    {
+      "claim": "「兩條完全獨立的 TLS 會話」在代理內部拼合，兩側可各自協商不同的應用層協定。",
+      "verdict": "correct",
+      "reasoning": "在章內所設的 TLS 終止型代理模型中，代理對客戶端充當 TLS 伺服器，對上游充當 TLS 客戶端。兩次交握各自決定應用層協定，因此一側為 HTTP/2、另一側為 HTTP/1.1 在模型上成立。",
+      "correct_value": "受攔截的 HTTPS 連線包含兩個獨立交握，兩側的 ALPN 結果可以不同。"
+    },
+    {
+      "claim": "「代理開啟通往上游伺服器的連線後回傳 `HTTP/1.1 200 Connection Established`。」",
+      "verdict": "imprecise",
+      "reasoning": "章內流程圖將成功回覆編為第 2 步，卻將 CONNECT 請求編為第 3 步，請求與回覆的順序顛倒。TLS 終止型代理對上游的連線時機也無法從下游交握順序單獨推出。",
+      "correct_value": "先送出 CONNECT，再收到成功回覆，接著啟動下游 TLS 交握。上游連線時機依代理實作而定。"
+    },
+    {
+      "claim": "「現代代理都會以網域名稱為鍵快取葉憑證（例如 Caido 在 Tokio 非同步執行時期中以 `rustls` 搭配記憶體映射表快取簽發結果，免除了傳統 JVM 堆疊在大量歷史封包下的 GC 停頓）。」",
+      "verdict": "imprecise",
+      "reasoning": "憑證重用可能降低重複簽發的成本，但推理無法確定產品選用的 TLS 函式庫、快取資料結構、鍵值或效能差異。所附外部證據沒有提供 Caido 或 Burp 的版本、原始碼位置或效能量測。",
+      "correct_value": "代理可重用已簽發的葉憑證。具體實作與效能差異須依版本化文件、原始碼或實測確認。"
+    },
+    {
+      "claim": "「會話 A 能否建立，完全取決於客戶端是否信任代理的 Root CA。」",
+      "verdict": "incorrect",
+      "reasoning": "即使客戶端信任根憑證，章內描述的憑證釘扎仍可能拒絕代理憑證。主機名、有效期及其他 TLS 交握條件也須成立。",
+      "correct_value": "在一般憑證鏈驗證場景中，信任代理 CA 是條件之一。客戶端仍須接受葉憑證及其餘交握條件。"
+    },
+    {
+      "claim": "「正確解法：設定環境變數 `NODE_EXTRA_CA_CERTS=/path/to/proxy-ca.crt`。」",
+      "verdict": "imprecise",
+      "reasoning": "此解法對應代理確已收到 CLI 連線、且錯誤確由代理 CA 未受信任所致的情境。題目只說設定了 `HTTPS_PROXY`，沒有提供 Node.js 版本、代理啟用方式或實際收到的憑證鏈，無法從錯誤碼唯一確定原因。",
+      "correct_value": "先確認 CLI 實際經過代理，再依該 Node.js 版本與啟動設定驗證 CA 信任。若缺少代理 CA，可在啟動時載入該 CA，並維持憑證驗證。"
+    },
+    {
+      "claim": "「若出現 `SyntaxError: Unexpected token` 堆疊片段，則幾乎確定是 Express `body-parser` 直接攔截了畸形 JSON。」",
+      "verdict": "incorrect",
+      "reasoning": "通用 JavaScript 解析錯誤可由多種框架、中介軟體或應用程式產生。單一訊息缺乏足以識別元件的資訊，也無法從材料估算「幾乎確定」的機率。",
+      "correct_value": "該片段支持發生解析錯誤的假設。框架識別須另有可歸因的堆疊或設定證據。"
+    },
+    {
+      "claim": "「若伺服器回傳 `500` 且夾帶 `22P02`（invalid input syntax for type uuid）或序列化後的 SQLState，便已確認底層為 PostgreSQL 且未做好全域錯誤遮罩。」",
+      "verdict": "imprecise",
+      "reasoning": "觀測足以支持有技術錯誤細節外洩。SQLSTATE 也可能經相容層或應用程式轉送及重現，因此無法單憑這筆回應確認實際資料庫產品，或判定所有路徑的遮罩設定。",
+      "correct_value": "將其記為錯誤細節外洩及 PostgreSQL 相容行為的線索。底層產品與遮罩範圍需獨立確認。"
+    },
+    {
+      "claim": "「只要拿到一份 `.js.map`，就等於拿回整個前端 TypeScript 專案的目錄結構、API 客戶端定義與所有呼叫端點名稱。」",
+      "verdict": "incorrect",
+      "reasoning": "單一來源映射只描述其對應建置產物的映射範圍，可能沒有內嵌原始碼，也可能未涵蓋其他建置區塊及執行時期才決定的端點。",
+      "correct_value": "一份公開的來源映射可能揭露該建置區塊的來源路徑、符號及內嵌原始碼。可見範圍依映射內容而定。"
+    },
+    {
+      "claim": "「同時滿足 `status == 200` 且 `Content-Type` 包含 `text/html` 且位元組長度落在基線容差內……才判定為軟 404 並丟棄」，可在自我檢核所要求的零漏報前提下剔除軟 404。",
+      "verdict": "incorrect",
+      "reasoning": "一條真實路由也可能回傳狀態碼 200、同樣的內容類型及 1,428 位元組的主體。兩種回應在這三個欄位上可完全相同。±16 位元組的容差會進一步擴大被丟棄的集合。",
+      "correct_value": "此條件只能將回應列為疑似軟 404。若要求零漏報，須保留無法區分的回應，或以獨立的路由證據排除。"
+    },
+    {
+      "claim": "「三個隨機路徑應回傳一致的基線（例如 `404 94` 代表 Nginx/NestJS 預設 JSON `{\"message\":\"Cannot GET /v1/...\",\"error\":\"Not Found\",\"statusCode\":404}` 為 `94 bytes`）。」",
+      "verdict": "incorrect",
+      "reasoning": "依展示的緊湊 ASCII JSON，回應長度等於 62 加上完整路徑的位元組數。把省略號依字面計算為 69 位元組。代入實驗中的 `/v1/probe_71f2a` 等三條 15 位元組路徑，則各為 77 位元組。腳本的基線請求與候選請求也帶有不同的認證條件，所以實際回應未必可直接比較。",
+      "correct_value": "依展示模板與三條實驗路徑，示例應為 `404 77`。實際長度須以同等請求條件下的回應為準。"
+    },
+    {
+      "claim": "「從 `405 Method Not Allowed` 的 `Allow` 回應標頭直接讀出後端支援的全部方法。」",
+      "verdict": "incorrect",
+      "reasoning": "該標頭的範圍至多是產生回應的一層對該資源所宣告的方法，無法由此推出整個後端或各種認證條件下支援的方法。",
+      "correct_value": "`Allow` 提供該回應所宣告的資源方法，可作為路由盤點的部分證據。"
+    },
+    {
+      "claim": "「觀察型別錯誤觸發或回應時間／快取鍵偏移」可判斷參數是否被後端讀取。",
+      "verdict": "imprecise",
+      "reasoning": "錯誤可能由閘道或通用驗證器產生，回應時間也可能受負載影響。觀察到差異只能說明某一環節可能對輸入有反應，仍無法確認業務程式讀取或使用了該參數。",
+      "correct_value": "將差異視為輸入受到處理的線索，並以可歸因的程式碼或執行紀錄確認處理位置。"
+    },
+    {
+      "claim": "「四個因子均採用明確離散級距（範圍 `1` 至 `4`），分數區間為 `1` 到 `256`。」",
+      "verdict": "correct",
+      "reasoning": "四因子皆為正數，最小乘積為 1⁴，最大乘積為 4⁴。1 與 256 是上下界，區間內並非每個整數都可由四因子相乘得到。",
+      "correct_value": "APS 最小為 1、最大為 256，P0 下限 72 與 P1 下限 32 為章內定義。"
+    },
+    {
+      "claim": "「跨越了幾道不同進程／解析器邊界……取實際邊界數，上限記為 `4`。」",
+      "verdict": "imprecise",
+      "reasoning": "規則只說明上限，未交代零道邊界如何評為至少 1 分。範例也沒有一致說明是否把 Client 到 Nginx 算作第一道邊界。",
+      "correct_value": "明訂計數起點、哪些轉換構成信任邊界，以及適用於零道邊界的規則。若維持 1 至 4 分，可將計數限制在該範圍。"
+    },
+    {
+      "claim": "「接收自由字串排序條件（`3`）並落入 Raw SQL 匯點（`4`）的端點，得分高達 `4 × 3 × 3 × 4 = 144`。」",
+      "verdict": "incorrect",
+      "reasoning": "給定四個數字，乘積確為 144。但依章內級距，扁平字串屬 2，原始 SQL 排序表達式屬 4。Raw SQL 也只描述介面，未證明具備第 4 級影響。",
+      "correct_value": "一般扁平排序字串填 2，原始 SQL 排序表達式填 4。匯點影響按已證實能力評分。若只有跨租戶讀取，兩種輸入情形分別為 48 分與 96 分。"
+    },
+    {
+      "claim": "「需管理員權限（`2`）、跨 1 層（`1`）、僅傳入布林旗標（`1`）的組態開關（`2`），得分僅 `4`。」",
+      "verdict": "imprecise",
+      "reasoning": "乘積 2 × 1 × 1 × 2 確為 4，但「組態開關」無法確立影響級距。章內第 2 級對應跨租戶讀取或快取異常，並未交代該開關的作用。",
+      "correct_value": "若證實影響屬第 2 級，APS 為 4。否則須依開關可改變的狀態重新評分。"
+    },
+    {
+      "claim": "「`Content-Length: 121`」與示例 JSON 相符，且「`routeTag` 字串值……長度 = 18 字元」。",
+      "verdict": "correct",
+      "reasoning": "按展示的單行 ASCII 本文逐段計數，五段分別是 28、25、19、17、32 位元組，合計 121。末段的欄名、標點及閉括號共 14 位元組，值本身為 18 位元組。此計算以本文末尾沒有附加換行為前提。",
+      "correct_value": "本文 121 位元組，`routeTag` 值 18 字元、18 位元組。"
+    },
+    {
+      "claim": "「接著追蹤攻擊者送出的真實請求封包，逐位元組與逐層驗證污點狀態。」",
+      "verdict": "imprecise",
+      "reasoning": "展示的 Authorization 值有省略號及括號註解，因此無法用來驗證完整 JWT。材料也沒有封包擷取、原始碼或逐層執行紀錄。本文長度可以獨立核算，實測性質與執行結果無法確認。",
+      "correct_value": "將其標為含省略欄位的示意報文及依章內假設重建的資料流。實測主張須附可核對的紀錄。"
+    },
+    {
+      "claim": "「僅檢查餘額 10,000 >= 2,500（剩 7,500）。」",
+      "verdict": "imprecise",
+      "reasoning": "算術成立，10,000 減 2,500 等於 7,500 分。但表格只記載餘額檢查及費率查詢，未提供扣帳成功或交易提交的證據。",
+      "correct_value": "餘額檢查可通過。若成功扣帳 2,500 分且無其他費用或異動，餘額才是 7,500 分。"
+    },
+    {
+      "claim": "「驗證長度與型別……不等於淨化 SQL 控制字元。」",
+      "verdict": "correct",
+      "reasoning": "18 個 ASCII 字元符合字串型別及 64 字元上限。兩條規則都沒有約束字串進入 SQL 時必須作為資料處理，因此通過 DTO 驗證後，對該 SQL 語境仍屬未受信任輸入。",
+      "correct_value": "DTO 的型別與長度驗證可保留。SQL 引數應透過參數綁定維持資料與查詢結構的界線。"
+    },
+    {
+      "claim": "「`Sink_Impact = 4`……總分 = `3 × 3 × 2 × 4 = 72` 分 -> 落入 P0。」",
+      "verdict": "incorrect",
+      "reasoning": "算式與 P0 門檻相符，但章內展示的查詢及資料流未證明任意程式碼執行、任意檔案寫入或完整認證繞過。依模型，跨租戶讀取為 2，帳本寫入為 3，且兩者均須有獨立證據。",
+      "correct_value": "保留其餘三因子的乘積 18。若只證實跨租戶讀取，為 36 分、P1。若證實帳本寫入，為 54 分、P1。只有證實第 4 級後果才為 72 分、P0。"
+    },
+    {
+      "claim": "「Phase 1–2 逆向篩選後保留 = 7 處 Raw Sink、僅 1 條可達外部 HTTP Source（剩餘路徑佔比 1/112 ≈ 0.89%）。」",
+      "verdict": "imprecise",
+      "reasoning": "1 ÷ 112 × 100 約為 0.893%，但分母是註冊路由數，不能據此得到程式碼或全部呼叫路徑的保留率。前文記載命中 7 個檔案，檔案數也無法推出匯點數。僅一個檔案位於示範端點的呼叫鏈，無法證明其餘檔案均不受其他對外路由觸及。",
+      "correct_value": "若分子是保留的一條註冊路由，路由佔比約為 0.89%。命中檔案、匯點、可達路徑及耗時須各自列出證據。"
+    },
+    {
+      "claim": "「僅供內部排程呼叫的 `/v1/internal/ledger-snapshot`，全部透過同一條 `/v1/` 前綴暴露在公網上。」",
+      "verdict": "imprecise",
+      "reasoning": "片段只能支持符合位置規則的請求會交由該上游處理。公網可達性還依賴監聽範圍與外層限制，資料可存取性則依賴實際路由與授權。參考解答也容許一般商戶收到 403。",
+      "correct_value": "寬鬆前綴可能將原本預期內部使用的路由帶到外部閘道。應分別確認閘道可達、路由存在與業務授權。"
+    },
+    {
+      "claim": "「這正是 OWASP API Security Top 10:2023 中的 API9: Improper Inventory Management（不當資產清單管理）。」",
+      "verdict": "imprecise",
+      "reasoning": "文件與實際路由漂移可從章內案例重建為資產清單問題。所附史料摘錄談的是通用 OWASP Top 10:2025，沒有收錄 API Security Top 10:2023 的分類表，無法獨立核對版本、編號與正式名稱。",
+      "correct_value": "案例可定性為 API 資產清單與部署路由漂移。API9 的版本及正式名稱須以該年 API 專案條目核定。"
+    },
+    {
+      "claim": "「NestJS 的請求生命週期順序是固定的：`Middleware → Guards → Interceptors (Pre) → Pipes → Route Handler → Interceptors (Post) → Exception Filters`。」",
+      "verdict": "incorrect",
+      "reasoning": "此序列將例外過濾器畫成每筆請求最後必經的階段。正常回應沒有例外可供過濾；未處理例外可能先於處理器或攔截器的正常回程而發生。",
+      "correct_value": "正常路徑依序為 Middleware、Guards、前置 Interceptors、Pipes、處理器和後置 Interceptors。例外過濾器屬未處理例外的分支。"
+    },
+    {
+      "claim": "「使用沒有綁定 DTO 類別的 `@Headers('x-idempotency-key')`、`@Query()`、`@Param()`，`ValidationPipe` 便無從套用白名單與型別轉換。」",
+      "verdict": "imprecise",
+      "reasoning": "直接存取原始請求及缺少 DTO 約束時，無法依賴 DTO 白名單。這與所有參數永遠不經 Pipe 或永遠不會轉換是不同命題。章內沒有涵蓋參數級 Pipe、自訂驗證及啟用轉換的情況。",
+      "correct_value": "前置元件與原始請求存取須自行驗證。個別欄位可透過適用的 DTO、參數級 Pipe 或明確驗證建立約束，是否轉換依綁定及設定判定。"
+    },
+    {
+      "claim": "「只設 `whitelist: true` 而未設 `forbidNonWhitelisted: true`……會剝除未定義欄位。」",
+      "verdict": "imprecise",
+      "reasoning": "白名單針對受驗證 DTO 的驗證中繼資料判定允許的屬性。屬性在 TypeScript 類別內有宣告，仍可能沒有驗證裝飾器。此機制也不會替允許的字串加上語境專用的安全約束。",
+      "correct_value": "對適用的 DTO，`whitelist` 會移除缺少白名單驗證中繼資料的屬性。再啟用 `forbidNonWhitelisted` 可改為拒絕此類輸入。"
+    },
+    {
+      "claim": "「偏離此基線即可鎖定以下 3 個未列於 `openapi-public.json` 的端點。」",
+      "verdict": "imprecise",
+      "reasoning": "基線差異無法單獨證明路由已註冊、未列入規格或缺少授權。展示的候選迴圈只發出 GET，無法產出參考解答所述的 POST 結果。材料也未提供公開規格、路由清單、建置版本或實際回應。",
+      "correct_value": "將三個端點及狀態碼列為待驗證的實驗預期。使用相同建置版本的規格、方法對應的回應及路由和授權證據交叉比對。"
+    },
+    {
+      "claim": "「若 `legacy-export` 接收匯出格式字串並流入檔案讀寫或 Raw SQL Sink，其 APS（`Exposure=3 × Boundary=3 × Complexity=3 × Sink_Impact=3..4 = 81..108`）即落入 P0。」",
+      "verdict": "incorrect",
+      "reasoning": "給定原因子，81 與 108 的乘積正確。但普通匯出格式字串在模型中屬扁平字串，應為 2。檔案或 Raw SQL 呼叫也無法自動確立第 3 或第 4 級影響。",
+      "correct_value": "若暴露度與邊界皆為 3，普通匯出格式字串使三因子乘積為 18。經證實的第 3 級影響為 54 分、P1，第 4 級為 72 分、P0。"
+    },
+    {
+      "claim": "「接收複合 XML/ZIP 檔案或路徑字串（`Input_Complexity = 4`）……得分為 `3 × 3 × 4 × 4 = 144`（若無須認證更高達 `192`）。」",
+      "verdict": "imprecise",
+      "reasoning": "複合 XML 或 ZIP 可按章內定義給 4 分。在其餘因子成立時，兩個乘積均正確。普通路徑字串屬扁平字串，依同一規則為 2 分。CPU 採樣佔比也沒有出現在 APS 算式中。",
+      "correct_value": "複合 XML 或 ZIP 的示例為 144 或 192 分。若只接收普通路徑字串，其餘條件相同時為 72 或 96 分。"
+    },
+    {
+      "claim": "「效能工程優化的是『平均期望延遲 × 呼叫頻率』……安全工程防禦的是『攻擊者主動選擇的最壞路徑』。」",
+      "verdict": "imprecise",
+      "reasoning": "平均延遲乘呼叫頻率可描述某些累積成本，但無法代表尾端延遲或阻塞等效能目標。章內 APS 也沒有把最壞路徑形式化，只按四個指定因子評分。",
+      "correct_value": "效能分析可按採樣佔比、延遲或其他目標排序。依章內 APS，低頻路徑仍可因暴露度與已證實的高影響得到高分。"
+    },
+    {
+      "claim": "「CodeQL 與 Semgrep」可用於跨檔案語意規則與自動化掃描。",
+      "verdict": "imprecise",
+      "reasoning": "所附摘錄支持將 CodeQL 描述為跨檔案資料流與變體分析工具，並支持 Semgrep 用於語法樹規則及 CI 掃描。摘錄未提供 Semgrep 跨檔案能力所適用的版本、語言或產品層級。",
+      "correct_value": "依已提供的證據，可說明 CodeQL 的跨檔案資料流定位與 Semgrep 的規則掃描用途。較具體的 Semgrep 跨檔案能力須標出適用條件。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 提供列出的五個 Information disclosure 與 API testing 關卡，難度分別如章中所列。",
+      "verdict": "imprecise",
+      "reasoning": "所附摘錄只支持 Academy 是免費學習資源並涵蓋若干現代 Web 安全議題，沒有逐項列出這五個關卡、分類與難度。",
+      "correct_value": "可保留 Academy 作為學習資源。個別關卡名稱、分類及難度須以對應課程頁核對。"
+    }
+  ]
+}

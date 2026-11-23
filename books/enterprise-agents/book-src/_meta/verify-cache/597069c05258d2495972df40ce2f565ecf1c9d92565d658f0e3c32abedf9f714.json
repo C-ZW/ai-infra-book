@@ -1,0 +1,78 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "方案 A：前綴累計輸入 = 6,000 × 5 = 30,000 tokens；前綴輸入成本 = 30,000 × ($2.00 / 1,000,000) = $0.060000 / 筆",
+      "verdict": "correct",
+      "reasoning": "基準資料的前綴是 6,000 tokens（2,400 + 3,600），對話 5 回合，所以 6,000 × 5 = 30,000。Sonnet 5.5 輸入牌價 $2.00/MTok，30,000 × 2 / 1,000,000 = $0.06。只計前綴不含每回合新增輸入，這點與章內「純前綴」的定義一致。",
+      "correct_value": "$0.060000 / 筆"
+    },
+    {
+      "claim": "Haiku Router 前綴 450 tokens 成本 $0.000045；計入 90 tokens 輸出另加 $0.000045，合計 $0.000090",
+      "verdict": "correct",
+      "reasoning": "450 × 0.10 / 1,000,000 = $0.000045；90 × 0.50 / 1,000,000 = $0.000045；兩者合計 $0.000090。用的是 Haiku 5.5 ≤100K 的牌價。",
+      "correct_value": "$0.000045（前綴）；$0.000090（含輸出）"
+    },
+    {
+      "claim": "唯讀 Worker（Haiku、2,800 × 2 回合）前綴成本 $0.000560；Opus 仲裁觸發時 $0.022400，以 20% 攤提為 $0.004480",
+      "verdict": "correct",
+      "reasoning": "5,600 × 0.10 / 1,000,000 = $0.00056；5,600 × 4.00 / 1,000,000 = $0.0224；乘上 0.2 得 $0.00448。",
+      "correct_value": "$0.000560；$0.022400；$0.004480"
+    },
+    {
+      "claim": "方案 B 合計 $0.005085 / 筆，降幅 91.53%；扇出 2 個 Worker 時為 $0.005645，降幅 90.59%",
+      "verdict": "correct",
+      "reasoning": "0.000045 + 0.00056 + 0.00448 = 0.005085；(0.06 − 0.005085) / 0.06 = 91.525%，四捨五入為 91.53%。多一個 Worker 再加 0.00056 得 0.005645；(0.06 − 0.005645) / 0.06 = 90.59%。",
+      "correct_value": "$0.005085（91.53%）；$0.005645（90.59%）"
+    },
+    {
+      "claim": "預算熔斷 $0.050 約為分層基準 $0.005085 的 10 倍",
+      "verdict": "correct",
+      "reasoning": "0.005085 × 10 = 0.05085，章節用「約」來描述，可以接受。另需注意：這個基準只算純前綴，實際單筆成本含輸出與每回合新增輸入，熔斷閾值的倍數意義會比 10 倍小。",
+      "correct_value": "約 9.8 倍（$0.050 / $0.005085）"
+    },
+    {
+      "claim": "尖峰 12 tickets/s，每筆扇出 3–4 個 Worker，等於 36–48 次 Worker 啟動／秒；耗滿 4 回合時達 144–192 次呼叫／秒",
+      "verdict": "correct",
+      "reasoning": "12 × 3 = 36，12 × 4 = 48；36 × 4 = 144，48 × 4 = 192。",
+      "correct_value": "36–48 次／秒；144–192 次呼叫／秒"
+    },
+    {
+      "claim": "Router 掛 2 個工具（每個約 200 tokens）會使每日多出 20,000,000 輸入 tokens，按 Haiku 無快取牌價約多 $2／日",
+      "verdict": "correct",
+      "reasoning": "400 × 50,000 = 20,000,000 tokens；20 MTok × $0.10 = $2.00。前提是每筆只呼叫 Router 1 次。",
+      "correct_value": "20,000,000 tokens／日，約 $2.00／日"
+    },
+    {
+      "claim": "Haiku 5.5 的最小快取門檻為 512 tokens",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只寫 512 tokens 適用於「newer Claude 5 / 5.5 flagship models (claude-opus-5-5)」，Sonnet 為 1,024，舊版 Haiku 4.5 為 4,096，並且要求逐一模型查證。Haiku 5.5 的門檻在提供的證據中沒有記載，章節把 512 套用到 Haiku 5.5 缺乏依據。",
+      "correct_value": "Haiku 5.5 的門檻在提供的證據中未記載（unknown），部署前應查官方文件逐模型確認"
+    },
+    {
+      "claim": "SDK 內建重試加上外層重試，「2 次 × 2 次會膨脹成最多 9 次嘗試」",
+      "verdict": "imprecise",
+      "reasoning": "若內外層各重試 2 次，每層各有 3 次嘗試，(1+2) × (1+2) = 9，結論成立。但原文寫「2 次 × 2 次」，讀起來像 4，容易誤解。此外，SDK 預設重試次數不在提供的證據中。",
+      "correct_value": "內外層各「1 次初始 + 2 次重試」= 3 × 3 = 最多 9 次嘗試（SDK 預設值需另行查證）"
+    },
+    {
+      "claim": "Full Jitter（base = 500ms、cap = 8,000ms、max_retries = 2），此參數下等待上界為 1,000ms",
+      "verdict": "imprecise",
+      "reasoning": "以 sleep = random(0, min(cap, base × 2^n)) 計算，n 從 0 起算時，兩次等待的上界分別為 500ms 與 1,000ms。所以 1,000ms 只是單次等待的最大值，累計等待上界是 1,500ms。若 n 從 1 起算，則為 1,000ms 與 2,000ms，累計 3,000ms。章節沒有說明指數起點，也沒區分單次與累計。",
+      "correct_value": "單次等待上界 1,000ms（n 從 0 起算），累計等待上界 1,500ms；應明示公式"
+    },
+    {
+      "claim": "Haiku 5.5 呼叫應省略 temperature；Agent SDK 可搭配 permissionMode: \"dontAsk\"",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只提到 Agent SDK 的 allowedTools / disallowedTools 權限控制，沒有關於 Haiku 5.5 取樣參數限制的記載，也沒有 permissionMode 或 \"dontAsk\" 這個值。無法用提供的材料判定。",
+      "correct_value": "需以官方 API / Agent SDK 文件查證；提供的證據只支持 allowedTools / disallowedTools"
+    },
+    {
+      "claim": "離線模擬輸出 totalCostUsd：TKT-5001 為 0.00051、TKT-5002 為 0.01811；WorkerHandoff 約 120–180 tokens",
+      "verdict": "imprecise",
+      "reasoning": "這些數值取決於範例程式碼的模擬 token 數與輸出量，材料中沒有提供，無法重算。章節也自承情境與容量假設不同（2 個 Worker、1 次 Opus）。120–180 tokens 同樣沒有計算依據。",
+      "correct_value": "無法從提供材料驗證（unknown），需實際執行範例或列出模擬用 token 數"
+    }
+  ]
+}

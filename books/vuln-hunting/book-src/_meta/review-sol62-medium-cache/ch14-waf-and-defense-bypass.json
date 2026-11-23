@@ -1,0 +1,194 @@
+{
+  "chapter": "ch14-waf-and-defense-bypass.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "在 NexusPay 尖峰 `2,000 req/s` 的流量下，WAF 必須在幾毫秒內完成檢查，不能對每個請求啟動完整的 SQL 語法樹（AST）解析器、JavaScript 引擎或 XML DOM 解析器。",
+      "verdict": "imprecise",
+      "reasoning": "基準表支持尖峰流量為每秒 2,000 個請求。若流量均勻，平均到達間隔是 0.5 毫秒，但單一請求可用的處理時間還取決於並行度、硬體與整體延遲目標。章內沒有提供足以推出所稱延遲預算或排除特定解析器的資料。",
+      "correct_value": "NexusPay 的尖峰流量為 2,000 req/s。WAF 的逐請求延遲與解析成本須依部署資源及服務目標評估。"
+    },
+    {
+      "claim": "在跨層攻擊鏈中，防禦對抗是所有 Web 與 API 漏洞進入實戰利用的「前置放大器」。",
+      "verdict": "incorrect",
+      "reasoning": "章內機制都以目標請求會被邊緣防線攔下為前提。若可達的脆弱路由沒有這道防線，或現有規則原本就不涵蓋該漏洞，該前提便不成立。",
+      "correct_value": "當邊緣控制確實會攔截觸發漏洞的請求時，突破該控制才是該條攻擊路徑的前置條件。"
+    },
+    {
+      "claim": "6 位數 OTP 驗證（`10^6` 種組合）",
+      "verdict": "correct",
+      "reasoning": "章內的 OTP 驗證接受恰好六個十進位數字，且允許前導零。每一位各有十種取值，因此共有 10 的六次方種字串。",
+      "correct_value": "1,000,000 種六位數字字串。"
+    },
+    {
+      "claim": "突破 IP 或端點級 Rate Limiter 後，攻擊者能對 NexusPay 商戶登入、6 位數 OTP 驗證（`10^6` 種組合）、密碼重設碼或優惠券兌換端點發動高併發暴力破解與憑證填充（Credential Stuffing），直接造成帳號接管與財務損失。",
+      "verdict": "imprecise",
+      "reasoning": "移除一個請求速率門檻，可增加在該門檻下原本會被阻擋的嘗試。章內未建立嘗試能在 OTP 有效期內成功，也未排除帳號級限制、其他驗證因素或交易控制。",
+      "correct_value": "IP 或端點級限流失效可增加猜測與憑證填充風險。帳號接管及財務損失取決於驗證與交易流程中的其他控制。"
+    },
+    {
+      "claim": "早期或預設配置的 AWS WAF 經典檢查上限為 `8,192 bytes`，即 `8 KiB`；部分代理方案在預設模式下僅檢查前 `8 KiB` 至 `128 KiB`。",
+      "verdict": "imprecise",
+      "reasoning": "8 KiB 的確是 8 × 1,024 = 8,192 bytes。所附來源材料沒有記錄 AWS WAF 的版本、整合服務、預設上限或超限處理，也沒有給出其他代理方案的名稱與版本。章內的假設值不能證明產品史實。",
+      "correct_value": "8,192 bytes 等於 8 KiB。AWS WAF 與其他代理的檢查上限須按具名產品、版本、整合服務與設定查證。"
+    },
+    {
+      "claim": "`express.json()`（底層為 `body-parser`）的預設 `limit` 參數為 `100kb`——在 `bytes` 套件的換算下，這代表 `100 × 1024 = 102,400 bytes`。",
+      "verdict": "imprecise",
+      "reasoning": "依章內採用的每 kb 為 1,024 bytes 換算，乘積正確。基準表未定義 Express 的主體大小預設值，附錄也未提供對應版本的 API 文件或原始碼內容。",
+      "correct_value": "依題設換算，100kb 為 102,400 bytes。Express 的預設值應附適用版本及文件依據。"
+    },
+    {
+      "claim": "`8,192 bytes` 與 `102,400 bytes` 之間，存在高達 `94,208 bytes` 的檢查盲區。",
+      "verdict": "correct",
+      "reasoning": "在題設的同一位元組計量下，後端最多接受 102,400 bytes，邊緣只檢查最前面的 8,192 bytes。相減得 94,208 bytes。",
+      "correct_value": "在題設的部分檢查模型下，一個達到後端接收上限的主體最多有 94,208 bytes 未受該前段視窗檢查。"
+    },
+    {
+      "claim": "Worked Example 所列的 JSON 各區段長度、偏移量與總長度彼此一致。",
+      "verdict": "correct",
+      "reasoning": "範例字串均在 ASCII 範圍，每字元占一個位元組。逐段計數後，尾段長度與各分段小計相符。從索引零起逐段累加，最後索引等於總長度減一，未檢查範圍的大小也等於總長度減去檢查視窗大小。",
+      "correct_value": "原列長度、偏移及總長度一致。"
+    },
+    {
+      "claim": "後端完整解析後，`req.body[\"__proto__\"]` 建立自有屬性，若後續流入 deepMerge 或未參數化 SQL Sink 即觸發漏洞。",
+      "verdict": "imprecise",
+      "reasoning": "把 JSON 鍵解析為自有屬性，只建立了物件自身的資料。是否改動原型取決於合併函式如何處理鍵與目標物件。SQL 行為則取決於排序欄位如何進入查詢、查詢結構與資料庫介面。章內沒有提供這些下游實作。",
+      "correct_value": "解析結果可包含自有屬性。原型污染與 SQL 注入各需對應的下游實作條件，須分別由資料流及匯點程式碼判定。"
+    },
+    {
+      "claim": "某些早期或輕量級反向代理在緩衝區尚未組裝完成前不會重組大塊 chunk。",
+      "verdict": "imprecise",
+      "reasoning": "將傳輸分塊獨立交給只接受單一區段的規則，與將完整主體交給規則，確實是兩種不同的檢查模型。附錄沒有提供採用前一模型的具名代理、版本或觀察紀錄。",
+      "correct_value": "應把分塊檢查差異寫成條件式模型。若要主張特定部署有此行為，應列出代理與版本，並提供主體重組及檢查階段的證據。"
+    },
+    {
+      "claim": "RFC 並未規定當同一個查詢參數或表單欄位名稱出現多次時，伺服器應該取哪一個值。",
+      "verdict": "imprecise",
+      "reasoning": "句子將 URI 查詢字串、表單編碼及應用程式取值介面合併成一項標準主張，卻沒有指出適用的 RFC 或段落。附錄也未提供標準正文。章內的框架範例可呈現不同取值模型，但不足以證明這項廣泛的標準主張。",
+      "correct_value": "應分別列出適用的查詢字串與表單規格，並指明目標框架及取值介面如何處理重複欄位。"
+    },
+    {
+      "claim": "Express 的預設 `qs` 解析器回傳陣列，PHP `$_GET` 或 `parse_str` 取末值，Flask `MultiDict.get()` 取首值，ASP.NET `Request.QueryString` 以逗號串接。",
+      "verdict": "imprecise",
+      "reasoning": "按表中各自明示的聚合規則，可推得陣列、末值、首值和逗號串接四種結果。材料缺少產品版本、實際解析器設定與 API 文件，無法證實這些規則都是所列產品的預設行為，尤其不能把 `qs` 一概稱為 Express 的預設解析器。",
+      "correct_value": "在指定版本、解析器設定及取值 API 後，分別列出重複參數的結果。Express 應區分解析結果與預設解析器名稱。"
+    },
+    {
+      "claim": "該陣列傳入下游 ORM 時會被展開為 `WHERE status IN ('pending', 'approved')`（或經 `String()` 轉成 `\"pending,approved\"`），導致越權讀取 `approved` 資料。",
+      "verdict": "incorrect",
+      "reasoning": "在題設的陣列解析結果下，陣列與字串型別不同，嚴格比較會得到 false。題設指定 ORM 將陣列展開為集合時，集合包含受限狀態。但 `String()` 分支只產生一個帶逗號的字串，是否匹配受限資料取決於之後如何解讀該字串。原句把後果套用到兩個分支。",
+      "correct_value": "陣列會通過該黑名單檢查。題設的 ORM 展開分支會納入受限狀態。字串轉換分支的查詢結果須依下游查詢語意判定。"
+    },
+    {
+      "claim": "RFC 8259 並未強制禁止物件內出現重複鍵名。當邊緣解析器採首值而 V8 `JSON.parse()` 採末值時，後端最終收到 `role: \"admin\"`。",
+      "verdict": "imprecise",
+      "reasoning": "依題設的末值覆寫規則，第二個 `role` 值會取代第一個，計算結果正確。來源材料沒有提供 RFC 8259、ECMA-262 或 V8 實作內容，無法獨立確認標準的規範用語及實作依據。",
+      "correct_value": "在後端採末值覆寫的題設下，結果為 `role: \"admin\"`。標準主張應附對應條文，並說明鍵名唯一性的規範強度。"
+    },
+    {
+      "claim": "V8 的 `JSON.parse()` 會在解析階段將 `\"\\u005f\\u005fproto\\u005f\\u005f\"` 或 `\"\\u0027 OR 1=1--\"` 還原為 `\"__proto__\"` 與 `\"' OR 1=1--\"`。",
+      "verdict": "correct",
+      "reasoning": "依章內給定的 JSON Unicode 跳脫語法，十六進位 005F 對應底線，0027 對應單引號。逐一替換後，其餘字元維持原序，與所列解碼值相符。",
+      "correct_value": "章內兩個字串的 Unicode 解碼值正確。"
+    },
+    {
+      "claim": "若前置 WAF 預設只按 UTF-8 / ASCII 掃描位元組流且未拒絕非 UTF-8 `charset`，WAF 就看不出雙位元組或非 ASCII 編碼下的攻擊關鍵字而放行。",
+      "verdict": "incorrect",
+      "reasoning": "編碼差異可使特定逐位元組規則看不到預期字面形式。從一條規則未匹配，不能推得整個閘道放行，因為其他規則、解析錯誤處理或媒體類型限制仍可能拒絕請求。",
+      "correct_value": "編碼處理不一致可能造成特定規則漏判。請求是否放行取決於完整的解析、規則與錯誤處理策略。"
+    },
+    {
+      "claim": "現代 Express 標準 `body-parser.json()` 會檢查字元集必須以 `utf-` 開頭，對 `ibm037` 會直接回傳 `415 Unsupported Media Type`。",
+      "verdict": "imprecise",
+      "reasoning": "如果題設的前綴檢查存在且會對該主體執行，`ibm037` 確實通不過。材料未提供套件版本、原始碼或錯誤處理測試，也未界定請求是否符合該解析器的媒體類型匹配條件。",
+      "correct_value": "將 415 行為限定於有證據支持的 `body-parser` 版本與已進入 JSON 解析中介層的請求。"
+    },
+    {
+      "claim": "攻擊者只需把 `Content-Type` 寫成 `multipart/form-data; boundary=\"----abc\"; charset=utf-8` 或利用多餘空白與換行，就能讓 WAF 跳過該欄位解析，後端卻正常讀取。",
+      "verdict": "imprecise",
+      "reasoning": "從解析器可能有容錯差異，無法推出所列標頭會使特定 WAF 跳過解析。材料未提供解析器版本、對應主體、規則或解析錯誤時的處置。",
+      "correct_value": "Multipart 解析差異須以具名元件及版本、完整請求和實測結果確認。"
+    },
+    {
+      "claim": "每一層代理在轉發時，會把上一跳的 TCP 來源 IP 附加（append）到 `X-Forwarded-For`（XFF）標頭尾端。",
+      "verdict": "incorrect",
+      "reasoning": "章內自己的三層代理題設就指定最外層代理覆寫標頭。既然寫入行為可因代理而異，拓樸本身也不能證明每一層採用附加。",
+      "correct_value": "每層代理可能附加、覆寫或移除 XFF。必須依部署設定重建最後送達應用程式的位址鏈。"
+    },
+    {
+      "claim": "在固定三層架構下，`trust proxy = 1` 會把 AWS ALB 的位址當成 `req.ip`，而 `trust proxy = 3` 可取得真實客戶端 IP。",
+      "verdict": "correct",
+      "reasoning": "依題設，最外層寫入客戶端位址，其餘受控代理依序附加上一跳。從應用程式往外的位址序列是 Nginx、ALB、Cloudflare、客戶端。只信任第一個位址時，第一個不受信任的位址是 ALB。信任前三個時，則是客戶端。",
+      "correct_value": "在所有流量均經固定三跳，且各層按題設維護 XFF 的條件下，設為 1 取得 ALB 位址，設為 3 取得客戶端位址。"
+    },
+    {
+      "claim": "將 AWS ALB 的內網 IP 當成 `req.ip`，導致所有經過該 ALB 的不同使用者共用同一個限流計數器而造成全站誤殺。",
+      "verdict": "imprecise",
+      "reasoning": "只以 `req.ip` 作為鍵時，得到同一個 ALB 節點位址的用戶確實共用計數器。但材料沒有說明 ALB 節點數、鍵的其他維度、端點覆蓋範圍或流量是否已達門檻。",
+      "correct_value": "在只用 IP 作鍵的限流範圍內，共用同一 ALB 節點位址的用戶可能彼此耗用配額。影響範圍取決於節點與限流設定。"
+    },
+    {
+      "claim": "一個標準的 IPv6 `/64` 子網前綴包含 `2^64`（約 `1.84 × 10^19`）個不同的 `/128` 位址值。",
+      "verdict": "correct",
+      "reasoning": "IPv6 位址有 128 位元。固定 64 位元後，剩下的 64 位元各有兩種取值，共 18,446,744,073,709,551,616 種，與章內近似值一致。",
+      "correct_value": "每個 IPv6 `/64` 包含 `2^64` 種位址值。實際可用來源位址受配置、路由及過濾政策約束。"
+    },
+    {
+      "claim": "限流鍵須先對 `pathname` 轉小寫、合併重複斜線、剝除尾斜線與 `;` 矩陣參數。",
+      "verdict": "incorrect",
+      "reasoning": "即使接受章內所述 Express 大小寫與尾斜線設定，也無法由這兩項設定推得 Express 將重複斜線或矩陣參數視為等價。若對路由器原本區分的路徑採相同限流鍵，兩者就可能共用配額。範例改寫 `req.url`，也可能改變實際路由結果。",
+      "correct_value": "依實際路由匹配語意設計限流鍵，或使用已匹配的路由識別值。若要改寫 URI，應把路由行為的變更列為獨立決策。"
+    },
+    {
+      "claim": "若端點為 GraphQL，攻擊者還可利用單一 HTTP 請求內的 Alias Batching 繞過請求次數型限流器。",
+      "verdict": "imprecise",
+      "reasoning": "HTTP 請求數與解析器執行成本是不同計量單位。基準表的 20 個操作適用於單次 Batch 請求，未規定單一查詢內的別名數或解析器呼叫數。材料也未交代目標端點的欄位成本、執行限制及業務端限流。",
+      "correct_value": "只按 HTTP 請求計數可能低估 GraphQL 執行成本。應分別評估 HTTP 批次操作上限、查詢欄位成本與業務操作配額。"
+    },
+    {
+      "claim": "參考修補程式碼強制僅接受 UTF-8 `application/json`。",
+      "verdict": "incorrect",
+      "reasoning": "程式對媒體類型使用前綴比對，對 charset 使用子字串比對，兩者都沒有比對解析後的完整值。例如 `application/jsonx` 可通過第一個條件，`charset=utf-8x` 可滿足第二個子字串條件。這層檢查也只在 POST 執行。",
+      "correct_value": "以媒體類型解析器拆解 Content-Type，精確比對類型與所接受的 charset 值，並將驗證套用於需要讀取 JSON 主體的路由。"
+    },
+    {
+      "claim": "參考修補程式碼對 `pathname` 做正規化並保留原始 query string。",
+      "verdict": "incorrect",
+      "reasoning": "`req.url.split(\"?\")` 會在每個問號切開，解構只取前兩個片段。若查詢字串本身還含問號，第二個問號與其後內容會遺失。",
+      "correct_value": "只以第一個問號區隔路徑，並原樣保留該問號起的整段查詢字串。"
+    },
+    {
+      "claim": "參考修補程式碼落實了拒絕 JSON 重複鍵的防禦。",
+      "verdict": "incorrect",
+      "reasoning": "範例先執行 `express.json()`，再把解析物件交給 Zod。依章內的末值覆寫模型，進入 Schema 時，同名鍵是否曾出現多次的資訊已經丟失。`.strict()` 可處理解析後的未知欄位，無法重建已消失的鍵。",
+      "correct_value": "若要拒絕重複鍵，須在讀取原始 JSON 或執行解析時檢查，再用 Schema 驗證解析結果。"
+    },
+    {
+      "claim": "參考解答提供「以業務主鍵 (merchant_id) + 正規化 IP (/64 IPv6) 綁定於路由層的 OTP 限流器」。",
+      "verdict": "incorrect",
+      "reasoning": "程式只用請求中的 `merchant_id` 建立程序內 `Map` 的鍵，沒有讀取來源 IP 或計算 IPv6 前綴。計數器沒有到期、滑動視窗、重設、跨程序共享或指數退避。通過 Schema 的前五次要求固定回傳 401，後續固定回傳 429，流程也沒有真正驗證 OTP。",
+      "correct_value": "這是單程序、以請求所填 `merchant_id` 分桶的累計示例。完整實作應從受驗證的業務識別建立共享且有期限的計數器，按需求加入獨立的來源網路維度，並明確定義計數、驗證及重設條件。"
+    },
+    {
+      "claim": "重新執行任務一與任務二的測試腳本，確認全數被阻斷。",
+      "verdict": "incorrect",
+      "reasoning": "腳本主要列印 HTTP 狀態與回應，唯一斷言只檢查一個主體長度。它沒有執行任務一的 Unicode 個案，也沒有核對後端解析結果、正向對照或預期狀態。修補範例的 OTP 路由會把第一至第五次合格要求送入處理器並回傳 401，因此「全數被阻斷」也混淆了驗證失敗與限流拒絕。",
+      "correct_value": "腳本可列印部分對照結果。要確認修補，須對正向對照、主體拒絕、Schema 拒絕及第六次限流分別設斷言，並補齊 Unicode 個案。實際狀態仍需環境與測試紀錄佐證。"
+    },
+    {
+      "claim": "自我檢核第 1 題的 WAF 檢查在零起算 offset `8,191` 停止，且 `8,190` 個字元的填充與 JSON 外殼共 `8,199 bytes`。",
+      "verdict": "imprecise",
+      "reasoning": "前 8,192 個位元組對應索引 0 至 8,191，邊界計算正確。填充長度則以字元給定，沒有指定編碼、字元種類或 JSON 序列化方式。8,199 bytes 僅在序列化後的每個填充字元各占一個位元組時成立。",
+      "correct_value": "視窗最後一個位元組的零起算索引為 8,191。若要得到解答所列的精確區段長度，題目應指定 8,190 個無須跳脫的 ASCII 字元，或直接以序列化後的位元組數出題。"
+    },
+    {
+      "claim": "PortSwigger Academy 提供 *SQL injection with filter bypass via XML encoding*，以及所述關於 `X-Forwarded-For` 與 IP 封鎖的 Practitioner 實驗。",
+      "verdict": "imprecise",
+      "reasoning": "所附來源材料只支持 Academy 涵蓋若干 Web 安全主題，並指向 PortSwigger Research 首頁。它沒有列出這兩個實驗的頁面、正式名稱或難度。",
+      "correct_value": "附上各實驗的官方頁面及可核對的名稱與難度。依現有材料，只能確認 Academy 作為整體學習資源的引述。"
+    }
+  ]
+}

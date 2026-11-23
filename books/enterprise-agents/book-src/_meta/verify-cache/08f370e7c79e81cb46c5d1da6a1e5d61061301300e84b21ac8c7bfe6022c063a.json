@@ -1,0 +1,60 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "五回合基準（30,000 / 42,000 = 71.43%）在全輸入占比上本就低於 80%。",
+      "verdict": "incorrect",
+      "reasoning": "五回合各含 6,000 tokens 固定前綴，合計 30,000 tokens，佔總輸入 42,000 tokens 的 71.43%；但這是前綴占比，不是快取讀取占比。若第一回合建立快取、後四回合均命中，快取讀取量為 4 × 6,000 = 24,000 tokens。若第一回合已命中先前建立的快取，才可能達到 30,000 tokens 的讀取量。",
+      "correct_value": "冷啟動且後四回合全命中時，快取讀取占總輸入 24,000 / 42,000 = 57.14%；五回合皆讀取既有快取時為 71.43%。"
+    },
+    {
+      "claim": "基準單筆成本 = (42,000 × $2.00 + 1,750 × $10.00) / 1,000,000 = $0.1015 / 筆。",
+      "verdict": "correct",
+      "reasoning": "依題設，五回合輸入合計 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens，輸出合計 350 × 5 = 1,750 tokens。按基準牌價，輸入成本為 $0.084，輸出成本為 $0.0175，合計 $0.1015。",
+      "correct_value": "$0.1015／筆；適用於題設的無快取、全程 Sonnet 5.5 情境。"
+    },
+    {
+      "claim": "12% 工單多出 1 回合且錯因可由 strict 消除時，平均每筆工單期望節省 $0.0033，每月 $4,950。",
+      "verdict": "correct",
+      "reasoning": "第六回合輸入為 10,800 + 1,200 = 12,000 tokens，輸出為 350 tokens，成本是 $0.024 + $0.0035 = $0.0275。乘以 12% 得每筆 $0.0033；再乘每日 50,000 筆及 30 天，得到 $4,950。",
+      "correct_value": "依所列假設為 $0.0033／筆、$165／天、$4,950／30 天；12% 錯誤率與全部可消除均屬情境假設。"
+    },
+    {
+      "claim": "提交時後端必須驗證綁定 (tenant_id, actor, operation, amount_usd) 的短效預檢紀錄，防止模型在預檢後篡改金額與訂單。",
+      "verdict": "incorrect",
+      "reasoning": "所列綁定欄位包含金額，卻沒有訂單、原始付款或其他能唯一識別退款目標的欄位。兩筆訂單若租戶、操作者、操作類型與金額相同，僅比較這些欄位無法識別提交時更換訂單。",
+      "correct_value": "預檢紀錄應綁定經驗證的租戶、操作者、操作類型、訂單或原始付款識別碼、金額及其他會影響授權或政策判斷的必要參數；提交時比對並重新驗證政策與可退餘額。"
+    },
+    {
+      "claim": "若 12 req/s 為工單進件率，5 回合穩態下約對應 60 次模型請求／秒（未計重試）。",
+      "verdict": "correct",
+      "reasoning": "在穩態、每筆工單平均恰好發出 5 次模型請求的前提下，12 筆／秒 × 5 次／筆 = 60 次／秒。這是平均請求率的工作量換算，不能單憑它推定瞬時尖峰、併發數或連線池大小。",
+      "correct_value": "約 60 次模型請求／秒，未計重試；瞬時分布與併發數須另行估算。"
+    },
+    {
+      "claim": "需注意 strict: true 不支援遞迴 Schema、patternProperties 或 minLength。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據只支持 strict tool use 會強制工具名稱與輸入符合支援的 schema，未列出這三項限制，因此無法從提供的材料確認各項限制是否成立。",
+      "correct_value": "strict: true 對支援的 JSON Schema 子集提供結構約束；遞迴 Schema、patternProperties 與 minLength 的支援情況須依相應版本的官方文件核對。"
+    },
+    {
+      "claim": "若需降低工具間前置推理延遲，可使用 thinking: {\"type\": \"between_tools\"}（Sonnet 5.5 設為 disabled 會回傳 400）。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據提到 enabled 與較新模型的 adaptive reasoning，並未記載 between_tools 模式、其延遲效果，或 Sonnet 5.5 對 disabled 的回應，因此無法獨立確認這些具體主張。",
+      "correct_value": "應依所使用模型與 API 版本的官方文件確認支援的 thinking 設定及錯誤行為，並以實測比較延遲。"
+    },
+    {
+      "claim": "Streamable HTTP（Stateless 模式）必須依序完成 initialize、notifications/initialized，再執行 tools/list 或 tools/call；通知回傳空本文 202。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據支持 Streamable HTTP 與無狀態水平擴展的概述，但沒有提供初始化順序、通知回應狀態碼或其在無狀態模式下的具體要求，無法據此判定這些細節。",
+      "correct_value": "Streamable HTTP 可用於遠端 MCP；無狀態模式的生命週期與 HTTP 回應細節須對照指定版本的 MCP 規範。"
+    },
+    {
+      "claim": "完整可執行程式碼已建置於 examples/ts/ch02/index.ts 與 examples/py/ch02/main.py。",
+      "verdict": "imprecise",
+      "reasoning": "材料只提供檔案路徑、片段與預期輸出，沒有提供兩份完整程式碼或執行結果，無法確認檔案存在、可執行，或實作了所列元件與驗證流程。",
+      "correct_value": "須檢視完整程式碼並在適當環境執行，才能確認其存在、內容及可執行性。"
+    }
+  ]
+}

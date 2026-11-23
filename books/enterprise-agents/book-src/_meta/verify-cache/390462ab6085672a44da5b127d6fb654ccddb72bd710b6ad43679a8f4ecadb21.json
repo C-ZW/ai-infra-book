@@ -1,0 +1,42 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "PostgreSQL 帳本應保留 ticket_id、turn_index 與上游 request_id 供對帳。",
+      "verdict": "incorrect",
+      "reasoning": "文字要求保留 ticket_id，但緊接著的 CREATE TABLE 只有 trace_id、turn_index、upstream_request_id 等欄位，沒有 ticket_id。若 trace_id 與工單並非一對一，也不能僅憑現有欄位可靠地按工單對帳。",
+      "correct_value": "在帳本加入 ticket_id 欄位，例如 ticket_id TEXT NOT NULL；或明確提供可可靠連回工單的關聯方式。"
+    },
+    {
+      "claim": "Cache Hit Ratio 的目標基線為 ≥ 85%。",
+      "verdict": "correct",
+      "reasoning": "章節將 85% 限定為特定工作負載目標，沒有宣稱它必然由 OrderOps 基準達成。依基準的 42,000 輸入 tokens，若僅有 6,000-token 固定前綴在第 2 至第 5 回合讀取快取，讀取占比為 24,000 ÷ 42,000，約 57.1%；因此 85% 需要額外的可快取內容或不同的工作負載組成。",
+      "correct_value": "85% 可作為特定工作負載目標；僅憑基準中固定前綴跨後四回合命中，約為 57.1%。"
+    },
+    {
+      "claim": "4 小時事故期間受影響工單期望值為 8,333.33 筆，事故總成本為 $845.83，淨多燒 $745.83。",
+      "verdict": "correct",
+      "reasoning": "在均勻到達、事故期間全部改用全 Sonnet 且停用快取等明示假設下，50,000 × 4 ÷ 24 = 8,333.33 筆；42,000 × $2／百萬加上 1,750 × $10／百萬，單筆為 $0.1015。事故成本約 $845.83，正常成本為 $100，差額約 $745.83。這是情境估算，不能單由快取命中率為零推得。",
+      "correct_value": "符合所列假設時，4 小時預期淨增成本約 $745.83。"
+    },
+    {
+      "claim": "12 req/s 持續 10 分鐘、單筆成本 $0.012 時，燃燒 $86.40；若視窗初始耗用為零，約 174 秒觸及 $25。",
+      "verdict": "correct",
+      "reasoning": "12 × 600 = 7,200 筆，乘以 $0.012 為 $86.40；每秒成本為 $0.144，$25 ÷ $0.144 約為 173.61 秒。此時間假設工單成本按該速率均勻結算，且期間沒有跨越固定視窗邊界。",
+      "correct_value": "10 分鐘 $86.40；符合上述結算及視窗假設時，約 174 秒觸及 $25。"
+    },
+    {
+      "claim": "範例中兩個 Turn 的成本分別為 $0.00658 與 $0.01950，且總計 $0.02608。",
+      "verdict": "imprecise",
+      "reasoning": "兩個列出的金額相加確為 $0.02608，但提供的章節沒有列出兩次呼叫各計費類別的完整 token 數、模型及適用費率，也沒有提供範例程式內容，因此無法獨立重算各回合成本或確認程式實際輸出。",
+      "correct_value": "兩個所列金額的算術和為 $0.02608；各回合實際成本須提供完整 Usage、模型和費率後才能判定。"
+    },
+    {
+      "claim": "依 OpenTelemetry GenAI 語意慣例，LLM 呼叫應採 CLIENT Span Kind，並固定記錄所列 gen_ai 欄位。",
+      "verdict": "imprecise",
+      "reasoning": "所附 source-evidence 沒有列出 OpenTelemetry 特定版本的 Span Kind、欄位名稱或必填規則；章節亦未指定所採用的規範版本。因此無法僅依提供的材料確認這些要求是否符合相應版本的語意慣例。",
+      "correct_value": "應指定 OpenTelemetry GenAI 語意慣例版本，並逐項依該版本文件核對 Span Kind 與屬性要求。"
+    }
+  ]
+}

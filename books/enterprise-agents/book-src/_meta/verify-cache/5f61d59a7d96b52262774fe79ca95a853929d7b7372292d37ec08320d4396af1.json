@@ -1,0 +1,30 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "OrderOps 營運基準與工具配置：每日 50,000 筆工單（全站尖峰基準 12 req/s）、分流延遲 SLO 端到端 p95 ≤ 2.5s、總共 18 個工具（12 個唯讀 Read-only 與 6 個寫入／金流 Mutating）、完整工具集基準前綴大小為 6,000 tokens（System Prompt 2,400 tokens + 18 個工具 Schema 3,600 tokens）。",
+      "verdict": "correct",
+      "reasoning": "獨立核對 <baseline>：OrderOps 日工單量為 50,000 筆／天（1,500,000 筆／月，30 天計）；尖峰流量為 12 req/s；延遲 SLO 分流 p95 ≤ 2.5s；工具總數為 18 個（12 唯讀 + 6 寫入／金流）；基準前綴大小為 2,400 + 3,600 = 6,000 tokens。章節引用之基準數據全部與 <baseline> 完全吻合。",
+      "correct_value": "50,000 筆／天、尖峰 12 req/s、分流 p95 ≤ 2.5s、18 個工具（12 唯讀 + 6 寫入）、前綴 6,000 tokens（2,400 + 3,600）"
+    },
+    {
+      "claim": "Claude API 機制與規格：透過 output_config.format 的 JSON Schema 約束結構化輸出；client tool 設定 strict: true 驗證工具名稱與參數形狀；Prompt Caching 掛載 cache_control: {\"type\": \"ephemeral\"} 且前綴匹配順序為 tools → system → messages；MCP 支援 Streamable HTTP、Claude API MCP Connector（mcp_servers / mcp_toolset），Batch API 享有輸入與輸出同步 50% 折扣；啟用 inference_geo: \"us\" 帶來 1.1× 全類別 token 費率倍率。",
+      "verdict": "correct",
+      "reasoning": "獨立核對 <source-evidence> 與 <baseline>：第 2 節記載 cache_control: {\"type\": \"ephemeral\"} 與 tools → system → messages 精確前綴匹配順序；第 3 節記載 output_config.format 支援 JSON Schema、strict: true 強制名稱與參數符合 schema；第 5 節記載 Streamable HTTP 與 Claude API MCP Connector（mcp_servers / mcp_toolset）；第 1 節與 <baseline> 記載 Batch API 為 50% 折扣、inference_geo: \"us\" 為 1.1× 全類別倍率。章節描述與證據一致。",
+      "correct_value": "與 <baseline> 及 <source-evidence> 規格一致"
+    },
+    {
+      "claim": "Worked Example 前置護欄成本與 ROI 計算：每筆消耗 500 input tokens 與 50 output tokens，以 Claude Haiku 5.5（≤100K）牌價 $0.10 / $0.50 USD / MTok 計，單筆成本為 $0.000075（Input $0.000050 + Output $0.000025）；每日 50,000 筆成本為 $3.75／天、每月（30 天）$112.50／月；啟用 inference_geo: \"us\"（1.1×）為 $4.125／天、$123.75／月；若獨立避免每月 2 次每次 $5,000（共 $10,000）的損失，淨 ROI 為 ($10,000 - $112.50) / $112.50 ≈ 87.89×。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：Input 成本 = 500 × ($0.10 / 1,000,000) = $0.000050；Output 成本 = 50 × ($0.50 / 1,000,000) = $0.000025；單筆合計 = $0.000050 + $0.000025 = $0.000075。每日成本 = 50,000 × $0.000075 = $3.75；每月成本（30 天）= $3.75 × 30 = $112.50。套用 1.1× 資料駐留倍率：每日 = $3.75 × 1.1 = $4.125，每月 = $112.50 × 1.1 = $123.75。預期損失 = 2 × $5,000 = $10,000；淨 ROI = ($10,000 - $112.50) / $112.50 = 9,887.5 / 112.5 = 87.8888... ≈ 87.89×。所有算式與作者答案完全相符。",
+      "correct_value": "單筆 $0.000075、每日 $3.75、每月 $112.50（1.1× 時為每日 $4.125、每月 $123.75）、淨 ROI ≈ 87.89×"
+    },
+    {
+      "claim": "自我檢核第 3 題計算：啟用 inference_geo: \"us\"（1.1× 倍率），且 Haiku 護欄平均每筆 800 input tokens 與 100 output tokens，50,000 筆／天的單筆基礎成本為 $0.000130，套用 1.1× 後為 $0.000143／筆，每日成本為 $7.15／天，每月（30 天）成本為 $214.50／月。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：單筆基礎 Input 成本 = 800 × ($0.10 / 1,000,000) = $0.000080；單筆基礎 Output 成本 = 100 × ($0.50 / 1,000,000) = $0.000050；單筆基礎合計 = $0.000080 + $0.000050 = $0.000130。套用 1.1× 倍率 = $0.000130 × 1.1 = $0.000143／筆。每日成本 = 50,000 × $0.000143 = $7.15／天。每月成本（30 天）= $7.15 × 30 = $214.50／月。與參考解答完全一致。",
+      "correct_value": "單筆基礎 $0.000130、含 1.1× 為 $0.000143／筆、每日 $7.15／天、每月 $214.50／月"
+    }
+  ]
+}

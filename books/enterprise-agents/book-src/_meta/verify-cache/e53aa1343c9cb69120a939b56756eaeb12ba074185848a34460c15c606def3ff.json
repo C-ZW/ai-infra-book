@@ -1,0 +1,30 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "OrderOps 基準指標：每日處理 50,000 筆工單（全站尖峰基準 12 req/s）、分流延遲 SLO p95 ≤ 2.5s、總共 18 個工具（12 個唯讀 Read-only 與 6 個寫入／金流 Mutating）、完整工具集基準前綴大小為 6,000 tokens（System Prompt 2,400 tokens + 18 個工具 Schema 3,600 tokens）。",
+      "verdict": "correct",
+      "reasoning": "對照 <baseline>：日工單量 50,000 筆／天、尖峰流量 12 req/s、分流延遲 SLO p95 ≤ 2.5s、工具總數 18 個（12 唯讀 + 6 寫入／金流），前綴大小 2,400 + 3,600 = 6,000 tokens，所有數值與基準完全吻合。",
+      "correct_value": "50,000 筆／天、尖峰 12 req/s、分流 p95 ≤ 2.5s、18 個工具（12 唯讀 + 6 寫入）、前綴 6,000 tokens"
+    },
+    {
+      "claim": "Worked Example（第 4 節）：以 Claude Haiku 5.5 牌價（≤100K）$0.10 / $0.50 USD/MTok 計算，每筆消耗 500 input tokens 與 50 output tokens 時，單筆成本為 $0.000075；每日 50,000 筆為 $3.75 / 天、每月（30 天）為 $112.50 / 月；啟用 inference_geo: \"us\"（1.1× 倍率）後為 $4.125 / 天、$123.75 / 月；對比每月 2 次每次 $5,000（共 $10,000）的未攔截超額退款損失，若能獨立避免此兩筆損失，淨 ROI 為 ($10,000 - $112.50) / $112.50 ≈ 87.89×。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：Input 成本 = 500 × ($0.10 / 1,000,000) = $0.000050；Output 成本 = 50 × ($0.50 / 1,000,000) = $0.000025；單筆合計 = $0.000050 + $0.000025 = $0.000075。每日成本 = 50,000 × $0.000075 = $3.75；每月成本 = $3.75 × 30 = $112.50。套用 1.1× 倍率：每日 = $3.75 × 1.1 = $4.125，每月 = $112.50 × 1.1 = $123.75。每月預期損失 = 2 × $5,000 = $10,000；淨 ROI = ($10,000 - $112.50) / $112.50 = 9,887.5 / 112.5 ≈ 87.8889×（四捨五入至小數點後兩位為 87.89×）。與章節推導一致。",
+      "correct_value": "單筆 $0.000075、每日 $3.75、每月 $112.50；1.1× 資料駐留為每日 $4.125、每月 $123.75；淨 ROI ≈ 87.89×"
+    },
+    {
+      "claim": "自我檢核第 3 題參考解答：啟用 inference_geo: \"us\"（1.1× 倍率），且 Haiku 護欄改為平均每筆 800 input tokens 與 100 output tokens，50,000 筆／天的單筆基礎成本為 $0.000130、含 1.1× 倍率為 $0.000143／筆，每日成本為 $7.15／天，每月（30 天）為 $214.50／月。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：單筆基礎成本 = 800 × ($0.10 / 1,000,000) + 100 × ($0.50 / 1,000,000) = $0.000080 + $0.000050 = $0.000130。套用 1.1× 倍率：$0.000130 × 1.1 = $0.000143／筆。每日成本 = 50,000 × $0.000143 = $7.15／天。每月成本（30 天）= $7.15 × 30 = $214.50／月。與章節答案完全一致。",
+      "correct_value": "單筆基礎 $0.000130、含 1.1× 為 $0.000143／筆、每日 $7.15、每月 $214.50"
+    },
+    {
+      "claim": "Layer 1 與第 3 節 API 特性主張：「Claude Haiku 5.5 不支援 temperature: 0（送出會回傳 400）」、「Haiku 5.5 預設啟用 adaptive thinking；若要測試短輸出的分類設定，可明確傳入 thinking: {\"type\": \"disabled\"}」，以及「Claude API 的 MCP Connector 與 Message Batches 均不符合 ZDR，Batch 結果自建立起可取用 29 天」。",
+      "verdict": "imprecise",
+      "reasoning": "在提供的 <baseline> 與 <source-evidence> 中，雖載明 output_config.format、thinking: { type: \"enabled\", budget_tokens: N }（或 newer models 上的 adaptive reasoning modes）、Batch API 50% 折扣、MCP Connector (mcp_servers / mcp_toolset) 與 inference_geo: \"us\" 1.1× 倍率，但並未提供「Claude Haiku 5.5 傳入 temperature: 0 會回傳 HTTP 400」、「Haiku 5.5 預設啟用 adaptive thinking 且支援 thinking: {\"type\": \"disabled\"}」以及「MCP Connector 與 Message Batches 不符合 ZDR 且 Batch 結果保留 29 天」的佐證材料，單憑目前提供的閉卷基準證據無法獨立驗證這些細節。",
+      "correct_value": "需補充 Anthropic 官方 API 文件關於 Haiku 5.5 sampling 參數限制、預設 thinking 模式及 ZDR 排除功能／Batch 結果保留天數之查證依據，或將敘述限定於已驗證的規格範圍內。"
+    }
+  ]
+}

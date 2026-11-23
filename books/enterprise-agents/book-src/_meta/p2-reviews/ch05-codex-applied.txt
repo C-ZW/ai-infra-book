@@ -1,0 +1,16 @@
+已完成 [ch05-multi-agent-orchestration.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch05-multi-agent-orchestration.md)（透過 `.tmp` 原子覆蓋）以及 [index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch05/index.ts)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch05/main.py) 的同步修訂，並已重新執行兩份離線範例驗證通過（`TKT-5001` `$0.00051`、`TKT-5002` `$0.01811`）。
+
+### 已修正項目
+- **P0｜應用程式強制證據檢查**：TS/Python 範例中 `not_found` 不再標為 `"ok"`；`refund_arbitrator` 強制檢查 `carrier_status` 與 `billing_ledger` 皆須為 `"ok"` 且 `orderId` 相符，否則降級為 `degraded_pending_hitl`；唯讀分流在 Worker 失敗或無結果時亦降級為 `degraded_pending_hitl`。章文同步補充服務端授權與金流寫入前複檢。
+- **P0｜Redis 租約與退款冪等**：補充 `SET ... NX PX` 原子取鎖、fencing token／版本檢查，並區分示範鍵與生產環境持久化退款冪等鍵（`tenant_id` + `refund_intent_id` + 供應商對帳）；`agent_handoffs` 表補入 `workflow_run_id` 與 `attempt_no`。
+- **P0｜Handoff 資料邊界**：明確區分不可信的模型 `summary` 與後端驗證的 `facts`，並由 Dispatcher 強制 DAG、`max_depth = 2` 與派發總數上限。
+- **P1｜成本口徑統一**：Worked Example 改為純前綴輸入比較（方案 A `$0.060000` vs 方案 B `$0.005085`，降幅 `91.53%`），明確標註容量假設（平均 1 個唯讀 Worker + 20% Opus）並與離線模擬（2 Workers + 1 Opus）區隔；移除未量測的 `< 500ms`，改用 `p95 ≤ 2.5s` 分流 SLO。
+- **P1｜尖峰併發與限流**：補充 `12 tickets/s` 下的全域／租戶併發限制、單調時鐘期限分配與預留預算熔斷。
+- **Code & API**：移除 Router `temperature: 0`，補充 `output_config.format`、Haiku 5.5 `512` tokens 快取門檻、`cache_hit_rate` 正確分母公式、SDK `maxRetries = 0` 與 Full Jitter 上界說明、TS 改用 `WorkerTimeoutError` 型別判斷，以及 Agent SDK `allowedTools`／`permissionMode` 與沙盒說明。
+- **Clarity**：補充 4 項告警閾值的分母／視窗／最低樣本數（≥ `100`）、`max_revisions = 2` 與傳輸重試區分，以及 TS/Python 輸出格式標註。
+
+### 刻意未採納項目
+- **MCP Connector 與 Message Batches 預告**：原章未實作或提及 MCP／Batch，為維持章節聚焦與篇幅未額外新增（屬跨章主題）。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

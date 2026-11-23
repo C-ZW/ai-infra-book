@@ -1,0 +1,188 @@
+{
+  "chapter": "ch18-cloud-iam-and-lateral-movement.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "一旦應用程式存在伺服器端請求偽造（SSRF，見第 11 章），或是工作負載在容器／宿主節點層失守（見第 17 章），攻擊者便能透過 Link-Local 位址向中繼資料服務領取臨時安全憑證，直接把戰場從受限的容器或應用層，搬到整個雲端帳號的控制平面。",
+      "verdict": "incorrect",
+      "reasoning": "章內反例是只能控制 URL 的 GET 型 SSRF 遇到強制 IMDSv2 的配置。依章內模型，它無法完成 Token 申請。即使取得憑證，其有效權限仍取決於該身分與適用策略。",
+      "correct_value": "工作負載失守或 SSRF 可能導致憑證暴露，前提是中繼資料端點可達、請求能力符合驗證要求，且端點有可取得的憑證。影響範圍由有效權限決定。"
+    },
+    {
+      "claim": "這組憑證不需要留在原受害主機上使用——攻擊者可將其匯出到自己的機器，直接向公開的雲端 API 端點（例如 `sts.amazonaws.com`、`s3.amazonaws.com`）發起請求，完全繞過企業 VPC 防火牆與 WAF。",
+      "verdict": "imprecise",
+      "reasoning": "向公開端點送出請求可避開原工作負載的網路路徑，但章內列出的來源 IP 與 VPC Endpoint 條件仍可能使請求遭拒。「完全繞過」混淆了網路路徑與 API 授權。",
+      "correct_value": "憑證可能在原主機外使用。請求是否成功仍取決於憑證有效期、端點可達性與適用的授權及來源條件。"
+    },
+    {
+      "claim": "只要目標應用存在最基本的 `GET` SSRF，攻擊者依序發送兩次 `GET` 即可完成竊取。",
+      "verdict": "imprecise",
+      "reasoning": "依章內流程，角色名稱未知時有一次查名和一次取證，名稱已知時則可省略查名。成功仍需要 IMDSv1 可用、實例有角色憑證，且應用程式能將所需回應傳回。故障模式表中的「單一 `GET` 即可取證」省略了已知角色名稱的前提。",
+      "correct_value": "在 IMDSv1 可達且回應可讀的條件下，角色名稱未知時依所示流程需兩次 GET，已知時一次即可讀取該角色的憑證。"
+    },
+    {
+      "claim": "`X-aws-ec2-metadata-token-ttl-seconds` 標頭（合法範圍為 `1` 至 `21,600 s`，即 6 小時）。",
+      "verdict": "imprecise",
+      "reasoning": "6 × 60 × 60 = 21,600，換算正確。附證沒有 AWS 的合法值範圍或必填規則，章內模擬程式只是把作者選定的限制寫入程式。",
+      "correct_value": "21,600 秒等於 6 小時。標頭是否必填與 1 至 21,600 秒的合法範圍須由 AWS 規格確認。"
+    },
+    {
+      "claim": "若該 `PUT` 請求包含 `X-Forwarded-For` 標頭，IMDSv2 端點會直接拒絕並回傳 `400 Bad Request`，藉此擋掉大多數反向代理與 API Gateway 轉發的 SSRF 流量。",
+      "verdict": "imprecise",
+      "reasoning": "模擬器的分支能證明該程式會回傳 400，但附證沒有 AWS 的拒絕行為或狀態碼，也沒有代理流量分布可支持「大多數」。",
+      "correct_value": "模擬器會拒絕含該標頭的 Token 請求並回傳 400。真實服務的狀態碼須核對 AWS 文件或測試紀錄，代理流量的涵蓋比例須另有證據。"
+    },
+    {
+      "claim": "EC2 建立實例時，IMDSv2 預設的 `HttpPutResponseHopLimit` 為 **`1`**。",
+      "verdict": "imprecise",
+      "reasoning": "章內算例只需要將起始值指定為 1。附證沒有列出 EC2 建立實例時的設定優先序，也無法支持所有部署均採相同預設值。",
+      "correct_value": "算例明定實例的有效 `HttpPutResponseHopLimit` 為 1。通用預設值及其例外須依實際部署設定與 AWS 規格確認。"
+    },
+    {
+      "claim": "`Hop Limit = 1` 在宿主機可成功取證，卻會在容器內失敗。",
+      "verdict": "correct",
+      "reasoning": "在題設的回應路徑中，宿主本機交付經過零次路由轉發，TTL 仍為 1。容器路徑要經過一次路由轉發，起始 TTL 1 不足以通過。將起始值改為 2 時，一次轉發後剩 1。",
+      "correct_value": "在服務正常回應、其餘條件相同的情況下，Hop Limit 1 可抵達本機接收端，無法通過題設的一次路由轉發。Hop Limit 2 可通過這一次轉發。"
+    },
+    {
+      "claim": "這等同於把整台宿主節點的高權限 IAM Role 暴露給該節點上的每一個容器與 Pod。",
+      "verdict": "incorrect",
+      "reasoning": "TTL 算式只證明回應可以通過題設的一次路由轉發。假如某個 Pod 的中繼資料存取已被網路控制封鎖，提高 TTL 仍無法讓該 Pod 取得回應。反過來，若容器使用不經路由轉發的宿主網路路徑，設為 1 也無法憑跳數隔離它。",
+      "correct_value": "Hop Limit 2 會增加部分容器接觸節點憑證的風險。個別工作負載能否存取仍須依網路路徑與封鎖規則判定，並應獨立驗證採用 Pod 身分後的 IMDS 隔離。"
+    },
+    {
+      "claim": "只要在任何適用的策略中（包含 Identity Policy、Resource Policy、Organizations SCP、Permissions Boundary 或 Session Policy）命中任何一條 `Effect: \"Deny\"`，評估引擎立刻終止並回傳拒絕。",
+      "verdict": "imprecise",
+      "reasoning": "依章內規則，命中適用的顯式拒絕足以決定授權結果。這個優先序無法證明服務內部以何種順序或是否短路執行。",
+      "correct_value": "任何適用且命中的顯式 Deny 優先於 Allow，最終授權結果為拒絕。"
+    },
+    {
+      "claim": "即使通過了 Explicit Deny 檢查，請求還必須同時滿足所有「限制性邊界」的 `Allow` 交集。",
+      "verdict": "incorrect",
+      "reasoning": "章中將身分型 Allow 的交集規則推廣到所有同帳號資源型授權，忽略受授權 principal 的類型。例如資源政策直接授權角色工作階段時，權限邊界或工作階段策略的隱式拒絕與適用的顯式拒絕有不同效果。",
+      "correct_value": "先判定資源政策授權的是角色、角色工作階段或其他 principal，再套用對應的限制。適用的顯式 Deny 仍然優先。"
+    },
+    {
+      "claim": "KMS Key Policy 例外，要求 Key Policy 必須明確授權帳號本身委派給 IAM。",
+      "verdict": "incorrect",
+      "reasoning": "這把帳號委派誤寫成所有 KMS 授權的必要路徑。金鑰政策可直接授權適用的 principal，KMS grant 也可提供相應的使用權。另有 S3 讀取權限時，仍須獨立檢查適用的 KMS 解密授權。",
+      "correct_value": "使用 KMS 金鑰須具備適用的 KMS 授權。金鑰政策可直接授權，也可啟用帳號透過 IAM 委派，並可能有適用的 KMS grant。"
+    },
+    {
+      "claim": "一旦該角色能創造或啟動另一個「具備不同身分」的運算實例，原角色的 `Explicit Deny` 就會在身分切換的瞬間脫離評估上下文。",
+      "verdict": "correct",
+      "reasoning": "算例中的 Deny 附在開發部署角色上。改由獨立的執行角色發出後續請求時，該身分策略不屬於後續請求的適用策略。限制若來自仍適用的新身分策略或組織層策略，結果仍須重新評估。",
+      "correct_value": "原呼叫者身分策略中的 Deny 不會自動沿用到另一執行身分。每次請求均按其實際 principal 與適用策略評估。"
+    },
+    {
+      "claim": "只要該角色能透過 `iam:PassRole`（`Resource: \"*\"`）或運算資源建立權限切換到另一個不受該 `Deny` 約束的角色，原始的拒絕規則就會在跨角色邊界時失效。",
+      "verdict": "imprecise",
+      "reasoning": "章內表格本身就分別檢查運算資源操作、角色傳遞與服務信任，顯示其中任何一項單獨成立都不足以證明算例的身分轉換可達。萬用資源範圍也不會排除其他適用限制。",
+      "correct_value": "須以實際有效權限、服務信任及執行條件逐一判定是否可達另一執行身分。成立時，原身分策略上的拒絕不會自動套用到新身分。"
+    },
+    {
+      "claim": "跨帳號缺少 `sts:ExternalId`（Confused Deputy 混淆代理人問題）：當企業將跨帳號存取權授與第三方 SaaS 監控或備份平台時，若未要求第三方在呼叫 `sts:AssumeRole` 時帶入租戶專屬且不可預測的 `sts:ExternalId` 條件，同一個第三方平台上的其他惡意租戶就能誘導該平台去存取企業帳號的資源。",
+      "verdict": "incorrect",
+      "reasoning": "缺少該條件只能證明少了一項租戶綁定控制。能否誘導還取決於第三方是否允許租戶指定其他租戶的角色，以及是否有獨立驗證。從這個因果模型也推不出識別值必須保密或不可預測。",
+      "correct_value": "在第三方可被誘導存取其他租戶角色的情境，應由第三方為每個客戶配置唯一的 External ID，並由其流程與角色信任條件共同驗證。缺少 External ID 會增加風險，實際影響仍取決於第三方的租戶綁定。"
+    },
+    {
+      "claim": "他可以直接修改高權限角色的 Trust Policy 把自己加進去，接著呼叫 `sts:AssumeRole` 合法切換身分。",
+      "verdict": "imprecise",
+      "reasoning": "修改信任與扮演角色是兩次獨立的授權判定。章內自己的跨帳號規則已提供反例，目標端信任即使成立，呼叫端缺少必要的 Allow 時仍無法成功。",
+      "correct_value": "能修改信任策略代表可改變目標端信任。後續 AssumeRole 是否成功，仍須依帳號關係、信任條件與適用策略另行評估。"
+    },
+    {
+      "claim": "他只要上傳一段替換後的 ZIP 程式碼，等待排程觸發（或搭配 `lambda:InvokeFunction` 主動呼叫），該程式碼就會直接繼承既有 Lambda 的高權限 Role 執行。",
+      "verdict": "imprecise",
+      "reasoning": "算例的身分推論成立須以新程式碼確實被執行為前提。假如排程仍指向舊的已發佈版本或指向該版本的別名，更新程式碼本身不會使該排程執行更新內容。",
+      "correct_value": "更新程式碼可保留既有執行角色。只有實際執行到更新後的程式碼時，該程式碼才會以既有角色執行。"
+    },
+    {
+      "claim": "步驟 0 以 `nexuspay-dev-deployer` 呼叫 `secretsmanager:GetSecretValue` 的策略評估結果為 `EXPLICIT DENY`。",
+      "verdict": "correct",
+      "reasoning": "`secretsmanager:GetSecretValue` 屬於 `secretsmanager:*`，目標資源也落在萬用資源範圍內。依章內的顯式拒絕優先規則，答案為拒絕。",
+      "correct_value": "在所列策略下，開發部署角色對該密鑰的直接讀取命中 `ExplicitDenyProdSecrets`。"
+    },
+    {
+      "claim": "步驟 3 回傳生產資料庫帳號密碼 JSON。",
+      "verdict": "imprecise",
+      "reasoning": "從題設策略可推得密鑰名稱比對符合執行角色的身分策略 Allow。這項比對無法證明密鑰存在、內容為 JSON、沒有其他適用拒絕，或所需的 KMS 解密授權成立。",
+      "correct_value": "所列執行角色策略允許題設的密鑰操作。實際回傳值取決於有效權限、密鑰狀態與儲存內容。"
+    },
+    {
+      "claim": "開啟後會無視 Bucket Policy 或 ACL 中的公開授權（`Principal: \"*\"`）。",
+      "verdict": "incorrect",
+      "reasoning": "S3 Block Public Access 由多個設定組成，其效果涵蓋拒絕新增特定公開 ACL 或政策、忽略既有公開 ACL，以及限制受公開政策影響的存取。把整組設定描述成一律忽略既有授權會得出錯誤的評估結果。ACL 的授權格式也並非 Bucket Policy 的 `Principal` 欄位。",
+      "correct_value": "應按實際啟用的 Block Public Access 設定分別判定對公開 ACL 和 Bucket Policy 的影響，並依 S3 對公開政策的判定檢查其條件。"
+    },
+    {
+      "claim": "若簽發者是使用 IMDS 臨時 STS 憑證（例如剩餘有效期僅 `900 s`），即使 URL 參數寫 `Expires=604800`，該連結仍會在 STS 憑證過期後立即失效。",
+      "verdict": "imprecise",
+      "reasoning": "7 × 24 × 60 × 60 = 604,800。若 URL 自身有效期為 604,800 秒、簽發憑證僅餘 900 秒，兩項條件可同時成立的最長期間是 900 秒。章內將 SigV4 的相對秒數參數誤寫為 `Expires`，也未區分請求授權上限與提前失效。",
+      "correct_value": "SigV4 預簽 URL 使用 `X-Amz-Expires`。若簽發時有效憑證僅餘 900 秒，且其餘條件維持，該 URL 最晚只能在憑證到期前用來發起獲授權的請求。"
+    },
+    {
+      "claim": "CloudTrail 預設只記錄「控制平面管理事件」（Management Events），例如 `sts:AssumeRole`、`iam:PassRole`、`lambda:CreateFunction`、`iam:UpdateAssumeRolePolicy` 與 `secretsmanager:GetSecretValue`。",
+      "verdict": "incorrect",
+      "reasoning": "章內前文已將 PassRole 定義為執行服務 API 時的授權檢查。把該檢查列為獨立 API 事件，會使讀者在稽核時查找不存在的獨立事件。",
+      "correct_value": "移除獨立的 `iam:PassRole` 事件範例。應查看實際接收角色的服務管理事件及其請求參數，例如 Lambda 建立事件。"
+    },
+    {
+      "claim": "如果攻擊者拿到憑證後直接把 `nexuspay-ledger-backup-prod` 裡的 10,000 筆備份檔整批下載，沒有開啟 S3 Data Events 的環境甚至不會在 CloudTrail 留下任何下載紀錄。",
+      "verdict": "correct",
+      "reasoning": "依章內的事件分類，逐物件下載由 S3 `GetObject` 資料事件表徵。未記錄該類事件時，下載 1 次或 10,000 次都不會產生相應的逐物件 CloudTrail 事件。基準表中的 10,000 是餘額與提領單位，無法驗證這裡假設的物件數。",
+      "correct_value": "未針對相關資源記錄 S3 資料事件時，CloudTrail 不會提供這批 `GetObject` 的逐物件下載紀錄。"
+    },
+    {
+      "claim": "幾乎可直接判定為憑證已透過 SSRF 或工作負載入侵外洩。",
+      "verdict": "imprecise",
+      "reasoning": "角色與來源 IP 的異常組合能支持進一步調查，但無法單獨重建憑證取得途徑。章內沒有提供工作負載、代理出口、請求時序或憑證發放紀錄作為歸因證據。",
+      "correct_value": "非預期來源使用工作負載角色是調查線索。憑證是否外洩與外洩途徑須由其他遙測及時序佐證。"
+    },
+    {
+      "claim": "雖然該停止動作本身會成為最後一筆高危事件。",
+      "verdict": "imprecise",
+      "reasoning": "停止某一 trail 無法推導其他獨立記錄也停止，且現有材料沒有事件傳遞與排序證據支持「最後一筆」。",
+      "correct_value": "停止或刪除 trail 的管理操作是重要稽核線索。能否取得紀錄及其順序須依各記錄來源確認。"
+    },
+    {
+      "claim": "這份配置同時鎖死了 `iam:PassRole` 的目標範圍、服務對象，並透過 **Permissions Boundary** 確保即便部署角色建立了新角色或函式，其有效權限也永遠無法超越開發邊界。",
+      "verdict": "incorrect",
+      "reasoning": "若如文中所述把邊界掛到所有開發角色，部署角色的身分策略允許 Lambda 建立、叫用和角色傳遞，邊界卻未允許這些動作。依章內交集規則，正常部署即被拒絕。此外，既有角色的邊界不會自動套到新角色，列出的防篡改拒絕也不等於帳號層不可變更。",
+      "correct_value": "部署角色的邊界須明確容許所需且受限的部署操作。若允許建立角色，須對新角色另外強制邊界，並限制具備變更邊界或其政策版本權限的身分。"
+    },
+    {
+      "claim": "只要受到 Permissions Boundary 交集約束（且禁止卸載 Boundary），它也永遠無法取得讀取 `nexuspay/prod/db-credentials` 或 `nexuspay-ledger-backup-prod` 的有效權限。",
+      "verdict": "incorrect",
+      "reasoning": "所示邊界只有略去這兩個生產資源的 Allow，未明確拒絕讀取。以同帳號 S3 為例，若資源政策直接授權該開發角色的工作階段，邊界中的隱式拒絕不足以支持「永遠無法」的結論。",
+      "correct_value": "所示邊界限制開發角色透過身分策略取得的權限。要保證生產資源隔離，須涵蓋資源政策、工作階段直接授權及其他執行身分，並驗證適用的顯式拒絕。"
+    },
+    {
+      "claim": "重現 IMDSv1 與 IMDSv2 的規範行為。",
+      "verdict": "incorrect",
+      "reasoning": "靜態讀取程式可見，TTL 只在發放時檢查範圍，Token 放入集合後沒有到期時間或清除邏輯。GET 處理器又允許由請求標頭選擇模式，故同一個預設 v2 的伺服器仍可接受未附 Token 的 v1 模式請求。程式也沒有模擬路由跳數。",
+      "correct_value": "此程式展示部分 HTTP 狀態與標頭檢查。它沒有實作 Token 到期、由部署設定強制 IMDSv2，或 IP 跳數行為。"
+    },
+    {
+      "claim": "觀察 `/tmp/lambda-out.json` 輸出，即可看到函式以 `nexuspay-prod-secrets-reader` 身分成功取回生產資料庫密鑰。",
+      "verdict": "incorrect",
+      "reasoning": "所示解答未建立開發部署角色或切換呼叫者，未執行直接讀取的拒絕測試，也未套用硬化策略並重測。即使輸出含有密鑰，也無法單憑該輸出辨識實際呼叫者或證明 IAM 已強制執行。章內也承認社群版預設不強制校驗策略。",
+      "correct_value": "所示解答至多展示模擬函式讀取測試密鑰。完整驗證需要呼叫端與執行端的身分證據、拒絕與允許判定，以及修補後的重測紀錄。"
+    },
+    {
+      "claim": "在完全離線、零雲端費用的本地環境中，使用 Docker 與 **LocalStack**（社群版）搭配輕量 Python 模擬器，重現本章核心攻擊與防禦路徑。",
+      "verdict": "imprecise",
+      "reasoning": "章內命令指定容器映像與 Lambda 執行環境，卻未證明所需映像已預載、容器整合可用或該版本支援強制 IAM 評估。附證也沒有 LocalStack 3.8 社群版的功能矩陣或所提環境變數的版本化行為。",
+      "correct_value": "命令指定本地服務端點。離線可重現性取決於預先備妥映像及執行環境，IAM 驗證能力須依指定版本的文件或測試證據確認。"
+    },
+    {
+      "claim": "flaws2.cloud（無須自有 AWS 帳號、完全免費）提供線上瀏覽器與 CLI 演練的「Attacker」與「Defender」兩條完整路線。CloudGoat 涵蓋 `iam_privesc_by_rollback`、`lambda_privesc`、`ecs_efs_attack` 等真實 AWS 場景。",
+      "verdict": "imprecise",
+      "reasoning": "附證未列出這兩個靶場的版本、使用條件、題目清單或費用。章末網址提供待核位置，其頁面內容未包含在材料內。部署真實資源也無法推出費用必定只有微額。",
+      "correct_value": "若保留這些描述，應按查證日期核對 flaws2.cloud 的可用路線、帳號與收費條件，並按指定 CloudGoat 版本確認場景名稱、部署資源及可能費用。"
+    }
+  ]
+}

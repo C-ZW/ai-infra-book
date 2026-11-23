@@ -1,0 +1,96 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "月成本從未優化基準的 $152,250 壓低至 ≤ $18,000（降幅 ≥ 88%，單筆 ≤ $0.012）",
+      "verdict": "correct",
+      "reasoning": "1 − 18,000 ÷ 152,250 = 0.8818，降幅約 88.2%，符合 ≥ 88%。18,000 ÷ 1,500,000 = $0.012/筆。兩者都與基準表一致。",
+      "correct_value": "降幅約 88.2%；單筆 ≤ $0.012"
+    },
+    {
+      "claim": "尖峰 12 req/s 若每單 5 次模型呼叫，持續穩態下平均約 60 次模型請求／秒",
+      "verdict": "correct",
+      "reasoning": "12 × 5 = 60。只有尖峰流量持續時，穩態吞吐量才會是 60 次/秒；全日平均是 0.58 × 5 ≈ 2.9 次/秒。原句寫的是「尖峰持續穩態」，也註明瞬間尖峰須另行估算，算式成立。不過「平均」一詞容易被讀成全日平均。",
+      "correct_value": "尖峰持續時約 60 次模型請求/秒；全日平均約 2.9 次/秒"
+    },
+    {
+      "claim": "每日預算上限 $18,000 ÷ 30 = $600；150% 後備告警為 $900",
+      "verdict": "correct",
+      "reasoning": "18,000 ÷ 30 = 600；600 × 1.5 = 900。",
+      "correct_value": "$600/天；$900/天"
+    },
+    {
+      "claim": "人工每筆 4 分鐘、時薪 $24 → 單筆 $1.60，月成本 $2,400,000",
+      "verdict": "correct",
+      "reasoning": "4/60 × 24 = 1.60；1.60 × 1,500,000 = 2,400,000。",
+      "correct_value": "$1.60/筆；$2,400,000/月"
+    },
+    {
+      "claim": "單筆 $0.011 → 月 $16,500；乘 1.1× 後為 $18,150（$605/天）；須將基礎單價壓到 ≤ $0.010909，例如 $0.0108 對應 $17,820",
+      "verdict": "correct",
+      "reasoning": "0.011 × 1,500,000 = 16,500；× 1.1 = 18,150；÷ 30 = 605。18,000 ÷ (1.1 × 1,500,000) = 0.0109090…。0.0108 × 1,500,000 × 1.1 = 17,820。1.1× 倍率套用到所有 token 類別，與 source-evidence 一致。",
+      "correct_value": "$16,500 / $18,150 / $605 每天；上限單價 ≈ $0.010909；$0.0108 → $17,820"
+    },
+    {
+      "claim": "Shadow 階段 14 天實際 API 成本 $7,700",
+      "verdict": "correct",
+      "reasoning": "50,000 × 14 × 0.011 = 7,700。",
+      "correct_value": "$7,700"
+    },
+    {
+      "claim": "階段二：每月 75,000 筆 × 0.05 小時 × $24 = $90,000；API $825；淨效益 +$89,175/月",
+      "verdict": "correct",
+      "reasoning": "2,500 × 30 = 75,000；75,000 × 0.05 × 24 = 90,000；75,000 × 0.011 = 825；90,000 − 825 = 89,175。這是月化估算，實際階段只有 21 天。",
+      "correct_value": "+$89,175/月（月化）"
+    },
+    {
+      "claim": "階段三：450,000 筆 → 節省 $540,000、API $4,950、淨效益 +$535,050/月",
+      "verdict": "correct",
+      "reasoning": "450,000 × 0.05 × 24 = 540,000；450,000 × 0.011 = 4,950；兩者相減得 535,050。",
+      "correct_value": "+$535,050/月"
+    },
+    {
+      "claim": "階段四：L2 節省 $1,260,000、L3 節省 $720,000、合計 $1,980,000，扣除 $18,150 後淨效益 +$1,961,850/月",
+      "verdict": "imprecise",
+      "reasoning": "算術正確：1,050,000 × 0.05 × 24 = 1,260,000；450,000 × (4/60) × 24 = 720,000；1,980,000 − 18,150 = 1,961,850。但有兩個前提未經證實：一是有 30% 工單符合 ≤ $50 低風險條件；二是 L3 工單完全不需人工，節省整整 4 分鐘。抽樣覆核、例外退回 L2、退款損失都沒有計入。作者雖註明是估算，結論仍偏樂觀。",
+      "correct_value": "算術為 +$1,961,850/月；應註明 30% L3 比例與「零人工殘留」都是假設，並扣除覆核與錯誤退款成本"
+    },
+    {
+      "claim": "70/30 加權節省 $1.32/筆；固定支出 $605/天須 ≥ 459 筆/天（約 0.92%）；變動成本下單筆淨節省 $1.3079",
+      "verdict": "correct",
+      "reasoning": "0.7 × 1.20 + 0.3 × 1.60 = 1.32；605 ÷ 1.32 = 458.33，取整為 459；459 ÷ 50,000 = 0.918%。0.011 × 1.1 = 0.0121；1.32 − 0.0121 = 1.3079。",
+      "correct_value": "$1.32；459 筆/天（0.92%）；$1.3079"
+    },
+    {
+      "claim": "自我檢核 3：60,000 筆/天 → $19,800，乘 1.1 為 $21,780/月（$726/天）；605 筆 L2 恰好打平（約 1.01%）",
+      "verdict": "correct",
+      "reasoning": "60,000 × 30 × 0.011 = 19,800；× 1.1 = 21,780；÷ 30 = 726；726 ÷ 1.20 = 605，剛好整除，所以 605 筆打平、606 筆起為正；605 ÷ 60,000 = 1.008%。",
+      "correct_value": "$21,780/月；$726/天；605 筆打平（約 1.01%）"
+    },
+    {
+      "claim": "超時階層 toolTimeoutMs 5,000 < llmTimeoutMs 12,000 < wallClockTimeoutMs 60,000，並設 max_turns 上限 8",
+      "verdict": "imprecise",
+      "reasoning": "不等式成立。但 8 回合 × 12 秒 = 96 秒，超過 60 秒的 wall-clock 上限，所以真正限制執行時間的是 wall-clock，不是回合數；這點應明說。另外，本章自己註明 max_turns 是 Agent SDK 選項，而 OrderOps 走的是裸 Messages API，這裡應改稱應用層自訂的回合上限。",
+      "correct_value": "階層成立；應註明 8 × 12s > 60s 時由 wall-clock 先截斷，並把 max_turns 改稱應用層回合上限"
+    },
+    {
+      "claim": "Claude Agent SDK 抽象洩漏風險「低」，而第三方框架的記憶體管理或摘要策略常破壞快取前綴",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 記載 Agent SDK 內建 context compaction（上下文壓縮）。本章批評第三方框架的摘要策略會破壞快取前綴，但沒有說明 SDK 的壓縮為何不會；「低」的評等缺乏證據支持。",
+      "correct_value": "應註明 Agent SDK 也有 context compaction，可能影響快取前綴，風險取決於設定"
+    },
+    {
+      "claim": "線上應依模型採 adaptive thinking 與 output_config.effort，並以 strict: true 與 output_config.format 約束結構",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 支持 strict: true、output_config.format，也提到新模型有「adaptive reasoning modes」，但完全沒有提到 output_config.effort 這個參數。手上證據無法確認它存在或名稱正確。",
+      "correct_value": "strict 與 output_config.format 有證據支持；output_config.effort 須查官方文件確認"
+    },
+    {
+      "claim": "inference_geo: \"us\" 的 1.1× 倍率適用於 input、output、cache write 與 cache read",
+      "verdict": "correct",
+      "reasoning": "與 source-evidence「1.1× multiplier across all token categories」一致。",
+      "correct_value": "1.1×，適用全部 token 類別"
+    }
+  ]
+}

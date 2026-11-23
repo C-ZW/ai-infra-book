@@ -1,0 +1,40 @@
+{
+  "_comment": "Merged from forms/instructional.lint.json + forms/zh-prose.lint.json + per-book pinned skeleton_slots and notation discipline.",
+  "chapter_globs": [
+    "ch*.md"
+  ],
+  "skeleton_slots": [
+    ["從你已知的出發"],
+    ["核心機制"],
+    ["故障模式與防禦"],
+    ["動手做"],
+    ["自我檢核"],
+    ["延伸閱讀"]
+  ],
+  "severity": {
+    "worked_example": "error",
+    "difficulty": "error",
+    "time": "error"
+  },
+  "vocab_error": {
+    "軟件": "軟體",
+    "硬件": "硬體",
+    "內存": "記憶體",
+    "默認": "預設",
+    "以后": "以後",
+    "大模型": "大型語言模型（或 LLM）",
+    "智能體": "Agent（或代理）",
+    "提示詞": "Prompt",
+    "微調": "Fine-tuning（或調校，視語境）"
+  },
+  "vocab_regex_warn": [
+    { "pattern": "(?<![演計運])算法", "term": "算法", "replace": "演算法" },
+    { "pattern": "進行[了]?[一-鿿]{2,4}", "term": "進行＋動作名詞", "replace": "直接用動詞（進行分析→分析）" },
+    { "pattern": "加以[一-鿿]{2,4}", "term": "加以＋動作名詞", "replace": "直接用動詞" },
+    { "pattern": "透過[^，。；]{1,14}的方式", "term": "透過…的方式", "replace": "用／靠／以" },
+    { "pattern": "在[^，。；]{1,12}的情況下", "term": "在…的情況下", "replace": "當／若／…時" },
+    { "pattern": "對於[^，。；]{1,10}而言", "term": "對於…而言", "replace": "對…" },
+    { "pattern": "存在著", "term": "存在著", "replace": "有" },
+    { "pattern": "作為一個", "term": "作為一個…", "replace": "換主語直述" }
+  ]
+}

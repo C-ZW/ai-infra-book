@@ -1,0 +1,54 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "在 OrderOps 基準設定中，系統共有 18 個工具（12 唯讀 Read-only + 6 寫入／金流 Mutating），單一 Agent 的基準前綴大小為 6,000 tokens（System Prompt 2,400 + 18 工具 Schema 3,600）。",
+      "verdict": "correct",
+      "reasoning": "依據 baseline：OrderOps 工具總數為 18 個（12 唯讀 + 6 寫入／金流），基準前綴大小為 6,000 tokens（System Prompt 2,400 + 18 工具 Schema 3,600，即 2,400 + 3,600 = 6,000，平均每工具 Schema 為 3,600 / 18 = 200 tokens）。與基準完全一致。",
+      "correct_value": "18 個工具（12 唯讀 + 6 寫入／金流），基準前綴 6,000 tokens（2,400 + 3,600）"
+    },
+    {
+      "claim": "最小快取門檻：例如 claude-opus-5-5 為 512 tokens、claude-sonnet-5 與先前的 Sonnet 4.5／4.6 為 1,024 tokens，低於門檻時 cache_control: { type: \"ephemeral\" } 會靜默不寫入。",
+      "verdict": "correct",
+      "reasoning": "核對 source-evidence 第 2 節 Prompt Caching Mechanics：透過 cache_control: { \"type\": \"ephemeral\" } 控制；低於最小快取門檻時為 silent no-op（回傳 0 cache_creation_input_tokens 且不報錯）；claude-opus-5-5 為 512 tokens，claude-sonnet-5 與先前 Sonnet 4.5/4.6 為 1,024 tokens。與 source-evidence 完全相符。",
+      "correct_value": "claude-opus-5-5 最小快取門檻為 512 tokens，claude-sonnet-5 / Sonnet 4.5 / 4.6 為 1,024 tokens，低於門檻時靜默不寫入"
+    },
+    {
+      "claim": "在尖峰 12 tickets/s 下，每筆扇出 3–4 個 Worker 代表 36–48 次 Worker 啟動／秒（若耗滿 4 回合則達 144–192 次呼叫／秒）。",
+      "verdict": "correct",
+      "reasoning": "依據 baseline，OrderOps 尖峰流量為 12 req/s。獨立重算：每秒 12 筆工單 × 每筆 3~4 個 Worker = 36~48 次 Worker 啟動／秒；若每個 Worker 執行滿 max_turns = 4 回合，則每秒 API 呼叫數為 36 × 4 = 144 至 48 × 4 = 192 次呼叫／秒。推導結果與內文完全一致。",
+      "correct_value": "36–48 次 Worker 啟動／秒；耗滿 4 回合時為 144–192 次呼叫／秒"
+    },
+    {
+      "claim": "Worked Example 方案 A（單一 Sonnet 5.5 攜帶 18 工具）：前綴 6,000 tokens，5 回合累計前綴輸入 30,000 tokens，前綴輸入成本為 $0.060000 / 筆。",
+      "verdict": "correct",
+      "reasoning": "依據 baseline，基準前綴為 6,000 tokens，基準回合為 5 回合，Sonnet 5.5 輸入牌價為 $2.00 / MTok。獨立重算：6,000 × 5 = 30,000 tokens；30,000 × ($2.00 / 1,000,000) = $0.060000 / 筆。與作者計算完全一致。",
+      "correct_value": "30,000 tokens，$0.060000 / 筆"
+    },
+    {
+      "claim": "Worked Example 方案 B（Haiku Router + 專責 Specialist）：1. Haiku Router（1 回合、前綴 450 tokens）前綴輸入成本 $0.000045 / 筆（若計入 90 tokens 輸出另加 $0.000045，合計 $0.000090 / 筆）；2. 唯讀調查 Worker（Haiku 5.5、前綴 2,800 tokens、2 回合）前綴累計輸入 5,600 tokens，成本 $0.000560 / 筆；3. 高風險退款仲裁（20% 工單觸發 Opus 5.5、前綴 2,800 tokens、2 回合）觸發時前綴成本 $0.022400 / 筆，攤提至全量工單為 $0.004480 / 筆。方案 B 合計平均純前綴成本 = $0.005085 / 筆，較方案 A 降幅 91.53%（若平均每筆扇出 2 個等量 Worker 則為 $0.005645，降幅 90.59%）；預算熔斷閾值 $0.050 約為分層基準 $0.005085 的 10 倍。",
+      "verdict": "correct",
+      "reasoning": "依據 baseline 牌價（Haiku 5.5 ≤100K 為 $0.10 / $0.50 per MTok；Opus 5.5 為 $4.00 / $20.00 per MTok）獨立重算：(1) Router 輸入：450 × $0.10 / 10^6 = $0.000045，90 tokens 輸出：90 × $0.50 / 10^6 = $0.000045，合計 $0.000090；(2) 單一 Worker 輸入：(2,800 × 2) = 5,600 tokens，5,600 × $0.10 / 10^6 = $0.000560；(3) Opus 仲裁輸入：5,600 × $4.00 / 10^6 = $0.022400，乘以 20% 觸發率 = $0.004480。三項純前綴加總：$0.000045 + $0.000560 + $0.004480 = $0.005085 / 筆。降幅 = ($0.060000 - $0.005085) / $0.060000 = 0.91525 ≈ 91.53%。若扇出 2 個等量 Worker：$0.005085 + $0.000560 = $0.005645 / 筆，降幅 = ($0.060000 - $0.005645) / $0.060000 = 0.905916... ≈ 90.59%。熔斷閾值倍數：$0.050 / $0.005085 ≈ 9.83 倍（約 10 倍）。所有數值皆驗證無誤。",
+      "correct_value": "單 Worker 平均純前綴成本 $0.005085 / 筆（降幅 91.53%）；雙 Worker 為 $0.005645 / 筆（降幅 90.59%）"
+    },
+    {
+      "claim": "若外層再包重試而不關閉內建重試，內外層各「1 次初始呼叫 + 2 次重試」會膨脹成 (1+2) × (1+2) = 最多 9 次嘗試；指數退避加 Full Jitter（sleep = random(0, min(cap, base × 2^n))，n 從 0 起算，base = 500ms、cap = 8,000ms、max_retries = 2）第 1、2 次重試分別為 0–500ms 與 0–1,000ms，單次等待上界為 1,000ms，兩次累計等待上界為 1,500ms。",
+      "verdict": "correct",
+      "reasoning": "獨立推導：外層最多執行 1 + 2 = 3 次嘗試，每次嘗試觸發內層最多 1 + 2 = 3 次請求，總計最多 3 × 3 = 9 次嘗試。退避公式 min(8000, 500 × 2^n)：當第 1 次重試（n = 0）時，上界為 min(8000, 500 × 1) = 500ms，範圍 0–500ms；當第 2 次重試（n = 1）時，上界為 min(8000, 500 × 2) = 1,000ms，範圍 0–1,000ms。單次等待最大上界為 max(500, 1000) = 1,000ms，兩次重試累計等待上界為 500 + 1,000 = 1,500ms。完全正確。",
+      "correct_value": "最多 9 次嘗試；第 1、2 次重試等待範圍分別為 0–500ms 與 0–1,000ms，累計等待上界 1,500ms"
+    },
+    {
+      "claim": "動手做離線模擬輸出中，TKT-5001 的 totalCostUsd 為 0.00051，TKT-5002 的 totalCostUsd 為 0.01811。",
+      "verdict": "imprecise",
+      "reasoning": "章節正文已註明這兩筆數值依賴外部範例檔案（examples/ts/ch05/index.ts 與 examples/py/ch05/main.py）內模擬的各模型輸入、輸出與快取 token 數量，而本章正文與 baseline / source-evidence 並未列出該模擬程式內部設定的具體 token 用量明細，因此在閉卷查核下無法僅憑章節提供的材料獨立重算 0.00051 與 0.01811。",
+      "correct_value": "需提供或於正文補充範例模擬程式中 Router、2 個 Worker 與 Opus Specialist 的具體模擬 token 用量（input / output / cache tokens），方能由正文獨立核驗 $0.00051 與 $0.01811"
+    },
+    {
+      "claim": "自我檢核參考解答 1：若在 Haiku Router 掛載 2 個常用查詢工具，工具 Schema 前綴（每個工具約 200 tokens，2 個工具即 400 tokens）乘上全量 50,000 筆／天的流量，每日多出 20,000,000 輸入 tokens，按 Haiku ≤100K 無快取牌價約多 $2／日。",
+      "verdict": "correct",
+      "reasoning": "依據 baseline：18 個工具 Schema 為 3,600 tokens，平均每個工具 3,600 / 18 = 200 tokens，2 個工具為 400 tokens；日工單量為 50,000 筆／天；Haiku 5.5（≤100K）輸入牌價為 $0.10 / MTok。獨立重算：400 tokens/筆 × 50,000 筆/天 = 20,000,000 tokens/天（即 20 MTok/天）；20 MTok × $0.10 / MTok = $2.00 / 日。完全正確。",
+      "correct_value": "每日多出 20,000,000 輸入 tokens，無快取下每日多出 $2.00"
+    }
+  ]
+}

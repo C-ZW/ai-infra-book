@@ -1,0 +1,308 @@
+{
+  "chapter": "ch23-heap-internals-and-primitives.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "區域變數隨著函式進入而壓入堆疊、隨著 `ret` 返回而自動收回，記憶體位址與生命週期都受限於單一呼叫鏈。",
+      "verdict": "incorrect",
+      "reasoning": "區域變數的作用域、儲存期與機器層級的配置位置是不同概念。編譯器可將自動區域變數保存在暫存器或消除其儲存，區域靜態變數則可跨呼叫存續。x86-64 的 `ret` 取出返回位址，正常函式返回前所需的堆疊框架清理由函式尾端處理。",
+      "correct_value": "具有自動儲存期的區域物件通常隨其作用域結束而失效。實際使用的堆疊框架依呼叫慣例與編譯結果建立及回收。"
+    },
+    {
+      "claim": "當 `libnexus-parse` 必須同時處理多筆長度最高可達 `65,536 bytes`（`64 KiB`）的 TLV 封包，並在非同步管線或跨函式呼叫間傳遞解析結果時，這些物件只能由動態記憶體配置器在堆積上配置與釋放。",
+      "verdict": "incorrect",
+      "reasoning": "基準的 `65,536 bytes` 是 payload 上限，加上 `2 + 2 + 4 = 8 bytes` 的檔頭，最大完整封包為 `65,544 bytes`。跨非同步邊界要求儲存空間活得夠久，也可由預配置緩衝池或上層所有者提供。",
+      "correct_value": "TLV payload 上限為 `65,536 bytes`，完整封包上限為 `65,544 bytes`。解析結果的儲存期須涵蓋全部使用者，堆積配置是其中一種做法。"
+    },
+    {
+      "claim": "`ptmalloc2` 先透過 `brk` 或 `mmap` 向作業系統核心取得大塊虛擬記憶體區域（稱為 **Arena**）。",
+      "verdict": "incorrect",
+      "reasoning": "章內後文指出每個 Arena 維護自己的鎖、Bin 與 Top Chunk，並另有直接透過 `mmap` 配置的區塊。這兩點顯示 Arena 是配置器管理狀態，不能用作核心傳回之虛擬記憶體區域的通稱。",
+      "correct_value": "Arena 是管理底層記憶體區域的配置器狀態。部分直接映射的配置獨立於 Arena 管理的堆區。"
+    },
+    {
+      "claim": "如果每次呼叫 `malloc(24)` 都直接向核心呼叫 `brk` 或 `mmap`，單次配置就會耗費數百至數千奈秒的系統呼叫切換成本，且會在 `4 KiB`（`4,096 bytes`）分頁粒度下造成嚴重的內部碎片。",
+      "verdict": "imprecise",
+      "reasoning": "`4,096 ÷ 24` 可說明為每個小物件單獨保留整頁的空間浪費。這個模型不能直接套至以 `brk` 擴展堆區的所有情況。章內也未提供能驗證奈秒區間的平台或量測。",
+      "correct_value": "批次取得並重用記憶體可減少系統呼叫。若每個 24-byte 物件各占一頁，單頁有 `4,072 bytes` 未供該物件使用。系統呼叫成本須附量測條件。"
+    },
+    {
+      "claim": "在 64 位元 x86_64 架構上，指標寬度為 `8 bytes`，`ptmalloc2` 強制要求所有 Chunk 位址與總大小滿足 `16 bytes`（`0x10`）對齊，且最小可用 Chunk 大小為 `32 bytes`（`0x20`）。",
+      "verdict": "correct",
+      "reasoning": "三個數字均與全書指定的 x86_64 模型一致。章內最小空閒 Chunk 的四個 8-byte 欄位合計 32 bytes，也符合 16-byte 對齊。",
+      "correct_value": "書中模型的指標寬 8 bytes，Chunk 對齊 16 bytes，最小 Chunk 為 32 bytes。"
+    },
+    {
+      "claim": "同一個 Arena 內的所有 Chunk 全數位於相同權限的可讀寫資料頁上，硬體不會阻擋一個物件的寫入越界改寫相鄰 Chunk 的標頭。",
+      "verdict": "imprecise",
+      "reasoning": "若存取來源與目標都在可寫映射內，頁表無法辨識兩個 C 物件之間的邊界。這個結論只依賴存取涉及的頁面權限，無須斷言同一 Arena 的所有映射皆具相同權限。",
+      "correct_value": "在基準的 4 KiB 頁面模型下，頁面權限無法阻擋仍落在可寫映射內的物件間越界寫入。"
+    },
+    {
+      "claim": "Linux x86_64 使用者空間堆積映射具備典型 `28 bits` 的 ASLR 隨機化熵值，最低 `12 bits`（`4 KiB` 頁內偏移）保持固定。",
+      "verdict": "imprecise",
+      "reasoning": "`4,096 = 2^12`，因此以頁為單位的隨機化不改變給定位置的頁內偏移，頁對齊映射基底的最低 12 位則為零。28 位來自本書基準，資料未證明每個 Linux x86_64 堆區或部署皆具相同有效熵。",
+      "correct_value": "本章採 28 位的映射隨機化模型與 4 KiB 頁面。部署的有效熵須依映射類型、核心及設定確認。"
+    },
+    {
+      "claim": "`unsorted bin` 的 `fd`/`bk` 指標則直接指向 `libc.so.6` 內的 `main_arena` 結構，讓攻擊者藉第 20 章推導過的固定 `12-bit` 頁內偏移還原整個 `libc` 與堆積基底位址。",
+      "verdict": "incorrect",
+      "reasoning": "章內將 unsorted bin 定義為每個 Arena 各自維護的雙向環狀串列，所以節點可連至其他節點或所屬 Arena 的串列表頭。知道頁內偏移只確定頁內位置，無法從中唯一決定兩個獨立映射的基底。",
+      "correct_value": "unsorted bin 鏈結的意義取決於所屬 Arena 與相鄰串列節點。固定的 12 位頁內偏移本身不足以確定 libc 或堆積基底。"
+    },
+    {
+      "claim": "若依賴額外的資訊洩漏才能突破 Safe-Linking，在 CVSS v4.0 中會精確反映於攻擊需求指標（`AT:P`，Attack Requirements: Present）以及對受影響系統與後續系統的機密性／完整性／可用性影響拆解，再配合 EPSS 評估野外自動化利用機率以決定是否納入 `24 小時` 嚴重級或 `7 天` 高危級 SLA 處置。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料支持 CVSS v4.0 含 AT 並拆分兩類系統影響，但未提供此案例的完整評分前提。額外需要資訊洩漏與存在實際的後續系統影響，都需要各自查明。EPSS 百分位是相對排名，與機率分數不同。基準也另外定義了立即處置條件。",
+      "correct_value": "依完整觸發條件與實際系統影響填寫 CVSS 向量，並分列 EPSS 分數、百分位與 KEV 狀態。書內 SLA 為嚴重 24 小時、高危 7 天，EPSS 分數 `≥ 0.1` 或列入 KEV 時視為立即處置。"
+    },
+    {
+      "claim": "主執行緒預設使用 `main_arena`，底層主要透過 `brk()` 系統呼叫向上擴張連續的資料段；當多個工作執行緒併發配置而發生鎖競爭時，`ptmalloc2` 會透過 `mmap()` 另外建立輔助的 `non_main_arena`（上限通常與 CPU 核心數相關，64 位元預設為核心數的 `8` 倍）。",
+      "verdict": "imprecise",
+      "reasoning": "每個 Arena 有各自的鎖，可解釋多 Arena 有助於降低競爭。這項設計無法單獨推出建立 Arena 的精確觸發條件或八倍上限。材料未附支援這些版本與設定細節的原始碼位置。",
+      "correct_value": "各 Arena 分別管理配置狀態以分散鎖競爭。輔助 Arena 的建立時機、預設上限與調校條件應綁定指定 glibc 版本。"
+    },
+    {
+      "claim": "當所有可重用的 Bin 都無法滿足當前 `malloc(size)` 請求時，配置器便從 Top Chunk 的低位址端切出所需大小的 Chunk，並將剩餘空間往高位址推進；只有當 Top Chunk 本身也不足時，才向核心請求擴張。",
+      "verdict": "imprecise",
+      "reasoning": "按章內最小 Chunk 不變量，能切出請求大小的空間仍可能不足以留下有效的 Top Chunk。原句也省略 fastbin 整理後可能重新嘗試從既有空間滿足請求。",
+      "correct_value": "從 Top 切分時，剩餘大小須至少為 `MINSIZE`。Top 無法切分時，配置器仍可能先整理既有空閒區塊，再進入向系統取得記憶體的路徑。"
+    },
+    {
+      "claim": "`malloc()` 回傳給應用程式的指標 `mem`，並非 `malloc_chunk` 的起始位址 `p`，而是 `p + 0x10`。",
+      "verdict": "correct",
+      "reasoning": "依章內佈局，使用者區域前有兩個各 8-byte 的欄位。`8 + 8 = 16 = 0x10`，因此偏移量與圖一致。",
+      "correct_value": "在本章 x86_64 佈局中，使用者資料起點位於 Chunk 起點後 16 bytes。"
+    },
+    {
+      "claim": "因為所有 Chunk 總大小皆為 `16 bytes`（`0x10`）的整數倍，所以 `mchunk_size` 的最低 4 個位元必定為 `0`。",
+      "verdict": "incorrect",
+      "reasoning": "16 的倍數最低四位為零，但章內明確將其中三位用作 A、M、P 旗標。例如 `0x20 | 0x1 = 0x21`，證明已儲存的欄位最低四位未必為零。",
+      "correct_value": "未帶旗標的 Chunk 大小最低四位為零。有效的 `mchunk_size` 可在最低三位帶旗標，使用 `mchunk_size & ~0x7` 取回大小。"
+    },
+    {
+      "claim": "`P == 1` 表示前一個 Chunk 正在使用（或本 Chunk 為 Arena 的起點）。",
+      "verdict": "incorrect",
+      "reasoning": "章內稍後明確說明，已釋放至 tcache 或 fastbin 的區塊仍讓下一塊保留 `P == 1`。因此該位元無法獨立判定應用程式是否仍持有前一塊。",
+      "correct_value": "`P == 1` 表示配置器在此視前一實體區塊為不可向後合併。前一區塊可能仍由應用程式持有，也可能已進入延遲合併的快取。"
+    },
+    {
+      "claim": "`M`（`IS_MMAPPED = 0x2`）的配置通常在請求大小達到動態調整的 `mp_.mmap_threshold` 時觸發，64 位元初始值為 `128 KiB`。",
+      "verdict": "imprecise",
+      "reasoning": "章內配置流程已容許大請求由匹配的 Bin 或 Top 滿足，所以跨過門檻不足以單獨決定使用獨立映射。提供的基準與史料均未定位 `128 KiB` 初始值對應的程式版本及設定。",
+      "correct_value": "在需要向系統取得記憶體的路徑中，映射門檻是是否嘗試獨立映射的條件之一。初始值應按指定版本與調校設定列出。"
+    },
+    {
+      "claim": "`ptmalloc2` 因此允許 Chunk A 的最後 `8 bytes` 使用者資料合法借用 Chunk B 的 `mchunk_prev_size` 槽位。",
+      "verdict": "correct",
+      "reasoning": "在本章的一般 Arena 模型中，32-byte Chunk 從 `+0x10` 開始有 16 bytes 位於其名義範圍內。下一塊的 `prev_size` 在前塊使用中時可提供額外 8 bytes，因此 `malloc(24)` 與章內佈局一致。",
+      "correct_value": "此模型下的一般 Arena Chunk 可借用下一塊未使用的 `prev_size`。24-byte 請求可由 32-byte Chunk 滿足。"
+    },
+    {
+      "claim": "無論呼叫 `malloc(0)`、`malloc(16)` 還是 `malloc(24)`，實際配置出的 Chunk 大小一律是 `0x20`；`malloc(25)` 則跳升至 `48 bytes`。",
+      "verdict": "correct",
+      "reasoning": "先加 8 得到 8、24、32、33 bytes，再分別向上對齊至 16 的倍數，得 16、32、32、48 bytes，最後套用最小值 32。這支持公式換算結果，實際回傳仍以配置成功及採用所述路徑為前提。",
+      "correct_value": "四筆規格化 Chunk 大小依序為 `0x20`、`0x20`、`0x20`、`0x30`。"
+    },
+    {
+      "claim": "實算演練的五筆請求 `24`、`25`、`1,032`、`1,040`、`65,536 bytes` 分別得到 `0x20`、`0x30`、`0x410`、`0x420`、`0x10010` 的 Chunk 大小。",
+      "verdict": "correct",
+      "reasoning": "先加入 8 bytes 得到 32、33、1,040、1,048、65,544，再向上取 16 的倍數得到 32、48、1,040、1,056、65,552。套用題目明示的 `A=0, M=0, P=1` 後，五個標頭均為各自大小加一。",
+      "correct_value": "Chunk 大小與標頭依序為 `0x20/0x21`、`0x30/0x31`、`0x410/0x411`、`0x420/0x421`、`0x10010/0x10011`。"
+    },
+    {
+      "claim": "`req = 1,040 bytes (0x410, 剛好跨出 tcache 邊界)`。",
+      "verdict": "imprecise",
+      "reasoning": "當 Chunk 上限為 1,040 bytes 時，扣除公式所用的 8 bytes，最大請求是 1,032 bytes。加一後的請求先得到 1,041 bytes，再向上對齊到 1,056 bytes。因此 1,040 bytes 已超過界線，但並非第一個超出的請求。",
+      "correct_value": "在本書模型中，最後可納入的請求是 `1,032 bytes`，第一個超出的請求是 `1,033 bytes`。1,033 和 1,040 bytes 均換算為 `0x420`。"
+    },
+    {
+      "claim": "自我檢核第 1 題只假設前一個物理相鄰 Chunk 正在使用中，參考解答據此列出 `0x21`、`0x31`、`0x411`、`0x421` 四個標頭。",
+      "verdict": "imprecise",
+      "reasoning": "前塊使用中決定 `P=1`，無法決定目前 Chunk 的 `A` 和 `M`。解答另採主 Arena，且隱含使用一般 Arena 分配。若為輔助 Arena 的一般已配置 Chunk，在相同大小下還須計入 `0x4`。",
+      "correct_value": "題幹補上「四個 Chunk 均由 `main_arena` 一般路徑配置，`A=0, M=0`」後，四個答案成立。"
+    },
+    {
+      "claim": "tcache 涵蓋 `64` 條 Bin，對應 Chunk 大小從 `0x20` 至 `0x410`，每條 Bin 預設容量上限為 `7` 個 Chunk。",
+      "verdict": "correct",
+      "reasoning": "按基準級距，首尾皆計入，`(0x410 - 0x20) ÷ 0x10 + 1 = 64`。每條 7 個亦與基準一致。這些數字建立的是書中指定的配置模型。",
+      "correct_value": "本書模型涵蓋 64 級、每級預設 7 個，最大請求為 1,032 bytes。"
+    },
+    {
+      "claim": "自 `glibc 2.26` 引入的執行緒區域快取，目的是讓每個執行緒在配置或釋放中小型物件時完全無須鎖定 Arena 互斥鎖。",
+      "verdict": "imprecise",
+      "reasoning": "章內流程已有快取未命中或已滿而轉入 Arena 路徑的情況。效能上的免鎖敘述只能套用由執行緒快取直接處理的操作。提供的史料也未定位 2.26 的引入紀錄。",
+      "correct_value": "tcache 命中或可直接收納時，常見路徑可避開 Arena 互斥鎖。首次引入版本應補上發行紀錄或版本化原始碼。"
+    },
+    {
+      "claim": "`fastbin` 共設計 `10` 個條目，預設 `global_max_fast` 通常設為 `0x80`，涵蓋 `0x20`–`0x80` 共 7 條預設啟用的 fastbin，調高最多可達 `0xa0`。",
+      "verdict": "imprecise",
+      "reasoning": "將章內指定的 `0x80` 當作上限，級數為 `(0x80 - 0x20) ÷ 0x10 + 1 = 7`。提供的材料沒有可獨立核對 10 個條目、預設門檻與調校最高值所對應的版本程式碼。",
+      "correct_value": "在指定 `global_max_fast = 0x80` 的模型下有七個涵蓋級距。表格容量、調校最高值及預設設定需按指定版本核對。"
+    },
+    {
+      "claim": "只有在系統呼叫 `malloc_consolidate()`（例如遇到超過 `0x400` 的大型請求或釋放大型區塊觸發整理）時，配置器才會把 `fastbin` 內的 Chunk 一次清空、清除對應 `P` 位元並合併送入 `unsorted bin`。",
+      "verdict": "incorrect",
+      "reasoning": "`malloc_consolidate()` 是配置器內部函式。章內把 `0x400` 定為 large-bin 範圍起點，因此「超過」會漏掉等於門檻的規格化大小。整理後也應保留合併至 Top 的可能性。",
+      "correct_value": "glibc 於適用條件下呼叫內部的 `malloc_consolidate()` 以取出並合併 fastbin 區塊。大型請求分類依規格化 Chunk 大小判定，書中分界含 `0x400`。整理結果可能併入 Top。"
+    },
+    {
+      "claim": "如果程式在釋放一個 `0x500` 區塊後緊接著又請求一個 `0x480` 區塊，配置器在掃描 `unsorted bin` 時就能直接切割重用，省下放進 `large bin` 又立刻取出的成本。",
+      "verdict": "incorrect",
+      "reasoning": "若 `0x480` 是 Chunk 大小，它與 `0x500` 不匹配。若 `0x480` 是使用者請求，公式換算為 `0x490`，也不匹配，且兩種解讀都落在 large 範圍。按本章給出的 unsorted 分流，這個例子應先分類，不能從大小足夠直接推出掃描時切割。",
+      "correct_value": "在本章描述的流程下，若 `0x500` 已進入 unsorted 且未與鄰塊合併，將先移入對應 large bin。後續搜尋可以選到它並切割，是否選到還取決於其他可用區塊。"
+    },
+    {
+      "claim": "`small bin`（62 條 Bin，`0x20`–`0x3f0`）：每條 Bin 內的 Chunk 大小完全一致，採雙向環狀 FIFO。因為大小精確對應，分配與自串列移除皆為 `O(1)`。",
+      "verdict": "correct",
+      "reasoning": "以 `0x10` 為步長，首尾都算入得到 `(0x3f0 - 0x20) ÷ 0x10 + 1 = 62`。在已定位且非空的相符 small bin 中，從雙向串列端點取出並移除單節點只需固定數量的操作。",
+      "correct_value": "62 條是本章 small-bin 範圍的正確級數。`O(1)` 適用於從已定位的非空 bin 取出單一節點。"
+    },
+    {
+      "claim": "`large bin`（63 條 Bin，`>= 0x400`）：每條 Bin 涵蓋一個指數遞增的尺寸區間。",
+      "verdict": "imprecise",
+      "reasoning": "原句列出的前兩個區間等寬，說明不能按 bin 逐一解讀成指數遞增。兩個例子也無法推出全表的 63 條、分段邊界或版本適用性。",
+      "correct_value": "large bin 涵蓋多種 Chunk 大小，區間依分段索引規則組織，可有多條等寬區間。總數及各分段邊界應引指定版本的索引定義。"
+    },
+    {
+      "claim": "`0x410` Chunk 在 tcache 已滿時、`0x420` Chunk 在繞過 tcache 與 fastbin 時，均在合併檢查後進入 unsorted bin。",
+      "verdict": "imprecise",
+      "reasoning": "兩個大小均大於章內 fastbin 測試門檻 `0x80`，但小節自己的流程圖已列出併入 Top 的分支。`0x420` 範例另稱後續一定進 large bin，忽略 unsorted 掃描時仍可能直接滿足精確大小請求。",
+      "correct_value": "在書中流程模型下，先進入一般合併路徑，未併入 Top 時才暫存於 unsorted。後續是否排入 large bin 取決於合併結果與分配需求。"
+    },
+    {
+      "claim": "假設函式為每筆封包配置一個 `tlv_ctx_t`（大小 `0x20`），另一個同尺寸的新物件 `new_obj` 也同屬 `0x20` 級距。",
+      "verdict": "incorrect",
+      "reasoning": "若 `0x20` 是 `tlv_ctx_t` 的物件大小，請求是 32 bytes。加 8 後為 40 bytes，向上取 16 的倍數得 48 bytes。所以原文把物件大小與 Chunk 級距混為一談。",
+      "correct_value": "若 `sizeof(tlv_ctx_t) == 0x20`，其規格化 Chunk 大小為 `0x30`。若圖要使用 `0x20` Chunk，該例的請求大小須至多為 24 bytes。"
+    },
+    {
+      "claim": "在階段 B，如果程式透過懸垂指標 `ctx` 讀取 `+0x10` 或 `+0x18`，讀出的不再是應用程式欄位，而是 `ptmalloc2` 的指標。",
+      "verdict": "incorrect",
+      "reasoning": "依圖表，`+0x10` 和 `+0x18` 是相對 Chunk 起點的偏移，`ctx` 已指向使用者起點。依章內自己的欄位定義，第二個欄位是釋放檢查值 `key`，也不能一概稱為指標。",
+      "correct_value": "圖上應區分 Chunk 起點與 `ctx` 的指向，並將 tcache 的兩個欄位分別標成編碼鏈結與釋放檢查值。"
+    },
+    {
+      "claim": "在沒有任何防護檢查的年代，若將同一塊記憶體 `A` 連續放入串列兩次（或穿插另一個區塊 `B` 形成 `A → B → A`），串列計數器會虛增，後續兩次 `malloc()` 會將同一塊記憶體同時分配給兩個看似獨立的呼叫端。",
+      "verdict": "incorrect",
+      "reasoning": "章內用 LIFO 串列作模型。若表頭路徑以 `A → B` 開始，前兩次取出的節點分別是 A 和 B，因此「後續兩次」無法涵蓋所列的兩種情況。章內也未為所有假設的歷史配置器建立串列計數器的前提。",
+      "correct_value": "重複插入同一節點可能破壞串列與配置器的所有權不變量。實際後果取決於串列狀態與配置器檢查。"
+    },
+    {
+      "claim": "向後看前塊的 `P` 位元與 `prev_size`，向前看後塊的再下一個區塊 `P` 位元。",
+      "verdict": "incorrect",
+      "reasoning": "章內定義每塊的 `P` 描述其物理前一塊。所以要檢查目前區塊的前一塊，應讀目前區塊的 `P`，在可向後合併時再使用目前區塊的 `prev_size`。前塊自身的 `P` 描述的是更前面一塊。",
+      "correct_value": "向後合併檢查目前 Chunk 的 `P` 與有效的 `prev_size`。一般向前檢查使用後塊之後的 Chunk 的 `P`，另處理 Top。"
+    },
+    {
+      "claim": "當兩個相鄰的 `0x20` Chunk 被陸續放進 `tcache` 或 `fastbin` 時，配置器不會去清除下一塊的 `P` 位元，也不會寫入 `prev_size`，因此不會立即觸發前後合併。",
+      "verdict": "correct",
+      "reasoning": "按章內延遲合併規則，這兩條快取路徑維持物理後塊的前塊使用中標記，也不更新供合併使用的空閒邊界標籤。兩次釋放仍各自留下獨立的快取節點。",
+      "correct_value": "tcache 與 fastbin 插入時延遲合併。一般釋放路徑則先合併當時可合併的相鄰區塊。"
+    },
+    {
+      "claim": "如果下一塊是個使用中的物件，溢位就會直接改寫該相鄰物件的內部欄位，完全不觸發配置器本身的任何完整性錯誤。",
+      "verdict": "imprecise",
+      "reasoning": "按本章佈局，連續寫入若由前一物件一路跨到下一物件的負載，中間可能先經過 Chunk 標頭。配置器通常也在後續操作使用中繼資料時才做一致性檢查。因此寫入當下與後續是否觸發錯誤是兩個問題。",
+      "correct_value": "配置器通常無法偵測單純的業務欄位覆寫。若相鄰 Chunk 的中繼資料也遭破壞，後續配置或釋放可能報錯。"
+    },
+    {
+      "claim": "`glibc 2.32` 引入了 Safe-Linking。`glibc 2.29` 起在 `tcache_entry` 加入 `key` 欄位，`glibc 2.34` 改為每個行程啟動時透過亂數產生的 64 位元 `tcache_key`。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料支持現代 glibc 採用 Safe-Linking 與雙重釋放檢查，沒有列出這三個版本的提交、發行註記、初始化時點或相應原始碼位置。",
+      "correct_value": "可保留現代 glibc 使用這兩項檢查的概述。首次引入版本、key 表示法與初始化時點須各自補證。"
+    },
+    {
+      "claim": "將 `pos` 右移 `12 bits` 會留下純粹受 ASLR 隨機化的 `28-bit` 分頁高位部分。",
+      "verdict": "incorrect",
+      "reasoning": "右移 12 位只會去掉 4 KiB 頁面的頁內偏移。結果是整個頁號，仍可含固定前綴或受映射範圍限制的位元。位移本身不會抽取恰好 28 個隨機位元。",
+      "correct_value": "`pos >> 12` 是欄位所在頁的頁號。書中假設映射基底具有 28 位隨機化熵，與頁號的位元表示是不同概念。"
+    },
+    {
+      "claim": "Safe-Linking「使缺乏資訊洩漏前提的盲目指標覆寫徹底失效」。",
+      "verdict": "incorrect",
+      "reasoning": "XOR 混淆與低位元對齊檢查沒有提供完整的來源或物件身分驗證。即使檢查能攔截部分損毀，也無法推出所有未知位址下的損毀必遭阻止。",
+      "correct_value": "Safe-Linking 提高盲目鏈結指標覆寫的難度，並可攔截部分無效的指標值。"
+    },
+    {
+      "claim": "Safe-Linking 實算演練稱，未編碼值在還原後未對齊，就會「立即失敗於 `aligned_OK()` 檢查」。",
+      "verdict": "imprecise",
+      "reasoning": "16-byte 對齊等價於最低四位均為零，但一個值已解碼，與配置器此刻已將它當作待取出的節點並執行檢查，是不同事件。材料也未提供指定 glibc 版本的呼叫順序。此項查核限於對齊條件與診斷時機。",
+      "correct_value": "若解碼後的值不符合對齊要求，且該路徑隨後對它執行節點對齊檢查，才會觸發該診斷。"
+    },
+    {
+      "claim": "若 `e->key == tcache_key`，`ptmalloc2` 遍歷對應尺寸那條 `tcache` Bin 的所有節點（因為單條 Bin 上限僅 `7` 個，掃描成本固定為常數 `O(7)`，不會拖慢正常路徑）。",
+      "verdict": "imprecise",
+      "reasoning": "假設檢查只掃一條最多七個節點的有效串列，最多七次節點比較。對可配置容量 `n` 而言，掃描是 `O(n)`。史料未證實所有所稱現代版本都只掃一條 bin，也未提供效能量測。",
+      "correct_value": "在單 bin、容量七個的假設下，驗證最多比較七個節點。實際掃描範圍應依 glibc 版本說明，耗時結論須有量測。"
+    },
+    {
+      "claim": "因為堆積記憶體洩漏完全不會暴露 `fs:0x30` 的內容，單靠堆積洩漏加上任意堆積寫入仍無法算出合法的 `PTR_MANGLE` 密文。",
+      "verdict": "imprecise",
+      "reasoning": "提供的證據只概括確認 Pointer Mangling。依章內模型，單一堆積頁號與 Pointer Guard 沒有可推導的關係。這無法推廣為任意內容的堆積洩漏完全不可能包含其他相關資料。確切的 x86_64 欄位偏移、轉換與適用對象也欠缺版本化來源。",
+      "correct_value": "單憑堆積頁號無法推得獨立的 Pointer Guard。將結論限定於題目提供的洩漏內容，並為 x86_64 實作細節補上指定版本來源。"
+    },
+    {
+      "claim": "封裝安全釋放介面，強制在 `free()` 後立即將呼叫端的指標本身置為 `NULL`；在實驗中以 `nexus_safe_free((void **)&ptr)` 套用到 `uint8_t *` 指標。",
+      "verdict": "incorrect",
+      "reasoning": "`uint8_t *` 可轉成 `void *` 傳給 `free`。但把 `uint8_t **` 強轉為 `void **` 後，透過 `*pp` 存取原本宣告為 `uint8_t *` 的物件，並未使該物件取得 `void *` 型別。這種存取不具可攜的 C 語義。置空單一指標也不會同步清除其他別名。",
+      "correct_value": "在單一所有者處直接執行 `free(ptr); ptr = NULL;`，或使用參數型別與該所有權指標精確相符的釋放函式。`free(NULL)` 可作為安全空操作。"
+    },
+    {
+      "claim": "每個 `malloc()` 分配區前後都會插入不可讀寫的 Redzone（影子位元組標記為負值 `0xfa`），任何越界 `1 byte` 的堆積溢位在存取當下就會觸發檢查失敗。",
+      "verdict": "incorrect",
+      "reasoning": "依章內公式，一個影子位元組對應八個應用程式位元組。因此未整除八的配置長度需要能表示部分可存取的末組，例如 25-byte 配置最後一組只有 1 byte 可存取。檢查依賴 ASan 插樁與執行期，未經檢查的存取或仍在同一有效配置內的子物件越界，均使「任何」不成立。",
+      "correct_value": "ASan 以約 1:8 的影子映射標示受追蹤配置的存取狀態。啟用檢查的存取若碰到已標記無效的位置，可偵測單一位元組的配置邊界越界。"
+    },
+    {
+      "claim": "`free()` 釋放的記憶體不會立刻交回重用，而是進入定容量的隔離區，確保緊接著發生的 UAF 讀取或寫入在第一個指令處就被精準攔截，並印出完整三份呼叫堆疊。",
+      "verdict": "imprecise",
+      "reasoning": "有限隔離區只提供暫時維持釋放標記的能力。診斷也依賴存取是否受檢查、位址當下的狀態，以及堆疊擷取及符號化設定。章內自己的防禦表已承認隔離有限。",
+      "correct_value": "若已釋放區域仍被 ASan 標記，且違規存取經過檢查，ASan 能報告 UAF。報告通常包含可取得的存取、釋放與配置堆疊。"
+    },
+    {
+      "claim": "ASan 會帶來約 `2×` CPU 與記憶體開銷；Safe-Linking + `key` 開銷 `< 1%`；Hardened Allocator 開銷 `5%–15%`；`nexus_safe_free` + 單一出口開銷為零。",
+      "verdict": "imprecise",
+      "reasoning": "時間、記憶體與配置器負擔取決於工作負載、平台、編譯、取樣與量測指標。材料未提供基準測試。置空是程式新增的操作，只有特定編譯結果或量測能支持其負擔為零。",
+      "correct_value": "將各開銷列為待量測。若保留數字，附上分配器版本、工作負載、硬體、編譯設定與量測指標。"
+    },
+    {
+      "claim": "若需低開銷的生產期取樣偵測，可評估核心/glibc 搭配的 `HWASan`（ARM64 MTE/TBI）或 `GWP-ASan`（低頻率隨機取樣防護頁）。",
+      "verdict": "incorrect",
+      "reasoning": "這句把編譯器插樁的標記檢查、硬體記憶體標記，以及只抽樣部分配置的防護頁方案列為同類。TBI 提供在指標中攜帶標記的能力；它與 MTE 的硬體標記檢查機制不同。",
+      "correct_value": "GWP-ASan 是抽樣配置的防護頁方案。HWASan 通常透過編譯器插樁進行標記檢查，Arm MTE 是另一種硬體標記檢查機制。各方案的部署支援與開銷應分別說明。"
+    },
+    {
+      "claim": "請求結束時一次釋放整個 Arena，從架構層面直接消滅個別物件釋放的 UAF 與 Double Free。",
+      "verdict": "correct",
+      "reasoning": "在章內「整批物件共享請求生命週期」的前提下，若介面完全移除逐一釋放操作，逐一釋放所造成的這兩種錯誤便沒有發生點。Arena 重設或釋放後仍有人持有指標，以及 Arena 被重複銷毀，則須另外管理。",
+      "correct_value": "集中回收可消除逐物件釋放路徑。物件引用須在 Arena 重設或銷毀前停止使用，且 Arena 本身須有明確所有權。"
+    },
+    {
+      "claim": "改採中繼資料與使用者資料實體隔離（Out-of-Band Metadata）的現代分配器（例如 `mimalloc` secure mode 或 `scudo`）。",
+      "verdict": "imprecise",
+      "reasoning": "配置器可以對不同中繼資料採不同位置與保護機制。部分中繼資料隔離、標頭完整性驗證與空閒鏈結編碼支持的安全結論各不相同。證據未提供兩個範例的版本化配置佈局，無法證實所述欄位都已移出。",
+      "correct_value": "依配置器版本分別列出標頭、大小欄位與空閒鏈結的位置及完整性保護，再判斷哪些中繼資料能避開相鄰負載溢位。"
+    },
+    {
+      "claim": "GDB 參考解答把 `b` 與 `c` 的 `prev_size` 槽位分別顯示為 `0x4141414141414141` 與 `0x4242424242424242`，並將其描述為典型 glibc 2.35+ 樣貌。",
+      "verdict": "imprecise",
+      "reasoning": "若 `a`、`b`、`c` 按序相鄰，前兩個 24-byte 的填值各會跨入後塊標頭的第一個 8-byte 槽，示例與算式一致。程式只要求三次配置成功，沒有檢查其是否相鄰，也沒有查明初始 Arena 或快取狀態。",
+      "correct_value": "將記憶體轉儲標為三塊按序相鄰、位於主 Arena 且符合所列條件時的示意。實際轉儲與位址應以實際配置結果為準。"
+    },
+    {
+      "claim": "以 `-fsanitize=address,undefined` 重新編譯執行 `uaf` 與 `dfree` 模式皆可無錯退出（exit code `0`）。",
+      "verdict": "imprecise",
+      "reasoning": "提供的修補片段定義 `simulate_uaf_fixed`，原本 `main` 仍呼叫 `simulate_uaf_bug`。若僅貼上片段，新函式不會被該分支呼叫。此外，參考修補仍有 `void **` 型別問題，配置失敗也必須明確傳遞。材料未提供已完成的修補檔或實際退出紀錄。",
+      "correct_value": "修補應包括 `main` 的分派、具型別正確性的釋放與回傳值處理。只有在修補版本成功建置並執行兩個模式後，才能將退出碼 `0` 記為已觀察結果。"
+    },
+    {
+      "claim": "可搭配 pwn.college 平台上的 `Dynamic Allocator Misuse` 模組，對照本章指定的 tcache 與 unsorted-bin 檢查點。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料只將 pwn.college 列為開源系統安全學習平台。章末提供的是首頁，材料缺少對應模組頁與題目對照，無法核定正式模組名稱或各檢查點是否有相應練習。",
+      "correct_value": "可把 pwn.college 列為延伸學習平台。正式模組名稱與各檢查點的對照須附模組頁位置。"
+    }
+  ]
+}

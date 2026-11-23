@@ -1,0 +1,164 @@
+{
+  "chapter": "ch11-ssrf-parsers-and-cache.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "Nginx 也設定了靜態資源快取與 `proxy_read_timeout = 30 s`（後端 Node.js 則維持 `keepAliveTimeout = 5 s`）。",
+      "verdict": "correct",
+      "reasoning": "逐一對照基準表，Nginx 的 `proxy_read_timeout` 為 30 秒，Node.js 的 `keepAliveTimeout` 為 5 秒。兩個數字與各自的設定名稱均相符。",
+      "correct_value": "就基準表可核對的數值而言，Nginx 為 30 秒，Node.js 為 5 秒。"
+    },
+    {
+      "claim": "只要應用程式的「URL 檢查器（Validator）」與「HTTP 發起器（Fetcher）」用了不同的解析器，攻擊者就能構造出「Validator 看到 A 主機、Fetcher 連向 B 主機」的雙面 URL。",
+      "verdict": "incorrect",
+      "reasoning": "兩個解析器可以在應用程式接受的輸入範圍內產生相同的主機，或只在片段等不決定連線目的地的欄位上分歧。即使結果分歧，驗證器也可能拒絕輸入。",
+      "correct_value": "解析器不同代表存在分歧風險。須證明存在一筆輸入，能通過驗證且使發起器使用另一個連線目的地。"
+    },
+    {
+      "claim": "Node.js 傳統 `url.parse()` 把 `127.0.0.1:8080\\` 當作 userinfo，解析出主機為 `trusted.example` 而放行。",
+      "verdict": "incorrect",
+      "reasoning": "會在權威部分切分前先正規化反斜線的 Node.js legacy 實作，會於反斜線處結束權威部分。因此 `@` 位於路徑內，章中驗證器看到的主機仍符合其封鎖條件。材料也沒有提供能支持作者所述結果的 Node.js 版本或實測紀錄。",
+      "correct_value": "在上述 legacy 實作中，主機為 `127.0.0.1`、連接埠為 `8080`，驗證器會拒絕。涉及其他版本的行為應限定版本並附證據。"
+    },
+    {
+      "claim": "正則與部分不剝除控制字元的傳統 parser 會判定不匹配或解析失敗而放行（或將其視為合法網域字元），交給 `fetch()` 時卻被靜默拼回 `127.0.0.1`。",
+      "verdict": "incorrect",
+      "reasoning": "逐一對章中的兩個輸入移除指定控制字元，第一個主機還原為 `127.0.0.1`，第二個還原為 `localhost`。字串正規化與後續名稱解析是兩個不同步驟。此外，解析失敗是否放行取決於錯誤處理。",
+      "correct_value": "兩個正規化後的主機分別為 `127.0.0.1` 與 `localhost`。驗證流程應拒絕解析失敗的輸入。"
+    },
+    {
+      "claim": "純十進位整數（DWORD）：`http://2130706433/`（計算式：`127 × 256^3 + 0 × 256^2 + 0 × 256 + 1 = 2,130,706,433`）",
+      "verdict": "correct",
+      "reasoning": "以 256 為基底，最高位的權重為 16,777,216，乘以 127 得 2,130,706,432。中間兩位為零，加上最低位的 1 得 2,130,706,433。",
+      "correct_value": "`127.0.0.1` 的 32 位元無號整數值為 `2,130,706,433`。"
+    },
+    {
+      "claim": "curl http://0177.0.0.1:8080/internal → 交由系統 inet_aton/getaddrinfo 解析，實際連線至 127.0.0.1:8080",
+      "verdict": "imprecise",
+      "reasoning": "八進位的 `177` 可獨立算得十進位 `127`，但算術無法證明由哪一層轉換，也無法證明連線成功。提供的資料未記載 curl 的精確版本、建置方式、解析路徑或連線觀測結果。",
+      "correct_value": "八進位轉換結果為 `127`。curl 由哪一層解析及實際連線行為須依特定版本與環境的證據判定。"
+    },
+    {
+      "claim": "HTTP Client 在建立 TCP 連線前會再次呼叫底層的 `getaddrinfo()` 解析同一個網域名稱。",
+      "verdict": "imprecise",
+      "reasoning": "驗證結果只約束當時取得的位址。若用戶端另行選址，實際目的地可能不同。然而既有連線可能被重用，新的名稱解析也可能由快取滿足。章中把可能發生的第二次解析寫成了必然行為。",
+      "correct_value": "若用戶端須建立新連線，且另外解析未釘選的名稱，驗證與實際連線的位址可能不一致。"
+    },
+    {
+      "claim": "底層 undici/libuv 再次呼叫 getaddrinfo() ──> 由於 TTL=0 無快取，送出 Query #2",
+      "verdict": "imprecise",
+      "reasoning": "TTL 為零是時間軸的輸入條件。正文同時承認解析環境可能採用最小快取時間，因此無法從 TTL 單獨推出第二次權威查詢。12 至 13 毫秒只相差 1 毫秒，若採正文假設的秒級最小快取時間，舊紀錄仍可能有效。",
+      "correct_value": "第二次權威查詢是示例成立所需的假設，須由解析環境與觀測結果確認。"
+    },
+    {
+      "claim": "TCP SYN 送往 127.0.0.1:8080 ──> 成功存取本機內部管理端點！",
+      "verdict": "incorrect",
+      "reasoning": "送出 SYN 只能證明嘗試建立 TCP 連線。還須完成握手、送出應用層請求，並由目標服務接受處理，才能判定成功存取。",
+      "correct_value": "在所述時間點嘗試建立 TCP 連線，管理端點是否可存取仍待確認。"
+    },
+    {
+      "claim": "被防火牆 `DROP` 的網段則會一路掛到 `proxy_read_timeout = 30 s` 或 socket connect timeout 才失敗。",
+      "verdict": "incorrect",
+      "reasoning": "封包在建立連線時被丟棄，請求尚未進入讀取上游回應的階段。章內架構也將 Webhook 外連交給 Node.js worker，無法把入口 Nginx 的讀取逾時直接套用在 worker 的外連上。",
+      "correct_value": "連線階段受外連用戶端的連線逾時、整體請求期限與作業系統行為影響。提供的基準未指定 worker 的外連逾時值。"
+    },
+    {
+      "claim": "除了這四個變數之外，請求裡的其他所有欄位（其他 HTTP Header、Cookie，甚至請求主體）都不能影響源站產生的回應內容。",
+      "verdict": "imprecise",
+      "reasoning": "在同一有效快取鍵下共用的回應，須適用於所有有資格命中該項目的請求。正文後面自己列出了 `Vary` 與禁止儲存等控制，因此僅從 `proxy_cache_key` 的字串無法推出其他欄位一概不得影響源站。",
+      "correct_value": "若某欄位會影響可共享回應，應把它納入有效的變體選擇，或讓相應請求與回應略過共享快取。"
+    },
+    {
+      "claim": "若 `max-age=60` 且目前 `Age: 52`，代表這份快取將在 **8 秒後過期**。",
+      "verdict": "imprecise",
+      "reasoning": "若有效新鮮期為 60 秒，且當前年齡為 52 秒，剩餘新鮮期是 60 減 52，等於 8 秒。變成陳舊涉及新鮮度判定，快取是否刪除、重新驗證或依政策繼續供應是另外的決策。",
+      "correct_value": "在有效新鮮期確為 60 秒的前提下，約剩 8 秒即成為陳舊回應。"
+    },
+    {
+      "claim": "加上 Cache Buster 可以強制產生一把無人使用過的獨立快取鍵。",
+      "verdict": "incorrect",
+      "reasoning": "章內的 Nginx 鍵含完整請求 URI，因此改動查詢字串會改變該設定下的鍵。但正文另有忽略部分查詢參數的快取模型。同樣的參數若被忽略或正規化，鍵值可以不變。鍵值改變也不能保證先前從未用過。",
+      "correct_value": "查詢參數須實際參與有效快取鍵，且所得鍵未被占用，才可用於隔離測試。"
+    },
+    {
+      "claim": "若後端確實依賴某個標頭（例如 `Accept-Encoding` 或 `Origin`）決定回應內容，源站必須在回應中正確加上 `Vary: Origin`，或直接將該欄位納入快取鍵。",
+      "verdict": "incorrect",
+      "reasoning": "假設兩筆請求的 `Origin` 相同而 `Accept-Encoding` 不同。若源站依編碼能力產生不同表示，`Vary: Origin` 仍會把兩筆請求視為同一變體，因此無法處理章中列出的第一個例子。",
+      "correct_value": "依 `Accept-Encoding` 變化時應區分 `Accept-Encoding`，依 `Origin` 變化時應區分 `Origin`。兩者都影響可共享回應時，應區分兩者。"
+    },
+    {
+      "claim": "CDN 視角：路徑以 `/static/` 開頭，且沒有明文 `..`（或匹配規則在正規化前執行），判定為「靜態資源路徑，允許快取！」",
+      "verdict": "incorrect",
+      "reasoning": "直接檢查章中的原始路徑可見兩組明文 `..`。百分比編碼套用於斜線。明文中有兩個點，與兩個點是否已被解析成獨立路徑段，是不同的判斷。",
+      "correct_value": "原始路徑含明文 `..`，斜線解碼後才形成對應的獨立點段。實際快取匹配結果取決於規則與正規化的執行順序。"
+    },
+    {
+      "claim": "這段規則在面對四種路徑混淆技巧時會立刻崩潰。",
+      "verdict": "incorrect",
+      "reasoning": "往下逐項計數只有三類。第三類還另行假設 `/static/` 前綴規則，而前述 Nginx 片段使用副檔名結尾匹配。即使路由判定有分歧，仍須證明回應可被儲存且會被未授權請求取用。",
+      "correct_value": "正文列出三類路徑分歧，其中點段示例採用另一套前綴規則。每類的結果取決於路由、快取資格與共享條件。"
+    },
+    {
+      "claim": "Poisoning 源於快取鍵遺漏了會影響回應的輸入欄位；Deception 源於快取層與源站對路徑或副檔名的解析與快取規則（如忽略源站 `Cache-Control`）不一致。",
+      "verdict": "imprecise",
+      "reasoning": "以章內例子推導，投毒依賴可受外部輸入影響的回應被共享，欺騙依賴私有回應被誤存並可跨身分讀取。路徑分歧和鍵漏列解釋了這些例子，但章內前提不足以把它們提升為所有案例的必要成因。",
+      "correct_value": "所列成因適用於本章示例。可用共享快取中的異常回應影響他人，以及未授權讀取誤存的私有回應，區分兩者的主要影響。"
+    },
+    {
+      "claim": "嚴格檢查 IPv4/IPv6 是否屬於私有、本機或保留網段",
+      "verdict": "incorrect",
+      "reasoning": "參考程式用文字前綴代表二進位 CIDR。IPv6 鏈路本地範圍 `/10` 涵蓋的第一組十六進位值從 `fe80` 至 `febf`，`startsWith('fe80')` 只涵蓋其中一部分。回環的等值展開寫法也不一定等於字串 `::1`。此外，參考程式列出的 IPv4 分支並未涵蓋它宣稱的所有保留範圍。",
+      "correct_value": "先將位址解析為標準二進位表示，再依明確的位址與 CIDR 政策比對。IPv4-mapped IPv6 應按其內嵌 IPv4 位址套用政策。"
+    },
+    {
+      "claim": "使用自訂 Agent 釘選已驗證 IP，消除 DNS Rebinding TOCTOU 並禁用自動重導向",
+      "verdict": "imprecise",
+      "reasoning": "程式將 `lookup` 作為單次請求的選項傳入，沒有建構自訂 Agent。這段程式也把一律拒絕 300 至 399 的回應視為停用自動重導向，但實際上它用的是不會自行跟隨重導向的原生請求介面。是否完成釘選還取決於建立新連線時採用的回呼契約，材料未提供相容性或執行驗證。",
+      "correct_value": "此參考程式嘗試透過每次請求的 `lookup` 選項限制新連線的解析結果，並使用不會自動跟隨重導向的請求介面。應以實際連線目的位址驗證釘選結果。"
+    },
+    {
+      "claim": "2B-2. 攻擊者不帶憑證直接讀取同一路徑，觀察 X-Cache-Status: HIT 並取得個資",
+      "verdict": "imprecise",
+      "reasoning": "兩次請求使用同一路徑，只證明其中一項可能的鍵欄位相同。要得到指定結果，帶憑證的首筆回應須實際寫入共享快取，匿名請求也須使用同一有效變體。教材只有預期結果，沒有提供完整的源站回應標頭、快取政策或實測紀錄。",
+      "correct_value": "`HIT` 與資料暴露是條件式結果。須能證明帶憑證的回應已儲存，且匿名請求有資格命中同一項目。"
+    },
+    {
+      "claim": "動態路由預設不快取；僅在源站明確回傳 public Cache-Control 時才依指令快取",
+      "verdict": "incorrect",
+      "reasoning": "修補片段仍為動態位置啟用 `proxy_cache`，也沒有設定只接受 `public` 的條件。移除固定有效期與保留對源站標頭的處理，無法從邏輯上推出僅 `public` 回應得以儲存。",
+      "correct_value": "若政策要求動態路由預設不進共享快取，可關閉該位置的代理快取。若需允許特定公開回應，應明確實作並驗證快取資格條件。"
+    },
+    {
+      "claim": "**RFC 3986（URI Generic Syntax）**：誕生於 2005 年。",
+      "verdict": "imprecise",
+      "reasoning": "基準表和已提供的史料摘錄均沒有 RFC 3986 的發布日期。章末列出標準名稱，沒有附上可核對年份的出版紀錄。",
+      "correct_value": "可保留 RFC 編號及標題，發布年份待核對 IETF 出版紀錄。"
+    },
+    {
+      "claim": "Orange Tsai, *A New Era of SSRF — Exploiting URL Parser in Trending Programming Languages!*（Black Hat USA 2017）。",
+      "verdict": "imprecise",
+      "reasoning": "已提供的史料摘錄未附該場次的議程、簡報或出版紀錄。無法從章內其他前提推出講者、標題、會議與年份的對應關係。",
+      "correct_value": "作者、題名與會議年份待核對官方議程或原始簡報。"
+    },
+    {
+      "claim": "James Kettle, *Practical Web Cache Poisoning*（PortSwigger Research / Black Hat USA 2018）與 *Web Cache Entanglement*（2020）— 完整建立 Unkeyed Input、Fat GET 與 Parameter Cloaking 實戰方法論。",
+      "verdict": "imprecise",
+      "reasoning": "史料摘錄只有 PortSwigger Research 的入口，未提供這兩份作品的書目資料與內容位置。無法確認年份、發表場合，也無法判定「完整建立」所暗示的貢獻範圍與優先性。",
+      "correct_value": "書目資料與技術貢獻待原始作品核對。以各作品可確認涵蓋的內容描述其貢獻。"
+    },
+    {
+      "claim": "PortSwigger Research, *Gotta cache 'em all: bending the rules of web cache exploitation*（2024）— 深入探討現代 CDN 與源站之間的路徑分隔符（Path Delimiters）與點段正規化（Normalization）對 Web Cache Deception 的最新影響。",
+      "verdict": "imprecise",
+      "reasoning": "史料摘錄未提供該文章的日期或內容，也未比較後續研究。即使文章確實涵蓋列舉主題，仍需額外時序證據才能支持「最新」。",
+      "correct_value": "核對原文後列出發表日期與所涵蓋的主題。若要使用「最新」，須交代比較範圍及截至日期。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 的所列挑戰屬於「Practitioner / Expert 等級」。",
+      "verdict": "imprecise",
+      "reasoning": "史料摘錄只支持 Academy 涵蓋現代 Web 安全主題，未逐一列出本章挑戰的正式名稱與難度。不能從主題分類推得每項實驗的級別。",
+      "correct_value": "各挑戰的正式名稱與級別須按 Academy 的個別課程紀錄核對。"
+    }
+  ]
+}

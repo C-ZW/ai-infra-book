@@ -1,0 +1,26 @@
+已依據 Codex 審查意見完成 [ch08-cost-and-latency-optimization.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch08-cost-and-latency-optimization.md)（透過 `.tmp` 寫入並原子 `mv`）、[examples/ts/ch08/index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch08/index.ts) 與 [examples/py/ch08/main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch08/main.py) 的修正：
+
+### 已修正項目
+1. **瀑布帳本與數學精度**：
+   - 明確說明 Stage 4 的 `0.85×` 為成本加權假設，並補列「僅 30% 單量且全屬 Haiku 低優先發票工單走 Batch」的敏感度結果（`$17,114.79/月`，全量 `us` 為 `$18,826.27/月`），以及 `1h` TTL（`$16,028.85/月`）與 `1h + us`（`$17,631.74/月`）數據。
+   - 統一 Stage 3–5 小數精度並補列 Stage 3 Opus（`$0.075240`）；標註 `≥ 88.18%` 達標門檻（88% 為 `$18,270/月`）、`12 req/s` 為平均 `0.5787 req/s` 的約 `21 倍`，並將 Stage 5 標為待實測驗證情境（交代 `13,500` cached 與 `7,000` uncached 來源）。
+2. **Prompt Caching 與 API 契約**：
+   - 修正 5m TTL 回本條件為首次寫入後「命中 `≥ 1` 次（總計 `≥ 2` 次請求）」；修正 Claude 5.5 三款模型最小前綴門檻為 `512` tokens；將 `90%` 定義為可快取前綴的 token 讀取占比，移除單憑日流量即可保證 `>90%` 的說法。
+   - 補齊 `tools → system → messages` 比對順序、~20 block 查找、有效 JSON Schema、`strict: true`、`output_config.format`、`output_config.effort`、完整 `stop_reason` 分支、SSE 合併與 `message_stop`／`error` 處理、Batch 結果狀態與多步編排界線，以及 MCP Client vs Connector 的區分。
+3. **SLO、併發、安全與帳本 Schema**：
+   - 改以剩餘 deadline 限制每步、分流另定 `< 2.5s` 預算；區分全域／租戶在途量、模型 RPM／ITPM／OTPM 與工具併發；將 `300–600ms`、告警閾值、`60s` 輪詢與 `16/4` 標為示例配置並補上量測視窗／分母。
+   - 明確 Speculative 護欄的放行點與 `max(main, guardrail)` 延遲、不受信任資料的雙端驗證、唯讀並行限制、寫入／退款的持久化業務冪等鍵（取代僅作為租約的 `SET NX EX 300`），以及 `ticket_cost_ledger` 的 `attempt_id`、`request_id`、`is_estimated`、唯一鍵與 `NUMERIC(12, 8)` 精度。
+   - 對齊 TS／Python SDK 預設重試（`2` 次）與 timeout 單位（ms vs 秒），補齊 3 次重試 Full Jitter 上限（`0.5/1/2s`，合計最多 `3.5s`）。
+4. **範例程式與連結**：
+   - Python 補齊 `build_cached_prefix_blocks` 與 `select_tools_for_category`；TS 與 Python 皆加入字典序排序、`ttl`／`inferenceGeo`（`inference_geo`）參數；TS 改用 `ToolSchema` 型別與 `pathToFileURL` 判斷主程式進入點。
+   - 將內文絕對路徑改為儲存庫相對路徑，並分別標註 Python（`$14,789.55`）與 TS（`$14,790`）預期輸出。
+
+### 驗證結果
+- `python3 books/enterprise-agents/examples/py/ch08/main.py` 執行通過，輸出 `$14,789.55`、`$0.00986`、`90.3%`。
+- TypeScript 因環境無 `tsx`／`tsc`（`node --experimental-strip-types` 無法解析 `../shared/types.js`），未在此環境重跑 `npx tsx`。
+
+### 刻意保留項目
+- 未對 Codex 任何有效意見做刻意駁回；原有 `running-examples.md` 與 `landscape-2026-11.md` 的 Claude 5.5 基準價格與 Stage 5 基準數字均完整保留。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

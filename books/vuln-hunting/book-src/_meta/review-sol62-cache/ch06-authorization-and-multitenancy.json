@@ -1,0 +1,176 @@
+{
+  "chapter": "ch06-authorization-and-multitenancy.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "OWASP API Security Top 10:2023 把 **BOLA**（Broken Object Level Authorization，物件層級授權失效，歷史名稱為 IDOR）、**BOPLA**（Broken Object Property Level Authorization，物件屬性層級授權失效）與 **BFLA**（Broken Function Level Authorization，功能層級授權失效）分別列為 API1、API3 與 API5，原因很單純：自動化掃描器讀不懂商業語意，而人工寫出的每一條 SQL、ORM 查詢與 DTO 綁定，都可能漏掉一個條件。",
+      "verdict": "imprecise",
+      "reasoning": "史料摘錄確認三個類別的編號。章內的物件識別碼案例可以說明 IDOR 與 BOLA 的關聯，但摘錄沒有交代兩者的命名沿革，也沒有提供 OWASP 採用這些分類或排序的理由。",
+      "correct_value": "OWASP API Security Top 10:2023 將 BOLA、BOPLA、BFLA 分別列為 API1、API3、API5。IDOR 是章中用來說明 BOLA 的一種表現。命名沿革及 OWASP 的分類理由須有另外的史料支持。"
+    },
+    {
+      "claim": "注意 **BOPLA** 在 OWASP API Security Top 10:2023 把過去分開的兩個問題合併成同一類：寫入側的 **Mass Assignment（大量賦值）** 與讀取側的 **Excessive Data Exposure（過度資料暴露）**。",
+      "verdict": "imprecise",
+      "reasoning": "按章內定義，未授權的屬性寫入與屬性讀取都屬於物件屬性授權失效。史料摘錄只列出 2023 年的 API3 名稱，沒有提供前版分類或新版的對照說明。",
+      "correct_value": "BOPLA 涵蓋未授權的物件屬性讀取與寫入。若要保留兩個前版類別合併的歷史敘述，應補上官方版本對照。"
+    },
+    {
+      "claim": "當系統實作漏掉其中一維的檢查，就會對應出三種截然不同的漏洞型態：",
+      "verdict": "incorrect",
+      "reasoning": "章內模型有 Subject、Action、Object、Context 四項輸入。表中的 BOLA 與 BOPLA 都涉及 Object，分別針對整個物件和個別屬性，且表格沒有將 Context 缺漏獨立歸到任何一類。同一端點也可能同時漏掉多項檢查。",
+      "correct_value": "依失效的授權範圍區分物件、物件屬性與功能三類。四項決策輸入與三種漏洞分類沒有一對一關係。"
+    },
+    {
+      "claim": "RLS 只管得到「透過非超級使用者連線角色進入 PostgreSQL 的 SQL 列（Row）」。",
+      "verdict": "imprecise",
+      "reasoning": "章內後文已列出非超級使用者仍可略過 RLS 的兩種情況，也就是具備 BYPASSRLS 的角色，以及資料表未啟用 FORCE ROW LEVEL SECURITY 時的擁有者。因此非超級使用者身分不足以判定策略是否生效。",
+      "correct_value": "RLS 約束已啟用 RLS 的資料表中，受策略管轄角色所執行的列存取。超級使用者與 BYPASSRLS 角色會略過策略，表擁有者預設也會略過。"
+    },
+    {
+      "claim": "若應用程式在 PgBouncer transaction pooling 模式下用了 `SET app.current_tenant_id` 而非交易作用域的 `SET LOCAL`，上一個租戶的 session 變數會殘留給下一個連線使用。",
+      "verdict": "imprecise",
+      "reasoning": "依章內所述，設定附著在 PostgreSQL 後端實體連線。後續請求必須重用同一條連線，且該設定未被清除或覆寫，才會讀到殘留值。章內沒有證據顯示下一個請求必然滿足這些條件。",
+      "correct_value": "若交易結束後的工作階段設定未清除，後續重用同一條 PostgreSQL 實體連線的交易可能沿用舊租戶值。應在執行查詢的同一交易內設定租戶上下文。"
+    },
+    {
+      "claim": "只要租戶 A 先查過一次（或快取預熱），租戶 B 送出相同 `aid` 就能直接從 Redis 讀出租戶 A 的物件，完全繞過 PostgreSQL RLS。",
+      "verdict": "imprecise",
+      "reasoning": "兩次查詢若以同一 `aid` 形成相同鍵，確實可能查到同一快取項目。要造成外洩，還須快取項目存在，而且應用程式在送出快取內容前沒有驗證呼叫者能否讀取該物件。RLS 無法介入未送往 PostgreSQL 的查詢。",
+      "correct_value": "共用快取命中時，若應用程式未重新確認租戶與物件授權，可能回傳跨租戶資料。"
+    },
+    {
+      "claim": "只要 `account_id` 全域唯一（無論是遞增整數還是可從報表、Webhook、錯誤訊息側漏的 UUIDv4），攻擊者就能用自己的 `:tid` 繞過 `TenantMatchGuard`，再把 `:aid` 換成受害租戶的帳戶 ID，讀取或提領對方的 `10,000` 分（`$100.00`）餘額。",
+      "verdict": "incorrect",
+      "reasoning": "示範只給出 E1 的 GET 查詢，沒有扣款或提領邏輯。若已知目標 ID、資料層沒有其他有效限制且回應包含餘額，可以推得未授權讀取。10,000 分換算為 $100.00 正確，提領結果無法從 E1 推得。",
+      "correct_value": "在所列條件下，E1 可能暴露他戶帳戶資料及其 $100.00 測試餘額。提領行為需要獨立查核 E3 的授權及帳本流程。"
+    },
+    {
+      "claim": "TypeORM 的 `.update()` 會直接把這兩個欄位編進 `SET \"isVerified\" = true, \"feeRate\" = 0` 的 SQL 語句。",
+      "verdict": "imprecise",
+      "reasoning": "型別標註與 `as any` 本身沒有在執行期移除多餘屬性，因此可以推得這些屬性可能被交給 Repository。材料沒有提供實體欄位映射、驗證及轉換配置，或實際 SQL 紀錄，無法確認更新成功及所示的精確 SQL。",
+      "correct_value": "若輸入處理接受並保留兩個屬性，且兩者均對應到可更新的實體欄位，就可能發生未授權欄位更新。實際 SQL 及更新結果應由執行證據確認。"
+    },
+    {
+      "claim": "同樣的對稱錯誤發生在讀取端：Controller 直接 `return await this.accountRepo.findOne(...)`，把整張資料表的欄位（包含 `internalRiskScore`、`settlementSecret`、`kycNotes`）全部序列化成 JSON 回傳，只靠前端 React 表格決定「不渲染這幾欄」。",
+      "verdict": "imprecise",
+      "reasoning": "前端隱藏欄位不能阻止用戶取得已經傳送的資料，但 `findOne` 這個呼叫本身沒有說明實際選取哪些欄位，也沒有交代序列化規則。",
+      "correct_value": "若查詢取回敏感欄位且伺服器將其序列化到回應中，前端隱藏欄位仍會造成資料暴露。"
+    },
+    {
+      "claim": "單戶測試餘額 = 10,000 分（$100.00）；單次提領上限 = 10,000 分（$100.00）",
+      "verdict": "correct",
+      "reasoning": "以 100 分換算 1 美元，10,000 分為 $100.00。基準表也分別將單戶測試餘額與單次提領上限設為 10,000 分。",
+      "correct_value": "單戶測試餘額與單次提領上限皆為 10,000 分，即 $100.00。"
+    },
+    {
+      "claim": "JWT Access Token（RS256）有效期 = 900 s（15 分鐘）；併發尖峰 = 2,000 req/s",
+      "verdict": "correct",
+      "reasoning": "基準表同樣列出 RS256、900 秒有效期與每秒 2,000 個請求的尖峰。900 除以 60 得 15 分鐘。req/s 表示請求速率。",
+      "correct_value": "RS256 JWT 有效期為 900 秒，即 15 分鐘。系統尖峰請求速率為 2,000 req/s。"
+    },
+    {
+      "claim": "標準結算手續費率 feeRate = 0.025（250 bps = 2.50%）",
+      "verdict": "correct",
+      "reasoning": "以章內模型採用的 0.025 為前提，乘以 100 得 2.50%，乘以 10,000 得 250 個基點。提供的基準表未另列費率，因此可核對的是換算和章內用值。",
+      "correct_value": "本例設定的費率 0.025 等於 2.50%，也等於 250 個基點。"
+    },
+    {
+      "claim": "端點預期授權矩陣（Allow = 允許同租戶/合法範圍；Deny = 應回 403）：",
+      "verdict": "imprecise",
+      "reasoning": "依矩陣逐列重建，E1 與 E4 各允許四個角色，其中 R4 可跨租戶。E2 允許 R2 和 R3 操作兩個指定欄位，E3 與 E6 各僅允許 R3，E5 對列出的四個角色均拒絕，共 12 個允許格與 12 個拒絕格。R1 定義只寫唯讀報表，E1 卻允許讀取單一帳戶，範圍需要明定。另有矩陣外的 platform_admin 可合法使用 E5。角色矩陣也不足以單獨決定每個拒絕情境的 HTTP 狀態。",
+      "correct_value": "這是四個指定角色的 24 格角色矩陣。應明示 R1 是否可讀單一帳戶，並註明 E5 的合法角色在矩陣外。物件不存在或不可見、欄位驗證失敗及角色無權呼叫功能，可依 API 契約分別回傳 404、400 與 403。"
+    },
+    {
+      "claim": "單筆平台損失 = 250 分（$2.50）",
+      "verdict": "correct",
+      "reasoning": "每筆按章內設定結算 10,000 分，正常費用為 10,000 × 0.025 = 250 分，淨撥款為 9,750 分。費率為零時，費用為 0 分，淨撥款為 10,000 分，平台少收 250 分。",
+      "correct_value": "每筆成功以零費率完成的 10,000 分結算，平台少收 250 分，即 $2.50。"
+    },
+    {
+      "claim": "總手續費漏損 = 90,000 × 250 分 = 22,500,000 分 = $225,000.00",
+      "verdict": "imprecise",
+      "reasoning": "100 ÷ 2,000 得 5%，100 × 900 得 90,000 個請求。若每個請求恰好完成一筆符合金額與費率假設的獨立結算，乘積確為 22,500,000 分。但基準表的每秒請求尖峰沒有證明結算成功率、可用資金、業務限額或重複請求的處理結果。",
+      "correct_value": "若 900 秒內實際完成 90,000 筆各 10,000 分的零費率結算，平台少收 $225,000.00。此為情境估算，材料未提供實測損失。"
+    },
+    {
+      "claim": "帳本直接盜領 = 500 × 10,000 分 = 5,000,000 分 = $50,000.00",
+      "verdict": "correct",
+      "reasoning": "依原文的假設，500 戶各成功提領 10,000 分，合計 5,000,000 分，除以 100 得 $50,000.00。基準表支持單次上限，但算式不證明 500 次提領能成功。",
+      "correct_value": "500 戶各成功提領 $100.00 時，直接帳本損失為 $50,000.00。"
+    },
+    {
+      "claim": "2) BOLA（跨租戶參數替換）於 E1 + E3：",
+      "verdict": "imprecise",
+      "reasoning": "章內 E1 程式碼支持物件查詢缺少租戶條件的判斷。E3 矩陣另外要求 R3，章內沒有提供 E3 的實作或執行結果，無法確認它是否遵守角色限制、是否存在同一物件授權缺漏，或是否觸發扣款。",
+      "correct_value": "E1 示範了 BOLA 讀取風險。E3 的跨租戶提領列為假設，須有獨立的實作或測試證據才能確認。"
+    },
+    {
+      "claim": "回傳 200 OK，達到與 E2 BOPLA 相同的手續費歸零效果，且跳過帳戶驗證檢查。",
+      "verdict": "imprecise",
+      "reasoning": "依矩陣，R2 無權呼叫 E5。若只有 JWT 驗證而沒有角色授權，設計上缺少功能層級檢查。200 回應或回應中的 `feeRate` 無法單獨證明費率已持久儲存、後續結算採用該費率，或帳戶驗證已被跳過。",
+      "correct_value": "R2 若能執行 E5 的管理功能，即構成 BFLA。實際費率影響與帳戶驗證結果須以狀態變更、結算紀錄或可核對的應用程式邏輯確認。"
+    },
+    {
+      "claim": "攻擊者不需要破解任何 2048-bit RSA 簽章，只需要一張合法登入拿到的 JWT，在 `900 s` 內就能打出六位數美金的帳本損失。",
+      "verdict": "incorrect",
+      "reasoning": "合法 JWT 可通過身分驗證，2048 位元與 900 秒也符合基準。但六位數金額來自假設中的 90,000 筆成功結算所產生的手續費漏收，直接盜領的另一算式為 $50,000.00。E2 和 E5 的費率歸零影響若落在同一筆交易，也不能重複計入。",
+      "correct_value": "若應用存在所述授權缺陷，合法 JWT 即可觸及未授權操作。六位數金額是特定交易量假設下的手續費漏收估算，直接帳本損失另須依成功提領及入帳紀錄計算。"
+    },
+    {
+      "claim": "Policy Engine 的運作機制是把請求轉換成結構化輸入 `{ subject, action, resource }`，對政策樹求值並回傳單一布林值或允許的欄位清單（Field Mask）。",
+      "verdict": "imprecise",
+      "reasoning": "章內四元模型要求考量 Context，並舉出 MFA 與交易狀態。範例輸入只有三項，沒有說明政策如何取得這些資料，因此無法用該輸入驗證依賴情境的規則。",
+      "correct_value": "若授權規則依賴請求情境，PDP 測試與求值輸入須提供可信的 context，例如 `{ subject, action, resource, context }`。"
+    },
+    {
+      "claim": "準備兩組合法 JWT（分別代表租戶 `1001` 的 `merchant_admin` 與租戶 `1002` 的 `merchant_operator`），用 Python 腳本自動對 6 個端點送出交叉請求，偵測三類異常：",
+      "verdict": "incorrect",
+      "reasoning": "逐一數腳本的請求，只有 E1、E2、E5 共三個端點，且三次都使用同一組操作員 JWT。程式只列印狀態與回應前 120 字元，沒有檢查更新後的持久狀態，也沒有為三項異常作出自動判定。",
+      "correct_value": "現有腳本以一組操作員 JWT 對三個端點列印回應摘要，供人工檢視。完整矩陣驗證需要涵蓋四個角色、六個端點及適用的租戶與欄位情境，並檢查預期的回應和狀態變更。"
+    },
+    {
+      "claim": "[BOPLA E2] status=400, body={\"statusCode\":400,\"message\":[\"property isVerified should not exist\",\"property feeRate should not exist\"]}",
+      "verdict": "imprecise",
+      "reasoning": "章內 DTO 範例的 `displayName` 與 `webhookUrl` 只有型別標註，沒有驗證裝飾器。依章內自己所述的裝飾器白名單規則，正式修補若未補上裝飾器，`displayName` 也可能被視為未列入白名單。此外，精確的回應內容未由執行紀錄證實，腳本還會截斷回應。",
+      "correct_value": "若希望接受 `displayName` 與 `webhookUrl`，應先明確宣告它們的執行期驗證規則。超出白名單的屬性應依配置遭拒，精確的錯誤內容以實際回應為準。"
+    },
+    {
+      "claim": "需注意 `E1` 在 RLS 生效後回傳 `404`（而非 `403`）是正常且更安全的行為：因為 `accounts_tenant_isolation` 策略會直接過濾掉非本租戶的列，不讓攻擊者區分「該 `aid` 不存在」與「該 `aid` 屬於別的租戶」。",
+      "verdict": "imprecise",
+      "reasoning": "將不符租戶條件的列排除後，查詢結果可以與 ID 不存在時相同。HTTP 404 仍需由應用程式把查無資料轉換成一致的回應。所示 E1 Handler 直接回傳 Repository 結果，沒有展示這項轉換。",
+      "correct_value": "RLS 使他戶資料列在查詢中不可見。若 E1 對不存在與不可見的物件統一回傳相同的 404 回應，便可避免以回應差異透露該物件是否存在。"
+    },
+    {
+      "claim": "此外，若未設 `NULLIF(current_setting(..., true), '')::bigint`，當某支背景排程忘記設定 `app.current_tenant_id` 時，PostgreSQL 會對空字串轉型 `bigint` 拋錯而中斷查詢（Fail-Closed），這比靜默回傳全表資料安全得多。",
+      "verdict": "imprecise",
+      "reasoning": "須區分 `current_setting(..., true)` 取得 NULL 與取得空字串兩種情況。NULL 轉成 bigint 仍為 NULL，租戶相等條件不會成立。空字串直接轉型才會出錯。`NULLIF` 會把空字串也轉成 NULL。",
+      "correct_value": "對受 RLS 策略約束的查詢，缺少設定而得到 NULL 時，租戶相等條件不會讓資料列通過。讀到空字串時，直接轉成 bigint 才會報錯，使用 `NULLIF` 可讓這種情況同樣得到 NULL。"
+    },
+    {
+      "claim": "GraphQL Resolver 層級的 BOLA 屬於非 REST 查詢樹的專屬攻擊面，將在第 7 章拆解；本節聚焦 REST 與資料庫邊界。",
+      "verdict": "imprecise",
+      "reasoning": "依章內定義，只要處理資料讀寫的程式缺少目標物件的授權檢查，無論入口是 REST Handler 或 GraphQL Resolver，都可構成 BOLA。章內材料沒有提供第 7 章，無法核對交叉引用。",
+      "correct_value": "GraphQL Resolver 是可能發生 BOLA 的授權檢查點。BOLA 的判準是未授權的物件存取，適用於 REST 與 GraphQL。"
+    },
+    {
+      "claim": "**Method-based access control can be circumvented**（Practitioner）— 驗證 BFLA 中的 HTTP Method 覆寫（`X-HTTP-Method-Override` 或切換 `POST`/`GET`）與路由前綴檢查落差。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料摘錄只支持 Academy 平台的存在及廣泛主題，沒有列出本題的正式名稱、難度或機制，也沒有支持將標頭覆寫與路由前綴差異同時歸於此題。其餘兩項列名實驗的名稱、難度及精確步驟也缺少個別題頁證據。",
+      "correct_value": "可用方法層級授權不一致說明 BFLA。各實驗的名稱、難度及具體機制應以個別題頁的核讀記錄為準。"
+    },
+    {
+      "claim": "3. 某平台在 API Gateway 層驗證了 JWT 的 `RS256` 簽章與 `900 s` 有效期，並在 Controller 檢查了 `params.tid === user.tenantId`。這組防護能擋下哪一類漏洞，又漏掉了哪兩類？",
+      "verdict": "incorrect",
+      "reasoning": "由相等條件可推得，它只會拒絕路徑租戶與憑證租戶不符的請求。條件沒有查驗物件歸屬、屬性權限或功能權限，因此按章內的分類，BOLA、BOPLA 與 BFLA 三類都仍可能發生。參考解答把後兩類放在同一個編號，沒有改變實際類別數。",
+      "correct_value": "這組檢查能拒絕路徑租戶與憑證租戶不符的請求。它仍可能漏掉 BOLA、BOPLA 與 BFLA，共三類。"
+    },
+    {
+      "claim": "實務上許多後端服務共用建立 Schema Migration 的高權限帳號連線資料庫，若未加上 `FORCE ROW LEVEL SECURITY`，RLS 策略在線上環境形同虛設。",
+      "verdict": "imprecise",
+      "reasoning": "依章內所述，表擁有者與普通應用角色的結果不同。若線上服務使用受策略約束的非擁有者角色，缺少 FORCE 不會自動使 RLS 失效。材料也沒有支持後端服務共用遷移帳號的普及程度。",
+      "correct_value": "若線上服務以資料表擁有者身分查詢，未啟用 FORCE 時會預設略過 RLS。以受策略約束的非擁有者角色查詢時，啟用 RLS 即可使相應策略生效。"
+    }
+  ]
+}

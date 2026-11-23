@@ -1,0 +1,86 @@
+{
+  "total": 10,
+  "written": 10,
+  "results": [
+    {
+      "chapter_id": "ch01",
+      "file": "ch01-agent-architecture.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 3674,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch02",
+      "file": "ch02-tool-use-and-mcp.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 3518,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch04",
+      "file": "ch04-state-memory-and-retrieval.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 4102,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch05",
+      "file": "ch05-multi-agent-orchestration.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 4113,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch06",
+      "file": "ch06-reliability-and-durable-execution.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 3793,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch07",
+      "file": "ch07-evals-and-systematic-tuning.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 4080,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch08",
+      "file": "ch08-cost-and-latency-optimization.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 3880,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch09",
+      "file": "ch09-security-guardrails-and-governance.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 4323,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch10",
+      "file": "ch10-observability-and-operations.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 4134,
+      "notes": ""
+    },
+    {
+      "chapter_id": "ch11",
+      "file": "ch11-enterprise-patterns-in-action.md",
+      "status": "written",
+      "attempts": 1,
+      "cjk": 4259,
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "尖峰 API 請求率為 12 req/s × 5 calls/req = 60 calls/s，即 3,600 RPM。",
+      "verdict": "correct",
+      "reasoning": "依章內明示的五回合充分重疊且不計重試之假設，12 × 5 = 60 calls/s，再乘以 60 秒得到 3,600 RPM。這是負載模型下的估算，不能只憑每筆工單有五次呼叫就保證實際瞬時速率達到該值。",
+      "correct_value": "在所述假設下為 60 calls/s，即 3,600 RPM。"
+    },
+    {
+      "claim": "按 90% 限流設定（36 calls/s）：持續 30 秒累積 720 個 API 呼叫；若尖峰開始時桶滿且立即放行 burst = 54，則剩 666 個，約 20.1 秒排空；無初始額度約 21.8 秒。",
+      "verdict": "correct",
+      "reasoning": "尖峰淨流入為 60 − 36 = 24 calls/s，30 秒累積 720 個；若初始桶內 54 個額度可全部用於尖峰，剩餘 666 個。尖峰後到達率按日均工單量計為 50,000 ÷ 86,400 × 5 ≈ 2.894 calls/s，排空速率約為 36 − 2.894 = 33.106 calls/s，因此 666 ÷ 33.106 ≈ 20.1 秒，720 ÷ 33.106 ≈ 21.7 秒。章內 21.8 秒屬合理的取整估算。",
+      "correct_value": "無初始額度積壓 720 個、約 21.7 秒排空；初始 54 個額度全數可用時積壓 666 個、約 20.1 秒排空。"
+    },
+    {
+      "claim": "名目配額為 3,600 RPM 時，持續 45 秒尖峰累積 1,800 個 API 呼叫；若沿用 90% 限流，未扣初始桶額度時積壓 2,070 個。",
+      "verdict": "correct",
+      "reasoning": "依同樣的充分重疊假設，尖峰需求為 20 × 5 = 100 calls/s。名目配額為 3,600 ÷ 60 = 60 calls/s，積壓為 (100 − 60) × 45 = 1,800；90% 限流為 54 calls/s，未計初始桶額度時積壓為 (100 − 54) × 45 = 2,070。",
+      "correct_value": "名目速率下為 1,800 個；90% 限流下為 2,070 個，均假設沒有可用的初始突發額度。"
+    },
+    {
+      "claim": "確保系統在任何節點重啟或外部異常下，都不重複退款、不遺失進度。",
+      "verdict": "incorrect",
+      "reasoning": "章內本身指出，外部金流可能已入帳而本地回執尚未落盤；本地唯一約束無法涵蓋這個窗口。若供應商的冪等有效期已過，且無法可靠查詢交易狀態，系統不能僅靠所列機制保證安全重送或自動完成對帳。持久化、備援與資料遺失情境亦未完整定義，因而不能推出對任何外部異常均不遺失進度。",
+      "correct_value": "在持久化與供應商冪等或查單等條件成立時降低重複退款與進度遺失的風險；結果不明且無法安全確認時，暫停自動重送並進行人工對帳。"
+    },
+    {
+      "claim": "Full Jitter 把重試時間均勻打散在 [0, expCap] 區間內，在數百個並發 Worker 同時退避時能有效消除尖峰碰撞。",
+      "verdict": "incorrect",
+      "reasoning": "隨機退避可以降低請求同時重試的機率，但有限時間區間內多個請求仍可能碰撞。此外章內實際延遲取 max(fullJitter, retryAfter)：若多個請求收到相同 retry-after，所有小於該值的抽樣都會集中在同一時間醒來，並非均勻分布；後續限流可再抑制同時放行。",
+      "correct_value": "Full Jitter 可降低重試同步與碰撞，但不能保證消除；共同 retry-after 可能造成醒來時間集中，仍需限流或在下限之後進一步分散放行。"
+    },
+    {
+      "claim": "Batch API 的 processing_status 依序為 in_progress → ended／canceling／canceled；expired 子請求在 24 小時到期。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 支持 Batch API 非同步處理及輸入、輸出各半價，但沒有列出批次狀態列舉、狀態轉移或到期時間，因此無法據此核定這些具體 API 細節。",
+      "correct_value": "Batch API 為非同步且依所附證據享 50% 折扣；狀態名稱、轉移與到期規則須以對應版本的官方文件另行查證。"
+    },
+    {
+      "claim": "Sonnet 5.5 預設 adaptive thinking（between_tools 可停用前置 thinking，disabled 與舊式 enabled 會被拒絕）。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據只說明較新模型可能有 adaptive reasoning，並描述舊式 enabled 的一般用法與工具回合中的 thinking 保留要求；沒有提供 Sonnet 5.5 的預設模式、between_tools 語意或兩種設定會被拒絕的證據。",
+      "correct_value": "Replay 須保留同一工具回合要求回傳的 thinking 區塊與簽章；Sonnet 5.5 的預設及支援設定須另查該模型的官方文件。"
+    },
+    {
+      "claim": "兩個版本的範例首次執行記錄 3 筆 Checkpoint，核准續跑後累積 6 筆，且不重複呼叫 LLM。",
+      "verdict": "imprecise",
+      "reasoning": "章節給出預期輸出及部分程式片段，但未提供完整的 TypeScript、Python 實作與實際執行結果。依所附片段無法獨立重建完整事件序列，也無法確認兩個版本續跑時都不重複呼叫 LLM。",
+      "correct_value": "這是章節列出的預期結果；是否實際成立須核讀完整程式或執行驗證。"
+    }
+  ]
+}

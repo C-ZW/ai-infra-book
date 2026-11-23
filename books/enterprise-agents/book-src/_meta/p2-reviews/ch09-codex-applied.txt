@@ -1,0 +1,31 @@
+已完成 `ch09` 與雙語範例的全面修訂：
+
+### 已修正項目
+
+1. **Layer 1 Haiku 5.5 請求與回應契約（[ch09-security-guardrails-and-governance.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch09-security-guardrails-and-governance.md)）**
+   - 移除會導致 `400` 錯誤的 `temperature: 0`，改為省略 sampling 參數、明確設定 `thinking: {"type": "disabled"}` 與 `output_config.format` JSON Schema（`enum: ["allow", "block", "escalate"]`），並將範例改為合法 JSON 實例。
+   - 區分 `maxRetries: 0`／`timeout: 800`（TS ms）與 `max_retries=0`／`timeout=0.8`（Python s）及外層 `800ms` deadline；明訂僅採信 `stop_reason === "end_turn"` 且通過 JSON 解析與 Schema 驗證的結果，`max_tokens`、`refusal`、空回應或失敗一律降級。
+   - 將 `500/50` 標為成本估算假設（實際結算採 API `usage`），並將 `0.90`、`0.50`、`64` tokens 與告警閾值標為待校準初值。
+
+2. **Layer 2–5 權限、隔離與執行邊界**
+   - **Layer 2**：釐清 XML 跳脫僅保護區塊結構，仍須視為不可信資料並於進模型前做欄位白名單投影；明確指定 `cache_control: {"type": "ephemeral"}` 掛載於最後一個靜態 System content block（及動態裁切對前綴快取的影響）。
+   - **Layer 3**：`ScopedToken` 補齊 `actor`、`ticketId`/`runId`、`audience` 與伺服器時間 `nowMs >= expiresAtMs` 檢查，說明 Redis 刪鍵無法撤回已派發操作；釐清 `12 req/s` 為全站尖峰基準，並補上持久冪等鍵與對帳機制。
+   - **Layer 4**：更新 `PolicyEngine` 範例與章內片段為正整數最小貨幣單位（`refundAmountCents`、`currency`）、拒絕未註冊工具、`nowMs >= token.expiresAtMs`；補充執行器端訂單歸屬／餘額／狀態原子檢查、HITL 審批單持久化與重新授權、`strict: true` 驗證邊界、`tool_result` 配對規則，以及 MCP（Streamable HTTP / Connector）與 Batch API 的政策執行點差異。
+   - **Layer 5**：移除「徹底切斷外洩」保證，區分無網路沙盒（`--network=none`）與受控出站 Webhook 代理，並說明 regex 遮罩須搭配欄位白名單與出站控制。
+
+3. **稽核鏈、ZDR 與數學／ROI 修正**
+   - **Audit Trail**：補充多 worker 交易序列化鏈頭更新、獨立不可覆寫 checkpoint 儲存與驗證器重算機制，移除「任何竄改」與「毫秒級」承諾。
+   - **ZDR 與駐留**：區分 ZDR、訓練用途與推論地域（`inference_geo: "us"` `1.1×`），註明 MCP Connector 與 Message Batches 不符合 ZDR（Batch 保留 29 天），改以 `zdr_config_ref` 記錄可查證設定來源而非硬編 `zeroDataRetention: true`。
+   - **Worked Example**：標明「不到 4 美元」僅適用標準費率（US 模式 `$4.125/天`），修正 ROI 歸因為相對於既有 `PolicyEngine` 的增量預期損失，移除 `95%` 與「風險降至零」保證。
+   - **故障模式與自我檢核**：補齊 `pending_hitl` 與 `deny` 皆屬「未執行」、降級僅開放低敏唯讀工具、結構化日誌避免印出全文，以及自我檢核第 2 題的資源授權與欄位／目的地檢查順序。
+
+4. **雙語範例同步（[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch09/main.py)、[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch09/index.ts)）**
+   - 兩份範例統一改用 `maxRefundCents`／`refundAmountCents`（整數分）與 `currency`、拒絕未註冊工具、`nowMs >= expiresAtMs`、完整處理 `allow`/`block`/`escalate` 三分支、`TKT-103` 改為跨租戶＋跨客戶（`tenant_globex / cust_9999`）。
+   - 統一 Python 與 TS 的 `ImmutableAuditTrail` 規格化 JSON 序列化與 `verify()` 驗證器，回傳淺拷貝避免外部竄改；已實測 `python3 books/enterprise-agents/examples/py/ch09/main.py` 通過並輸出 `Audit chain verified: True`（TS 範例因環境缺少編譯後 `../shared/types.js` 未直接執行，已人工核對與 Python 邏輯一致）。
+
+### 未採納／保留項目
+
+- 無刻意駁回的技術建議；所有 Codex 所提技術、數學與程式落差皆已修正。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

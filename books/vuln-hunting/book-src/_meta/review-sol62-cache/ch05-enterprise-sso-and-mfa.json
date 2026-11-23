@@ -1,0 +1,200 @@
+{
+  "chapter": "ch05-enterprise-sso-and-mfa.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "NexusPay 的 RS256 JWT（2048-bit RSA，有效期 `900 s`、JWKS 快取 TTL `300 s`）",
+      "verdict": "correct",
+      "reasoning": "演算法、金鑰長度及兩個時間值均與基準表一致。以每分鐘 60 秒換算，900 秒是 15 分鐘，300 秒是 5 分鐘。",
+      "correct_value": "NexusPay 採用 RS256、2048-bit RSA，權杖有效期為 15 分鐘，JWKS 快取 TTL 為 5 分鐘。"
+    },
+    {
+      "claim": "單戶基準餘額 `10,000` 分，即 `$100.00`",
+      "verdict": "correct",
+      "reasoning": "以每元 100 分換算，10,000 ÷ 100 = 100，且基準表明列同一測試餘額。",
+      "correct_value": "單戶測試餘額為 10,000 分，即 $100.00。"
+    },
+    {
+      "claim": "JWT 的簽章輸入是完整的 `Header.Payload` 字串，驗證函式庫驗過之後，業務層拿到的就是這個已驗章的字串解碼後的唯一物件。",
+      "verdict": "incorrect",
+      "reasoning": "對本章的 RS256 緊湊序列化而言，簽章確實綁定編碼後的標頭與負載。驗證位元組卻無法保證解析結果唯一。例如同名 JSON 成員可能使一個解析器拒絕輸入，另一個解析器則保留其中一個值。",
+      "correct_value": "RS256 簽章綁定編碼後的標頭與負載。驗證與授權應使用一致的解析結果，並拒絕會造成歧義的宣告。"
+    },
+    {
+      "claim": "在 SAML 2.0 Web Browser SSO Profile 中，企業使用者經由 IdP 認證後，瀏覽器會將一份 Base64 編碼的 `<samlp:Response>` 以 `POST` 送往 SP 的 Assertion Consumer Service（ACS）端點。",
+      "verdict": "imprecise",
+      "reasoning": "這段描述對應章內明示的 HTTP-POST 傳輸方式。章內只展示這一種 Binding，證據摘要也沒有列出 Profile 可用的 Binding 或其適用條件。",
+      "correct_value": "採用 HTTP-POST Binding 時，瀏覽器會將 Base64 編碼的 SAML Response 送至 SP 的 ACS。"
+    },
+    {
+      "claim": "Exclusive C14N (消除空白、屬性排序、預設剝離註解)",
+      "verdict": "incorrect",
+      "reasoning": "元素之間的縮排和換行可以是文字節點。移除 enveloped Signature 子樹仍會留下與該子樹相鄰的文字節點。章內示意把這些文字節點一併省略，因此無法代表展示輸入的正規化位元組。",
+      "correct_value": "範例指定的無註解 Exclusive C14N 會省略註解、依規則排序屬性及處理命名空間，並保留輸入節點集中存在的文字空白。"
+    },
+    {
+      "claim": "驗證器只保證「文件裡確實存在某個 `ID=\"_assert_01\"` 的節點，且該節點經過 Exclusive C14N 轉換後的位元組符合簽章」。",
+      "verdict": "imprecise",
+      "reasoning": "依章內流程，Reference 的摘要比對與 SignedInfo 的簽章驗證是兩項獨立檢查。即使兩者通過，也只能把結果連到實際解析並通過驗證的 Reference 目標。預期 IdP、可信金鑰與允許的 SAML 結構仍屬應用的信任判斷。",
+      "correct_value": "XMLDSig 驗證須檢查 SignedInfo 的簽章，以及各 Reference 經指定轉換所得的摘要。SP 須另外確立可信的 IdP 金鑰、允許的簽署位置及業務層所採用的資料。"
+    },
+    {
+      "claim": "2012 年 Somorovsky 等人在論文 *On Breaking SAML* 中將常見的包裹手法系統化歸納為 **XSW #1 至 XSW #8**",
+      "verdict": "imprecise",
+      "reasoning": "證據摘要只提及 XSW #1–#8 與安全指引，沒有原論文頁碼、圖表或摘錄。章末重複同一歸屬，無法獨立證明發表年份、原作者的編號方式或逐項對照。",
+      "correct_value": "本章使用 XSW #1–#8 的編號。年份、原始分類歸屬和逐項對應須由原論文或可追溯的分類資料確認。"
+    },
+    {
+      "claim": "**XSW #1** 的簽章原始位置為 Response 層。",
+      "verdict": "imprecise",
+      "reasoning": "表格描述簽署 Response，對照圖卻把 Reference 指向 Assertion。這兩種受保護範圍不同，現有證據也未附可核對的分類圖。",
+      "correct_value": "圖表應統一標示受保護的元素與 Reference 目標。XSW #1 的正式對應須依可定位的原始資料確認。"
+    },
+    {
+      "claim": "攻擊者將惡意節點插入為 `<samlp:Response>` 的第一個子節點。",
+      "verdict": "incorrect",
+      "reasoning": "範例的第一個元素子節點是 `<saml:Issuer>`。展示文字還包含縮排和註解，因此以 DOM 的子節點計數也不會得到章文所稱的位置。",
+      "correct_value": "該元素在範例中是第一個 Assertion，也是 Issuer 之後的第二個元素子節點。"
+    },
+    {
+      "claim": "我們來對照兩個子系統在處理這份 `1,892 bytes`（含縮排空白）的 XML 時，實際選取的目標與運算結果。",
+      "verdict": "imprecise",
+      "reasoning": "章文同時把展示內容稱為片段與可驗證輸入，卻未交代 1,892 bytes 指展示文字還是原始樣本，也沒有定義換行、結尾換行與占位符的計數口徑。無法把這個值歸給實際驗章的輸入。",
+      "correct_value": "若要報告精確長度，應指定完整輸入與序列化口徑。現有材料無法確認實際驗章樣本為 1,892 bytes。"
+    },
+    {
+      "claim": "計算 SHA-256 Digest：位元組長度 = 285 bytes（屬性依字母序重排，去除多餘空白）",
+      "verdict": "incorrect",
+      "reasoning": "SHA-256 的輸出長度固定為 256 ÷ 8 = 32 bytes。若 285 bytes 指雜湊輸入，章內又以消除文字空白為前提，與原 XML 文字節點在正規化後仍可保留的行為不符。",
+      "correct_value": "SHA-256 摘要為 32 bytes。正規化輸入的長度應以實際轉換輸出計算，目前無法確認為 285 bytes。"
+    },
+    {
+      "claim": "比對 `<ds:DigestValue>`：100% 相符；RSA-2048 驗章 `<ds:SignatureValue>`：PASS（回傳 true）",
+      "verdict": "incorrect",
+      "reasoning": "展示的摘要及簽章欄位都有省略號和示意文字，無法作為實際 Base64 值解碼。材料也未提供可供獨立驗章的可信測試公鑰。",
+      "correct_value": "這是條件式流程示意。實際摘要比對及簽章驗證結果未建立，須由完整測試向量和可信公鑰確認。"
+    },
+    {
+      "claim": "執行 `doc.getElementsByTagName(\"NameID\")[0]` 後，業務層讀取 `NodeList[0].textContent` 會回傳 `admin@nexuspay.example`。",
+      "verdict": "incorrect",
+      "reasoning": "在按限定名稱比對的標準 XML DOM 中，範例元素的限定名稱是 `saml:NameID`。查詢的 `NameID` 與其不同，因此所示查詢不會取得該元素。",
+      "correct_value": "按標準 XML DOM 的限定名稱行為，清單為空，該取值無法成立。教材應明示解析器語意，並以已驗證子樹內的命名空間及唯一結構路徑說明防禦。"
+    },
+    {
+      "claim": "這就是 2018 年 Duo Security 揭露的 **XML 註解截斷**（CERT/CC **VU#475445**，涵蓋 OneLogin `python-saml` CVE-2017-11427、`ruby-saml` CVE-2017-11428、`saml2-js` CVE-2017-11429 與 Shibboleth `openSAML` CVE-2018-0489）。",
+      "verdict": "imprecise",
+      "reasoning": "證據摘要未附 Duo 報告、CERT/CC 公告或各 CVE 紀錄的摘錄。章末清單也只重述前三個對應，無法獨立證實完整歸屬。",
+      "correct_value": "將揭露日期、公告編號與各產品的 CVE 對應列為待查證，並為每項補上可定位的公告證據。"
+    },
+    {
+      "claim": "DOM 會將 `<NameID>` 拆成 `Text(\"admin@nexuspay.example\")`、`Comment(\"\")`、`Text(\".attacker.test\")`。",
+      "verdict": "incorrect",
+      "reasoning": "範例註解分隔符之間有一個空格。對保留註解的 DOM 而言，該空格就是註解節點內容。首個文字節點仍只包含前段，讀取第一個子節點也仍只能取得該段文字。",
+      "correct_value": "若 DOM 保留示例註解，中間節點是 `Comment(\" \")`。身分欄位應依結構約束驗證並完整讀取。"
+    },
+    {
+      "claim": "只要攻擊者的合法帳號名稱恰好以目標管理員帳號作為前綴，就能直接冒充目標帳號。",
+      "verdict": "incorrect",
+      "reasoning": "帳號前綴只滿足字串條件。若身分抽取保留完整識別碼、拒絕有歧義的欄位，或帳號對應未映射到該管理員，僅有前綴關係就不會造成假冒。",
+      "correct_value": "身分誤判需要驗章語意與身分抽取語意分歧，且截斷後的值須被 SP 映射至目標帳號。"
+    },
+    {
+      "claim": "SP 驗證完畢後立即作廢該 `_req_9f2a...`，就能阻斷跨會話重放與登入 CSRF。",
+      "verdict": "incorrect",
+      "reasoning": "請求 ID 的單次消費可以阻止同一 ID 再次使用，但無法單獨證明首次提交者就是發起登入的瀏覽器。若驗證和作廢分開執行，兩個並行處理也可能在作廢前都通過。",
+      "correct_value": "將 `InResponseTo` 綁定至發起登入的瀏覽器或會話，並原子性消費待處理請求。SP 也須驗證適用的 SAML 受眾、接收者及時效。"
+    },
+    {
+      "claim": "`<Conditions NotBefore=\"...\" NotOnOrAfter=\"...\">` 通常保有 `300 s`（5 分鐘）以上的時間容許度（Clock Skew）。",
+      "verdict": "imprecise",
+      "reasoning": "兩個時間欄位界定有效期。Clock skew 是 SP 額外允許的時鐘偏差。基準表的 300 秒屬於 JWKS 快取，無法推得 SAML 的常見偏差，證據摘要也未提供設定資料。",
+      "correct_value": "分別標示 Assertion 有效期和 SP 設定的時鐘偏差。5 分鐘只能在有明確設定或來源佐證時列為具體數值。"
+    },
+    {
+      "claim": "`authenticatorData[33:37]` (signCount): 嚴格遞增 (0 除外)",
+      "verdict": "incorrect",
+      "reasoning": "按表內欄位長度，32 位元組的 RP ID 雜湊和 1 位元組的旗標後，計數器確實占索引 33 至 36。但非遞增是可能的異常訊號，不能普遍視為所有有效認證都必須通過的條件。",
+      "correct_value": "`signCount` 是位於索引 33 至 36 的 4 位元組計數器。當所存或新收到的計數器非零且新值未增加時，應依 RP 的風險政策評估。"
+    },
+    {
+      "claim": "伺服器端必須同時核對五項邊界",
+      "verdict": "incorrect",
+      "reasoning": "下方表格實列六項。若將表格獨立讀成完整驗證清單，它也沒有列出用所登記憑證的公鑰驗證簽章，以及確認該憑證與目前帳號的綁定。",
+      "correct_value": "表格列有六項欄位檢查，其中 UV 依驗證政策強制，signCount 依風險政策處理。完整流程也須查核憑證歸屬及簽章。"
+    },
+    {
+      "claim": "`UP` 只代表使用者碰觸了安全金鑰；`UV` 才代表驗證過 PIN 或生物辨識。",
+      "verdict": "imprecise",
+      "reasoning": "章內旗標定義支持 UP 為使用者在場、UV 為本地使用者驗證。碰觸、PIN 與生物辨識是實作例子。缺少 UV 也無法單憑此推得持有金鑰的人必然能完成提領，會話及憑證綁定仍影響結果。",
+      "correct_value": "bit 0（`0x01`）表示使用者在場，bit 2（`0x04`）表示認證器已在本地完成使用者驗證。要求 UV 的 Step-Up 應拒絕 UV 未設定的認證回應。"
+    },
+    {
+      "claim": "6 位數 TOTP 只有 `1,000,000` 種組合，若伺服器容許前後 `±1` 個時間步（共 `90 s` 視窗），單次猜測命中率為 `3 / 1,000,000`。",
+      "verdict": "imprecise",
+      "reasoning": "允許前導零時，有 10⁶ 個六位十進位字串。假設每步 30 秒，三個時間步共覆蓋 90 秒。對某次驗證，等機率猜測的命中率取決於當下有效碼的不重複個數。若兩個時間步產生相同碼，機率就低於章文所列值。",
+      "correct_value": "單次均勻猜測的命中率為 `k / 1,000,000`，其中 `k` 是當下不重複的有效碼數，最多為 3。90 秒是三個 30 秒時間步的覆蓋範圍。"
+    },
+    {
+      "claim": "若是 4 位數簡訊碼（`10,000` 種組合），在沒有單一 challenge 錯誤上限的系統上，幾秒鐘就能跑完。",
+      "verdict": "imprecise",
+      "reasoning": "含前導零時確有 10⁴ 種組合。完成時間還取決於該端點的實際驗證吞吐、有效期及其他限制。基準表的提領併發數字無法代替 MFA 端點的量測值。",
+      "correct_value": "四位十進位碼有 10,000 種可能。缺少單次挑戰的錯誤上限會增加猜測風險，完成時間須依實際端點行為判定。"
+    },
+    {
+      "claim": "`Assertion/@ID` 防重放的 TTL 至少覆蓋 `NotOnOrAfter` 剩餘秒數。",
+      "verdict": "imprecise",
+      "reasoning": "若 SP 在名義到期之後仍因時鐘偏差而接受同一 Assertion，按名義到期設定的已用標記會先消失。`NX` 的原子性只在標記仍存在時有效。",
+      "correct_value": "原子性記錄已消費的 Assertion ID，TTL 覆蓋 SP 實際接受該 Assertion 的完整剩餘期間，包含配置的容許偏差。"
+    },
+    {
+      "claim": "WebAuthn 驗證時以 Redis `GETDEL` 原子性取出並立即刪除，確保每個 `challenge` 只能被驗證一次。",
+      "verdict": "correct",
+      "reasoning": "若所有驗證請求以同一鍵執行原子取出並刪除，且同一挑戰值不會被重新寫回，只有第一個操作能取得該值。這也代表一次失敗的提交可以消耗挑戰。",
+      "correct_value": "`GETDEL` 可讓同一筆挑戰至多被一個驗證請求取用。挑戰仍須綁定目前會話、帳號及用途。"
+    },
+    {
+      "claim": "每次核發或驗證 MFA 時，對伺服器端的 `mfa:attempts:<challengeId>` 執行原子遞增（`INCR`）；累計失敗達 `5` 次即直接刪除該 `challenge`。",
+      "verdict": "incorrect",
+      "reasoning": "核發時遞增會把發放算成一次失敗。`INCR` 只保證計數更新的原子性，不能同時保證挑戰仍有效、驗證請求有剩餘額度，以及超限後無法完成核准。",
+      "correct_value": "核發時計數從零開始。若限額是五次驗證，應在接受驗證前原子性保留額度，並在核准時確保挑戰只能成功消費一次。若政策按失敗計數，實作仍須處理並行請求與封鎖的狀態一致性。"
+    },
+    {
+      "claim": "**AAL2（高風險操作態）**：必須經過 WebAuthn（強制 `requireUserVerification: true`）或 TOTP/備援碼驗證後，才在後端簽發短效 Step-Up 權杖。",
+      "verdict": "imprecise",
+      "reasoning": "章內可以用 `aal` 欄位表示 NexusPay 自訂的權限狀態，但單憑此欄位與列出的驗證方式，無法證明符合正式 AAL2 要求。材料未交代所採標準、完整因素組合或備援碼流程如何納入保證等級。",
+      "correct_value": "將 `aal: 2` 明示為 NexusPay 內部的 Step-Up 狀態。若要宣稱符合正式 AAL2，須引用適用標準並逐項核對完整流程。"
+    },
+    {
+      "claim": "未修補前，上述兩項請求皆回傳 `200 OK`（或 `302` 重導向並附帶 `admin@nexuspay.example` 的會話權杖）。",
+      "verdict": "imprecise",
+      "reasoning": "沒有提供靶機執行紀錄、原始回應標頭或會話對應的身分。範例只列印 HTTP 狀態和部分正文，無法證明會話身分。預設重新導向行為也可能使輸出只呈現最終狀態。",
+      "correct_value": "將 HTTP 狀態列為待測預期。驗收須分別確認原始回應、是否建立會話，以及會話對應的身分。"
+    },
+    {
+      "claim": "套用修補後，XSW #3 因存在多個 `<Assertion>` 或無法對應已驗章節點而回傳 `401 Unauthorized`。",
+      "verdict": "imprecise",
+      "reasoning": "僅從已驗章子樹讀取身分，可以消除示意中的身分分歧，但不會自動拒絕所有多 Assertion 文件。範例把結構政策委託給未展示的輔助函式，也未顯示例外到 HTTP 狀態的映射。",
+      "correct_value": "若 NexusPay 明訂拒絕多 Assertion，應在驗證流程中明示這項檢查及其 HTTP 錯誤映射。現有材料無法確認會回傳 401。"
+    },
+    {
+      "claim": "`wantAssertionsSigned: true` 僅保證文件內「存在某個已簽章的 Assertion」。",
+      "verdict": "imprecise",
+      "reasoning": "選項名稱無法推導實作只檢查存在性，也無法判定它是否限制 Assertion 數量或綁定回傳資料。章內未指定此判斷所依據的套件及版本。",
+      "correct_value": "依指定套件及版本確認 `wantAssertionsSigned` 的契約，並核對實際採用的 Assertion 是否由可信簽章覆蓋。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 的 *Authentication vulnerabilities* 包含章內所列的三個關卡，且各關卡具有所述的驗證流程與限制。",
+      "verdict": "imprecise",
+      "reasoning": "證據摘要僅支持 Academy 涵蓋現代 Web 安全議題，未附三個關卡的頁面或摘錄。現有材料不足以核對精確名稱、驗證碼政策、鎖定行為及請求生命週期。",
+      "correct_value": "以各關卡的可定位說明支持名稱和具體行為。在補齊證據前，將本節的狀態機分析標示為條件式說明。"
+    },
+    {
+      "claim": "奪取企業組織特權會話後，攻擊者可肆意跨租戶越權讀寫，並進一步上傳惡意報表觸發檔案解析器攻擊。",
+      "verdict": "incorrect",
+      "reasoning": "特權會話只能帶來其實際獲授的權限。跨租戶讀寫另外取決於租戶隔離是否失效，後續解析器影響則取決於上傳權限與解析器是否存在獨立缺陷。",
+      "correct_value": "企業特權會話暴露該帳號獲授的操作。跨租戶影響及檔案解析器影響應列為有獨立前提的後續風險。"
+    }
+  ]
+}

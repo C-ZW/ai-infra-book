@@ -1,0 +1,72 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "只要前綴字元完全一致，就能命中快取，以基礎輸入單價的 0.05×（Sonnet 5.5 / Opus 5.5）或 0.10×（Haiku 5.5）讀取。",
+      "verdict": "correct",
+      "reasoning": "基準資料和 source-evidence 都寫明，Sonnet 與 Opus 5.5 的快取讀取倍率是 0.05×（分別為 $0.10 與 $0.20 / MTok），Haiku 5.5 是 0.10×（$0.01 / MTok），與章節一致。",
+      "correct_value": "Sonnet / Opus 5.5 為 0.05×，Haiku 5.5 為 0.10×"
+    },
+    {
+      "claim": "前綴需達模型最低門檻（Sonnet 5.5 為 512 tokens）",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只說 512 tokens 適用於較新的 Claude 5 / 5.5 旗艦模型，括號中的例子是 claude-opus-5-5；標準 Sonnet 系列（claude-sonnet-5、Sonnet 4.5/4.6）是 1,024 tokens。證據沒有直接寫出 Sonnet 5.5 的門檻，還註明部署前要逐模型核對。所以「Sonnet 5.5 為 512」缺乏證據支持，實際值可能是 1,024。OrderOps 的 tools 前綴有 3,600 tokens，兩種門檻都達到，論證結論不受影響。",
+      "correct_value": "Sonnet 5.5 的最低可快取門檻在提供的證據中未載明（可能是 512 或 1,024 tokens，需查官方文件確認）；OrderOps 的 3,600 與 6,000 tokens 前綴不論哪個門檻都超過。"
+    },
+    {
+      "claim": "最多支援 4 個斷點、向前回看 20 個 blocks",
+      "verdict": "imprecise",
+      "reasoning": "基準資料和 source-evidence 都沒有提到斷點數量上限或回看 block 數，無法從提供的證據判定。",
+      "correct_value": "unknown（需查官方 Prompt Caching 文件）"
+    },
+    {
+      "claim": "5 回合未優化基準累計 42,000 input / 1,750 output，單筆 $0.1015",
+      "verdict": "correct",
+      "reasoning": "第 1 回合 6,000 tokens，第 2–5 回合每回合累加 1,200 tokens，各回合輸入為 6,000、7,200、8,400、9,600、10,800，合計 42,000 tokens。輸出 350 × 5 = 1,750 tokens。成本：42,000 × $2 / 1M = $0.084，加上 1,750 × $10 / 1M = $0.0175，等於 $0.1015。乘以每月 1,500,000 筆得 $152,250，與基準一致。",
+      "correct_value": "42,000 / 1,750 tokens；$0.1015 / 筆"
+    },
+    {
+      "claim": "情境 A：前綴快取寫入 $0.015000、新增輸入 $0.002400、輸出 $0.043500，單回合總計 $0.060900，thinking 4,000 tokens 佔 $0.040000",
+      "verdict": "correct",
+      "reasoning": "6,000 × 2 × 1.25 / 1M = $0.015；1,200 × 2 / 1M = $0.0024；4,350 × 10 / 1M = $0.0435；三項加總為 $0.0609；4,000 × 10 / 1M = $0.04。數字全部吻合。需留意：首輪另加 1,200 tokens 動態輸入，與基準第 1 回合只有 6,000 tokens 的設定不同，但章節已標明這是獨立情境。",
+      "correct_value": "$0.0609（thinking 部分 $0.04）"
+    },
+    {
+      "claim": "情境 B：7,400 × 3 = 22,200 tokens，節省 $0.044400；含首次送入 29,600 tokens，節省 $0.059200",
+      "verdict": "correct",
+      "reasoning": "8,000 − 600 = 7,400；7,400 × 3 = 22,200，× $2 / 1M = $0.0444；7,400 × 4 = 29,600，× $2 / 1M = $0.0592。",
+      "correct_value": "22,200 tokens / $0.0444；29,600 tokens / $0.0592"
+    },
+    {
+      "claim": "自我檢核第 3 題解答：後續重送每筆省 18,000 tokens、$0.036，每月 $54,000；含首次送入每筆 22,500 tokens、$0.045，每月 $67,500",
+      "verdict": "correct",
+      "reasoning": "5,000 − 500 = 4,500；× 4 = 18,000 tokens，× $2 / 1M = $0.036；× 1,500,000 筆 = $54,000。× 5 = 22,500 tokens，即 $0.045 / 筆，每月 $67,500。",
+      "correct_value": "$0.036 / 筆、$54,000 / 月；$0.045 / 筆、$67,500 / 月"
+    },
+    {
+      "claim": "設定 thinking: { type: \"enabled\", budget_tokens: N } 時，max_tokens 必須嚴格大於 budget_tokens；thinking tokens 以輸出單價計費",
+      "verdict": "correct",
+      "reasoning": "source-evidence 寫明 max_tokens 必須超過 budget_tokens，才能留空間給最終答案或工具呼叫。thinking 以輸出單價計費（Sonnet $10 / Opus $20 per MTok），與牌價一致。至於錯誤時回傳的確切代碼「400 invalid_request_error」，證據沒有記載。",
+      "correct_value": "max_tokens > budget_tokens；thinking 按輸出單價計費"
+    },
+    {
+      "claim": "claude-sonnet-5-5 預設使用自適應思考（thinking: { type: \"adaptive\" }，並透過 output_config.effort 調整深度）",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只寫到「或較新模型上的自適應推理模式」，沒有說 Sonnet 5.5 預設採用 adaptive，也沒有提到 output_config.effort 參數。",
+      "correct_value": "較新模型可能支援自適應推理模式；Sonnet 5.5 是否預設 adaptive、是否有 output_config.effort 參數，提供的證據中都未知"
+    },
+    {
+      "claim": "system 最前端插入時間戳時，tools 斷點（3,600 tokens）仍可命中，system（2,400 tokens）與後續斷點失配重寫",
+      "verdict": "correct",
+      "reasoning": "source-evidence 寫明前綴從 tools → system → messages 精確比對，前段區塊一變動，其後所有斷點都會失效。tools 位於 system 之前，不受影響，所以推論成立。",
+      "correct_value": "tools 仍命中；system 及之後的斷點失效並重新寫入"
+    },
+    {
+      "claim": "Context Rot：模型在長上下文中段的資訊檢索準確率會明顯下滑",
+      "verdict": "imprecise",
+      "reasoning": "提供的基準資料與 source-evidence 都不包含這項實證；章節也沒有給出量化數據或來源。",
+      "correct_value": "應限定為「可能下滑，需以評測驗證」，並補上來源"
+    }
+  ]
+}

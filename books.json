@@ -145,6 +145,16 @@
       "id": "qgen",
       "title": "問題誕生之前",
       "config": "books/question-genesis/web/book.config.json"
+    },
+    {
+      "id": "vuln",
+      "title": "邊界失守",
+      "config": "books/vuln-hunting/web/book.config.json"
+    },
+    {
+      "id": "eagent",
+      "title": "企業級 Agent 工程",
+      "config": "books/enterprise-agents/web/book.config.json"
     }
   ]
 }

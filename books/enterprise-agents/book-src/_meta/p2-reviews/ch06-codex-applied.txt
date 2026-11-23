@@ -1,0 +1,18 @@
+已完成 [ch06-reliability-and-durable-execution.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch06-reliability-and-durable-execution.md)（以 `.tmp` 寫入後原子替換）、[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch06/index.ts) 與 [main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch06/main.py) 的修訂，並保持 6 個骨架標題與 `2026-11` 基準不變：
+
+### 已修正項目
+1. **退款去重與授權邊界**：將去重鍵從 `refund:{run_id}:{order_id}` 改為綁定業務操作的 `(tenant_id, refund_operation_id)`（綁定訂單、最小貨幣單位金額與幣別），並補充工具端授權驗證、防併發超退，以及本地 `UNIQUE` 約束無法涵蓋「外部已入帳、回執未落盤」窗口的對帳處理。
+2. **Replay、Redis 租約與 PostgreSQL 分區**：補充 Replay 逐一比對 `tool_use_id` 與 `tool_call`、重新核對額度／權限／HITL 狀態；說明 Redis 鎖須核對持有者 token 後續約／刪鎖並搭配 fencing token；修正 `created_at` 月分區與 `(run_id, seq)` 主鍵衝突說明；HITL 改以 PostgreSQL `deadline_at` 與條件式狀態轉移競爭、Outbox 喚醒。
+3. **API 語意與結構化輸出邊界**：補充 `429` 支出上限無 `retry-after` 情境、SSE `message_stop`／`stop_reason`／transport idle 與進度 timeout 區分、`maxRetries: 0`／`max_retries=0`、Batch `custom_id` 改為 `^[a-zA-Z0-9_-]{1,64}$` 短 ID、Prompt Caching `tools → system → messages` 有效前綴，以及 `strict: true`／`output_config.format`、Sonnet 5.5 adaptive thinking 與 MCP Streamable HTTP／Connector 失敗窗口。
+4. **容量算式與名詞統一**：峰均比修正為 `約 20.7×`；Worked Example 與自我檢核第 3 題明確區分「API 呼叫數」與「工單數」，並同時列出名目配額（`600` 個呼叫／`16.2s`）與 `90%` 限流設定（`720` 個／扣除 `burst = 54` 剩 `666` 個／`20.1s`；第 3 題 `1,800` 與 `2,070`）；統一「退款」用語並修正範例 `cd` 指令為子 shell。
+5. **TS / Python 範例對齊與驗證**：
+   - `approveHitl` / `approve_hitl` 僅在 `waiting_hitl` 狀態寫入 `hitl_resume`，不再直接標記 `completed`，而是由 `runRefundWorkflow` / `run_refund_workflow` 續跑取得核准後的退款回執再寫入 `tool_call` 與 `completed`（共 `6` 筆 checkpoints）。
+   - 加入 `amountUsd` / `amount_usd` 正有限數驗證與 `(tenantId, refundOperationId)` 去重鍵。
+   - `CircuitBreaker` 加入 `halfOpenInFlight` 單探測控制與 `epoch` 防舊請求誤關，且僅計入 `RetryableApiError`。
+   - 實測 `(cd books/enterprise-agents/examples/ts && npx tsx ch06/index.ts)` 與 `(cd books/enterprise-agents/examples/py && python3 ch06/main.py)` 皆通過並輸出 `waiting_hitl` → `3` → `6` → `completed`。
+
+### 未採納項目
+- 無（Codex 所提各項技術、數學與程式碼問題均已採納並修正；因題目限制未修改 `shared/` 下的共用 mock 檔案，相關金額與鍵值檢查已做在 `ch06` runner 入口）。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

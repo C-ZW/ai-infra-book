@@ -1,0 +1,236 @@
+{
+  "chapter": "ch02-recon-and-audit-workflow.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "Flamegraph 先鎖定高資源消耗的葉節點再回溯呼叫鏈；白箱審計則先鎖定高風險的 Sink（匯點）……再沿呼叫圖往回追，確認它能否觸及外部輸入 Source（來源）。",
+      "verdict": "correct",
+      "reasoning": "CPU 採樣堆疊可從葉框回看呼叫來源。白箱審計也可從敏感操作反查輸入來源。前者依已觀察到的執行成本收斂，後者依程式路徑與資料流收斂。",
+      "correct_value": "兩種工作都可以逆向縮小檢視範圍。採樣圖反映已觀察到的 CPU 活動，靜態追蹤仍需確認路徑與資料流的可達性。"
+    },
+    {
+      "claim": "兩者都能在有限的初步分流時間預算（如 30 分鐘）內，將檢視範圍從整個程式碼庫收斂至少數可達高危匯點的關鍵呼叫鏈。",
+      "verdict": "imprecise",
+      "reasoning": "三段時間分別是 8、10、12 分鐘，合計 30 分鐘。這只建立了時間預算。材料沒有路由盤點結果、覆蓋率或計時紀錄，無法支持在該期限內取得完整端點清單或必然收斂至少數鏈路。字串命中也只代表找到候選位置。",
+      "correct_value": "30 分鐘是初步分流的時間盒。產出應為已盤點的入口、已追蹤的候選鏈路，以及仍待驗證的範圍。"
+    },
+    {
+      "claim": "當採樣數有限或受圖表呈現門檻過濾時，執行佔比極低（如低於 0.1%）的冷分支往往難以在 Flamegraph 上顯現。",
+      "verdict": "correct",
+      "reasoning": "在簡化的等機率採樣模型中，佔比 0.1% 的分支在 1,000 次樣本中期望命中一次，實際仍可能零次。圖表也可能額外隱藏窄框。章文將 0.1% 用作例子，且列出了適用條件。",
+      "correct_value": "冷分支的可見性取決於採樣量、實際命中數與呈現門檻。0.1% 是示例。"
+    },
+    {
+      "claim": "NexusPay 尖峰 `2,000 req/s` 的主結算交易",
+      "verdict": "imprecise",
+      "reasoning": "基準表將 2,000 req/s 列為 NexusPay 的併發尖峰，沒有提供主結算交易的流量占比，也沒有 CPU 採樣證明它是熱路徑。",
+      "correct_value": "NexusPay 的基準尖峰為 2,000 req/s。主結算交易的流量與 CPU 佔比須個別量測。"
+    },
+    {
+      "claim": "實際發生的不是單一加密通道，而是兩條完全獨立的 TLS 會話在代理內部拼合。",
+      "verdict": "correct",
+      "reasoning": "在章內所述的攔截模式中，代理對下游扮演 TLS 伺服器，對上游扮演 TLS 客戶端。兩側各自握手、驗證對端並協商應用協定，因此兩側可能選到不同的 HTTP 版本。",
+      "correct_value": "終止並解密 TLS 的代理使用兩條分別協商的 TLS 會話。只轉送位元組的 CONNECT 隧道則可承載端到端 TLS。"
+    },
+    {
+      "claim": "客戶端必須先送出明文 `CONNECT api.nexuspay.local:443 HTTP/1.1`，代理收到後回傳 `HTTP/1.1 200 Connection Established`……從這一刻起，代理才把該下游 TCP socket 交給 TLS 終端引擎處理。",
+      "verdict": "imprecise",
+      "reasoning": "CONNECT 的 HTTP/1.1 明文表示法符合本節的明文顯式代理示例。成功的 CONNECT 回應採 2xx 語意，200 是常見值。隧道成立後，只有啟用攔截的代理才終止隧道內的 TLS，交由哪個元件處理則屬實作細節。",
+      "correct_value": "在明文 HTTP/1.1 顯式代理示例中，客戶端先送 CONNECT。成功的 2xx 回應建立隧道語意，攔截代理隨後可終止隧道內的 TLS。"
+    },
+    {
+      "claim": "代理讀取明文的 SNI……得知目標網域……因此現代代理普遍以目標主機名稱為鍵重用已簽發的葉憑證。",
+      "verdict": "imprecise",
+      "reasoning": "章內的 CONNECT 目標本身已提供主機名稱。代理可在 SNI 可見時利用該欄位，但其存在與可見性取決於交握條件。材料沒有各代理版本的簽發、金鑰生成與快取實作證據，無法確認普遍採用的快取鍵或 CPU 成本。",
+      "correct_value": "攔截代理可依 CONNECT 目標、可見的 SNI 或其他實作資訊選擇葉憑證。動態簽發、金鑰重用與快取策略須按工具及版本描述。"
+    },
+    {
+      "claim": "Node.js 內建編譯進執行檔的 Mozilla CA 束，必須明確設定 `NODE_EXTRA_CA_CERTS=/path/to/proxy-ca.crt`；`curl` 則需透過 `--cacert` 或 `SSL_CERT_FILE` 注入。",
+      "verdict": "incorrect",
+      "reasoning": "TLS 驗證取決於該程序實際使用的信任來源。章內所列設定可以在相容環境加上代理 CA，但由此無法推出每個 Node.js 或 curl 環境都必須以這些方式注入。Node.js 的代理選擇也與 TLS 信任設定分開，題目只說設定了 HTTPS_PROXY，尚未證實所用 fetch 實作有採用它。",
+      "correct_value": "依 Node.js 版本、啟動設定及 HTTP 用戶端確認代理與 CA 行為。在使用內建 CA 束且支援該設定的情況下，可於程序啟動前使用 NODE_EXTRA_CA_CERTS。curl 的信任來源依 TLS 後端與建置而異。"
+    },
+    {
+      "claim": "即使系統信任庫已安裝代理 Root CA，代理依然完全攔不到流量……原因在於客戶端實作了 Certificate Pinning……或要求雙向 TLS（mTLS）提供客戶端私鑰，導致代理簽發的動態葉憑證被直接拒收。",
+      "verdict": "incorrect",
+      "reasoning": "信任代理 CA 只能滿足一般憑證鏈驗證。如果用戶端另有釘扎，驗證可能在下游拒絕代理葉憑證。mTLS 的用戶端認證則要求在指定會話中用私鑰證明持有，私鑰本身不交給對端。代理欠缺上游要求的用戶端身分時，失敗可發生在上游，並不能歸為下游拒收葉憑證。",
+      "correct_value": "分別說明兩種失敗。釘扎可能使下游拒絕代理憑證。mTLS 可能使上游拒絕無適當用戶端憑證及持有證明的代理。僅有 TLS Alert 無法診斷是哪一種。"
+    },
+    {
+      "claim": "當上游逾時未回應達 `30 s`（Nginx `proxy_read_timeout`）時，代理通常回傳 `504 Gateway Time-out`；而若上游 Node.js 因閒置達 `keepAliveTimeout = 5 s` 關閉持久連線……則可能因連線重設而偶發回傳 `502 Bad Gateway`。",
+      "verdict": "imprecise",
+      "reasoning": "30 秒與 5 秒均符合基準。前者描述上游相鄰讀取之間的等待，不能作為整個請求或完整回應的總期限。能否向客戶端送出 504 或 502，取決於失敗階段、回應是否已送出及重試設定。單靠這些狀態碼也無法辨識特定代理或執行時期。",
+      "correct_value": "保留 30 秒與 5 秒的基準值。將 504 限於適用的上游讀取逾時情境，將 502 描述為上游連線失敗且代理仍可產生錯誤回應時的可能結果。"
+    },
+    {
+      "claim": "NestJS 預設的 `ValidationPipe` 會回傳結構固定的 `400 Bad Request` 陣列",
+      "verdict": "imprecise",
+      "reasoning": "章內的示例外層是 JSON 物件，陣列位於 message 欄位。是否出現示例訊息取決於是否啟用 Pipe、DTO 裝飾器、驗證選項與例外處理設定。422 或特定解析錯誤文字也可由其他框架、中介層或自訂處理器產生。",
+      "correct_value": "在啟用 ValidationPipe 且採用相應 DTO 裝飾器與預設錯誤處理的示例中，可見帶有 message 陣列的 400 回應物件。錯誤形狀可提供框架歸因線索。"
+    },
+    {
+      "claim": "若伺服器回傳 `500` 且夾帶 `22P02`（`invalid input syntax for type uuid`）等 SQLSTATE 錯誤碼，即強烈指向底層採用 PostgreSQL（或相容協定資料庫）且該錯誤路徑未做好例外遮罩。",
+      "verdict": "imprecise",
+      "reasoning": "錯誤碼與 UUID 訊息的組合可支持 PostgreSQL 相容元件的推測。22P02 表示無效文字表示，適用範圍不限 UUID。回應若確實包含內部資料庫錯誤，可確認該回應暴露了錯誤細節，單憑內容仍無法確定實際發錯層級。",
+      "correct_value": "將 22P02 說明為無效文字表示。UUID 型別由伴隨訊息辨識，資料庫產品與錯誤來源須另行確認。"
+    },
+    {
+      "claim": "一旦拿到公開暴露的 `.js.map`，往往就能從其中的 `sources`、`names` 與 `sourcesContent` 欄位還原該建置區塊（chunk）涵蓋的前端 TypeScript 原始碼目錄結構、API 客戶端定義與靜態宣告的呼叫端點名稱。",
+      "verdict": "imprecise",
+      "reasoning": "sources 可提供來源名稱或路徑，names 提供映射中的名稱。只有 sourcemap 實際附帶對應的 sourcesContent 或另有可取得的原始檔時，才有足夠資訊閱讀原文。重寫後的路徑與前端路由字串也各自有歸因限制。",
+      "correct_value": "公開 sourcemap 可能揭露來源路徑與符號。內嵌來源內容時才可能直接讀到相應原始碼。靜態端點名稱須與部署路由證據交叉比對。"
+    },
+    {
+      "claim": "許多 API 閘道或 SPA 回退規則會對任何未知路徑一律回傳 `200 OK`……或統一的 `401 Unauthorized`，讓只看 HTTP 狀態碼的字典掃描器產出 100% 誤報。",
+      "verdict": "incorrect",
+      "reasoning": "設被標為命中的項目有 T 筆真正命中與 F 筆誤報，命中清單中的誤報比例為 F／(T＋F)。只有在 T 等於零且 F 大於零時才是 100%。題目給定的 5,000 筆探測量無法推出真實路徑有幾筆。",
+      "correct_value": "相同狀態碼會讓只使用該特徵的分類器無法區分部分已知與未知路徑。誤報比例取決於真實路徑數與判定規則。"
+    },
+    {
+      "claim": "後續探測必須同時過濾掉所有符合基線向量的回應，只保留產生「結構性偏差」的候選端點。",
+      "verdict": "incorrect",
+      "reasoning": "真實路由可與回退回應具有相同狀態、長度、內容類型或結構。動態請求識別碼也可能使兩個等價回退回應在標頭值上不同。若回應缺少 Content-Length，仍可量測收到的主體大小。章末建議的交叉驗證能降低分類錯誤，無法保證零漏報。",
+      "correct_value": "把符合正規化基線的回應標成疑似回退。識別碼等動態值與實測主體大小須分開處理，有歧義的候選須由獨立路由證據確認。"
+    },
+    {
+      "claim": "先對三個隨機路徑發送請求，記下狀態碼與位元組長度作為基線，再用字典探測常見管理與內部路徑前綴（比對回應與基線的差異，並測試 `OPTIONS` 與 `POST` 方法切換）",
+      "verdict": "incorrect",
+      "reasoning": "章內範例用預設 GET 建立基線，候選迴圈實際只有 GET 與 POST，且候選請求另帶 Content-Type。文字宣稱會測 OPTIONS，程式未涵蓋。以不同方法及標頭條件的回應比較，無法將差異單獨歸因於路由存在。",
+      "correct_value": "現有範例只有 GET 基線及 GET、POST 候選比較。每個方法的對照應使用相同的請求條件。"
+    },
+    {
+      "claim": "三個長度皆為 15 bytes 的隨機路徑（如 `/v1/probe_71f2a`）應回傳一致的基線（例如 `404 77` 代表 NestJS 預設 JSON `{\"message\":\"Cannot GET /v1/probe_71f2a\",\"error\":\"Not Found\",\"statusCode\":404}` 為 `77 bytes`）。",
+      "verdict": "correct",
+      "reasoning": "三個路徑均由 4 位元組前綴、6 位元組的 probe_ 與 5 位元組尾碼組成，共 15。所示 ASCII JSON 的固定部分為 62 位元組，加上 15 位元組路徑得 77。相同大小的結論適用於三筆回應都採用所示序列化格式的情境。",
+      "correct_value": "三個示例路徑各 15 位元組。所列 JSON 在無尾端換行時為 77 位元組。404 77 是以該格式回傳時的示例。"
+    },
+    {
+      "claim": "四個因子均採用明確離散級距（範圍 `1` 至 `4`），分數區間為 `1` 到 `256`。",
+      "verdict": "correct",
+      "reasoning": "四因子均為正整數，乘積最小為 1⁴，最大為 4⁴。章內兩組示例各組相乘，分別得 144 與 4，依規則為 P0 與低於 P1 門檻。",
+      "correct_value": "最小值 1，最大值 256。可得分數是四個 1 至 4 的整數因子之乘積，因此區間內有不可達的整數。"
+    },
+    {
+      "claim": "邊界越多，解析器與序列化假設分歧的機率越高。",
+      "verdict": "imprecise",
+      "reasoning": "增加一個邊界可能增加一處需要檢查的轉換，但材料未定義各邊界的失配機率、相依性或共同規格，也沒有用實測資料校準 APS 權重及門檻。",
+      "correct_value": "APS 是啟發式排序。新增邊界代表新增一處可能需檢查的轉換，實際失配風險依各邊界的語意與驗證方式而定。"
+    },
+    {
+      "claim": "假設 NexusPay 單戶測試餘額為 `10,000`（整數分，即 `$100.00`），單次提領／轉帳上限 `10,000`",
+      "verdict": "imprecise",
+      "reasoning": "10,000 分除以 100 得 100.00 美元，基準也列出單次提領上限為 10,000 分。基準沒有獨立的轉帳上限。算例 DTO 所列 Max(10000) 可以建立示例中的轉帳上限。",
+      "correct_value": "基準的單戶測試餘額及單次提領上限均為 10,000 分。10,000 分的單次轉帳上限是本例所述 DTO 的設定。"
+    },
+    {
+      "claim": "累計 121 bytes，與 Content-Length: 121 完全吻合",
+      "verdict": "correct",
+      "reasoning": "依所示 JSON 欄位邊界逐段計入標點，分別得到 28、25、19、17、32 位元組，總和為 121。字串值含 18 個 ASCII 字元，因此為 18 位元組，且低於 64。",
+      "correct_value": "主體為 121 位元組，前提是使用所示 ASCII 內容，且主體不包含額外空白或尾端換行。routeTag 值為 18 字元、18 位元組。"
+    },
+    {
+      "claim": "RS256 JWT, TTL 900 s, sub=usr_1042, tenantId=tnt_alpha",
+      "verdict": "imprecise",
+      "reasoning": "RS256 與 900 秒符合基準，驗證表所列的 JWKS 快取 300 秒也符合。示意 token 有省略，資料中沒有可核對的完整簽章、金鑰與時間欄位，無法驗證本次認證結果或實際聲明。",
+      "correct_value": "基準為 RS256（2048 位元 RSA）、900 秒有效期、300 秒 JWKS 快取。特定 token 的簽章結果、時間與聲明值均為算例前提。"
+    },
+    {
+      "claim": "檢查餘額 10,000 >= 2,500 (扣款後將為 7,500)；將 routeTag 直接拼接進路由查詢",
+      "verdict": "correct",
+      "reasoning": "在算例假設這次扣款成功、沒有其他異動且只扣除所示金額時，10,000 減 2,500 等於 7,500，且 2,500 落於 DTO 的 1 至 10,000 範圍。字串型別與長度檢查只限制資料形狀，無法證明後續的 SQL 組合安全。",
+      "correct_value": "算例扣款後餘額為 7,500 分。對整數欄位的範圍驗證、帳戶與租戶歸屬授權、字串資料的 SQL 參數化，以及交易提交結果須各自確認。"
+    },
+    {
+      "claim": "總分 = 3 × 3 × 2 × (3..4) = 54..72 分 -> 落入 P1 至 P0 優先驗證級別！",
+      "verdict": "imprecise",
+      "reasoning": "依章內定義，客戶端到 Nginx、Nginx 到 NestJS、NestJS 到 PostgreSQL 共三道邊界。前三因子相乘為 18，離散影響值 3 或 4 分別給 54 分與 72 分。所示查詢與資料流沒有提供核心帳本寫入、完整認證繞過或任意程式碼執行的證據。",
+      "correct_value": "若獨立確認影響等級為 3，得 54 分、P1。若確認為 4，得 72 分、P0。這兩個分數是條件式結果，現有材料不足以確認本例的實際影響等級。"
+    },
+    {
+      "claim": "Phase 1–2 逆向篩選後保留 = 7 個命中 Raw Sink 的檔案，其中在轉帳模組追蹤中確認 1 條註冊路由（POST /v1/transfers）可由外部 HTTP Source 直接觸發（占全系統 112 條註冊路由的 1/112 ≈ 0.89%）",
+      "verdict": "imprecise",
+      "reasoning": "1 除以 112 再乘 100 約為 0.892857%，百分比正確。材料沒有搜尋輸出、路由表、封包或計時紀錄，無法核實所述的 184,000 行、112 條註冊路由、98 項公開文件紀錄、7 個命中、0.9 秒或 15 分鐘。搜索命令所示的範圍只有 src/。",
+      "correct_value": "若 112 條路由中已確認 1 條，該條占約 0.89%。應將其餘數字標為算例假設，或附同版本路由表、搜尋結果與計時紀錄。"
+    },
+    {
+      "claim": "正常請求生命週期順序為：`Middleware → Guards → Interceptors（前置）→ Pipes → Route Handler → Interceptors（後置）`（若任一階段拋出未捕獲例外則轉入 `Exception Filters` 分支）。",
+      "verdict": "imprecise",
+      "reasoning": "依章內序列，Middleware 與 Guard 的讀取發生在 Pipe 之前，這支持前置元件無法倚賴後續 DTO 驗證的結論。『任一階段』將例外捕捉範圍說得過廣，材料沒有提供框架版本、轉接器或各階段的例外傳遞證據。",
+      "correct_value": "以所列順序描述正常的框架請求處理流程。未處理且進入 Nest 例外處理機制的錯誤，可由適用的例外篩選器處理。"
+    },
+    {
+      "claim": "全域 `ValidationPipe` 針對基礎型別（primitive types）不會套用 DTO `whitelist` 規則，輸入會原封不動進入 Service。",
+      "verdict": "imprecise",
+      "reasoning": "DTO 屬性白名單需要受驗證的 DTO 類別，單一 primitive 型別標註無法提供那套屬性規則。輸入在到達 Service 前仍可能經過請求解析、型別轉換、其他 Pipe 或 Controller 邏輯。對受驗證 DTO，單用 whitelist 可剝除未知屬性，但有裝飾器的欄位仍須依其用途處理。",
+      "correct_value": "直接讀取原始 request 或只綁定基本型別的參數，不能倚賴 DTO 屬性白名單。是否還會轉換或驗證，取決於參數綁定與其餘管線設定。"
+    },
+    {
+      "claim": "這正是 OWASP API Security Top 10:2023 中的 **API9: Improper Inventory Management（不當資產清單管理）**。",
+      "verdict": "imprecise",
+      "reasoning": "端點文件與部署路由漂移在概念上符合資產清單管理問題。source-evidence 提供的是 OWASP Top 10:2025 通用榜單摘錄，沒有 2023 API 榜單原文可核對編號與正式名稱。",
+      "correct_value": "可將影子端點描述為 API 資產清單管理缺口。API9 的版本、編號與名稱須用 2023 API Security Top 10 原文核對。"
+    },
+    {
+      "claim": "結果就是後端歷史遺留的 `/v1/transfers/legacy-export`、工程師除錯留下的 `/v1/debug/routes-health`，甚至僅供內部排程呼叫的 `/v1/internal/ledger-snapshot`，全部透過同一條 `/v1/` 前綴被轉發至上游應用服務",
+      "verdict": "imprecise",
+      "reasoning": "三個路徑均符合所示前綴。若實際配置由該 location 處理且沒有其他路由、改寫或存取控制，請求可轉發到上游。單一配置片段無法證明端點已註冊、可從公網到達、未列入規格，或能由特定角色執行。材料也沒有可核對的三條路由、前端資產與回應紀錄。",
+      "correct_value": "將三條路徑及其回應、權限和影響列為本地算例的待核項目。確認時需比對同一建置版本的完整閘道配置、實際路由、公開規格及授權證據。"
+    },
+    {
+      "claim": "改送 `POST` 後回傳 `400 Bad Request`（`ValidationPipe` 報錯提示缺少欄位），證實舊版路由未被移除且允許一般商戶 Token 呼叫，並於服務層以 `path.join` 處理匯出檔名。",
+      "verdict": "imprecise",
+      "reasoning": "所述錯誤有助於辨識請求可能進入驗證層。如果能獨立歸因於指定路由的 Pipe，才可證明該次請求抵達該路由的驗證階段。400 無法證明服務層已執行、商戶獲准完成操作，或服務層使用的函式。",
+      "correct_value": "400 與欄位錯誤可作為路由和驗證階段的線索。路由存在、商戶授權及檔案處理實作須由部署路由、授權邏輯與原始碼分別核對。"
+    },
+    {
+      "claim": "若 `legacy-export` 接收巢狀匯出篩選物件（`Complexity=3`）並經確認可流入任意檔案讀寫或 Raw SQL Sink（`Sink_Impact=3..4`），其 APS（`Exposure=3 × Boundary=3 × Complexity=3 × Sink_Impact=3..4 = 81..108`；若僅接收扁平格式字串 `Complexity=2` 則為 `54..72`）即落入 **P1–P0**",
+      "verdict": "incorrect",
+      "reasoning": "巢狀輸入時，3×3×3 等於 27，乘上 3 或 4 得 81 或 108，均已達 72 分門檻。扁平輸入時，3×3×2 等於 18，乘上 3 或 4 得 54 或 72，才分別落入 P1 與 P0。章內定義將任意檔案寫入列為 4，未將任意檔案讀取或任一 Raw SQL 匯點一概列為 3 或 4。",
+      "correct_value": "巢狀輸入在影響值 3 或 4 時均為 P0，分數為 81 或 108。扁平輸入則分別為 54 分、P1 或 72 分、P0。影響值依已確認的後果評定。"
+    },
+    {
+      "claim": "純讀取資訊洩漏（`routes-health`：`Exposure=4 × Boundary=1 × Complexity=1 × Sink_Impact=1 = 4`）",
+      "verdict": "incorrect",
+      "reasoning": "按本文的邊界算法，客戶端進入 Nginx 計第一道，Nginx 轉發到 NestJS Controller 計第二道。章文同時將此端點描述為經 Nginx 轉發並由 NestJS Controller 處理。",
+      "correct_value": "依所述路徑，至少應計兩道邊界。若處理止於 NestJS 且其他三個因子維持 4、1、1，得分為 8。若再跨其他邊界或資訊具更高影響，須依證據重評。"
+    },
+    {
+      "claim": "其得分為 `3 × 3 × 4 × 4 = 144`（若無須認證更高達 `192`），遠超 `72` 分的 P0 門檻。",
+      "verdict": "correct",
+      "reasoning": "按章內規則，首組乘積為 144，暴露度改成 4 後為 192，兩者都是 P0。APS 沒有 CPU 採樣佔比因子，因此低於 0.05% 與高於 100 分可同時成立。",
+      "correct_value": "在所列暴露度、三道邊界、複合輸入及已確認的影響條件下，分數為 144 或 192，均為 P0。"
+    },
+    {
+      "claim": "低頻冷路徑一旦具備高危匯點，攻擊者便能主動發送請求將其放大為 `100%` 的確定性突破口。",
+      "verdict": "incorrect",
+      "reasoning": "可達性只支持存在某組能到達匯點的條件。是否每次成功還取決於身分、資料、設定、系統狀態及其他前提。APS 的乘積是排序分數，沒有定義為成功率或提供 100% 的推導。",
+      "correct_value": "低頻路徑可因外部可達性及已確認的匯點影響而列為 P0。成功率與可重現性須在明確前提下另行驗證。"
+    },
+    {
+      "claim": "如何將這些搜尋模式寫成跨檔案語意規則自動化掃描整個生態系（如 CodeQL 與 Semgrep 語法工程），見 ch28",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 將 CodeQL 描述為跨檔案語意資料流與變體分析工具，將 Semgrep 描述為語法樹規則與 CI 檢查工具。這支持兩者可用於靜態分析，無法證明所有 Semgrep 模式均有跨檔案分析能力，或任何規則可覆蓋整個生態系。",
+      "correct_value": "CodeQL 可用於跨檔案資料流分析。Semgrep 可用於語法樹規則檢查，跨檔案能力與涵蓋範圍須按版本、分析模式、語言和規則說明。"
+    },
+    {
+      "claim": "RFC 9110（HTTP Semantics）與 RFC 9112（HTTP/1.1）：第 9 章 `CONNECT` 方法與隧道語意、第 6 章訊息長度與連線持久性規範",
+      "verdict": "incorrect",
+      "reasoning": "CONNECT 位於 RFC 9110 §9.3.6。RFC 9112 第 6 節涵蓋訊息主體及長度，連線管理及持久性在第 9 節，其中持久性是 §9.3。",
+      "correct_value": "CONNECT 引 RFC 9110 §9.3.6。訊息主體與長度引 RFC 9112 第 6 節，連線持久性引 RFC 9112 §9.3。"
+    },
+    {
+      "claim": "RFC 8446（The Transport Layer Security Protocol Version 1.3）與 RFC 6066（TLS Extensions: SNI）：理解 MITM 代理在 TLS 交握中如何擷取 `server_name` 與協商 `ALPN`。",
+      "verdict": "imprecise",
+      "reasoning": "RFC 8446 提供 TLS 1.3 交握框架，RFC 6066 說明 server_name 擴充。這組書目沒有列出定義 ALPN 擴充本身的 RFC。",
+      "correct_value": "TLS 1.3 交握引 RFC 8446，SNI 引 RFC 6066，ALPN 引 RFC 7301。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 的 Information disclosure 與 API testing 路徑包含所列五個關卡，難度分別標為 Apprentice 與 Practitioner。",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 支持 Academy 是免費的 Web 安全練習資源，並列舉部分議題。它未附所列五個關卡的官方目錄、名稱、個別難度或提示內容。",
+      "correct_value": "可確認提供的材料將 Academy 記為免費的 Web 安全練習資源。五個關卡的名稱、分類、難度與提示須以各關卡的官方頁面核對。"
+    }
+  ]
+}

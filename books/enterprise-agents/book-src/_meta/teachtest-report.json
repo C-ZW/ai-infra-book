@@ -1,0 +1,86 @@
+[
+  {
+    "chapter_id": "ch01",
+    "file": "ch01-agent-architecture.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver accurately executed all Chapter 1 methods (workflow-vs-agent decision criterion, multi-tool_result wire-level contract with is_error, stateless linear token inflation with dynamic remainingMs timeout tracing, and budget-before-end_turn check ordering) and reached exact expected values with no stuck points."
+  },
+  {
+    "chapter_id": "ch02",
+    "file": "ch02-tool-use-and-mcp.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver satisfied all six pass criteria with exact arithmetic, correct schema/caching/MCP/idempotency designs, no stuck points, and clear execution of the methods taught in Chapter 2."
+  },
+  {
+    "chapter_id": "ch03",
+    "file": "ch03-context-and-prompt-engineering.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "The solver satisfied all seven pass criteria with exact calculations and corroborated execution of the chapter's taught prefix-matching formula, Extended Thinking configuration and cost-ledger method, truncation multiplication accounting, compaction structural invariants, and Scratchpad application-layer guardrails, with no stuck points."
+  },
+  {
+    "chapter_id": "ch04",
+    "file": "ch04-state-memory-and-retrieval.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver satisfied all pass criteria with worked steps executing every taught chapter mechanism (CAS UPDATE with all required predicates and rows-affected handling, wire-level message pairing on webhook resume, ACL pre-filtering before 1-based RRF with k=60 and (rrf_score DESC, chunk_id ASC) tie-breaking, verifyCitations evaluation, and uncached retrieval input cost accounting) with zero stuck points."
+  },
+  {
+    "chapter_id": "ch05",
+    "file": "ch05-multi-agent-orchestration.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver met all five pass criteria with exact numerical results ($0.115200 vs $0.010420, 90.95% reduction; 60 starts/s, 240 API calls/s; 12 retry attempts) and corroborated execution of every chapter-taught mechanism (three scaling bottlenecks, WorkerHandoff contract isolation, DAG/max_depth=2/least-privilege/Promise.allSettled/degraded_pending_hitl, and maxRetries=0 with 429 Retry-After and 529 Full Jitter plus deadline cutoff)."
+  },
+  {
+    "chapter_id": "ch06",
+    "file": "ch06-reliability-and-durable-execution.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "The solver satisfied all five pass criteria with exact numerical results, complete worked steps, zero stuck points, and faithful execution of Chapter 6's capacity/backoff formulas, circuit-breaker rules, Checkpoint Replay logic, and HITL state machine."
+  },
+  {
+    "chapter_id": "ch07",
+    "file": "ch07-evals-and-systematic-tuning.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver accurately executed every taught method from ch07—Pass^k compounding, OrderOps Sonnet/Haiku cost and concurrency/deadline math, trajectory grading with deterministic-first remediation, and all three CI failure-mode thresholds—with zero stuck points."
+  },
+  {
+    "chapter_id": "ch08",
+    "file": "ch08-cost-and-latency-optimization.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver executed the chapter's five-stage cost waterfall method step-by-step (4-turn cumulative input formula, Claude 5.5 pricing, 1h TTL effective cache multipliers 0.48/0.44, 0.80 Batch multiplier, and 1.1x inference_geo='us' surcharge) with exact values across Stages 0-5, correct budget verdicts for both compliance scenarios, and zero stuck points."
+  },
+  {
+    "chapter_id": "ch09",
+    "file": "ch09-security-guardrails-and-governance.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "The solver satisfied all six pass criteria with accurate calculations, exact PolicyEngine evaluation order, proper API tool_result framing, and corroborated execution of the chapter's taught methods without any stuck points."
+  },
+  {
+    "chapter_id": "ch10",
+    "file": "ch10-observability-and-operations.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "The solver satisfied all pass criteria across all three parts, producing exact values and demonstrating faithful execution of every chapter-specific method, formula, OTel contract, and threshold."
+  },
+  {
+    "chapter_id": "ch11",
+    "file": "ch11-enterprise-patterns-in-action.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver met all pass criteria across Scenarios A, B, and C with exact calculations, rule applications, and verdicts corroborated by the chapter's formulas, validateCitations short-circuit order, verifyTriageEvidenceChain rules, and pricing footnote."
+  },
+  {
+    "chapter_id": "ch12",
+    "file": "ch12-production-readiness-blueprint.md",
+    "passed": true,
+    "gaps": [],
+    "reason": "Solver executed Chapter 12's Buy vs Build matrix, PRR/validateProductionConfig gates, 90-day net benefit ledger, and fixed/variable break-even calculations with full worked steps and all exact values; no chapter teaching gaps found."
+  }
+]

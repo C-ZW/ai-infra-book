@@ -1,0 +1,31 @@
+已完成 [ch02-tool-use-and-mcp.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch02-tool-use-and-mcp.md)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch02/main.py) 與 [index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch02/index.ts) 的修訂。
+
+### 已修正項目
+
+1. **端到端冪等與伺服器端授權（Prose + Code）**
+   - 在章節第 1、3 節與故障模式 #3 補充：資料庫 `UNIQUE(tenant_id, idempotency_key)` 僅保護帳本寫入，須先原子建立持久操作紀錄並比對正規化 `payload_hash`，將同一操作鍵傳給支付商、定義 `pending`/`succeeded`/`failed`/`unknown` 狀態轉移與對帳流程，並在交易內預留可退餘額；Redis 鎖改為含持有者驗證的租約。
+   - 明確要求 `tenant_id` 由已驗證身分取得、`dry_run` 提交須驗證綁定 `(tenant_id, actor, operation, amount_usd)` 的短效預檢紀錄，並將工單、知識庫與 MCP 工具結果視為不可信資料。
+   - `IdempotentRefundExecutor`（Python / TS）已補齊參數型別、枚舉、`NaN`/無限值與兩位小數（整數分）驗證，改以 `(tenant_id, idempotency_key)` 為鍵並比對 SHA-256 `payload_hash`（不符回傳 `IDEMPOTENCY_PAYLOAD_MISMATCH`），超限改回傳 `would_approve: false`（移除假 `REF-PENDING-...` ID），並以 UUID 取代毫秒時間戳避免碰撞；Python 端加上 `threading.Lock()`。
+
+2. **成本算術、快取斷點與全鏈路 SLO（Prose）**
+   - 保留 `running-examples.md` 與 `landscape-2026-11.md` 的 2026-11 Claude 5.5 基準數據，釐清 `42,000` 輸入假設第 1 回合總輸入為 `6,000`、`350` 含 thinking、`$4,950/月` 標為 12% 情境估算，並移除未經實測的「守住 p95」結論。
+   - 修正 Prompt Caching 斷點說明為 `tools → system → messages`（將斷點置於最後一個固定 `system` 區塊以同時涵蓋 `tools` 與 `system`），並修正故障模式 #4 的 `80%` 告警分母為「符合快取條件的前綴／請求」，避免與 5 回合 `71.43%` 總輸入占比矛盾。
+   - 補充 `18,000 ms` wall-clock deadline 須由整條呼叫鏈（含 `Retry-After` 與 SDK 重試）共同執行，並釐清 `12 req/s` 工單進件率對應約 `60` 次模型請求/秒。
+
+3. **完整 Agent Loop、結構化輸出與 MCP HTTP 契約（Prose + Code）**
+   - 在第 2 節補充 `strict: true` 支援子集限制（無遞迴/`patternProperties`/`minLength`、不保證 `<50 ms`）、完整 `stop_reason` 分支（含 `stop_sequence`、`pause_turn`、`model_context_window_exceeded`）、保留帶簽章 `thinking` blocks 及 `thinking: {"type": "between_tools"}`。
+   - Python 與 TS 範例皆補齊 `get_order` handler、允許清單 `dispatch_tool` / `dispatchTool`、`run_agent_loop` / `runAgentLoop`（含 `max_turns = 8`、`messages.parse` 搭配 `TicketResolution` / `zodOutputFormat`），並統一 `refund_id` 為必填且可為 `null` 及 `confidence_score` 欄位。
+   - MCP HTTP handler 補上 `GET /mcp` 回 `405`、`notifications/initialized` 回 `202`、`Origin` 與請求大小檢查、正確的 JSON-RPC 錯誤碼（`-32700` / `-32600` / `-32602` / `-32601`）；TS 改用 `pathToFileURL` 並明確綁定 `127.0.0.1`。
+   - 修正第 4 節 Connector 與應用層代理邊界（移除「只需 POST `tools/call`」與「毫秒級」），將 `json` 區塊標記為 `jsonc`，補齊故障模式分母/最小樣本與「動手做」驗收步驟。
+
+### 驗證結果
+
+- `python3 -B books/enterprise-agents/examples/py/ch02/main.py`：通過（`Dry-run`、`Commit`、`Replay` 輸出正確，未設 `ANTHROPIC_API_KEY` 跳過即時 API 呼叫），並已移除 `examples/py/ch02/__pycache__`。
+- `npx tsx ch02/index.ts`：因 `examples/ts` 尚未安裝 `@anthropic-ai/sdk`（`ERR_MODULE_NOT_FOUND`）未執行。
+
+### 刻意未採納項目
+
+- **未將範例重構為依賴外部官方 MCP Python/TS SDK Server**：為維持章節「零外部 server 框架依賴、單檔可讀」的教學定位，保留標準庫 `ThreadingHTTPServer` 與 `node:http` 實作，並於其上補齊 MCP 生命週期與驗證。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

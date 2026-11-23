@@ -1,0 +1,164 @@
+{
+  "chapter": "ch28-static-and-variant-analysis.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "「`8 bytes` 檔頭、`len` 欄位為 `4B` uint32、合法 payload 上限 `65,536 bytes`」",
+      "verdict": "correct",
+      "reasoning": "基準表的三個檔頭欄位合計 2 + 2 + 4 = 8 位元組，長度欄位為 32 位元無號整數。64 KiB 等於 64 × 1,024 = 65,536 位元組。",
+      "correct_value": "檔頭 8 位元組，長度欄位為 uint32，payload 上限 65,536 位元組。"
+    },
+    {
+      "claim": "「到達 `buildOrderClause(input)` 時該條件並不成立。」",
+      "verdict": "incorrect",
+      "reasoning": "片段 B 中，白名單檢查通過時直接到達呼叫，未通過時記錄警告後也到達同一呼叫。兩條路徑匯流，因此到達該呼叫時，白名單條件可能為真，也可能為假。",
+      "correct_value": "到達呼叫時，白名單條件不一定成立。"
+    },
+    {
+      "claim": "「`if (!ALLOWED.includes(field))` 裡沒有 `return` 或 `throw`，它的 `False` 分支（即 `ALLOWED.includes(field) == false`）執行完 `auditLog.warn` 後仍然會匯流回 `pool.query(...)`。」",
+      "verdict": "incorrect",
+      "reasoning": "`includes` 回傳 false 時，取反後的 `if` 條件為 true，因此執行警告的是 `if` 的真分支。兩條分支仍會匯流，原文對守衛無法保證白名單成立的結論正確。",
+      "correct_value": "`includes` 為 false 的路徑進入取反後 `if` 的真分支，記錄警告後仍到達查詢。"
+    },
+    {
+      "claim": "「遇到 `if/else` 匯流點則插入 `φ`（Phi）函式 `q_3 = φ(q_1, q_2)` 合併來自不同分支的值。」",
+      "verdict": "imprecise",
+      "reasoning": "範例中的三次賦值依序執行，使用點只接到最後一次常數賦值，沒有分支匯流。若另外假設兩條控制流路徑各有一個不同的定義到達後續使用點，才需要合併那些定義。",
+      "correct_value": "所示範例直接使用 q_2。φ 節點適用於有不同到達定義需要合併的控制流匯流點。"
+    },
+    {
+      "claim": "「第一條抓 NestJS/Express 中常見的未驗證租戶邊界（BOLA，見第 6 章）或未參數化查詢。」",
+      "verdict": "incorrect",
+      "reasoning": "第一條規則檢查請求輸入是否流入 SQL 命令參數，未檢查物件授權或租戶隔離。章內的 BOLA 範例使用固定 SQL 字串並以參數綁定物件 ID，依該規則的匯點定義無法判定是否缺少授權。",
+      "correct_value": "這條規則檢查請求資料流入 SQL 命令字串的情形。BOLA 需另外驗證物件存取是否受到授權約束。"
+    },
+    {
+      "claim": "「`nexuspay-bola-missing-tenant-where` 精準命中 `getSettlementByIdBola`（1 TP），略過 `getSettlementByIdSafe`（0 FP）。」",
+      "verdict": "imprecise",
+      "reasoning": "就兩條字面 SQL 而言，第一條的 WHERE 後沒有租戶欄位字樣，第二條有，因此符合所示文字條件的預期差異。材料未附實際輸出，也未證明欄位字樣出現就等同有效的租戶授權。此外，函式片段未交代外部呼叫是否另有物件授權。",
+      "correct_value": "兩個樣本預期分別出現一筆文字模式命中與零筆命中。真陽性判定須以完整授權路徑為準。"
+    },
+    {
+      "claim": "「第二條抓 `libnexus-parse` C FFI 解析器裡對 `8 bytes` TLV 檔頭 `len` 做加法溢位後才比對 `65,536 bytes` 上限的經典模式。」",
+      "verdict": "incorrect",
+      "reasoning": "所示規則的核心條件是長度欄位的污點到達配置或複製的大小參數。規則沒有要求路徑包含加法，也沒有要求加法結果先於上限檢查。",
+      "correct_value": "該規則標記未被其淨化條件排除的長度資料流，結果只能作為人工查核算術與邊界檢查的候選。"
+    },
+    {
+      "claim": "「`parse_tlv_safe` 前置檢核 `payload_len > NEXUS_MAX_PAYLOAD` 而自動淨化（0 FP）。」",
+      "verdict": "imprecise",
+      "reasoning": "程式實際使用含零值檢查與巨集的複合條件。規則的一個模式使用複合條件與數字常值，另一個使用巨集與單一條件。材料未證明引擎如何正規化這些差異，也未提供掃描結果。",
+      "correct_value": "前置檢查可由程式語意驗證。掃描是否辨識該檢查及是否得到零誤報，仍待以指定版本的結果確認。"
+    },
+    {
+      "claim": "「[安全對照] 先檢查原始 hdr->len 不超過 65,536 bytes 再做加法」",
+      "verdict": "imprecise",
+      "reasoning": "函式接受的 payload 長度為 1 至 65,536 位元組，所以加上檔頭後的最大配置量為 65,544 位元組，且目的緩衝區在 8 位元組偏移後有足夠空間。然而函式未收到來源緩衝區的實際長度，無法自行確認來源有足夠位元組可讀。",
+      "correct_value": "前置檢查足以保證所示加法和目的端大小。來源端安全仍依賴呼叫者保證 payload 可讀長度。"
+    },
+    {
+      "claim": "「只消除了『語意上確定不可能造成字串結構逃逸』的路徑（參數陣列位置、整數轉型、白名單成員檢核）。」",
+      "verdict": "incorrect",
+      "reasoning": "查詢只用名稱及引數數量辨識 `includes`、`has`，沒有驗證接收者的允許值是否可信，也沒有證明其值適合相應的 SQL 語法位置。方法回傳 true 本身不足以建立安全條件。",
+      "correct_value": "固定且可信的允許值集合，在成員檢查確實保護使用路徑、集合內容也符合目標 SQL 語法時，才可作為淨化依據。"
+    },
+    {
+      "claim": "「輸入經過 `parseInt(..., 10)` 或 `Number(...)` 強轉為數值（頂多變成 `NaN` 或整數，無法注入 SQL 關鍵字）。」",
+      "verdict": "incorrect",
+      "reasoning": "`Number(...)` 可產生非整數及無窮值。範例中數值轉型移除了原始字串的任意文字，但數值字串是否符合特定 SQL 位置的語法，以及是否符合業務範圍，仍須分別判斷。",
+      "correct_value": "`Number(...)` 可產生有限整數、有限非整數、正負無窮值或 NaN。對 LIMIT 應另外驗證結果為符合範圍的有限整數。"
+    },
+    {
+      "claim": "「基準版 Precision 9.09%、Recall 100.0%、F1 16.67%；最終版 Precision 50.0%、Recall 100.0%、F1 66.67%，誤報消除 90.0%。」",
+      "verdict": "correct",
+      "reasoning": "依給定計數，基準版 Precision 為 5/55，Recall 為 5/5，F1 為 10/(10+50+0)。最終版三項分別為 5/10、5/5 與 10/(10+5+0)。誤報依序由 50 減至 35、17、5，淨減 45/50。最終精準度為基準版的 5.5 倍。",
+      "correct_value": "基準版 9.09%、100.00%、16.67%。最終版 50.00%、100.00%、66.67%。誤報消除率 90.00%。"
+    },
+    {
+      "claim": "「NexusPay CodeQL 查詢精準度演進實測 (120 TS 檔案基準集)」",
+      "verdict": "imprecise",
+      "reasoning": "所給計數可以重算，但未提供 120 個檔案、漏洞標註、各版本原始結果或固定工具版本。另依文中的定義，基準只選取 `query`，最終查詢還納入其他方法，因此不能單靠展示的查詢歸因為同一批警報逐步扣除。",
+      "correct_value": "把表中數字稱為依所列計數推導的示例。要稱為實測或歸因各步的影響，需提供資料集、標註、各版查詢與原始結果。"
+    },
+    {
+      "claim": "「只需為該 DTO 驗證器補上一段領域專屬的 `isBarrier` 即可進一步逼近 `100%` Precision。」",
+      "verdict": "imprecise",
+      "reasoning": "若新增條件恰好移除剩下的 5 筆誤報並保留 5 筆真陽性，該資料集上的精準度確實為 5/5。但章內未提供 DTO 約束及各使用點的證據，無法確定該驗證器足以保證安全，也無法確認原真陽性全數保留。",
+      "correct_value": "在恰好消除 5 筆剩餘誤報並保留全部真陽性的條件下，該資料集的精準度與召回率皆為 100%。"
+    },
+    {
+      "claim": "「實測應只輸出一筆位於 `api/settlement.ts` `executeOrderQuery` 的命中結果（`TP = 1, FP = 0, FN = 0`，Precision = `100%`、Recall = `100%`）」",
+      "verdict": "imprecise",
+      "reasoning": "指定計數的兩項百分比皆為 1/1。所附材料只有預期輸出，沒有 SARIF 或執行紀錄。標為數值轉型安全對照的函式還直接把 `req.user.tenantId` 插入 SQL，所示查詢的來源定義未涵蓋該欄位，且章內未交代它的信任約束。",
+      "correct_value": "單筆命中與兩項 100% 指標屬於依標註給出的預期。數值轉型對照的安全判定須另處理 tenantId 字串插值。"
+    },
+    {
+      "claim": "「初版 F1 = 24 / 99 = 24.24%；新版 F1 = 30 / 36 = 83.33%；誤報消除率 = 66 / 72 = 91.67%。」",
+      "verdict": "correct",
+      "reasoning": "初版為 12 TP、72 FP、3 FN；新版為 15 TP、6 FP、0 FN。代入 F1 = 2TP/(2TP+FP+FN)，分別得到 24/99 與 30/36。誤報減少 72 − 6 = 66 筆，以原有 72 筆為分母。",
+      "correct_value": "初版 Precision 14.29%、Recall 80.00%、F1 24.24%。新版 Precision 71.43%、Recall 100.00%、F1 83.33%。誤報消除率 91.67%。"
+    },
+    {
+      "claim": "「`malloc(0)` 配置最小區塊後，`memcpy` 卻讀入無號的 `hdr->len`……造成毀滅性堆積溢位。」",
+      "verdict": "imprecise",
+      "reasoning": "基準表列的是配置器的最小 chunk 大小，無法據此推定零大小請求必然回傳可用物件。題目也未交代來源緩衝區大小或遠端入口的可達性，因此不能從片段推定固定的執行結果或遠端影響。",
+      "correct_value": "零大小配置可能回傳空指標或不得用於存取物件的指標。以這種結果執行非零長度複製會違反記憶體存取前提，具體後果與遠端可達性須另行驗證。"
+    },
+    {
+      "claim": "「靜態規則只證明『存在資料流路徑』，不代表『線上可被未授權攻擊者觸發』。」",
+      "verdict": "imprecise",
+      "reasoning": "靜態工具的命中是在其分析模型中找到一條路徑。近似的派發關係或分支可行性可能讓模型包含實際無法走通的路徑，所以連實際資料流是否存在也需查核。",
+      "correct_value": "命中表示分析模型找到候選路徑。是否有可行的執行路徑及是否能從未授權入口到達，皆須另行驗證。"
+    },
+    {
+      "claim": "「開源單機版 Semgrep 的 `mode: taint` 預設是單檔案、程序內運作。」",
+      "verdict": "imprecise",
+      "reasoning": "提供的來源摘錄支持 Semgrep 用於輕量語法樹比對，也支持 CodeQL 用於跨檔案語意資料流。但沒有 Semgrep 版本、引擎選項或文件段落可確認 OSS 的完整能力邊界。",
+      "correct_value": "所附證據支持兩者的高階定位。OSS 特定版本與設定的分析範圍仍需版本化文件或實測確認。"
+    },
+    {
+      "claim": "「現代 CodeQL（`DataFlow::ConfigSig` 模組簽章架構，已全面取代舊版繼承式 `TaintTracking::Configuration` 類別）」、「CodeQL 預設會攔截真實編譯器呼叫」。",
+      "verdict": "imprecise",
+      "reasoning": "來源摘錄只支持 CodeQL 用於全域污點追蹤，沒有提供版本、遷移紀錄、各語言的抽取模式或 CLI 預設值。章內列出的命令和延伸閱讀標題不能獨立證明這些歷史與預設行為。",
+      "correct_value": "本章範例採用 `DataFlow::ConfigSig`，C 範例明確指定建置命令。舊介面支援情況與預設模式須限定到具體 CLI 和查詢包版本。"
+    },
+    {
+      "claim": "「CodeQL 引擎……計算出每一條從 `Source`……抵達 `Sink`……的路徑，並透過 `PathGraph` 輸出完整逐行跳轉軌跡。」",
+      "verdict": "incorrect",
+      "reasoning": "所示查詢選取的是來源與匯點，未將每條可能路徑的節點序列當成獨立結果。遞迴不動點可建立可達關係，但同一對端點可有多條路徑，存在迴圈時還可有任意多種走法。",
+      "correct_value": "查詢判斷分析模型內的來源與匯點是否可達，並提供用於解釋命中的路徑資訊。"
+    },
+    {
+      "claim": "「同步提交一條高精度規則進 CI/CD，等於把一次性人工修復轉化為全組織永久生效的不變量檢查，阻斷同類漏洞在未來 PR 中回流。」",
+      "verdict": "incorrect",
+      "reasoning": "高精準度表示命中結果中真陽性占比高，單靠這項指標無法推得召回率。規則能否持續阻斷回歸也取決於受檢專案、執行設定、規則涵蓋範圍與例外配置。",
+      "correct_value": "規則在持續執行且具有阻斷效力的範圍內，可攔截其涵蓋的回歸樣態。"
+    },
+    {
+      "claim": "「C 程式碼，在 Debug 建置安全，在 Release 建置（`-DNDEBUG`）卻會被預處理器整行蒸發。」",
+      "verdict": "imprecise",
+      "reasoning": "啟用的斷言只能在執行到斷言且條件為假時中止程式，無法由此推得整個 Debug 建置安全。原文描述的檢查差異取決於是否定義 `NDEBUG`，而非建置名稱。",
+      "correct_value": "定義 `NDEBUG` 會停用標準 `assert` 的條件檢查。外部輸入的必要驗證應由會依建置需求持續執行的程式邏輯承擔。"
+    },
+    {
+      "claim": "「改以 Rust 安全切片與 `checked_add`……將『長度溢位』從執行時期隱患收斂為型別系統與編譯期檢查的一部分。」",
+      "verdict": "incorrect",
+      "reasoning": "長度來自外部輸入，其具體值在執行時才知道。`checked_add` 的介面使溢位可由回傳結果表達，溢位判斷仍然發生於執行時。切片索引的邊界也可能需要執行時檢查。",
+      "correct_value": "以回傳型別表達溢位，讓程式明確處理失敗。由 `checked_add` 和安全切片在需要時執行算術與範圍檢查。"
+    },
+    {
+      "claim": "「幾分鐘內就能橫向掃描數百個公開 GitHub 儲存庫」、「幾十萬行程式碼通常在數十秒內掃描完成」、「在 2 分鐘內初篩出……8 個候選專案」。",
+      "verdict": "imprecise",
+      "reasoning": "基準表和來源摘錄均未提供這些數字的機器配置、掃描範圍、規則組、快取狀態、測試資料或時間紀錄，無從判定為實測或一般可達表現。",
+      "correct_value": "將時間與候選數標示為情境假設。若要主張實測效能，應附上測試條件、計時口徑與結果。"
+    },
+    {
+      "claim": "「NIST SARIF（Static Analysis Results Interchange Format）v2.1.0 規範」。",
+      "verdict": "imprecise",
+      "reasoning": "章內標題歸給 NIST，連結則指向 OASIS 網域。提供的來源摘錄沒有規範封面或發布機構資料，無法由材料確認 NIST 歸屬。",
+      "correct_value": "可先標作《SARIF v2.1.0 規範》，並保留章內的 OASIS 文件連結。發布機構以規範封面核實。"
+    }
+  ]
+}

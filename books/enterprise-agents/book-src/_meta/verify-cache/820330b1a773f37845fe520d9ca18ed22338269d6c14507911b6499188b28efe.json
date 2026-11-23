@@ -1,0 +1,84 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "Token Bucket 補充速率設為租戶配額的 90%，例如 2,400 RPM 配額對應 36 calls/s",
+      "verdict": "correct",
+      "reasoning": "2,400 RPM ÷ 60 = 40 calls/s，乘以 0.9 等於 36 calls/s。burst = 54 等於 1.5 秒的補充量。這是設計選擇，本身沒有矛盾。",
+      "correct_value": "36 calls/s（名目配額 40 calls/s）"
+    },
+    {
+      "claim": "base_delay_ms = 500ms 時，前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s",
+      "verdict": "correct",
+      "reasoning": "依公式 min(30000, 500 × 2^(attempt−1))，attempt 1 到 4 分別得 500、1000、2000、4000 ms，加總 7,500 ms，四個值都沒有碰到 30s 上限。",
+      "correct_value": "0.5 / 1 / 2 / 4 s，合計 7.5 s"
+    },
+    {
+      "claim": "唯讀工具單次 timeout 5s，重試 2 次，總預算 5s × 3 = 15s（未計退避）",
+      "verdict": "correct",
+      "reasoning": "首次呼叫加 2 次重試共 3 次，3 × 5s = 15s。",
+      "correct_value": "15 s"
+    },
+    {
+      "claim": "OrderOps 平均 0.5787 req/s，尖峰約 20.7×",
+      "verdict": "correct",
+      "reasoning": "50,000 ÷ 86,400 = 0.5787 req/s，12 ÷ 0.5787 = 20.74。基準表寫的「平均 0.58 req/s、尖峰 20×」是四捨五入後的概數，章內 20.7× 比較精確，兩者不衝突。",
+      "correct_value": "0.5787 req/s；約 20.7×（基準表概略值為 20×）"
+    },
+    {
+      "claim": "尖峰 API 呼叫率 = 12 req/s × 5 calls/req = 60 calls/s = 3,600 RPM",
+      "verdict": "correct",
+      "reasoning": "12 × 5 = 60 calls/s，60 × 60 = 3,600 RPM。章內已註明前提是五回合完全重疊、未計重試，屬於上限估算。",
+      "correct_value": "60 calls/s；3,600 RPM"
+    },
+    {
+      "claim": "按名目配額 40 calls/s，尖峰 30 秒累積 600 個 API 呼叫；尖峰後平均流量 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空",
+      "verdict": "correct",
+      "reasoning": "超額 (60 − 40) × 30 = 600。尖峰後流量 0.5787 × 5 = 2.894 calls/s，餘裕 40 − 2.894 = 37.106，600 ÷ 37.106 = 16.17 秒。",
+      "correct_value": "600 個；約 16.2 秒"
+    },
+    {
+      "claim": "按 90% 限流（36 calls/s）累積 720 個；扣除 burst 54 後剩 666 個，約 20.1 秒排空；沒有初始額度時約 21.8 秒",
+      "verdict": "correct",
+      "reasoning": "(60 − 36) × 30 = 720，720 − 54 = 666。排空餘裕 36 − 2.894 = 33.106，666 ÷ 33.106 = 20.12 秒，720 ÷ 33.106 = 21.75 秒。",
+      "correct_value": "720 / 666 個；20.1 s / 21.8 s"
+    },
+    {
+      "claim": "挑戰題：20 req/s × 5 = 100 calls/s，配額 3,600 RPM，45 秒累積 1,800 個（約 37.5s 抵達 1,500 告警線）；90% 限流下積壓 2,070 個",
+      "verdict": "correct",
+      "reasoning": "3,600 RPM = 60 calls/s，超額 40 calls/s，40 × 45 = 1,800，1,500 ÷ 40 = 37.5 s。90% 限流為 54 calls/s，(100 − 54) × 45 = 2,070。",
+      "correct_value": "1,800 個（37.5 s 抵達 1,500）；2,070 個"
+    },
+    {
+      "claim": "Batch API 提供 50% 折扣，Sonnet 5.5 降為 $1.00 / $5.00 per MTok",
+      "verdict": "correct",
+      "reasoning": "基準表與 source-evidence 都記載輸入與輸出同步半價，$2.00 / $10.00 × 0.5 = $1.00 / $5.00。",
+      "correct_value": "$1.00 / $5.00 per MTok"
+    },
+    {
+      "claim": "範例第一輪寫入 llm_turn、tool_call、hitl_pause 共 3 筆事件，核准後累積 6 筆，最終狀態為 completed",
+      "verdict": "correct",
+      "reasoning": "依章內流程，第一輪寫入 3 筆；核准後再寫入 hitl_resume、tool_call、completed 共 3 筆，合計 6 筆。$300 大於 $250 上限、小於 $340 訂單總額，觸發 HITL 的條件成立。不過實際程式輸出未經執行，這裡只確認敘述內部一致。",
+      "correct_value": "3 → 6 筆（敘述內部一致）"
+    },
+    {
+      "claim": "Silent Cache Miss 告警條件：cache_creation_input_tokens > 0 且 attempt > 1",
+      "verdict": "imprecise",
+      "reasoning": "如果前一次嘗試是在處理前就被拒絕（例如 429，或 529 過載），快取根本還沒寫入，重試時正當地寫入快取也會觸發這條告警，造成誤報。此外，快取已因 TTL 過期，或前綴低於最低可快取長度時（source-evidence 指出低於門檻會默默不生效），也會出現同樣的觀測值。",
+      "correct_value": "限定為「前一次嘗試已回報 cache_creation 或 cache_read > 0，或前一次已收到 200」且 prefix hash 相同、仍在 TTL 內，重試才出現 cache_read_input_tokens = 0 時告警；被拒絕的嘗試不應納入判斷基準。"
+    },
+    {
+      "claim": "熔斷器：滑動視窗 60s 內「連續」發生 failure_threshold = 5 次 529 或 5xx 即切為 OPEN",
+      "verdict": "imprecise",
+      "reasoning": "「連續 N 次」與「滑動視窗內累計 N 次」是兩種不同的觸發語意：中間夾一次成功時，前者會歸零，後者不會。章內把兩者混在一起，實作者可能做出不同的行為。",
+      "correct_value": "明確擇一，例如「60s 滑動視窗內累計 ≥ 5 次 529/5xx」或「連續 5 次失敗（不限時間窗）」。"
+    },
+    {
+      "claim": "LLM API 錯誤語意：429 rate_limit_error 帶 retry-after、支出上限型 429 可能沒有 retry-after、529 overloaded_error、413 request_too_large 屬於不可重試錯誤",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只涵蓋價格、快取、SDK 與 MCP，沒有記載 HTTP 錯誤碼、錯誤類型或 retry-after 行為。章內雖已加註「依官方文件為準」，但這些具體主張無法用現有證據判定，閉卷也不能代替查證。",
+      "correct_value": "需對照官方 Errors 與 Rate Limits 文件，逐一確認錯誤碼列舉、支出上限型 429 的標頭行為，以及 anthropic-ratelimit-* 標頭名稱。"
+    }
+  ]
+}

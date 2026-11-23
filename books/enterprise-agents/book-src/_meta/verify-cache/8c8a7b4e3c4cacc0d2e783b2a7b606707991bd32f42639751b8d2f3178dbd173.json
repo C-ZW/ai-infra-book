@@ -1,0 +1,54 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "5 回合未優化基準累計 42,000 input / 1,750 output，單筆 $0.1015。",
+      "verdict": "correct",
+      "reasoning": "依章內基準，5 回合輸入分別為 6,000、7,200、8,400、9,600、10,800 tokens，合計 42,000；輸出為 350 × 5 = 1,750 tokens。依 Sonnet 牌價計算，輸入成本為 42,000 × 2 / 1,000,000 = $0.084，輸出成本為 1,750 × 10 / 1,000,000 = $0.0175，合計 $0.1015。",
+      "correct_value": "42,000 input tokens、1,750 output tokens，單筆 $0.1015。"
+    },
+    {
+      "claim": "情境 A 的前綴快取寫入、新增輸入與輸出成本合計為 $0.060900。",
+      "verdict": "correct",
+      "reasoning": "依情境 A 的獨立假設，前綴寫入為 6,000 × 2 × 1.25 / 1,000,000 = $0.015；動態輸入為 1,200 × 2 / 1,000,000 = $0.0024；4,350 個輸出 tokens 為 4,350 × 10 / 1,000,000 = $0.0435。三者合計 $0.0609，其中 4,000 個 thinking tokens 的成本為 $0.04。",
+      "correct_value": "單回合 $0.060900，其中 thinking 為 $0.040000。"
+    },
+    {
+      "claim": "工具回傳由 8,000 裁至 600 tokens，後續 3 次重送可省 22,200 input tokens、$0.044400；含首次送入則省 29,600 tokens、$0.059200。",
+      "verdict": "correct",
+      "reasoning": "每次送入減少 8,000 − 600 = 7,400 tokens。在題設的未快取且未經 Compaction 移除條件下，後續三次共省 7,400 × 3 = 22,200 tokens，按每百萬 $2 為 $0.0444；再加首次送入則為 7,400 × 4 = 29,600 tokens，即 $0.0592。",
+      "correct_value": "後續重送節省 22,200 tokens、$0.044400；含首次送入節省 29,600 tokens、$0.059200。"
+    },
+    {
+      "claim": "自我檢核第 3 題：僅計後續 4 回合可每筆省 $0.036、每月省 $54,000；加計首次送入可每筆省 $0.045、每月省 $67,500。",
+      "verdict": "correct",
+      "reasoning": "每次減少 5,000 − 500 = 4,500 tokens。後續四次共省 18,000 tokens，按每百萬 $2 為 $0.036；每日 50,000 筆、30 天共 1,500,000 筆，節省 $54,000。含首次送入共五次，為 22,500 tokens、每筆 $0.045、每月 $67,500。此為題設的獨立大回傳情境，不能直接當成基準工作負載的實際節省。",
+      "correct_value": "依題設，後續重送每月省 $54,000；含首次送入每月省 $67,500。"
+    },
+    {
+      "claim": "OrderOps 的 3,600 與 6,000 tokens 前綴不論哪個門檻都已超過。",
+      "verdict": "imprecise",
+      "reasoning": "3,600 與 6,000 均超過章內舉例的 512 與 1,024 tokens 門檻；但提供的證據另列部分舊模型門檻為 4,096 tokens，3,600 未達該門檻。證據也未列出 Sonnet 5.5 的確切最低門檻，因此不能據此確認其 3,600-token 斷點必定可快取。",
+      "correct_value": "兩個前綴均超過所舉的 512 與 1,024 tokens 門檻；各模型實際門檻，包括 Sonnet 5.5，仍須另行確認。"
+    },
+    {
+      "claim": "把動態時間戳記放在 system 前段時，仍有效的 tools 斷點可命中，但從 system 斷點起會失配。",
+      "verdict": "correct",
+      "reasoning": "提供的證據指出前綴依 tools、system、messages 次序比對，較早區塊的變動會使其後斷點失效。因此，若 tools 前綴本身相同且其快取項目仍有效，system 內容改變不會破壞較早的 tools 斷點；包含變動內容的 system 斷點及後續斷點則不能沿用原先匹配。",
+      "correct_value": "在 tools 前綴相同且快取有效等條件成立時，tools 可命中；變動處及其後的斷點失配。"
+    },
+    {
+      "claim": "thinking 產生的 tokens 計入 API 回傳的 usage.output_tokens，因此只應在高難度或高風險工單開啟，不應全量預設開啟。",
+      "verdict": "imprecise",
+      "reasoning": "提供的證據列出輸出價格與 thinking 的使用方式，但未直接記載 usage.output_tokens 的計數口徑。即使按章內假設將 thinking 視為計費輸出，成本較高也不能單獨證明必須僅限高難度或高風險工單；決策還取決於品質改善、錯誤損失與任務評測。",
+      "correct_value": "應確認所用模型的 thinking 計費與 usage 欄位口徑，並依任務品質、風險、延遲及成本評測決定啟用範圍。"
+    },
+    {
+      "claim": "在 tool_use 迴圈中，必須原封不動保留 thinking／redacted_thinking block（包含其中的 signature 欄位），並將所有對應的 tool_result 放在緊接的 user 訊息開頭。",
+      "verdict": "imprecise",
+      "reasoning": "提供的證據支持在多回合工具迴圈中保留先前 assistant thinking blocks 及其簽章，但未具體說明 redacted_thinking 的欄位結構，也未提供 tool_result 必須位於緊接 user 訊息開頭的規則，無法獨立核實這些細節。",
+      "correct_value": "工具迴圈中應依所用 API 的規格保留先前 assistant thinking blocks 及其簽章；redacted_thinking 與 tool_result 的具體格式及排序須另行查證。"
+    }
+  ]
+}

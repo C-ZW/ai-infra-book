@@ -1,0 +1,236 @@
+{
+  "chapter": "ch31-real-world-oss-fuzzing.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "AFL++ 的 `65,536 bytes`（`64 KiB`）邊緣覆蓋率位圖、Persistent Mode 的 `5,000 exec/s` 吞吐基準。",
+      "verdict": "correct",
+      "reasoning": "基準表列出 65,536 bytes 與單核 Persistent Mode 的 5,000 exec/s。以 1 KiB = 1,024 bytes 換算，65,536 ÷ 1,024 = 64。",
+      "correct_value": "全書基準為 64 KiB 覆蓋率位圖及單核 5,000 exec/s。"
+    },
+    {
+      "claim": "在我們前兩章設計的單檔實驗目標上，從編譯到抓出首次 Crash 只需幾分鐘。",
+      "verdict": "imprecise",
+      "reasoning": "吞吐量只能將執行次數換算為時間。材料缺少前兩章的編譯耗時、首次崩潰紀錄及執行條件，無法核對端到端時間。",
+      "correct_value": "補上指定組態的編譯與首次崩潰紀錄，並把耗時限定為該次實驗的觀測結果。"
+    },
+    {
+      "claim": "`libnexus-parse`（`8 bytes` 檔頭與 `65,536 bytes` 合法負載上限）。",
+      "verdict": "correct",
+      "reasoning": "基準表定義檔頭由 2、2、4 bytes 的欄位組成，合計 8 bytes，並獨立規定負載上限為 65,536 bytes。若計入檔頭，完整封包上限為 65,544 bytes。",
+      "correct_value": "檔頭 8 bytes，負載最多 65,536 bytes，完整封包最多 65,544 bytes。"
+    },
+    {
+      "claim": "「沒有已知 CVE」並不等同於「已經通過高覆蓋模糊測試驗證」——許多時候只是尚未有人針對其解析邊界接入持續模糊測試。",
+      "verdict": "imprecise",
+      "reasoning": "CVE 查詢結果無法推出測試是否存在或其覆蓋程度，因此前半句成立。後半句把缺乏持續測試描述為常見原因，材料沒有提供樣本或比例。",
+      "correct_value": "查無已知 CVE 時，仍須以測試組態、目標 API 與覆蓋率報告確認實際驗證範圍。"
+    },
+    {
+      "claim": "一旦存在可由外部輸入觸達的堆積越界寫入或 UAF，攻擊者往往能針對同樣暴露該解析路徑且未修補的下游服務重用漏洞原語。",
+      "verdict": "imprecise",
+      "reasoning": "多個服務使用同一受影響元件，確實可能同時暴露於同一缺陷。但可達性與未修補只能建立部分前提。材料缺少下游組態與實測，無法推論同一缺陷在不同部署上的實際影響或重用頻率。",
+      "correct_value": "下游使用受影響版本且實際暴露相同路徑時，可能繼承該缺陷。影響程度須依各部署確認。"
+    },
+    {
+      "claim": "許多熱門開源專案雖然名義上「已經接入 OSS-Fuzz」，但維護者寫的 Harness 往往只呼叫最陽春的預設 API，導致非預設旗標長期處於 `0%` 覆蓋率狀態。",
+      "verdict": "imprecise",
+      "reasoning": "固定參數確實可能使只在特定旗標下執行的分支無法透過該 Harness 觸達。所附證據支持 OSS-Fuzz 的用途，但沒有專案樣本、跨 Harness 覆蓋率或長期紀錄來支持普遍性。",
+      "correct_value": "接入 OSS-Fuzz 只代表有測試整合。特定非預設路徑是否未覆蓋，須按專案、建置組態及測試目標核對。"
+    },
+    {
+      "claim": "若缺乏獨立配額與逾時隔離，少數惡意請求就可能長時間佔用工作行程並拖垮服務可用性。",
+      "verdict": "correct",
+      "reasoning": "每個請求若能長時間持有有限的工作行程，持有數量達到可用容量時，其他請求就可能排隊或失敗。章節使用「可能」，沒有從基準的 2,000 req/s 推出一個固定的失效請求數。",
+      "correct_value": "資源消耗可使服務失去可用性，實際門檻取決於工作行程數、每次請求的成本，以及配額與逾時行為。"
+    },
+    {
+      "claim": "C/C++ 缺少語言級邊界檢查，任意指標偏移或整數溢位直接轉化為記憶體損毀。",
+      "verdict": "incorrect",
+      "reasoning": "整數溢位或錯誤偏移可以只產生錯誤數值，也可能因額外檢查而在記憶體存取前被拒絕。若錯誤數值影響配置大小、索引或拷貝長度，才可能進一步造成越界存取等後果。",
+      "correct_value": "C/C++ 原生指標與陣列操作通常缺少自動邊界檢查。錯誤偏移或整數溢位若影響後續記憶體操作，可能造成記憶體安全缺陷。"
+    },
+    {
+      "claim": "公開函式覆蓋率偏低（如 `< 30%`）屬於高勝率訊號，已有 10+ 個精細 Harness 且長期行覆蓋率極高（如 `> 80%`）則屬於低勝率訊號。",
+      "verdict": "imprecise",
+      "reasoning": "公開函式覆蓋率、行覆蓋率及 Harness 數量使用不同分母或計數方式。即使接受章節已列出的經驗門檻，材料仍缺少可證明這些門檻與實際發現率相連的比較資料。",
+      "correct_value": "將這些數字視為示例。審查特定依賴時，應依實際部署組態檢查相關 API、旗標和分支的覆蓋情況。"
+    },
+    {
+      "claim": "單次耗時 100 ms 時僅剩 `10 exec/s`；平均每次執行耗時 `50 ms` 時為 `20 exec/s`。",
+      "verdict": "correct",
+      "reasoning": "以單路序列執行、所列耗時包含每次完整處理成本為前提，吞吐量是單次耗時的倒數。1 ÷ 0.100 = 10，1 ÷ 0.050 = 20。",
+      "correct_value": "100 ms 對應 10 exec/s，50 ms 對應 20 exec/s。"
+    },
+    {
+      "claim": "在改寫建置腳本時，必須遵守三條硬性原則：強制靜態建置受測庫與關閉測試。",
+      "verdict": "incorrect",
+      "reasoning": "章內提出的兩個問題來自受測程式碼缺少插樁。靜態封存檔可以沒有任何插樁，動態函式庫也可以使用相容的插樁組態。關閉無關測試可以縮短建置時間，但與受測庫是否有插樁是兩個獨立條件。",
+      "correct_value": "確認受測庫及相關相依元件有匹配的插樁與執行期配置。依平台與專案要求選擇鏈結方式，並視建置需求關閉無關測試。"
+    },
+    {
+      "claim": "發生在該未插樁函式庫內部的越界讀寫將因缺少編譯期檢查探針而漏檢。",
+      "verdict": "incorrect",
+      "reasoning": "缺少 ASan 編譯期插樁意味著直接存取不會經由該處的插樁檢查。若操作經過 ASan 攔截的函式，或後續觸發其他可觀察的錯誤，仍可能收到診斷。",
+      "correct_value": "未插樁的受測程式碼會形成 ASan 檢測缺口。直接越界存取可能漏檢，部分錯誤仍可能由攔截器或後續檢查發現。"
+    },
+    {
+      "claim": "`-fsanitize=fuzzer` 會連結自帶 `main()` 的模糊引擎，可能與專案自帶 `main()` 的輔助程式衝突；`-fsanitize=fuzzer-no-link` 則保留插樁並延後引擎鏈結。",
+      "verdict": "correct",
+      "reasoning": "按章內的兩階段模型，程式庫編譯只需產生具探針的物件。若輔助執行檔的鏈結同時取得兩個全域 `main()` 定義，便會出現重複定義。最後只為專用 Fuzzer 執行檔提供引擎入口，可以避開這個衝突。",
+      "correct_value": "將受測碼插樁與模糊引擎入口分成兩個階段。重複 `main()` 的判斷適用於實際同時鏈入兩個定義的目標。"
+    },
+    {
+      "claim": "`$LIB_FUZZING_ENGINE` 在 libFuzzer 模式下等同 `-fsanitize=fuzzer`，在 AFL++ 模式下則對應 `libAFLDriver.a`。",
+      "verdict": "imprecise",
+      "reasoning": "由章內契約可知該變數提供所選引擎的鏈結參數。所附證據未提供指定 OSS-Fuzz 版本在各引擎與 Sanitizer 矩陣下設定此變數的內容，無法核對具體旗標或封存檔名稱。",
+      "correct_value": "將 `$LIB_FUZZING_ENGINE` 描述為環境提供的引擎鏈結參數。具體展開值以選定版本與建置矩陣為準。"
+    },
+    {
+      "claim": "猜中 32-bit 精確值平均需 `2^32 ≈ 4.29 × 10^9` 次嘗試。",
+      "verdict": "imprecise",
+      "reasoning": "若每次獨立、均勻地從 2^32 個值抽樣，單次成功機率為 2^-32，幾何分布的期望確為 2^32。若均勻不放回，平均位置為 (2^32 + 1) ÷ 2。章節沒有在這句交代抽樣模型。",
+      "correct_value": "每次獨立、均勻且可重複猜測 32-bit 精確值時，平均需要 4,294,967,296 次。"
+    },
+    {
+      "claim": "標準做法是透過 `cargo fuzz build -O` 編譯目標執行檔，再從 `fuzz/target/<triple>/release/<target_name>` 複製進 `$OUT/`。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據支持 cargo-fuzz 與 libFuzzer 的搭配，未記載 `-O` 的版本語義、Cargo 工作區的輸出目錄，或對所有 Rust 相依元件套用的旗標。",
+      "correct_value": "指定 cargo-fuzz 版本、目標架構與 Cargo 輸出設定，再依該組態的實際產物路徑複製執行檔。"
+    },
+    {
+      "claim": "當 `llvm-cov` 顯示覆蓋率停滯在 `15%–25%` 之間時，原因通常集中在輸入維度單一、語法關鍵字與魔數牆、單向路徑鎖死三種瓶頸。",
+      "verdict": "imprecise",
+      "reasoning": "總覆蓋率只反映指定分母中有多少項目已執行。同樣是 20%，可能來自不同的建置、測試範圍或輸入路徑。章內例子能說明三種可能原因，無法建立該百分比區間與這三種原因的普遍關聯。",
+      "correct_value": "低覆蓋率可作為診斷起點。應對照未覆蓋區段、呼叫路徑與輸入條件判定瓶頸。"
+    },
+    {
+      "claim": "在單核 `5,000 exec/s` 下各自跑滿 2 小時（`36,000,000` 次執行）。",
+      "verdict": "correct",
+      "reasoning": "2 小時等於 7,200 秒。若每階段都維持基準吞吐量，7,200 × 5,000 = 36,000,000。",
+      "correct_value": "在題定固定吞吐量下，每階段 36,000,000 次執行。"
+    },
+    {
+      "claim": "示例三階段的總行覆蓋率分別為 `18.00%`、`39.00%`、`63.00%`，總區域覆蓋率分別為 `17.61%`、`39.20%`、`63.64%`。",
+      "verdict": "correct",
+      "reasoning": "逐模組加總後，三階段未覆蓋行數為 1,476、1,098、666，從 1,800 扣除後為 324、702、1,134 行。未覆蓋區域分別為 725、535、320，從 880 扣除後為 155、345、560 個區域。以各自的分母重算，三階段各模組的百分比及總計均與表中精度一致。",
+      "correct_value": "行覆蓋率為 18.00%、39.00%、63.00%。區域覆蓋率為 17.61%、39.20%、63.64%。"
+    },
+    {
+      "claim": "總行覆蓋率由 18.00% (+378 行) 提升至 39.00%（702 / 1800 行）；最終較 Phase 0 提升 +45.00 個百分點，有效覆蓋行數擴增為 3.5 倍。",
+      "verdict": "correct",
+      "reasoning": "Phase 1 比 Phase 0 多覆蓋 702 − 324 = 378 行。Phase 2 比 Phase 0 多覆蓋 1,134 − 324 = 810 行，覆蓋率增加 810 ÷ 1,800 = 45 個百分點，最終覆蓋行數是 1,134 ÷ 324 = 3.5 倍。",
+      "correct_value": "Phase 1 新增 378 行。Phase 2 較 Phase 0 新增 810 行、提高 45.00 個百分點，最終覆蓋行數是原來的 3.5 倍。"
+    },
+    {
+      "claim": "診斷瓶頸：`parser.c`（16.00%）缺乏多字節語法關鍵字與數字邊界 token，卡在基礎型別判斷。",
+      "verdict": "imprecise",
+      "reasoning": "16.00% 只表示 750 行中覆蓋了 120 行。分階段同時變更控制參數、序列化路徑、字典與種子，總表無法確認特定分支的停滯原因，也無法分出每項變更的貢獻。",
+      "correct_value": "將缺少語法詞元列為示例中的診斷假設。若要歸因，須核對分支層級的覆蓋率並比較個別變更。"
+    },
+    {
+      "claim": "Phase 1：導入 FuzzedDataProvider 拆分 2 bytes 控制參數 + 往返序列化。",
+      "verdict": "imprecise",
+      "reasoning": "示例只描述解析後呼叫 `write()`。參考 Harness 也只將文件寫出後釋放輸出，沒有再解析輸出或比較等價性。這些動作足以涵蓋讀取與寫出兩條路徑，但未展示完整往返驗證。",
+      "correct_value": "稱為「解析後序列化」或「讀取與寫出路徑覆蓋」。若要稱為往返驗證，應交代重新解析與比較準則。"
+    },
+    {
+      "claim": "ClusterFuzz 與 OSS-Fuzz 採用基於呼叫堆疊簽章的自動化去重模型，預設擷取 Top-3 專案框架，以不可逆雜湊將同一 Hash 合併為單一 Issue。",
+      "verdict": "imprecise",
+      "reasoning": "章節清楚定義了一個可供推導的 Top-3 模型，但所附來源摘要未記載實際產品版本的解析規則、比對欄位、預設框架數或追蹤單合併條件。分桶結果本身也無法證明根因相同。",
+      "correct_value": "將圖示標明為教學用 Top-3 簽章分桶模型。若要描述實際部署，須補上版本、程式位置與適用組態。"
+    },
+    {
+      "claim": "自我檢核的報告 A 與 B 合併，報告 C 獨立，共 `2` 個 Issue。",
+      "verdict": "correct",
+      "reasoning": "依題定規則過濾框架與移除行號後，三份報告皆保留 `copy_field | parse_tlv | parse_batch`。A、B 都是 `heap-buffer-overflow`，C 是 `heap-use-after-free`，故得到兩個不同的 Crash State。",
+      "correct_value": "模型下有兩個簽章分桶。A、B 為 `heap-buffer-overflow | copy_field | parse_tlv | parse_batch`，C 為 `heap-use-after-free | copy_field | parse_tlv | parse_batch`。"
+    },
+    {
+      "claim": "高比例的假陽性其實是 Fuzzer Harness 自己寫錯導致的。",
+      "verdict": "imprecise",
+      "reasoning": "Harness 違反 API 前置條件，確實可能造成無法歸責於受測庫的崩潰。但材料未定義「高比例」，也沒有報告數、分類標準或統計期間。",
+      "correct_value": "Harness 錯誤是須排查的來源之一。應以具體 API 契約與崩潰條件判斷歸責。"
+    },
+    {
+      "claim": "`YYJSON_READ_INSITU` 就地解析模式要求傳入可寫緩衝區，且尾端必須額外預留 `YYJSON_PADDING_SIZE` 位元組——如 `4 bytes`——的零填充空間。",
+      "verdict": "imprecise",
+      "reasoning": "參考程式碼使用 `YYJSON_PADDING_SIZE` 配置額外空間並自行清零，但這只能證明範例的處理方式。所附證據沒有 yyjson 0.10.0 的標頭或契約摘錄，無法分別確認常數數值及填充內容是否必須為零。",
+      "correct_value": "以指定版本標頭所定義的 `YYJSON_PADDING_SIZE` 及其記憶體契約為準。在引用契約前，可將清零描述為範例的初始化方式。"
+    },
+    {
+      "claim": "在啟用 ASan 的插樁建置下，該輸入緩衝區後方通常緊鄰 ASan 紅區，只要越過 `size` 多讀 1 byte 就會觸發 ASan 越界告警。",
+      "verdict": "incorrect",
+      "reasoning": "`size` 是 API 提供的邏輯長度。只憑指標與長度無法推知 `data + size` 是否進入 ASan 標記的紅區。從較大且仍可存取的配置區塊讀出一個超過邏輯長度的位元組，仍可能沒有 ASan 告警。",
+      "correct_value": "讀取 `size` 之外的資料已超出 API 契約。ASan 是否告警取決於實際位置是否被標記為不可存取，以及讀取是否經過檢查。"
+    },
+    {
+      "claim": "若要主張該 Crash 在正式生產組態下可被觸發，回報前應在未定義該巨集的標準 Release + ASan 環境中測試重現確認。",
+      "verdict": "imprecise",
+      "reasoning": "移除測試專用巨集有助於檢查路徑是否依賴替代條件。Release + ASan 仍帶有診斷插樁，其配置與執行環境可能和部署版本不同，因此結果直接支持的是該驗證組態。",
+      "correct_value": "報告應列出已確認的組態，並依實際部署的前置條件限定生產影響。"
+    },
+    {
+      "claim": "OSS-Fuzz 與 ClusterFuzzLite 可分別提供持續模糊測試及 PR 閘門。",
+      "verdict": "correct",
+      "reasoning": "所附外部證據明列 OSS-Fuzz 的大規模持續模糊測試用途與 ClusterFuzzLite 的 PR 閘門用途。這足以支持角色區分，實際是否阻止合併仍取決於專案是否把該檢查設為必要狀態。",
+      "correct_value": "OSS-Fuzz 提供集中式持續模糊測試。ClusterFuzzLite 可在專案 CI 中執行 PR 檢查，並由儲存庫的合併規則將其設為閘門。"
+    },
+    {
+      "claim": "`build.sh` 在容器建置期由基底環境執行。",
+      "verdict": "incorrect",
+      "reasoning": "依章內自己的流程，`build_image` 建置映像，`build_fuzzers` 才執行 `build.sh`。範例的 Dockerfile 只複製該腳本，並沒有在建置映像時執行它。",
+      "correct_value": "`Dockerfile` 建立測試映像並備妥 `build.sh`。建立 Fuzzer 產物的容器執行階段才呼叫 `build.sh`。"
+    },
+    {
+      "claim": "範例 `.github/workflows/cflite_pr.yml` 可在符合 `paths` 的 PR 上，以 `mode: 'pr'` 對每個受影響的 Fuzzer 執行 `600 秒` 回歸測試。",
+      "verdict": "imprecise",
+      "reasoning": "`paths` 篩選是否啟動工作流，範例未顯示如何識別各個受影響的 Fuzzer。工作流也未顯式 checkout，章內沒有證明所選 action 會自行準備 Dockerfile 要複製的原始碼。外部證據只支持 PR 整合用途，未核實 `@v1`、參數語義或 600 秒的分配範圍。",
+      "correct_value": "把片段標為待驗證的工作流範例。確認來源檔準備、action 版本與參數語義，再陳述目標選取、時間預算及合併條件。"
+    },
+    {
+      "claim": "放入小型合法種子至 `corpus_p2`（尾端附 4 bytes 供 `FuzzedDataProvider` 切分控制參數）。",
+      "verdict": "incorrect",
+      "reasoning": "依章內定義，整數和布林值從尾端消費。程式依序要求 `uint16_t` 的 2 bytes、`uint8_t` 的 1 byte 與兩個布林值各 1 byte，總共 5 bytes。所附 4 bytes 會先被消費，最後一次布林值消費會取走 JSON 的結尾 `}`，剩餘負載因而缺少右大括號。",
+      "correct_value": "目前的 Harness 使用 5 bytes 控制區。種子配置須與該欄位寬度一致，對應的最短非空負載輸入為 6 bytes。"
+    },
+    {
+      "claim": "建立 24 條字典檔 `harness/json.dict`。",
+      "verdict": "correct",
+      "reasoning": "忽略註解，可數得 6 個結構符號、3 個基本字面值、4 個非有限數字寫法、3 個註解符號、4 個跳脫詞元與 4 個數字邊界詞元，合計 24 條。",
+      "correct_value": "範例字典列出 24 條詞元。"
+    },
+    {
+      "claim": "對比兩份 `llvm-cov report` 輸出時，可觀察到 `fuzz_adv` 成功覆蓋了 `fuzz_p0` 完全未觸達的寫出與非預設旗標區塊。",
+      "verdict": "imprecise",
+      "reasoning": "程式碼可證明進階 Harness 預備了更多呼叫路徑，但路徑須由實際語料觸發，寫出也須先解析成功。材料未附 yyjson 的兩份報告或語料清單，前面的四模組覆蓋率表則是另一個示例。本章提供的唯一顯式種子還有控制區長度錯誤。",
+      "correct_value": "進階 Harness 提供觸達額外路徑的機會。應以實際重播報告確認覆蓋哪些區塊，再陳述增幅。"
+    },
+    {
+      "claim": "6-byte 精確比對在 `5,000 exec/s` 下，期望 `2^48` 次、`56,294,995,342` 秒，約 `1,785 年`；即使半數空間亦約 `892 年`。",
+      "verdict": "imprecise",
+      "reasoning": "每次獨立均勻抽取一組 6 bytes 時，命中機率為 256^-6 = 2^-48，期望為 281,474,976,710,656 次。除以 5,000 得 56,294,995,342.1312 秒，按 365 天一年約 1,785.10 年。均勻不放回時，精確期望是 (2^48 + 1) ÷ 2 次，約 892.55 年，四捨五入至整年為 893 年。",
+      "correct_value": "有放回約 1,785.10 年。不放回約 892.55 年，取最接近整年為 893 年。"
+    },
+    {
+      "claim": "6-byte 盲猜的預期耗時解釋了為何必須撰寫 `.dict` 字典檔；比對若包在非標準函式、雜湊表查找或編譯器最佳化後的控制流，TraceCmp 就無法自動推導。",
+      "verdict": "imprecise",
+      "reasoning": "盲猜的期望值只適用於題設抽樣模型。提供完整詞元可免去從均勻隨機位元組中湊齊詞元，但包含該詞元的種子也會改變此前提。比較回饋能否看見相關運算元，則取決於實際插樁與編譯產物，無法由函式分類直接推定。",
+      "correct_value": "字典是跨越精確字面值門檻的一種方法。實際效果取決於相關路徑、種子和可用回饋。"
+    },
+    {
+      "claim": "第 `4,121` 次輸入觸發 `SEGV` 但單筆重播正常，最可能是跨迭代全域狀態汙染，或未初始化記憶體與記憶體佈局依賴。",
+      "verdict": "imprecise",
+      "reasoning": "同一行程確實可能累積先前輸入留下的狀態，單筆重播也可能沒有原本的配置歷史。但題目只給一個重播結果，缺少序列、執行組態與重複觀測，無法排定原因的可能性。",
+      "correct_value": "這兩項是合理的待驗證假設。單筆重播成功只表示該次重播沒有觀察到崩潰。"
+    },
+    {
+      "claim": "以 `MemorySanitizer`（MSan）或 ASan 檢查是否存在未初始化記憶體讀取，並透過二分法刪減前置輸入序列。",
+      "verdict": "incorrect",
+      "reasoning": "MSan 追蹤未初始化值的使用。ASan 主要檢查位址可存取性與記憶體生命週期，可能發現未初始化值引起的後續違規，但無法通用地檢測未初始化讀取。序列縮減也可能遇到先後依賴，單純二分未必能定位或保留必要條件。",
+      "correct_value": "以 MSan 查核未初始化值，以 ASan 查核越界與生命週期問題。縮減有狀態的輸入序列時，應維持必要順序並驗證每次刪減後的觀測結果。"
+    }
+  ]
+}

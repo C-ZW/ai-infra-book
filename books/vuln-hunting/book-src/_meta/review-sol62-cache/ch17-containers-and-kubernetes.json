@@ -1,0 +1,164 @@
+{
+  "chapter": "ch17-containers-and-kubernetes.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "容器的隔離能力由四個獨立的核心機制拼裝而成，任何一環鬆動都會讓邊界產生破口。",
+      "verdict": "incorrect",
+      "reasoning": "這四種機制約束的對象不同。以 cgroups 為例，取消某項 CPU 配額會改變資源競爭條件，並不因此改變掛載視圖或檔案存取權限。從單一控制減弱無法推出隔離已被突破。",
+      "correct_value": "Namespaces、cgroups、Capabilities 與 seccomp 提供互補的控制。個別控制減弱的影響取決於受影響的資源、其他控制與部署配置。"
+    },
+    {
+      "claim": "當容器以非 `root` 使用者執行、移除多餘 Capabilities、未掛載宿主敏感路徑，且系統呼叫受到 `seccomp-bpf` 白名單約束時，行程無法看見或觸碰其他容器與宿主節點的資源，隔離邊界成立。",
+      "verdict": "incorrect",
+      "reasoning": "列出的條件沒有約束網路可達性，也沒有排除共享命名空間或其他共享資源。即使四項條件都成立，仍可能透過獲准的網路連線存取其他工作負載提供的服務。",
+      "correct_value": "這些措施可縮減容器的權限及核心攻擊面。跨工作負載與宿主的可達性還須依命名空間、網路政策、掛載與授權配置判定。"
+    },
+    {
+      "claim": "Linux 核心透過 8 種 Namespace 限制行程「能看見什麼」。",
+      "verdict": "correct",
+      "reasoning": "逐一計數章中列出的 `mnt`、`pid`、`net`、`ipc`、`uts`、`user`、`cgroup`、`time`，共八種。",
+      "correct_value": "章中所列的 Linux Namespace 類型共 8 種。"
+    },
+    {
+      "claim": "`ipc`、`uts`、`user`、`cgroup`、`time`：分別隔離行程間通訊、主機名稱、UID/GID 映射、cgroup 根目錄與系統時鐘。",
+      "verdict": "imprecise",
+      "reasoning": "「系統時鐘」未區分時鐘類型，容易讀成所有時鐘都有獨立視圖。cgroup namespace 的根目錄描述也應區分路徑視圖與資源控制層級。",
+      "correct_value": "cgroup namespace 虛擬化行程所見的 cgroup 路徑。time namespace 可為單調時鐘與開機時間時鐘提供偏移，`CLOCK_REALTIME` 維持共同的牆上時間。"
+    },
+    {
+      "claim": "`cgroups`（Control Groups）限制行程群組「能用多少資源」，例如 CPU 時間片、記憶體上限（以 `x86_64` 記憶體分頁大小 `4 KiB` 為基本計費與回收單位）與最大行程數（`pids.max`），主要防禦阻斷服務攻擊。",
+      "verdict": "imprecise",
+      "reasoning": "基準指定的基本頁大小為 4 KiB，換算為 4 × 1,024 = 4,096 bytes。基本頁大小本身無法推出所有記憶體計費或回收操作都以該大小為粒度。cgroups 也用於一般資源管理，限制單一群組耗盡資源是其安全效果之一。",
+      "correct_value": "本章模型採用 4 KiB 的 x86_64 基本頁。cgroups 可管理 CPU、記憶體及工作數量，實際計費與回收粒度依核心版本及記憶體類型而定。"
+    },
+    {
+      "claim": "當某個 cgroup 內的最後一個行程終止時，宿主機上的 Linux 核心會以 `root` 身分自動執行 `release_agent` 檔案內指定的宿主路徑程式。",
+      "verdict": "incorrect",
+      "reasoning": "章內已列出 `notify_on_release`，原句卻省略它，把最後一個行程終止寫成充分條件。群組是否已釋放也涉及子群組狀態。",
+      "correct_value": "cgroups v1 的 `release_agent` 是有條件的釋放通知機制。須啟用通知、配置代理程式，且群組符合釋放條件。"
+    },
+    {
+      "claim": "現代環境遷移至 `cgroups v2` 後已移除 `release_agent` 介面，從機制上消除了這條經典路徑。",
+      "verdict": "correct",
+      "reasoning": "章中描述的風險依賴 v1 的專有介面。純 v2 環境缺少該介面，因此無法形成同一條依賴鏈。若系統仍保留 v1 階層，該結論只適用於 v2 階層。",
+      "correct_value": "cgroups v2 沒有 v1 的 `release_agent` 介面。純 v2 部署排除了這個特定風險來源。"
+    },
+    {
+      "claim": "Linux Capabilities 則將特權拆分為 41 個獨立位元（bit `0` 至 `40`）；`CAP_SYS_ADMIN`（Bit 21，遮罩 `0x0000000000200000`）、`CAP_DAC_READ_SEARCH`（Bit 2，遮罩 `0x0000000000000004`）、`CAP_BPF`（Bit 39，遮罩 `0x0000008000000000`）。",
+      "verdict": "correct",
+      "reasoning": "在章中採用的位元範圍下，40 − 0 + 1 = 41。按單一位元遮罩的定義，2 的 21、2、39 次方分別為十六進位 `0x200000`、`0x4`、`0x8000000000`，與原值一致。",
+      "correct_value": "章中所列範圍包含 41 個位元，三個遮罩與各自標示的位元編號一致。"
+    },
+    {
+      "claim": "只要容器拿到 `CAP_SYS_ADMIN`，就能重新掛載 `cgroup` 觸發上述逃逸，或是掛載宿主裝置。",
+      "verdict": "incorrect",
+      "reasoning": "同章已指出相關機制另依賴 cgroups 版本與系統呼叫過濾。純 v2 環境是直接反例。單一 Capability 也無法保證宿主裝置可見或可存取。",
+      "correct_value": "`CAP_SYS_ADMIN` 會擴大可執行的管理操作。可執行範圍仍受 Capability 的命名空間、cgroups 版本、seccomp 與裝置存取政策約束。"
+    },
+    {
+      "claim": "在歷史著名的 `shocker` 逃逸中，攻擊者利用此權限呼叫 `open_by_handle_at(2)` 系統呼叫，直接透過檔案系統的 inode handle（`EXT4` 根目錄的 inode 固定為 `2`）繞過 `mnt` Namespace 限制，直接讀取宿主根目錄下的 `/etc/shadow` 或私鑰。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料摘錄沒有收錄該事件或檔案系統 handle 的文件。從已知 inode 編號也無法推導完整且有效的檔案 handle，或證明特定檔案曾遭讀取。",
+      "correct_value": "將 `shocker` 的歷史細節標為待查。機制描述應區分 inode 編號、有效的檔案 handle 與實際存取權限。"
+    },
+    {
+      "claim": "`CAP_BPF`：Linux 5.8 之後將 eBPF 相關權限從 `CAP_SYS_ADMIN` 獨立出來。若容器被授予 `CAP_BPF`（往往伴隨 `CAP_PERFMON`）且未受到嚴格的 eBPF Verifier 與路徑限制，攻擊者就能……直接側錄同節點上其他容器的系統呼叫參數、TLS 明文或檔案讀取內容。",
+      "verdict": "imprecise",
+      "reasoning": "史料摘錄支持 `CAP_BPF` 與 verifier 參與縮減攻擊面的概括說法，但未提供版本沿革或各類掛鉤的權限細節。可載入某類 BPF 程式也無法推出能觀測任意資料。以 TLS 為例，能否觀測到明文取決於觀測位置是否實際接觸明文。",
+      "correct_value": "`CAP_BPF` 是部分 eBPF 操作的權限之一。實際可觀測範圍取決於核心版本、程式類型、其他權限、附掛點及安全政策。版本起點需要具體史料支持。"
+    },
+    {
+      "claim": "containerd 與 Docker 預設套用的 `RuntimeDefault` seccomp 設定檔採白名單原則，明確阻擋約 40 多個高危系統呼叫（回傳 `EPERM`）。",
+      "verdict": "imprecise",
+      "reasoning": "材料沒有提供兩個執行時期的具體版本或設定檔。章中也指出部分規則依參數而定，因此只列系統呼叫名稱無法重算阻擋數量，或確認列出的呼叫在所有配置下都回傳 `EPERM`。",
+      "correct_value": "`RuntimeDefault` 由所用容器執行時期提供。若要主張特定呼叫會被拒絕、拒絕數量或回傳值，應標明版本、架構與適用條件。"
+    },
+    {
+      "claim": "Pod 的預設 `seccompProfile` 長期為 `Unconfined`（除非叢集啟用 `RuntimeDefault` 預設策略或 Pod Security Admission）。",
+      "verdict": "incorrect",
+      "reasoning": "章中的硬化範例分別設定 Namespace 的 PSA 標籤與 Pod 的 seccomp 欄位，反映兩者職責不同。PSA 可依政策拒絕不符要求的 Pod，並不替 Pod 填入 seccomp 設定。材料也不足以確認「長期」所涵蓋的版本區間。",
+      "correct_value": "省略 `seccompProfile` 時，實際預設取決於 kubelet 的 seccomp 預設設定。PSA 負責准入檢查，Pod 欄位仍可明確指定允許的設定檔。"
+    },
+    {
+      "claim": "`hostPID: true` 讓容器共享宿主的 PID Namespace，容器內的 `/proc/<host_pid>/root` 直接指向宿主上每一個執行中程序的根檔案系統；`/proc/<host_pid>/environ` 則暴露宿主程序的環境變數。",
+      "verdict": "imprecise",
+      "reasoning": "共享 PID 命名空間可以增加可見的行程範圍，讀取行程的根目錄連結或環境仍涉及另外的存取檢查。原句把可見性推成可讀性。",
+      "correct_value": "`hostPID` 使宿主行程可在共享的 PID 命名空間中被辨識。是否可讀取特定行程的 `/proc` 資訊，取決於憑證、核心存取檢查與安全政策。"
+    },
+    {
+      "claim": "在 Kubernetes 1.22 之後，系統改用 `TokenRequest` API 簽發有時效性（預設 `3600 s`）且綁定 Pod 物件的 Bound ServiceAccount Token，取代早期的永久靜態 Secret Token。",
+      "verdict": "imprecise",
+      "reasoning": "3,600 秒等於 60 分鐘，但提供的材料沒有版本史或 TokenRequest 設定可用來核實該數字適用於哪一層預設。章內關於 Token 輪替的推論只需要它有期限，無法推出所有實際發行的 Token 都具同一期限。",
+      "correct_value": "投射式 ServiceAccount Token 有期限且可綁定 Pod，由 kubelet 更新。版本沿革與一小時數值應分別標明來源、適用設定，以及描述的是請求期限或實際發行期限。"
+    },
+    {
+      "claim": "`secrets/get` 或 `list` 可直接讀取 Namespace 內所有靜態憑證、TLS 私鑰與資料庫密鑰。",
+      "verdict": "incorrect",
+      "reasoning": "`get` 的可讀集合取決於授權涵蓋的資源與名稱。允許讀取單一 Secret 的規則就足以反駁「所有」。由 Secret API 傳回的資料，也僅限於儲存在其授權範圍內的 Secret 物件。",
+      "correct_value": "這些權限可揭露授權範圍內的 Secret 內容。應檢查 Namespace、動詞與資源名稱限制，也要區分 Secret 物件與其他來源的憑證。"
+    },
+    {
+      "claim": "`bind` 動詞則允許建立 `RoleBinding` 或 `ClusterRoleBinding`，直接把叢集內既有的 `cluster-admin` ClusterRole 綁定到自己控制的 ServiceAccount 上。",
+      "verdict": "incorrect",
+      "reasoning": "綁定目標角色與建立綁定物件是兩項不同的授權判定。此外，章內 B1 與 B4 的對照已表明 Namespace 綁定與叢集級綁定的生效範圍不同。只看 `bind` 無法推出叢集級權限。",
+      "correct_value": "審計時應分別檢查目標角色的 `bind` 授權、綁定物件的操作授權，以及綁定的生效範圍。"
+    },
+    {
+      "claim": "以下權限圖完整推導如何從低權限的 `worker-sa` 透過 `pods/create` 完成 `Cluster-Admin` 提權的最短 3 步路徑。",
+      "verdict": "incorrect",
+      "reasoning": "逐一計數得到 5 個 ServiceAccount、3 條 RoleBinding 與 1 條 ClusterRoleBinding。B1 只授予 `nexuspay-prod` 的 Pod 權限，B4 只將叢集級權限授予 `cluster-admin-sa`。圖中沒有連接兩者的授權關係，也沒有證據顯示特定節點持有可用的叢集管理憑證。既未證明目標可達，就無法證明三步最短。",
+      "correct_value": "圖中可確認 5 個 ServiceAccount 與 4 條綁定，以及 `worker-sa` 的 Namespace 級 Pod 建立權。從 `worker-sa` 到 `cluster-admin` 的可達性及最短步數均無法由此圖判定。"
+    },
+    {
+      "claim": "條件檢查：nexuspay-prod 未套用 Pod Security Standards (Restricted) -> 可行！",
+      "verdict": "incorrect",
+      "reasoning": "缺少 Restricted 標籤只排除了一項特定設定，無法排除 Baseline、其他准入政策或平台限制，也無法證明工作負載可成功排程及啟動。",
+      "correct_value": "缺少 Restricted 標籤是應調查的配置訊號。是否允許特權屬性與宿主掛載，須依實際生效的准入政策及節點條件判定。"
+    },
+    {
+      "claim": "查詢：GET /apis/authorization.k8s.io/v1/selfsubjectrulesreviews；結果：確認具備 nexuspay-prod 內 pods/create (B1)，且無 PSS restricted 標籤阻擋。",
+      "verdict": "incorrect",
+      "reasoning": "權限規則審查是建立審查請求的操作，原文的 GET 與該介面語義不符。即使獲得有效的授權審查結果，所回答的也是授權問題，無法證明某個 Pod 會通過准入檢查。",
+      "correct_value": "將授權與准入分開查核。B1 支持 Namespace 內的 Pod 建立授權，實際 Pod 規格是否會獲准建立須另行判定。"
+    },
+    {
+      "claim": "只要 RBAC 允許 `pods/create`，而 API Server 准入控制又沒有禁止特權屬性或 `hostPath`，`Role` 即使寫得再小（只限單一 Namespace、只允許建 Pod），實質上仍等價於把整個底層節點與上層叢集的鑰匙交給攻擊者。",
+      "verdict": "incorrect",
+      "reasoning": "原句把 Pod 建立授權、節點影響與叢集控制合併為等價關係。即使假設節點已失陷，章中也沒有提供從該節點到叢集級身分或管理權限的必要前提。",
+      "correct_value": "Namespace 級 Pod 建立權在准入限制不足時可造成重大節點風險。叢集級影響須另依節點所持身分、憑證與 API 授權判定。"
+    },
+    {
+      "claim": "從 API Server 准入層直接拒絕任何帶有 `privileged`、`hostPath`、非 `RuntimeDefault` seccomp 或允許權限提升的 Pod 建立請求。",
+      "verdict": "incorrect",
+      "reasoning": "「非 RuntimeDefault」也涵蓋 `Localhost`。Restricted 允許適用的 `Localhost` seccomp 設定，章中防禦表也把它列為可用方式。原句另外把 `privileged` 欄位存在與其值為 `true` 混為一談。",
+      "correct_value": "對適用的 Linux Pod，Restricted 禁止 `privileged: true`、`hostPath` 與允許權限提升的設定，並接受符合要求的 `RuntimeDefault` 或 `Localhost` seccomp 設定。"
+    },
+    {
+      "claim": "以下為符合 **PSS Restricted** 與最小權限 RBAC 的 NexusPay 硬化配置基準。",
+      "verdict": "imprecise",
+      "reasoning": "範例的 Linux Pod 設定包含非 root、停用權限提升、移除 Capabilities 與 seccomp，並使用 `emptyDir`。但 YAML 只有 Namespace、ServiceAccount 與 Deployment，沒有 Role 或綁定的變更。若前文的 B1 已存在，套用此片段無法推出該授權已撤銷。",
+      "correct_value": "這段 YAML 是 Pod 與 ServiceAccount 的硬化範例。最小權限 RBAC 須另外核對現存綁定及撤銷結果。"
+    },
+    {
+      "claim": "`capabilities.drop: [\"ALL\"]` 只移除了需要特權 Capability 檢查的系統呼叫，但 Linux 核心仍有超過 300 個無須特權即可呼叫的系統呼叫介面。",
+      "verdict": "incorrect",
+      "reasoning": "移除的是行程持有的 Capability，系統呼叫入口仍存在。同一個系統呼叫可能依參數、目標物件或憑證而通過或拒絕，章內提到依 `clone` 旗標判斷便是例子。材料不足以重算「超過 300 個」。",
+      "correct_value": "移除 Capabilities 會使依賴這些權限的操作無法通過相關檢查。seccomp 可另外限制系統呼叫及其參數。精確數量須指定核心、架構與計數口徑。"
+    },
+    {
+      "claim": "只要目標 `Secret` 位於同一個 Namespace，擁有 `pods/create` 的攻擊者依然能建立一個完全符合 `restricted` 規範的非特權 Pod，將該 `Secret` 掛載進容器環境變數或檔案系統後透過 `kubectl logs` 讀出。",
+      "verdict": "incorrect",
+      "reasoning": "Restricted 與 Secret 引用授權是不同的控制，章中指出的間接暴露風險成立。但讀取 Pod 日誌另須 `pods/log` 的授權，B1 只有 `pods` 的 `get`、`list`、`create`，無法推出 `worker-sa` 可以讀取日誌。",
+      "correct_value": "Restricted 可阻止特權與宿主掛載設定，仍允許合規工作負載引用同 Namespace 的 Secret。審計時應另外核對 Secret 引用政策與 Pod 日誌的子資源授權。"
+    },
+    {
+      "claim": "將 `worker-sa` 改為 `automountServiceAccountToken: false` 並刪除不必要的 `rb-worker-pod-mgr` RoleBinding，即完成縱深修補。",
+      "verdict": "imprecise",
+      "reasoning": "變更 ServiceAccount 設定會影響後續 Pod 的自動掛載決策，既有 `nexuspay-worker` 的 Pod 規格不會因此移除已掛載的憑證。刪除 B1 撤除的是該綁定授予的權限，仍需確認其他綁定及既有工作負載狀態。",
+      "correct_value": "撤銷不必要的綁定後，還須重新部署受影響的既有 Pod，並驗證新 Pod 的憑證掛載狀態與 ServiceAccount 的有效授權。"
+    }
+  ]
+}

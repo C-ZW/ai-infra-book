@@ -1,0 +1,200 @@
+{
+  "chapter": "ch25-rust-unsafe-and-ffi.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "`libnexus-parse` TLV 檔頭固定 `8 bytes`：`magic: 2B`（`0x4e58`）、`type: 2B`、`len: 4B`（`uint32_t` / `u32`）。合法負載上限為 `65,536 bytes`（`64 KiB`）。",
+      "verdict": "correct",
+      "reasoning": "欄位寬度相加為 2 + 2 + 4 = 8 位元組，64 × 1,024 = 65,536 位元組，兩者都符合基準。基準未列出 magic 常數，該值僅作為章內定義。",
+      "correct_value": "固定檔頭 8 位元組，負載上限 65,536 位元組，最大合法框架長度 65,544 位元組。"
+    },
+    {
+      "claim": "`magic = 0x4e58 ('N','X')`，線路位元組為 `58 4e`。",
+      "verdict": "incorrect",
+      "reasoning": "小端序先放低位元組，所以數值 `0x4e58` 對應 `58 4e`。ASCII `0x58` 是 X，`0x4e` 是 N，依線路順序讀取為 XN。",
+      "correct_value": "若保留數值 `0x4e58` 與小端序，線路位元組 `58 4e` 的 ASCII 標示為 `('X','N')`。若協定要求字串 NX，線路位元組是 `4e 58`。"
+    },
+    {
+      "claim": "例如定義 `struct ValidatedTlvLen(u16)`（上限鎖死 `<= 65_536` 且通過邊界檢查才能建構）。",
+      "verdict": "incorrect",
+      "reasoning": "`u16` 共有 2^16 種值，從 0 起算的最大值為 65,535。直接儲存長度會排除基準允許的最大負載。",
+      "correct_value": "以 `u32` 或在目標平台足夠寬的 `usize` 儲存長度，並由受控建構介面驗證上限 65,536。"
+    },
+    {
+      "claim": "先獨立檢查 `0 < len && len <= 65_536` 再做任何加減。",
+      "verdict": "imprecise",
+      "reasoning": "基準明定上限，未定義空負載是否合法。參考解析器拒絕零長度，因此加入了材料未交代的協定限制。",
+      "correct_value": "先驗證 `len <= 65_536`。若協定禁止空負載，明定最小長度為 1。"
+    },
+    {
+      "claim": "這段程式碼之所以是 Unsound，不是因為裡面有 `unsafe`，而是因為函式簽章本身沒有標記 `unsafe fn`。",
+      "verdict": "imprecise",
+      "reasoning": "不健全的原因是安全呼叫介面未建立底層複製所需的前置條件。安全函式可以封裝 `unsafe` 操作，只要它能維持這些條件。章內建議只列出目的端長度檢查，亦漏了來源端的可讀範圍和複製區域互不重疊的要求。",
+      "correct_value": "安全介面可接受來源與目的切片，檢查 `len` 同時落在兩者範圍內，再用安全切片操作複製。若由呼叫者負責裸指標契約，應以 `unsafe fn` 文件說明來源有效性、可讀長度、目的容量及區域不得重疊。"
+    },
+    {
+      "claim": "呼叫 `unsafe` 函式或方法（包含所有 FFI 外部函式）。",
+      "verdict": "incorrect",
+      "reasoning": "同章指出外部宣告區塊內可以個別標註 `safe fn`，已提供「所有」的反例。宣告者須承擔 ABI 與安全契約責任，呼叫者的義務則由函式宣告決定。",
+      "correct_value": "呼叫宣告為 `unsafe` 的外部函式需要不安全語境，個別宣告為 `safe` 的外部函式可由安全程式碼呼叫。"
+    },
+    {
+      "claim": "Rust 2024 要求即使在 `unsafe fn` 內部，每一處不安全操作也必須顯式包進細粒度的 `unsafe { ... }` 區塊。",
+      "verdict": "incorrect",
+      "reasoning": "章內先將 `unsafe_op_in_unsafe_fn` 描述為預設警告。警告與編譯錯誤是不同層級，lint 也無法由區塊尺寸判定區塊是否夠細。",
+      "correct_value": "依章內所述的預設 lint 等級，缺少顯式 `unsafe` 區塊會觸發警告。將該 lint 設為 `deny` 才會因此阻止編譯，區塊應多小屬於程式碼審查規範。"
+    },
+    {
+      "claim": "**Rust 2024 Edition（自 Rust 1.85 穩定化）的邊界收緊**進一步把「函式對呼叫端的契約」與「函式內部執行不安全操作」切開。",
+      "verdict": "imprecise",
+      "reasoning": "章內描述的函式契約與 lint 行為可分開比較。所提供的史料摘錄沒有 Rust 1.85 發行紀錄或 Edition Guide 的相關段落，無法獨立確認穩定化版本。",
+      "correct_value": "保留契約與操作區塊的概念區分。版本歸屬須以 Rust 發行紀錄及 Edition Guide 對應條目核實。"
+    },
+    {
+      "claim": "`unsafe` 並不會關閉借用檢查器。你在 `unsafe` 區塊內寫出的普通引用 `&T` 與 `&mut T`，依然受到生命週期與獨佔規則約束。",
+      "verdict": "correct",
+      "reasoning": "許可操作清單增加的是解參考裸指標等特定操作，普通引用仍採原有的型別與借用規則。從裸指標建立引用時，引用有效性的證明落在執行該操作的程式碼。",
+      "correct_value": "普通引用仍受借用檢查與有效性規則約束。從裸指標建立引用時須另行維持對齊、有效範圍、生命週期與別名約束。"
+    },
+    {
+      "claim": "根據 Rust 的正式別名模型 **Stacked Borrows** 與演進中的 **Tree Borrows**，當你把一個 `&mut T` 或 `Box<T>` 轉成裸指標 `*mut T`、再從同一個基底位址衍生出第二個 `&mut T` 或同時保留原本的引用讀寫時，別名標籤堆疊就會遭到破壞。",
+      "verdict": "imprecise",
+      "reasoning": "同址及多個衍生引用本身無法判定違規，還要檢查重新借用、存取時序與使用的模型。材料未提供將任一模型定為 Rust 正式規範的依據，兩種模型的描述也不能一概使用同一種標籤堆疊。",
+      "correct_value": "Stacked Borrows 與 Tree Borrows 可作為分析 Rust 指標與引用行為的模型。應指出所採模型與造成權限衝突的具體存取時序。"
+    },
+    {
+      "claim": "Rust 會直接把 `&mut T` 降階成 LLVM IR 的 `noalias` 屬性。",
+      "verdict": "imprecise",
+      "reasoning": "引用的語言層獨佔義務無法推出每個引用都一定對應到單一 LLVM 屬性。材料也沒有任何編譯版本、目標或 IR 輸出可證明這個絕對敘述。",
+      "correct_value": "編譯器可在適用的降階情境使用 `noalias` 等資訊表達獨佔性。具體屬性須按編譯版本、目標與產出 IR 核對。"
+    },
+    {
+      "claim": "任何型別只要進入「讀取未初始化位元組」的狀態，本身就是立即的 UB——哪怕你讀的是 `u8` 也一樣。",
+      "verdict": "incorrect",
+      "reasoning": "同一節使用 `MaybeUninit<T>` 合法地保存未初始化儲存。須區分產生要求已初始化的型別值、保留未初始化狀態的原始搬移，以及結構體填充。填充未初始化也不足以判定整個結構值無效。",
+      "correct_value": "將未初始化位元組當成已初始化的 `u8` 等值會造成 UB。`MaybeUninit<T>` 能合法保存未初始化儲存，結構體填充須按所執行的操作另外判斷。"
+    },
+    {
+      "claim": "只呼叫 `read()` 寫入前 20 bytes 就對整個陣列呼叫 `assume_init()`（或在結構體中漏寫某個欄位），剩餘 44 bytes 或結構體空洞就成了受 `poison` 污染的記憶體。",
+      "verdict": "imprecise",
+      "reasoning": "64 − 20 = 44，這 44 個陣列元素仍未初始化，不能將整個陣列視為已初始化。結構體若漏寫必要欄位，問題在欄位值的有效性。未命名填充沒有同樣的欄位初始化要求，也無法單憑 Rust 原始碼斷定特定 LLVM 表示。",
+      "correct_value": "若已確認寫入 20 位元組，只能將該 20 位元組視為已初始化。結構體須初始化所有要求有效值的欄位，填充另按序列化方式處理。"
+    },
+    {
+      "claim": "在本地 `cargo test` 與 `cargo run`（Debug Profile）時，`a + b` 一旦溢位就會觸發 panic 並直接中止行程。",
+      "verdict": "incorrect",
+      "reasoning": "啟用溢位檢查時，執行期溢位可觸發 panic。panic 是否中止行程另由 panic 策略、呼叫邊界及是否攔截決定。測試框架可以把可展開的 panic 記為單項測試失敗。",
+      "correct_value": "啟用溢位檢查時，執行期整數加法溢位會 panic。行程是否中止取決於 panic 策略與呼叫邊界。"
+    },
+    {
+      "claim": "Rust 的 `as` 運算子在語意上是無條件截斷或重新解釋位元（lossy cast），永遠不會失敗。",
+      "verdict": "incorrect",
+      "reasoning": "例如 `u16` 的每個值都落在 `u32` 值域內，轉成 `u32` 時可完整保存原值。章內安全解析器在指定的 x86_64 環境將 `u32` 轉為 `usize`，也是拓寬轉型。",
+      "correct_value": "整數 `as` 的效果取決於來源與目的型別。拓寬可以保值，窄化可能截斷，有號性變更可能改變數值解讀。需要拒絕超出值域的輸入時，可用受檢轉型。"
+    },
+    {
+      "claim": "只要經過 C ABI（`extern \"C\"`）或 Node.js N-API，Rust 的型別標籤、切片長度與分配器隔離資訊都會全部剝除。",
+      "verdict": "incorrect",
+      "reasoning": "同章的外部緩衝區介面把指標與長度一同傳遞，配對釋放函式也能透過介面保存分配器契約。ABI 規定資料表示與呼叫方式，跨界保留哪些資訊由介面定義。",
+      "correct_value": "FFI 介面應明確傳遞長度、表示方式及所有權契約。裸指標本身無法表達這些條件。"
+    },
+    {
+      "claim": "在 64 位元 x86_64 glibc `ptmalloc2` 下，最小可用 chunk 大小為 `32 bytes`（`0x20`，包含 `16 bytes` chunk 表頭與 `16 bytes` 可用資料區，且滿足 `16-byte` 對齊）。",
+      "verdict": "imprecise",
+      "reasoning": "32 位元組最小 chunk 與 16 位元組對齊符合基準。32 − 16 = 16 只算出圖示中從使用者指標到下一個 chunk 起點的距離，無法推出零長度請求可寫 16 位元組，也無法由基準確認特定分配器的可用大小與相鄰欄位行為。",
+      "correct_value": "依基準保留最小 chunk 32 位元組及 16 位元組對齊。分別標示請求大小、實體 chunk 大小與分配器專屬可用大小。零長度請求沒有可依配置契約使用的資料容量。"
+    },
+    {
+      "claim": "欲使 `len + 16 ≡ 0 (mod 2^32)`，最小正無號整數為 `2^32 - 16 = 4,294,967,296 - 16 = 4,294,967,280`，十六進位為 `0xFFFF_FFF0`。",
+      "verdict": "correct",
+      "reasoning": "在 32 位元無號整數值域，`len + 16` 介於 16 與 2^32 + 15。這個區間內唯一的 2^32 倍數是 2^32，因此令總和等於 2^32 就能得到唯一解。十六進位的 `0x1_0000_0000` 減 `0x10` 與作者換算相符。",
+      "correct_value": "模算術的唯一解為 `2^32 − 16`，即 `4,294,967,280`。"
+    },
+    {
+      "claim": "任何跨越 FFI 的 struct 都必須顯式加上 `#[repr(C)]`。",
+      "verdict": "incorrect",
+      "reasoning": "若外部程式只持有不透明指標，從不依照 C 欄位偏移解讀目標物件，雙方就無須共享該 struct 的欄位佈局。另有適合單一欄位包裝的表示方式。",
+      "correct_value": "需要由兩端共同讀寫欄位或按值傳遞的型別，須採用經確認兼容的 ABI 表示。一般共享結構體可採 `#[repr(C)]`，不透明指標的目標型別可維持私有佈局。"
+    },
+    {
+      "claim": "未具名填充洞總計 `1 + 3 = 4 bytes`（分別位於 `0x01` 與 `0x05..0x08`），每次直接序列化傳出最多可外洩 4 bytes 堆疊／堆積殘留位元組。",
+      "verdict": "correct",
+      "reasoning": "依欄位對齊，四個欄位分別從偏移 0、2、4、8 開始，最後一欄在偏移 16 結束。對齊 8 的總大小已是 16，沒有尾端填充。若傳輸方式確實把填充帶出，未命名填充最多提供 4 位元組的外洩空間。",
+      "correct_value": "結構體大小 16 位元組，對齊 8 位元組，填充位於偏移 1（長度 1）及偏移 5（長度 3）。"
+    },
+    {
+      "claim": "若 C 端回傳一個未被驗證的整數直接 `transmute` 或透過指標轉型成 Rust `bool` 或 `enum`（例如收到 `0x02`），Rust 在後續 `match` 分支最佳化時會假設「絕對只有這幾個值」並刪除安全分支，直接觸發 UB。",
+      "verdict": "incorrect",
+      "reasoning": "如果 `0x02` 被讀成一個 Rust `bool`，產生無效型別值時就已違反有效性要求。後續有沒有 `match` 或最佳化均不改變這一點。對 `enum` 而言，`0x02` 是否非法則由該型別的表示及判別值決定。",
+      "correct_value": "先接收 ABI 相容的原始值，驗證後再建構 Rust `bool` 或 `enum`。UB 發生在產生無效型別值時。"
+    },
+    {
+      "claim": "跨分配器 `free()` 可能……在後續幾次正常配置後讓兩套堆積管理器把同一塊記憶體重複配發給兩個不相干的物件。",
+      "verdict": "imprecise",
+      "reasoning": "由配置來源與釋放方不符，可判定釋放契約遭到違反。特定的重複配發結果還依賴分配器實作、建置選項與執行狀態，基準和證據未交代這些條件。",
+      "correct_value": "分配器不匹配會造成未定義行為，可能表現為終止或記憶體損毀。應由匹配配置來源及配置契約的介面釋放。"
+    },
+    {
+      "claim": "V8 Sandbox（Ubercage）（保留 `1 TiB` 連續虛擬位址空間、把沙箱內物件指標壓縮成相對於基底的 32 位元偏移）。",
+      "verdict": "imprecise",
+      "reasoning": "基準寫 1 TiB，史料摘要寫 1 TB，兩種單位的字面數值不同。32 位元的直接位元組偏移涵蓋 2^32 位元組，即 4 GiB。若要用該描述涵蓋整個 1 TiB 區域，必須交代較小子區域、縮放或另一種表示。摘錄未提供足以區分這些概念的原文。",
+      "correct_value": "分開說明沙箱保留區、物件指標壓縮範圍及 backing store 指標表示，按目標 V8 版本核對各自的大小與單位。"
+    },
+    {
+      "claim": "在啟用該機制的執行時期（如 Electron 或鎖定沙箱組態的引擎）呼叫 `napi_create_external_buffer`，會觸發 `napi_no_external_buffers_allowed` 錯誤甚至導致行程直接 abort。",
+      "verdict": "imprecise",
+      "reasoning": "所附 V8 摘錄未提供 Node-API 實作、Electron 建置選項或回傳狀態與終止行程的觸發條件。由沙箱的地址隔離設計無法直接推導所有執行時期的 API 行為。",
+      "correct_value": "外部緩衝區是否受支援及失敗行為取決於執行時期與建置組態。應以指定版本的 API 契約與實作確認。"
+    },
+    {
+      "claim": "JS `Buffer` 失去參考後，V8 GC 執行 `finalize_cb` 透過 `Box::from_raw` 釋放該 `4,096 bytes` 緩衝區，而仍在執行的背景執行緒隨後向同一位址寫入資料……即使還沒釋放，背景執行緒寫入與 JS 事件迴圈讀取同時發生，無同步屏障保護。",
+      "verdict": "correct",
+      "reasoning": "若釋放先於背景寫入，寫入使用了已結束生命週期的儲存。若物件仍存活，兩個執行緒無同步地存取同一位置且至少一方寫入，則構成資料競爭。請求取消本身不足以確定參考已全數消失或回呼已執行。",
+      "correct_value": "兩項風險分別是釋放後使用及存活期間的資料競爭。完成背景寫入並移交所有權後再建立 JS 副本，可避開題設中的兩項競爭。"
+    },
+    {
+      "claim": "若必須零拷貝，則改用 `Arc` 同時給背景工作與 `finalize_cb` 各自持有一份所有權計數，並保證背景寫入完全結束後才將不可變視圖暴露給 JS。",
+      "verdict": "imprecise",
+      "reasoning": "`Arc` 強引用能延長配置生命週期，無法自行同步資料存取。普通 JS `Buffer` 可寫入，「不可變視圖」需要額外的 API 限制。外部緩衝區建立若失敗，也須處理先前移交出去的強引用。",
+      "correct_value": "先完成背景寫入，再移交給 JS。若以 `Arc` 管理生命週期，須處理建立成功與失敗的引用回收路徑。只要 JS 持有可寫視圖，原生端就不得無同步地存取相同資料或持有與其衝突的 Rust 引用。"
+    },
+    {
+      "claim": "對吞吐量可容忍約 1–3% 額外分支成本的解析服務，直接在 `Cargo.toml` 的 `[profile.release]` 加上 `overflow-checks = true`，把整數回繞從「靜默記憶體損毀」降級為「受控的執行緒 panic」（同時注意在 `extern \"C\"` 邊界捕獲 panic，避免跨 FFI unwinding 造成 UB）。",
+      "verdict": "imprecise",
+      "reasoning": "材料沒有基準測試，無法推出 1–3% 的成本。溢位檢查只處理相關算術行為，無法驗證長度及其他記憶體契約。Rust panic 遇到不允許展開的 `extern \"C\"` 邊界可導致行程終止，章內把結果一概描述為受控執行緒 panic 或 UB，混淆了不同情況。",
+      "correct_value": "以目標工作負載量測成本。可預期的不合法長度應顯式回傳錯誤。FFI 邊界的 panic 處理須依 panic 策略與 ABI 說明。"
+    },
+    {
+      "claim": "分別比較 `cargo test`（Debug）與 `cargo test --release`（Release）的結果差異。",
+      "verdict": "incorrect",
+      "reasoning": "參考解答以 `#[cfg(not(debug_assertions))]` 排除預設 Debug 組態下對示範解析器的呼叫。原樣執行的 Debug 測試只檢查安全解析器拒絕非法長度，因此沒有觀測到同一算式在兩組組態下的行為差異。",
+      "correct_value": "將純整數邊界行為與解析器拒絕非法輸入分開驗證。以不涉及原生分配與複製的測試比較算術組態，另驗證安全解析器的拒絕結果。"
+    },
+    {
+      "claim": "Miri 會立即攔截並輸出 `Undefined Behavior: attempting a write access using <tag> ... which does not have permission`（Stacked Borrows `&mut` 別名違背）與 `reading memory which is uninitialized`。",
+      "verdict": "incorrect",
+      "reasoning": "示範把兩個故意違規的片段順序放在同一個測試內。若第一段已被偵測並中止，第二段就不會執行。診斷字串也依版本和所採模型而異，材料未附執行紀錄。",
+      "correct_value": "以獨立測試和獨立執行分別觀察兩類診斷，並記錄 Miri 版本、別名模型及實際輸出。"
+    },
+    {
+      "claim": "ASan……當兩個 `&mut` 指向同一塊合法且尚未釋放的堆積物件時，兩個位址都在合法分配範圍內，ASan 不會判定違規。",
+      "verdict": "correct",
+      "reasoning": "可存取性檢查和 Rust 引用權限檢查所需資訊不同。單純的別名違規即使發生在配置範圍內，亦不會因此讓 ASan 的可存取性資訊顯示錯誤。Miri 可依所採模型檢查具體存取時序。",
+      "correct_value": "ASan 可偵測越界或釋放後存取等問題。僅涉及 Rust 引用權限的違規須以能檢查相應模型的工具分析。"
+    },
+    {
+      "claim": "使用 `checked_add`、`try_into()` 與安全的切片邊界重構解析器，確認所有 Sanitizer 與 Miri 測試皆以零錯誤通過。",
+      "verdict": "incorrect",
+      "reasoning": "安全版有 `checked_add` 與經長度檢查的切片，轉型用的卻是 `as usize`。其在指定的 x86_64 環境可以保值，仍與指定實作不符。實驗保留故意觸發 UB 的案例，也未附安全版獨立測試的通過紀錄。",
+      "correct_value": "若保留 `try_into()` 為任務要求，安全版應使用受檢轉型。安全版應有獨立的通過測試，故意違規案例則另列為預期失敗。"
+    },
+    {
+      "claim": "pwn.college 的 Program Security 課程中有 *Memory Errors* 與 *Dynamic Allocator Misuse* 相關關卡。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據只支持平台名稱及其系統安全實戰定位，未提供課程目錄、關卡頁面或教材摘錄。",
+      "correct_value": "可引用 pwn.college 作為系統安全實戰平台。具體課程、關卡名稱及其內容仍須由課程目錄或關卡頁面確認。"
+    }
+  ]
+}

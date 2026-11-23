@@ -1,0 +1,188 @@
+{
+  "chapter": "ch21-reverse-engineering.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "「libnexus-parse 的 TLV 封包檔頭固定為 8 bytes（magic: 2B、type: 2B、len: 4B uint32），合法 payload 上限為 65,536 bytes（64 KiB）。」",
+      "verdict": "correct",
+      "reasoning": "三個欄位依序占 2、2、4 bytes，合計 8 bytes。64 × 1,024 = 65,536。欄位寬度、長度型別與上限均與基準表一致。",
+      "correct_value": "檔頭 8 bytes，payload 上限 65,536 bytes。"
+    },
+    {
+      "claim": "「總計讓 rsp 向下移動 24 bytes，使得第 17 行呼叫 malloc@plt 前 rsp % 16 == 0。」",
+      "verdict": "correct",
+      "reasoning": "依題設的 ABI，函式進入時 RSP 餘 8。兩次各 8 bytes 的 push 加上一次減 8，合計減 24，故呼叫前的餘數為 (8 − 24) mod 16 = 0。",
+      "correct_value": "函式進入時 RSP mod 16 = 8，所示呼叫前 RSP mod 16 = 0。"
+    },
+    {
+      "claim": "「第 05 行將第一個參數 rdi 備份至 callee-saved 暫存器 rbx。」",
+      "verdict": "correct",
+      "reasoning": "第 05 行將 RDI 複製到 RBX。第 16 行寫入 EDI 會改變 RDI，第 18 行則透過 RBX 存取原基底。依章內 ABI 前提，呼叫的函式須保存 RBX。",
+      "correct_value": "所示指令以 RBX 保存原第一參數，供配置呼叫後使用。"
+    },
+    {
+      "claim": "「小端序 0x584e 對應記憶體位元組 4e 58（ASCII \\\"NX\\\"），與 TLV magic: 2B 吻合。」",
+      "verdict": "correct",
+      "reasoning": "0x584e 的低位元組是 0x4e，高位元組是 0x58。小端序將低位元組放在較低位址，因此依位址順序讀出 N、X。16 位元讀取也符合基準中的 2-byte 欄位。",
+      "correct_value": "所示比對對應小端序位元組 4e 58，即 ASCII NX。"
+    },
+    {
+      "claim": "「依反組譯中對第一個參數的存取寬度與偏移……即可在無原始碼下完整還原 nexus_tlv_ctx_t 的四個欄位。」",
+      "verdict": "imprecise",
+      "reasoning": "四次存取分別覆蓋位元組區間 0–1、2–3、4–7、8–15，且最後一次儲存的是配置回傳值。這足以提出涵蓋 16 bytes 的候選佈局。欄位原名、配置物件的元素型別和結構體總大小需要額外使用點或型別證據。章內另外給出的 C 原始碼可以驗證該教學結構的宣告。",
+      "correct_value": "反組譯片段支持四個候選欄位及至少 16 bytes 的存取範圍。原始碼確認了本教學範例的完整宣告。"
+    },
+    {
+      "claim": "「cmp dx, 0x0099 揭露隱藏除錯 opcode 0x99。」",
+      "verdict": "imprecise",
+      "reasoning": "比較及條件跳躍證明此欄位有一條特殊分派路徑。18 行節錄沒有提供跳轉目標，因此其除錯語意、介面是否公開，以及另一個跳轉目標是否回傳 −1，都需要額外證據。實驗原始碼證實教學實作確有對應的除錯分派。",
+      "correct_value": "片段顯示 type 的特殊分支。教學原始碼證實其除錯用途，單憑片段只能確認分派條件。"
+    },
+    {
+      "claim": "「77」",
+      "verdict": "imprecise",
+      "reasoning": "觀察到兩次存取之間的空隙，只能計算未被這兩次存取覆蓋的位元組。章內未提供足以排除其他欄位或保留資料的完整存取紀錄。",
+      "correct_value": "兩例的未觀察區間分別為 3 bytes 和 4 bytes。在欄位相鄰且採自然對齊的前提下，可解讀為填充。"
+    },
+    {
+      "claim": "「若看到 mov rax, qword ptr [rbx + rcx*8 + 0x10]，代表基底物件 +0x10 處存放著一個『每個元素佔 8 bytes』的陣列。」",
+      "verdict": "imprecise",
+      "reasoning": "這條指令證明有效位址以 RCX 的值乘 8 並讀取 8 bytes。整體元素步長還取決於 RCX 如何形成。例如 RCX 若已預乘，原始索引相鄰兩值對應的位址差可以大於 8。",
+      "correct_value": "可確認定址比例與讀取寬度皆為 8。若 RCX 是每次加一的原始索引，才支持 8-byte 陣列步長。"
+    },
+    {
+      "claim": "「對 32 位元暫存器執行左移相當於計算 (count × 8) mod 2^32。」",
+      "verdict": "correct",
+      "reasoning": "左移 3 位將各位元的權重乘以 8，目的暫存器僅保留低 32 位。後續寫入 32 位元參數暫存器會清除高 32 位，傳入配置函式的值仍是已截斷的結果。",
+      "correct_value": "所示資料流先做 32 位元乘積截斷，再將截斷結果零擴充為配置大小。"
+    },
+    {
+      "claim": "「若 payload 完全由固定 8-byte 項目組成，對應的項目數上限應為 65,536 / 8 = 8,192，即 0x2000。」",
+      "verdict": "correct",
+      "reasoning": "在題設條件下，N 筆記錄的大小為 8N。由 8N ≤ 65,536 可得 N ≤ 8,192。基準表定義的 wire 欄位語意仍是 payload 的位元組長度，項目數是額外建立的內部解讀。",
+      "correct_value": "payload 上限為 65,536 bytes。若全部由 8-byte 記錄組成，最多 8,192 筆。"
+    },
+    {
+      "claim": "「暴露出整個函式完全缺少上限防線。」",
+      "verdict": "imprecise",
+      "reasoning": "18 行片段只顯示正常分支在配置前判斷欄位是否為零，無法據此判定上游是否已檢查。另從章內教學 C 程式重建可見，入口檢查原始封包至少有完整檔頭，配置前也沒有驗證 payload 上限、宣告長度一致性或項目數上限。",
+      "correct_value": "所示基本區塊的配置前路徑缺少上限檢查。另列的教學 C 實作也缺少這些檢查，實際發布版的其餘路徑仍待查。"
+    },
+    {
+      "claim": "「當配置成功時，malloc(0) 不會回傳 NULL，而是回傳一個最小可用 chunk（實體大小 0x20 = 32 bytes）。」",
+      "verdict": "imprecise",
+      "reasoning": "基準表確認本書配置器模型的最小 chunk 為 32 bytes，卻未單獨定義零長度請求如何映射到該級距。物理 chunk 大小也無法推出呼叫者可使用的物件長度。",
+      "correct_value": "依本書模型，最小 chunk 為 32 bytes。零長度請求的回傳與實體配置行為須依指定 glibc 實作確認，程式應將其視為零個可寫入位元組。"
+    },
+    {
+      "claim": "「若後續填充迴圈（未包含於此 18 行配置片段中）直接拿原始 32 位元欄位……作為迭代上限寫入每筆 8 bytes，理論上就會……造成嚴重堆積緩衝區溢位。」",
+      "verdict": "imprecise",
+      "reasoning": "以原始項目數做完整寫入時，所需空間在數學上可大於截斷後的配置請求。然而片段沒有顯示該迴圈，教學 C 程式在正常配置分支也只執行一次固定 8-byte 複製。超出物件範圍後的實際執行結果無法用總寫入量預測。",
+      "correct_value": "片段證實配置大小可能回繞。若完整程式存在以原始項目數為上限的後續寫入，才支持這項假設中的堆積越界，且實際寫入總量無法由片段推定。"
+    },
+    {
+      "claim": "「模擬針對 stripped libnexus-parse.so 的完整無原始碼逆向流程……最後用 GDB 動態驗證整數溢位與記憶體配置異常。」",
+      "verdict": "imprecise",
+      "reasoning": "章內原始碼支持配置大小的算術落差，但正常分支只複製固定 8 bytes。因此，作者選用的配置結果只支持請求大小小於未截斷乘積，固定複製本身仍可容納於該次請求。GDB 紀錄也明示為預期算術關係，沒有實際建置及執行輸出。",
+      "correct_value": "實驗示例意在觀察配置大小回繞。是否如預期命中斷點、配置結果為何，以及是否另有越界寫入，須以實際產物和紀錄確認。"
+    },
+    {
+      "claim": "「可確認……便會直接覆寫 32 bytes 的 trace_buf 堆疊緩衝區。」",
+      "verdict": "imprecise",
+      "reasoning": "從提供的 C 程式可確認，複製長度檢查了來源可讀範圍，目的陣列的容量卻未參與檢查。複製長度超出目的容量時，C 語意是越界寫入與未定義行為。固定的實際覆寫範圍或效果需要特定產物和執行證據。",
+      "correct_value": "教學程式的除錯分支存在目的容量檢查缺失。應以目的陣列的實際可用容量限制複製，並保留字串終止所需空間。"
+    },
+    {
+      "claim": "「這些關鍵 Sink 的名稱與呼叫點永遠不會因為 strip -s 而消失。」",
+      "verdict": "incorrect",
+      "reasoning": "章內後文已提出內聯、經 GOT 的直接間接呼叫，以及執行期解析等情況，足以推翻所有外部呼叫都經 PLT 的前提。動態連結需要的符號可保留，從單一匯入符號取得的交叉引用也只能覆蓋能建立對應的使用點。",
+      "correct_value": "對使用 PLT 的具名動態匯入，重定位與動態符號通常可用於標註 stub 並尋找相關呼叫點。其他呼叫形態需個別判讀。"
+    },
+    {
+      "claim": "「現代編譯器（GCC 與 Clang 預設啟用 -fasynchronous-unwind-tables）會為每個函式生成一條 FDE……準確切出九成以上的函式邊界。」",
+      "verdict": "imprecise",
+      "reasoning": "即使取得一條 FDE，其範圍直接描述的是可套用該展開資訊的機器碼區間。章內未建立這些區間與所有原始函式的一對一關係，也未提供各目標的編譯器預設值、測試樣本或邊界識別統計，因此無從推出九成以上。",
+      "correct_value": "存在展開資訊時，可用 FDE 的位址範圍輔助判定函式邊界。覆蓋率和準確率須針對實際建置與分析結果量測。"
+    },
+    {
+      "claim": "「INT_LEFT 等微操作：先依移位量計算 CF、ZF、SF 等狀態旗標，再執行 EAX = EAX << 3。」",
+      "verdict": "incorrect",
+      "reasoning": "ZF 判斷移位結果是否為零，SF 取移位結果的最高位，兩者在資料流上都依賴移位結果。CF 則可由原值中最後移出的位元決定。章內也沒有實際 SLEIGH 輸出可用來主張微操作的固定排列。",
+      "correct_value": "以原值與移位量求得 32 位元結果。ZF、SF 與 PF 依結果決定，CF 依最後移出的位元決定。"
+    },
+    {
+      "claim": "「某個 32 位元無號變數被預設推測為有號 int 或未定義寬度的 undefined4。」",
+      "verdict": "incorrect",
+      "reasoning": "`undefined4` 的名稱已明示資料寬度為 4 bytes，與本段所說的 32 位元一致。尚未確定的是具體型別與符號性。",
+      "correct_value": "`undefined4` 表示已知寬度為 4 bytes、具體型別尚未確定的資料。"
+    },
+    {
+      "claim": "「MULTIEQUAL 對應 SSA 中的 φ 節點……INDIRECT 則標記……其他操作引起的間接資料流與潛在別名影響。」",
+      "verdict": "correct",
+      "reasoning": "若不同前驅區塊分別定義了同一位置，匯合點需要依實際進入邊選出對應的值，這與章內對 MULTIEQUAL 的描述一致。間接副作用則需要保留其對資料流的影響，避免把先前的值誤當成必然延續。",
+      "correct_value": "MULTIEQUAL 依前驅邊合併 SSA 值。INDIRECT 表示另一操作造成的間接資料流影響。"
+    },
+    {
+      "claim": "「它抽取函式開頭 32 bytes 的機器碼……搭配剩餘非重定位主體的 CRC16 校驗碼與函式總長度做快速碰撞排除。」",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 沒有 FLIRT 規格或簽章樣本，章內也沒有展示 CRC 的起訖位置。因此無法由材料确认 CRC 是否涵蓋整段剩餘主體，以及長度和尾端比對在哪些情況使用。",
+      "correct_value": "可描述 FLIRT 採用帶遮罩的前綴與後續比對資料。精確的 CRC 涵蓋區間與碰撞處理條件須以所用簽章格式的規格核定。"
+    },
+    {
+      "claim": "「即使函式開頭多了一條 endbr64 或指令排程微調仍可命中。」",
+      "verdict": "imprecise",
+      "reasoning": "按照本段自己的模型，雜湊輸入包含正規化後的指令流。遮罩常數和重定位欄位，無法推出新增一條指令或改變指令順序後輸入仍一致。材料也沒有比對結果或指定版本的雜湊規格可確認例外。",
+      "correct_value": "常數正規化可容忍部分運算元差異。新增或重排指令後是否命中，取決於所用版本的正規化規則、比對邏輯與簽章資料。"
+    },
+    {
+      "claim": "「使用者空間 mmap 與共享函式庫（.so）載入基底位址具備 28 bits 隨機化熵……低 12 bits 頁內偏移不變。」",
+      "verdict": "imprecise",
+      "reasoning": "4,096 = 2^12，因此頁對齊的映像基底低 12 位固定，重定位會保留指令的頁內偏移。28 bits 則是基準表給出的典型 mmap 隨機化模型，無法由頁對齊推得，也沒有證據顯示每個共享函式庫基底都具備獨立且固定的 28 bits 熵。",
+      "correct_value": "本書模型以 28 bits 作為 mmap 的典型值。4 KiB 頁對齊保留 12 位頁內偏移，個別映像的有效隨機化取決於環境。"
+    },
+    {
+      "claim": "「紀錄……相對位址偏移（假設 Ghidra 基底為 0x00100000，位址為 0x00101xxx，則檔內偏移即為 0x1xxx）。」",
+      "verdict": "incorrect",
+      "reasoning": "以分析位址減映像基底得到的是相對虛擬位址。檔案偏移還取決於該位址所在載入區段的檔案偏移與虛擬位址。章內的減法和後續加法在靜態與執行期映像起點對齊的例子中成立，等同檔案偏移則需要額外條件。",
+      "correct_value": "將差值稱為 RVA。若要換算檔案偏移，須以所在 PT_LOAD 的虛擬位址與檔案偏移換算。"
+    },
+    {
+      "claim": "「讀出該模組對應映像起點（檔案偏移 0x0 的首個 PT_LOAD 區段）的實際起始映射基底位址 runtime_base，最後在 b *(runtime_base + offset) 設下斷點。」",
+      "verdict": "imprecise",
+      "reasoning": "加法成立的前提是 runtime_base 與計算 offset 時所用的映像起點指向同一映像位置。檔案偏移為零和兩端參考點一致是兩個不同條件。章內例子的十六進位算術正確，通用解法還需要核對區段對應。",
+      "correct_value": "以同一載入區段在靜態分析與執行期的對應位址換算。執行期目標位址等於執行期參考位址加上目標相對靜態參考位址的差。"
+    },
+    {
+      "claim": "「從 Imports -> memcpy 與 malloc 追蹤 XREF，會找到兩個相鄰的未命名函式。」",
+      "verdict": "imprecise",
+      "reasoning": "C 原始碼確有兩個內部函式，卻沒有對最終排列或匯入表作出限制。章內也承認編譯器會展開固定長度複製，且沒有提供實際二進位檔、符號表或反組譯結果來確認兩個函式的位置與交叉引用。",
+      "correct_value": "應從實際產物確認保留的匯入、交叉引用與函式位置。兩個內部函式相鄰是待觀察結果。"
+    },
+    {
+      "claim": "「讓編譯器在能推導緩衝區大小的場景將 memcpy/strcpy 替換為附帶邊界檢查的 __memcpy_chk。」",
+      "verdict": "incorrect",
+      "reasoning": "`memcpy` 接受明確長度，`strcpy` 依來源字串終止符決定停止位置。兩者需要各自對應的強化入口。編譯器也可能證明某次操作安全，因而沒有額外的執行期檢查呼叫。",
+      "correct_value": "在相容的工具鏈與適用情況下，`memcpy` 和 `strcpy` 可分別採用 `__memcpy_chk` 和 `__strcpy_chk`，或在可靜態證明時由編譯器直接處理。"
+    },
+    {
+      "claim": "「reallocarray(NULL, count, sizeof(uint64_t))（glibc 2.26+ 內建整數溢位檢查，溢位時設定 ENOMEM 並回傳 NULL）。」",
+      "verdict": "imprecise",
+      "reasoning": "檢查配置乘積能處理算術可表示性，與本章建議的防禦方向相符。合法 payload 上限另由通訊協定定義。所附證據未包含 glibc 版本紀錄或 API 文件，無法閉卷確認引入版本與錯誤契約。",
+      "correct_value": "採用目標環境支援的檢查式配置 API，並獨立驗證通訊協定上限。版本和錯誤回傳細節須以目標環境文件核定。"
+    },
+    {
+      "claim": "「前面已經證實，ELF 動態符號表、.eh_frame 與 .rodata 字串常數足以讓熟練的分析師在數十分鐘內重建核心資料結構。」",
+      "verdict": "imprecise",
+      "reasoning": "章內範例顯示多種殘留資訊可提供線索，沒有提供計時紀錄、樣本規模或成功標準。關於 Windows 加殼的普及度與 Linux 線上二進位檔多數未加殼的說法，也沒有可供判定的樣本或調查資料。",
+      "correct_value": "保留的符號、展開資訊與常數可輔助重建。所需時間與不同平台的加殼普及程度須由可查證的資料支持。"
+    },
+    {
+      "claim": "「建議接著登入 pwn.college 的 Program Security -> Reverse Engineering 模組……依循以下四個階段檢查點。」",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 支持 pwn.college 是亞利桑那州立大學的系統安全實驗平台，但未提供課程頁面、目前的導航路徑或題目列表。四個檢查點可以作為作者設計的學習順序，無法確認與實際課程一一對應。",
+      "correct_value": "可將 pwn.college 列為相關練習來源，並將四項內容標為作者建議的練習重點。模組名稱、位置與題目內容待課程證據確認。"
+    }
+  ]
+}

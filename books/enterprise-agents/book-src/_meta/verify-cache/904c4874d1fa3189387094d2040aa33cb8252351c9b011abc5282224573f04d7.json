@@ -1,0 +1,48 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "5 回合累計輸入 = 42,000 tokens；5 回合累計輸出 = 1,750 tokens；未優化單筆成本 = $0.1015，每月成本 = $152,250。",
+      "verdict": "correct",
+      "reasoning": "依章內簡化假設，輸入為 5 × 6,000 + 1,200 × (0 + 1 + 2 + 3 + 4) = 42,000 tokens，輸出為 5 × 350 = 1,750 tokens。按基準價格計算，單筆成本為 42,000 × 2 / 1,000,000 + 1,750 × 10 / 1,000,000 = $0.1015；乘以每月 1,500,000 筆得 $152,250。此結果以首輪沒有另計工單文字為前提；若首輪另有 U tokens 且每輪重送，累計輸入增加 5U。",
+      "correct_value": "在章內簡化假設下，單筆 $0.1015，每日 $5,075，每月 $152,250。"
+    },
+    {
+      "claim": "HTTP 連線池：尖峰 12 req/s 下每筆工單都走 5 回合，穩態原始負載約 60 calls/s；若平均停留時間約 1.5 秒，平均在途連線數約 90 條。",
+      "verdict": "correct",
+      "reasoning": "在尖峰流量持續、每筆均完成 5 次呼叫的穩態假設下，呼叫率為 12 × 5 = 60 calls/s。依 Little's Law，平均在途呼叫數為 60 × 1.5 = 90。實際連線需求仍取決於連線複用、重試與負載分布，不能由此保證 128 條足夠。",
+      "correct_value": "平均約 90 個在途呼叫；128 為待壓測的連線池設定起點。"
+    },
+    {
+      "claim": "簡單工單單筆成本為 $0.00167，每日總成本為 $50.10；剩餘 40% 仍按 5 輪 Sonnet 基準時，月總成本為 $62,403。",
+      "verdict": "correct",
+      "reasoning": "兩輪輸入為 6,000 + 7,200 = 13,200 tokens，輸出為 700 tokens，依 Haiku 基準價得 $0.00132 + $0.00035 = $0.00167。每日 30,000 筆得 $50.10，30 日為 $1,503；複雜工單每月 600,000 筆，成本為 600,000 × $0.1015 = $60,900，合計 $62,403。",
+      "correct_value": "簡單工單每筆 $0.00167、每日 $50.10；兩分群合計每月 $62,403。"
+    },
+    {
+      "claim": "要達成整體 ≤ $18,000/月，複雜工單平均成本須壓至 ≤ $0.027495/筆。",
+      "verdict": "correct",
+      "reasoning": "每月簡單工單成本為 $1,503，剩餘預算為 $18,000 − $1,503 = $16,497。複雜工單每月 600,000 筆，因此每筆上限為 $16,497 / 600,000 = $0.027495；其每張總工單的加權貢獻為 0.4 × $0.027495 = $0.010998。",
+      "correct_value": "複雜工單平均成本 ≤ $0.027495/筆；整體平均 ≤ $0.012/筆。"
+    },
+    {
+      "claim": "if (controller.signal.aborted || err instanceof Anthropic.APIConnectionTimeoutError) { return { status: \"timeout\", stopReason: \"wall_clock_timeout\", /* ... */ }; }",
+      "verdict": "incorrect",
+      "reasoning": "程式將計時器設為單輪上限與總剩餘時間的較小值。若單輪上限為 5 秒、總剩餘時間為 18 秒，計時器在約 5 秒觸發時，總 wall-clock 期限尚未到，程式卻標記為 wall_clock_timeout。APIConnectionTimeoutError 也不能單憑其類型證明總期限已到。",
+      "correct_value": "應依實際總期限是否到達區分 wall_clock_timeout 與單輪或 API 逾時，並保留可辨識的逾時原因。"
+    },
+    {
+      "claim": "設定可續租的短暫 lease，可以防止同一工單被重試佇列重複啟動兩個 Agent Loop。",
+      "verdict": "imprecise",
+      "reasoning": "原子取得租約可在租約有效期間排除其他成功取得者，但舊 worker 可能暫停、租約到期後由新 worker 取得，舊 worker 隨後恢復，造成兩個迴圈同時存活。章節已指出寫入端需要版本或 fencing token；這能協助拒絕過期 worker 的副作用，卻不等於保證兩個迴圈不會同時運行。",
+      "correct_value": "租約可限制有效持有者；仍須處理租約過期後的舊 worker，並由受保護的寫入端驗證 fencing token 或版本。"
+    },
+    {
+      "claim": "當 stop_reason 為 tool_use 時，所有對應的 tool_result 必須放在緊接的同一則 user 訊息內，且若另附文字，tool_result 必須排在文字之前。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 記錄了工具呼叫、strict schema 與 thinking 區塊保留要求，但沒有提供足以核對此處訊息順序、同訊息合併及完整配對要求的具體史料內容或位置。章內陳述本身不足以獨立證明完整 wire-level 契約。",
+      "correct_value": "此排列與配對規則需以對應版本的官方 Tool Use 文件核實；僅憑所附證據無法判定。"
+    }
+  ]
+}

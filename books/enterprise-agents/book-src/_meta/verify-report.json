@@ -1,0 +1,2251 @@
+{
+  "verdict": "WARN",
+  "writer_family": "google",
+  "chapter_count": 12,
+  "chapters": [
+    {
+      "file": "ch01-agent-architecture.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "5 回合累計輸入 = 42,000 tokens；5 回合累計輸出 = 1,750 tokens；未優化單筆成本 = $0.1015，每月成本 = $152,250。",
+              "verdict": "correct",
+              "reasoning": "依章內簡化假設，輸入為 5 × 6,000 + 1,200 × (0 + 1 + 2 + 3 + 4) = 42,000 tokens，輸出為 5 × 350 = 1,750 tokens。按基準價格計算，單筆成本為 42,000 × 2 / 1,000,000 + 1,750 × 10 / 1,000,000 = $0.1015；乘以每月 1,500,000 筆得 $152,250。此結果以首輪沒有另計工單文字為前提；若首輪另有 U tokens 且每輪重送，累計輸入增加 5U。",
+              "correct_value": "在章內簡化假設下，單筆 $0.1015，每日 $5,075，每月 $152,250。"
+            },
+            {
+              "claim": "HTTP 連線池：尖峰 12 req/s 下每筆工單都走 5 回合，穩態原始負載約 60 calls/s；若平均停留時間約 1.5 秒，平均在途連線數約 90 條。",
+              "verdict": "correct",
+              "reasoning": "在尖峰流量持續、每筆均完成 5 次呼叫的穩態假設下，呼叫率為 12 × 5 = 60 calls/s。依 Little's Law，平均在途呼叫數為 60 × 1.5 = 90。實際連線需求仍取決於連線複用、重試與負載分布，不能由此保證 128 條足夠。",
+              "correct_value": "平均約 90 個在途呼叫；128 為待壓測的連線池設定起點。"
+            },
+            {
+              "claim": "簡單工單單筆成本為 $0.00167，每日總成本為 $50.10；剩餘 40% 仍按 5 輪 Sonnet 基準時，月總成本為 $62,403。",
+              "verdict": "correct",
+              "reasoning": "兩輪輸入為 6,000 + 7,200 = 13,200 tokens，輸出為 700 tokens，依 Haiku 基準價得 $0.00132 + $0.00035 = $0.00167。每日 30,000 筆得 $50.10，30 日為 $1,503；複雜工單每月 600,000 筆，成本為 600,000 × $0.1015 = $60,900，合計 $62,403。",
+              "correct_value": "簡單工單每筆 $0.00167、每日 $50.10；兩分群合計每月 $62,403。"
+            },
+            {
+              "claim": "要達成整體 ≤ $18,000/月，複雜工單平均成本須壓至 ≤ $0.027495/筆。",
+              "verdict": "correct",
+              "reasoning": "每月簡單工單成本為 $1,503，剩餘預算為 $18,000 − $1,503 = $16,497。複雜工單每月 600,000 筆，因此每筆上限為 $16,497 / 600,000 = $0.027495；其每張總工單的加權貢獻為 0.4 × $0.027495 = $0.010998。",
+              "correct_value": "複雜工單平均成本 ≤ $0.027495/筆；整體平均 ≤ $0.012/筆。"
+            },
+            {
+              "claim": "if (controller.signal.aborted || err instanceof Anthropic.APIConnectionTimeoutError) { return { status: \"timeout\", stopReason: \"wall_clock_timeout\", /* ... */ }; }",
+              "verdict": "incorrect",
+              "reasoning": "程式將計時器設為單輪上限與總剩餘時間的較小值。若單輪上限為 5 秒、總剩餘時間為 18 秒，計時器在約 5 秒觸發時，總 wall-clock 期限尚未到，程式卻標記為 wall_clock_timeout。APIConnectionTimeoutError 也不能單憑其類型證明總期限已到。",
+              "correct_value": "應依實際總期限是否到達區分 wall_clock_timeout 與單輪或 API 逾時，並保留可辨識的逾時原因。"
+            },
+            {
+              "claim": "設定可續租的短暫 lease，可以防止同一工單被重試佇列重複啟動兩個 Agent Loop。",
+              "verdict": "imprecise",
+              "reasoning": "原子取得租約可在租約有效期間排除其他成功取得者，但舊 worker 可能暫停、租約到期後由新 worker 取得，舊 worker 隨後恢復，造成兩個迴圈同時存活。章節已指出寫入端需要版本或 fencing token；這能協助拒絕過期 worker 的副作用，卻不等於保證兩個迴圈不會同時運行。",
+              "correct_value": "租約可限制有效持有者；仍須處理租約過期後的舊 worker，並由受保護的寫入端驗證 fencing token 或版本。"
+            },
+            {
+              "claim": "當 stop_reason 為 tool_use 時，所有對應的 tool_result 必須放在緊接的同一則 user 訊息內，且若另附文字，tool_result 必須排在文字之前。",
+              "verdict": "imprecise",
+              "reasoning": "提供的 source-evidence 記錄了工具呼叫、strict schema 與 thinking 區塊保留要求，但沒有提供足以核對此處訊息順序、同訊息合併及完整配對要求的具體史料內容或位置。章內陳述本身不足以獨立證明完整 wire-level 契約。",
+              "correct_value": "此排列與配對規則需以對應版本的官方 Tool Use 文件核實；僅憑所附證據無法判定。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "若尖峰 12 req/s 下每筆工單都走 5 回合，穩態原始負載約 60 calls/s；若平均停留時間約 1.5 秒，依 Little’s Law 推算平均在途（In-flight）連線數約 90 條。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：尖峰工單進入率為 12 req/s，每筆工單 5 回合（每回合 1 次 LLM API 呼叫），穩態呼叫到達率 λ = 12 × 5 = 60 calls/s。若單次呼叫平均停留時間 W = 1.5 s，依 Little's Law (L = λ × W) 得平均在途連線數 L = 60 × 1.5 = 90 條。與章節數值完全吻合。",
+              "correct_value": "60 calls/s，平均在途連線數 90 條"
+            },
+            {
+              "claim": "日工單量 50,000 筆／天（1,500,000 筆／月，以 30 天計）；尖峰流量 12 req/s（平均 0.58 req/s，尖峰 20×；精確比值約 20.7×）。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：每月工單 = 50,000 × 30 = 1,500,000 筆。每日秒數 = 86,400 秒，平均流量 = 50,000 ÷ 86,400 ≈ 0.5787 req/s（四捨五入至小數點後兩位為 0.58 req/s）。以 0.58 req/s 計算尖峰倍率為 12 ÷ 0.58 ≈ 20.69×（若以精確值 50,000/86,400 計算為 12 × 86,400 ÷ 50,000 = 20.736×），均約為 20.7×，與基準表的 20× 及章節括號補充一致。",
+              "correct_value": "1,500,000 筆／月，平均約 0.58 req/s，精確尖峰比值約 20.7×"
+            },
+            {
+              "claim": "OrderOps 單筆工單在全用 Sonnet 5.5、無快取下（固定前綴 6,000 tokens、每回合新增輸入 1,200 tokens、每回合輸出 350 tokens，共 5 回合），5 回合累計輸入 42,000 tokens、累計輸出 1,750 tokens；單筆成本 $0.1015、每日成本 $5,075、每月成本 $152,250（若首輪工單另占 U tokens 且每輪重送，5 回合累計輸入為 42,000 + 5U tokens）。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：第 k 回合（k=1..5）輸入為 6,000 + (k-1)×1,200，5 回合分別為 6,000、7,200、8,400、9,600、10,800，總和 = (6,000 + 10,800) × 5 ÷ 2 = 42,000 tokens（若首輪工單為 U 且每輪重送則多 5U）。5 回合累計輸出 = 350 × 5 = 1,750 tokens。依 Sonnet 5.5 牌價（Input $2.00/MTok、Output $10.00/MTok），單筆輸入成本 = 0.042 × $2.00 = $0.0840，單筆輸出成本 = 0.00175 × $10.00 = $0.0175，單筆總成本 = $0.1015。每日成本 = $0.1015 × 50,000 = $5,075；每月成本（30 天，1,500,000 筆）= $0.1015 × 1,500,000 = $152,250。與基準資料及章節算式完全一致。",
+              "correct_value": "累計輸入 42,000 tokens、累計輸出 1,750 tokens；單筆 $0.1015、每日 $5,075、每月 $152,250"
+            },
+            {
+              "claim": "自我檢核第 3 題：60% 簡單工單（每天 30,000 筆）只需 2 回合且改用 Claude Haiku 5.5（$0.10 / $0.50 USD / MTok），2 回合累計輸入 13,200 tokens、累計輸出 700 tokens，單筆成本 $0.00167，每日總成本 $50.10（$1,503/月，較未優化單筆 $0.1015 降幅達 98.35%）。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：2 回合輸入 = 6,000 + (6,000 + 1,200) = 13,200 tokens（≤ 100K，適用 Haiku 5.5 $0.10 / $0.50 費率），2 回合輸出 = 350 × 2 = 700 tokens。單筆成本 = 0.0132 × $0.10 + 0.0007 × $0.50 = $0.00132 + $0.00035 = $0.00167。每日筆數 = 50,000 × 60% = 30,000 筆，每日成本 = $0.00167 × 30,000 = $50.10；每月成本（30 天）= $50.10 × 30 = $1,503。單筆降幅 = ($0.1015 - $0.00167) ÷ $0.1015 = 0.09983 ÷ 0.1015 ≈ 98.3547%（約 98.35%）。全部吻合。",
+              "correct_value": "單筆 $0.00167，每日 $50.10，每月 $1,503，單筆降幅 98.35%"
+            },
+            {
+              "claim": "自我檢核第 3 題延伸：若剩餘 40% 複雜工單仍按 5 輪 Sonnet 基準，月總成本為 $62,403；要達成整體 ≤ $18,000/月（平均 $0.012/筆，總降幅 88.18%），複雜工單平均成本須壓至 ≤ $0.027495/筆（其對全部工單的加權成本貢獻須 ≤ $0.010998/總工單筆）。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：每月總工單 1,500,000 筆，其中 60% 簡單工單（900,000 筆/月）月成本為 $1,503；剩餘 40% 複雜工單為 600,000 筆/月。若複雜工單維持未優化 Sonnet 5.5 基準（$0.1015/筆），複雜工單月成本 = 600,000 × $0.1015 = $60,900，合計月總成本 = $1,503 + $60,900 = $62,403。若目標月總成本 ≤ $18,000，全部工單平均單筆上限 = $18,000 ÷ 1,500,000 = $0.012/筆，較基準 $152,250/月之總降幅 = ($152,250 - $18,000) ÷ $152,250 = 134,250 ÷ 152,250 ≈ 88.1773%（約 88.18%）。扣除簡單工單 $1,503/月後，複雜工單可用月預算上限 = $18,000 - $1,503 = $16,497；除以 600,000 筆複雜工單，得複雜工單平均成本上限 = $16,497 ÷ 600,000 = $0.027495/筆；其對全部 1,500,000 筆工單的加權貢獻上限 = $16,497 ÷ 1,500,000 = $0.010998/總工單筆（或 $0.027495 × 0.4 = $0.010998）。推導完全一致。",
+              "correct_value": "未優化複雜工單下月總成本 $62,403；達標需複雜工單 ≤ $0.027495/筆（加權貢獻 ≤ $0.010998/總工單筆，整體降幅 88.18%）"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "5 回合累計輸入 = 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens；累計輸出 = 350 × 5 = 1,750 tokens",
+              "verdict": "correct",
+              "reasoning": "固定前綴是 6,000 tokens，每回合新增 1,200 tokens，所以第 n 回合的輸入是 6,000 + 1,200(n−1)。五個回合依序為 6,000、7,200、8,400、9,600、10,800，加總 42,000。輸出為 350 × 5 = 1,750。兩者都與基準表一致。章內也另外說明，若加入工單本文 U 並每輪重送，總輸入會變成 42,000 + 5U，限定條件清楚。",
+              "correct_value": "42,000 / 1,750 tokens"
+            },
+            {
+              "claim": "未優化單筆成本 $0.1015；每日 $5,075；每月 $152,250（全用 Sonnet 5.5、無快取）",
+              "verdict": "correct",
+              "reasoning": "輸入成本：42,000 / 1e6 × $2.00 = $0.0840。輸出成本：1,750 / 1e6 × $10.00 = $0.0175。兩者合計 $0.1015。乘以 50,000 筆得每日 $5,075，乘以 1,500,000 筆得每月 $152,250。單價符合 source-evidence 中 Sonnet 5.5 的 $2 / $10。",
+              "correct_value": "$0.1015 / $5,075 / $152,250"
+            },
+            {
+              "claim": "尖峰 12 req/s，平均 0.58 req/s，尖峰 20×；精確比值約 20.7×",
+              "verdict": "correct",
+              "reasoning": "50,000 ÷ 86,400 ≈ 0.5787 req/s。12 ÷ 0.5787 ≈ 20.74，所以「約 20.7×」正確；基準表寫的 20× 是取整後的值。",
+              "correct_value": "平均 ≈ 0.579 req/s；尖峰比 ≈ 20.7×"
+            },
+            {
+              "claim": "尖峰 12 req/s × 5 回合 ≈ 60 calls/s；平均停留 1.5 秒時，依 Little’s Law 平均在途連線約 90 條；5 輪各 5,000 ms 即達 25 s",
+              "verdict": "correct",
+              "reasoning": "依 Little’s Law，L = λW = 60 × 1.5 = 90。另外 5 × 5,000 ms = 25,000 ms，超過 18,000 ms 的 wall-clock 上限，所以章節主張兩者要分別驗證是合理的。",
+              "correct_value": "≈90 條在途連線；最壞 25 s"
+            },
+            {
+              "claim": "60% 簡單工單用 Haiku 5.5 跑 2 回合：單筆 $0.00167，每日 $50.10（每月 $1,503），降幅 98.35%",
+              "verdict": "correct",
+              "reasoning": "兩回合輸入為 6,000 + 7,200 = 13,200 tokens，成本 13,200 / 1e6 × $0.10 = $0.00132。輸出 700 tokens，成本 700 / 1e6 × $0.50 = $0.00035。合計 $0.00167。乘以 30,000 筆得每日 $50.10，再乘以 30 天得每月 $1,503。降幅為 1 − 0.00167 / 0.1015 = 98.355%，寫成 98.35% 合理。輸入量低於 100K，所以適用 ≤100K 的價格級距。",
+              "correct_value": "$0.00167 / $50.10／天 / $1,503／月 / ≈98.35%"
+            },
+            {
+              "claim": "剩餘 40% 走 Sonnet 基準時月總成本 $62,403；要達 ≤ $18,000（平均 $0.012，降幅 88.18%），複雜工單須 ≤ $0.027495／筆，加權貢獻 ≤ $0.010998",
+              "verdict": "correct",
+              "reasoning": "複雜工單每月 600,000 筆 × $0.1015 = $60,900，加上簡單工單的 $1,503，總計 $62,403。$18,000 ÷ 1,500,000 = $0.012，對應降幅 1 − 0.012 / 0.1015 = 88.18%。扣掉簡單工單後的預算為 $18,000 − $1,503 = $16,497，除以 600,000 筆得 $0.027495／筆。乘以 0.4 得加權貢獻 $0.010998。",
+              "correct_value": "$62,403；$0.027495；$0.010998；88.18%"
+            },
+            {
+              "claim": "預算護欄 maxTotalInputTokens = 50,000（高於 5 回合基準 42,000）、maxCostUsd = 0.25",
+              "verdict": "correct",
+              "reasoning": "基準情境的累計輸入為 42,000，低於 50,000 的上限；成本 $0.1015 也低於 $0.25，所以正常工單不會被誤殺。但若加上 5U 的工單本文，U 超過 1,600 tokens 時就會超過 50,000，屆時要重新校準上限。章節已把這類門檻定位為初始政策門檻。",
+              "correct_value": "成立；U > 1,600 tokens 時需重新校準"
+            },
+            {
+              "claim": "範例程式：maxTurns = 1 時，第一輪出現 tool_use 就在派發前攔截，回傳 budget_exceeded／max_turns",
+              "verdict": "correct",
+              "reasoning": "迴圈開始後 turns 變成 1。收到 tool_use 時，`turns >= maxTurns` 成立，程式在 executeTool 之前就 return。所以最後一輪不會執行寫入工具，與章節的描述一致。",
+              "correct_value": "成立"
+            },
+            {
+              "claim": "範例程式在 AbortController 觸發時一律回傳 stopReason: \"wall_clock_timeout\"",
+              "verdict": "imprecise",
+              "reasoning": "計時器的值是 `min(turnTimeoutMs, 剩餘時間)`。當單輪 5,000 ms 先到期、而整體 18,000 ms 還沒到時，觸發的其實是單輪逾時，程式卻仍標成 wall_clock_timeout，會讓 agent_turns 的稽核與告警歸因失準。章末只附帶提到「程式需區分」，核心程式碼本身沒有做到。",
+              "correct_value": "建議區分 stopReason：剩餘時間 ≤ turnTimeoutMs 時標 wall_clock_timeout，否則標 turn_timeout"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch02-tool-use-and-mcp.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 共有 18 個工具（12 個唯讀工具與 6 個寫入／金流工具），Schema 合計 3,600 tokens，加上 System Prompt 2,400 tokens，構成 6,000 tokens 的基準前綴。",
+              "verdict": "correct",
+              "reasoning": "章內工具清單可數出 12 個唯讀工具及 6 個寫入工具，共 18 個；3,600 + 2,400 = 6,000。這些數值也與基準資料一致。",
+              "correct_value": "18 個工具；基準前綴 6,000 tokens。"
+            },
+            {
+              "claim": "第 1～5 回合輸入合計 42,000 tokens、輸出合計 1,750 tokens；無快取的 Sonnet 5.5 基準單筆成本為 $0.1015。",
+              "verdict": "correct",
+              "reasoning": "依章內假設，五回合輸入為 6,000、7,200、8,400、9,600、10,800，合計 42,000；輸出為 350 × 5 = 1,750。按提供的牌價計算，輸入成本為 $0.084，輸出成本為 $0.0175，合計 $0.1015。",
+              "correct_value": "42,000 輸入 tokens、1,750 輸出 tokens、$0.1015／筆。"
+            },
+            {
+              "claim": "在 12% 工單多出一個可由 strict 消除的第 6 回合的情境下，期望節省 $0.0033／筆、$165／天及 $4,950／月。",
+              "verdict": "correct",
+              "reasoning": "第 6 回合輸入為 12,000 tokens，依提供牌價與 350 輸出 tokens 計得成本 $0.0275；乘以 12% 為 $0.0033／筆。每日 50,000 筆為 $165，以 30 天計為 $4,950。結果成立於無快取及所述重試比例、位置與可消除性等假設下，並非已實測節省。",
+              "correct_value": "情境估算為 $0.0033／筆、$165／天、$4,950／30 天。"
+            },
+            {
+              "claim": "若第一回合為冷啟動寫入快取、後四回合均命中，快取讀取量為 24,000 tokens，占總輸入 57.14%；第一回合也命中時才達 71.43%。",
+              "verdict": "correct",
+              "reasoning": "四次讀取各 6,000 tokens，共 24,000；24,000 ÷ 42,000 約為 57.14%。五次均讀取則為 30,000 ÷ 42,000，約 71.43%。",
+              "correct_value": "冷啟動後四次命中為 57.14%；五次均命中為 71.43%。"
+            },
+            {
+              "claim": "若 12 req/s 為工單進件率，5 回合穩態下約對應 60 次模型請求／秒，未計重試。",
+              "verdict": "correct",
+              "reasoning": "在每筆工單均產生五次模型請求、系統處於穩態且不計重試的假設下，12 × 5 = 60 次模型請求／秒。此為平均穩態換算，不能單憑它確定瞬時峰值或所需併發數。",
+              "correct_value": "約 60 次模型請求／秒，限於所述穩態假設。"
+            },
+            {
+              "claim": "設定 strict: true 可在解碼階段強制成功完成的 tool_use.input 符合支援的 JSON Schema 子集；它不能保證業務語意正確。",
+              "verdict": "correct",
+              "reasoning": "提供的 source-evidence 支持 strict tool use 在解碼時約束工具名稱與輸入酬載符合 schema。結構合規本身不能推出訂單存在、呼叫者獲授權或退款符合政策，因此仍需後端驗證。",
+              "correct_value": "成功完成的工具呼叫受支援的 schema 約束；業務事實、授權與政策須另行驗證。"
+            },
+            {
+              "claim": "strict: true 無法驗證 amount_usd > 0。",
+              "verdict": "imprecise",
+              "reasoning": "本章範例只將 amount_usd 宣告為 number，正數限制寫在 description，沒有以數值約束表達，因此不能由這份 schema 推出金額大於零。提供的證據沒有列出 strict 模式支援的完整 schema 子集，不足以判定所有版本或 schema 均無法表達此限制。",
+              "correct_value": "本範例的 schema 未強制 amount_usd > 0；後端必須驗證正數、精度及業務上限。數值約束是否受 strict 模式支援，須查核對應版本文件。"
+            },
+            {
+              "claim": "若未設定 ANTHROPIC_API_KEY，範例程式會自動執行本地 dry_run、commit、replay 測試；若已設定，會進一步執行完整 Agent Loop。",
+              "verdict": "imprecise",
+              "reasoning": "材料只提供程式路徑、執行指令與預期輸出，沒有提供實際程式內容或執行紀錄，無法獨立判定分支行為及測試結果。",
+              "correct_value": "這是待驗證的範例預期行為；須取得程式內容並實際執行後才能確認。"
+            },
+            {
+              "claim": "將相同操作鍵傳給支付商，配合共享帳本、payload hash、操作狀態及餘額保留，可防止所涵蓋情境的重複動帳。",
+              "verdict": "correct",
+              "reasoning": "共享帳本與酬載比對可辨識同一操作及異參衝突；支付商對同一操作鍵去重可涵蓋已退款但本地尚未記帳的重試；餘額原子保留可處理不同操作鍵並發退款。結論依賴支付商冪等契約覆蓋重試與對帳，以及各項狀態和保留機制正確實作。",
+              "correct_value": "在章節列明的支付商契約與實作條件成立時，可防止這些條件所涵蓋的重複動帳情境；仍須以契約及故障測試驗證。"
+            },
+            {
+              "claim": "依序發送所列 curl 請求即可驗證 Stateless MCP HTTP 端點。",
+              "verdict": "imprecise",
+              "reasoning": "提供的證據支持 Streamable HTTP 與無狀態部署的概念，但未列出該協定版本對每個請求的完整標頭及回應要求，也沒有端點實作或實際回應。僅憑列出的請求順序，無法確認範例符合協定或端點可正常運作。",
+              "correct_value": "應以指定 MCP 協定版本的完整請求與回應要求，對實際端點執行初始化、探索及呼叫測試，再判定是否符合規範。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 共有 18 個工具（12 個唯讀 Read-only 工具 + 6 個寫入／金流 Mutating 工具），這些工具的 Schema 合計佔用 3,600 tokens，加上 System Prompt 2,400 tokens，構成 6,000 tokens 的基準前綴。",
+              "verdict": "correct",
+              "reasoning": "根據基準資料（baseline）：工具總數為 12 Read-only + 6 Mutating = 18 個；章節內列舉的唯讀工具共 12 個、寫入工具共 6 個，數量相符。前綴大小為 System Prompt 2,400 tokens + 18 工具 Schema 3,600 tokens = 6,000 tokens，與基準資料完全一致。",
+              "correct_value": "18 個工具（12 Read-only + 6 Mutating），基準前綴 2,400 + 3,600 = 6,000 tokens"
+            },
+            {
+              "claim": "第 2 回合的 Wire-Level tool_use 回應範例中，已有 6,000 tokens 基準前綴命中快取，1,200 tokens 為未快取的新增輸入，總輸入為 7,200 tokens，output_tokens 為 350。",
+              "verdict": "correct",
+              "reasoning": "依基準設定，第 1 回合輸入為基準前綴 6,000 tokens，之後每回合新增輸入 1,200 tokens、每回合輸出 350 tokens。第 2 回合時，前綴 6,000 tokens 命中快取（cache_read_input_tokens: 6000），新增未快取輸入 1,200 tokens（input_tokens: 1200），總輸入 6,000 + 1,200 = 7,200 tokens，輸出 350 tokens，與基準及算例一致。",
+              "correct_value": "第 2 回合 cache_read_input_tokens = 6,000、input_tokens = 1,200（總輸入 7,200 tokens）、output_tokens = 350"
+            },
+            {
+              "claim": "若 12 req/s 為工單進件率，5 回合穩態下約對應 60 次模型請求/秒（未計重試）。",
+              "verdict": "correct",
+              "reasoning": "根據基準資料，OrderOps 尖峰流量為 12 req/s，基準每筆工單為 5 回合。在穩態且不計重試的情況下，每秒模型請求數為 12 筆/秒 × 5 回合/筆 = 60 次模型請求/秒。",
+              "correct_value": "60 次模型請求/秒"
+            },
+            {
+              "claim": "無快取、5 回合基準下，第 1~5 回合累計輸入為 42,000 tokens，累計輸出為 1,750 tokens，以 Claude Sonnet 5.5（Input $2.00/MTok、Output $10.00/MTok）計價，基準單筆成本為 $0.1015 / 筆。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：第 1 回合輸入 6,000 tokens，每回合遞增 1,200 tokens，5 回合輸入總和 = 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens；5 回合輸出總和 = 350 × 5 = 1,750 tokens。輸入成本 = 42,000 / 1,000,000 × $2.00 = $0.0840；輸出成本 = 1,750 / 1,000,000 × $10.00 = $0.0175；單筆總成本 = $0.0840 + $0.0175 = $0.1015，與基準資料及章節算例完全一致。",
+              "correct_value": "累計輸入 42,000 tokens、累計輸出 1,750 tokens、單筆成本 $0.1015"
+            },
+            {
+              "claim": "未開啟 strict: true 時，若假設 12% 工單多出第 6 回合（輸入 12,000 tokens、輸出 350 tokens），單次額外回合成本為 $0.0275，平均每筆工單期望節省 $0.0033，每日 50,000 筆工單可省 $165.00 / 天（$4,950 / 月）。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：第 5 回合輸入為 10,800 tokens，故額外第 6 回合輸入 = 10,800 + 1,200 = 12,000 tokens，輸出 = 350 tokens。單次額外回合成本 = (12,000 × $2.00 + 350 × $10.00) / 1,000,000 = $0.0240 + $0.0035 = $0.0275。12% 發生率下每筆期望成本 = $0.0275 × 0.12 = $0.0033。每日 50,000 筆期望節省 = 50,000 × $0.0033 = $165.00 / 天；每月（30 天）= $165.00 × 30 = $4,950 / 月。所有推導數值皆正確。",
+              "correct_value": "單次額外回合 $0.0275、每筆期望節省 $0.0033、每日 $165.00、每月 $4,950"
+            },
+            {
+              "claim": "五回合基準的固定前綴總量占總輸入為 30,000 / 42,000 = 71.43%；若第一回合為冷啟動寫入快取、後四回合均命中，快取讀取量為 4 × 6,000 = 24,000 tokens（占總輸入 57.14%）。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：固定前綴為每回合 6,000 tokens，5 回合共 5 × 6,000 = 30,000 tokens，占 5 回合總輸入 42,000 tokens 的比例為 30,000 / 42,000 = 5 / 7 ≈ 71.4286%（四捨五入至小數點後兩位為 71.43%）。若第 1 回合為快取寫入（cache_creation = 6,000, cache_read = 0），第 2~5 回合共 4 回合命中快取讀取，則快取讀取總量為 4 × 6,000 = 24,000 tokens，占總輸入比例為 24,000 / 42,000 = 4 / 7 ≈ 57.1429%（四捨五入至小數點後兩位為 57.14%）。計算完全正確。",
+              "correct_value": "5 回合命中占比 30,000 / 42,000 ≈ 71.43%；冷啟動後 4 回合命中占比 24,000 / 42,000 ≈ 57.14%"
+            },
+            {
+              "claim": "Claude API 的 strict: true、output_config.format、thinking 區塊保留、Prompt Caching 的 tools → system → messages 前綴匹配順序，以及 Streamable HTTP MCP 與 mcp_servers / mcp_toolset 機制符合平台規範。",
+              "verdict": "correct",
+              "reasoning": "比對 source-evidence：第 2 節確認 Prompt Caching 前綴匹配順序為 tools → system → messages；第 3 節確認 output_config.format 支援 JSON Schema（搭配 Zod/Pydantic）、工具定義支援 strict: true 解碼期約束、多回合工具呼叫必須保留先前 assistant 的 thinking 區塊與簽章；第 5 節確認 Streamable HTTP 取代舊版 HTTP+SSE 並支援無狀態水平擴展，且 Messages API 支援 mcp_servers 與 mcp_toolset 連線遠端 Streamable HTTP MCP servers。章節敘述與 source-evidence 完全吻合。",
+              "correct_value": "與 source-evidence 記載之 Claude API 及 MCP 規範一致"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "基準單筆成本（無快取，5 回合）：輸入 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens，輸出 350 × 5 = 1,750 tokens，單筆成本 = $0.0840 + $0.0175 = $0.1015",
+              "verdict": "correct",
+              "reasoning": "第 n 回合的輸入是 6,000 + 1,200 × (n−1)，所以五回合依序是 6,000、7,200、8,400、9,600、10,800，加總 42,000。輸出 5 × 350 = 1,750。以 Sonnet 5.5 每百萬 tokens $2 / $10 計：42,000 × 2 / 1e6 = $0.084，1,750 × 10 / 1e6 = $0.0175，合計 $0.1015。結果與基準表的 42,000 / 1,750 / $0.1015 一致。",
+              "correct_value": "$0.1015 / 筆"
+            },
+            {
+              "claim": "多出的第 6 回合輸入 12,000 tokens、輸出 350 tokens，成本 $0.0275；乘以 12% 得每筆 $0.0033，每日 $165.00，每月 $4,950",
+              "verdict": "correct",
+              "reasoning": "第 6 回合輸入 = 6,000 + 5 × 1,200 = 12,000。成本 = 0.024 + 0.0035 = $0.0275。$0.0275 × 0.12 = $0.0033；× 50,000 = $165 / 天；× 30 = $4,950 / 月。數字正確。不過 12% 與「錯誤全可由 strict 消除」都是情境假設，章節也已標明。",
+              "correct_value": "$0.0275 / 次；$0.0033 / 筆；$165 / 天；$4,950 / 月（情境估算）"
+            },
+            {
+              "claim": "固定前綴占五回合總輸入 30,000 / 42,000 = 71.43%；首回合冷啟動、後四回合命中時，快取讀取 4 × 6,000 = 24,000 tokens，占 57.14%",
+              "verdict": "correct",
+              "reasoning": "5 × 6,000 = 30,000，30,000 / 42,000 = 0.714286；24,000 / 42,000 = 0.571429。6,000 tokens 也高於 source-evidence 所列 Sonnet 等級 1,024 tokens 的最低可快取門檻，因此會被快取。",
+              "correct_value": "71.43% / 57.14%"
+            },
+            {
+              "claim": "第 2 回合 Wire 範例：usage 為 input_tokens 1,200、cache_read_input_tokens 6,000，總輸入 7,200 tokens",
+              "verdict": "correct",
+              "reasoning": "斷點放在最後一個固定 system 區塊時，只快取 tools + system 共 6,000 tokens；第 2 回合新增的 1,200 tokens 不在快取內，計為 input_tokens。1,200 + 6,000 = 7,200，與第 5 節第 2 回合的總輸入一致。補充一點：輸出 350 tokens 依假設包含 thinking，但範例 content 裡沒有 thinking 區塊，與「保留帶簽章 thinking」的說明搭配時可加註「省略 thinking 區塊」。",
+              "correct_value": "7,200 tokens（1,200 未快取 + 6,000 快取讀取）"
+            },
+            {
+              "claim": "OrderOps 18 個工具 = 12 個唯讀 + 6 個寫入，列表與數量相符",
+              "verdict": "correct",
+              "reasoning": "逐一數過：Read-only 列了 12 個名稱，Mutating 列了 6 個名稱，合計 18，與基準一致。",
+              "correct_value": "12 + 6 = 18"
+            },
+            {
+              "claim": "若 12 req/s 為工單進件率，5 回合穩態下約對應 60 次模型請求/秒（未計重試）",
+              "verdict": "correct",
+              "reasoning": "12 × 5 = 60。基準尖峰 12 req/s 來自平均 0.58 req/s × 20 ≈ 11.6，而 50,000 / 86,400 ≈ 0.579，前後一致。",
+              "correct_value": "約 60 次模型請求/秒（尖峰、未計重試）"
+            },
+            {
+              "claim": "前綴匹配順序為 tools → system → messages；斷點只放在最後一個工具時只快取 tools，要涵蓋 system 須放在最後一個固定 system 區塊",
+              "verdict": "correct",
+              "reasoning": "source-evidence 指出前綴是從請求開頭依 tools → system → messages 精確比對，前面的區塊一變動就會讓後面的斷點全部失效。依這個規則，斷點放在 system 末端就會連同 tools 一起快取。",
+              "correct_value": "同章節所述"
+            },
+            {
+              "claim": "原則 4 要求 tenant_id 取自已驗證的身分上下文、操作鍵由後端產生，但 issue_refund 的 strict schema 與 Wire 範例卻讓模型填入 tenant_id 與 idempotency_key",
+              "verdict": "imprecise",
+              "reasoning": "章節的設計原則和它給的範例契約互相矛盾。schema 把 tenant_id、idempotency_key 列為模型必填，description 還要求模型自己組出確定性的鍵；可是原則 4 說不信任模型填的 tenant_id，並由後端產生操作鍵。讀者照範例實作的話，就會讓模型掌控租戶與冪等鍵，跨租戶或改鍵繞過去重的風險還在。",
+              "correct_value": "應說明 schema 裡的 tenant_id / idempotency_key 只用於展示或比對，執行層要以已驗證的身分覆寫 tenant_id，並由後端依 (tenant_id, order_id, ticket_id) 產生冪等鍵；或直接從模型可見的 schema 移除這兩個欄位。"
+            },
+            {
+              "claim": "strict: true 在解碼階段以受限採樣強制 tool_use.input 符合支援的 JSON Schema 子集，但不能保證語意或數值範圍（如 amount_usd > 0）",
+              "verdict": "correct",
+              "reasoning": "source-evidence 寫的是 strict: true 在解碼時強制工具名稱與輸入符合 schema。章節把它限定在「支援的子集」、「成功完成的」輸出，並把範圍與業務驗證留給應用層，說法保守而且與證據一致。",
+              "correct_value": "同章節所述"
+            },
+            {
+              "claim": "退避參數 base = 500 ms、cap = 4,000 ms、max_retries = 4，並受 18,000 ms 全鏈路 deadline 約束",
+              "verdict": "correct",
+              "reasoning": "Full Jitter 下每次最大等待依序是 500、1,000、2,000、4,000 ms，最多累計 7.5 s，還在 18 s deadline 之內。章節也要求以剩餘 deadline 再截斷，邏輯一致。",
+              "correct_value": "最壞累計退避約 7.5 s，在 18 s 預算內"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch03-context-and-prompt-engineering.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "5 回合未優化基準累計 42,000 input / 1,750 output，單筆 $0.1015。",
+              "verdict": "correct",
+              "reasoning": "依章內的基準情境，五回合輸入依序為 6,000、7,200、8,400、9,600、10,800 tokens，合計 42,000；輸出為 350 × 5 = 1,750 tokens。按每百萬輸入 $2、輸出 $10 計算，成本為 $0.084 + $0.0175 = $0.1015。",
+              "correct_value": "42,000 input tokens、1,750 output tokens，單筆 $0.1015。"
+            },
+            {
+              "claim": "情境 A 的前綴快取寫入成本為 $0.015000、新增輸入成本為 $0.002400、輸出成本為 $0.043500，單回合總計 $0.060900。",
+              "verdict": "correct",
+              "reasoning": "依題設的 1.25 倍寫入費率，6,000 × $2 × 1.25 / 1,000,000 = $0.015；1,200 × $2 / 1,000,000 = $0.0024；4,350 × $10 / 1,000,000 = $0.0435。三者合計 $0.0609，且低於 8,000 tokens 的輸出上限。",
+              "correct_value": "單回合 $0.060900，其中 4,000 個計費 thinking tokens 為 $0.040000。"
+            },
+            {
+              "claim": "情境 B 裁剪工具回傳後，後續重送節省 $0.044400；加計首次送入為 $0.059200。",
+              "verdict": "correct",
+              "reasoning": "每次送入減少 8,000 − 600 = 7,400 tokens。假設後續確實重送 3 次且均按基礎輸入費率計價，節省 22,200 tokens，即 $0.0444；加計首次送入共節省 29,600 tokens，即 $0.0592。",
+              "correct_value": "後續重送省 $0.044400；含首次送入省 $0.059200，均以題設條件成立為前提。"
+            },
+            {
+              "claim": "自我檢核第 3 題：僅計後續重送每月省 $54,000；加計首次送入每月省 $67,500。",
+              "verdict": "correct",
+              "reasoning": "每次送入減少 5,000 − 500 = 4,500 tokens；後續四次共 18,000 tokens，按 $2 / MTok 為每筆 $0.036。每日 50,000 筆、30 天共 1,500,000 筆，節省 $54,000。加計首次送入共五次，為每筆 22,500 tokens、$0.045，月省 $67,500。",
+              "correct_value": "後續四次重送每筆省 18,000 tokens、$0.036，月省 $54,000；含首次送入每筆省 22,500 tokens、$0.045，月省 $67,500。"
+            },
+            {
+              "claim": "時間戳記放在 system 第一行時，已寫入且仍有效的 tools 斷點仍可命中讀取，但從 system 斷點起會失配並重新寫入快取。",
+              "verdict": "correct",
+              "reasoning": "提供的證據指出比對順序為 tools → system → messages，較早區塊的變動使後續斷點失效。因此 tools 內容和既有有效快取不變時，其斷點可命中；變動的 system 前綴及其後續斷點不再匹配。重新寫入仍以符合該模型的快取門檻等條件為前提。",
+              "correct_value": "有效的 tools 斷點可命中；變動處所在的 system 斷點及後續斷點失配，符合寫入條件時重新建立。"
+            },
+            {
+              "claim": "Extended Thinking 的輸出單價極高，必須只針對高風險或複雜工單按需開啟。",
+              "verdict": "imprecise",
+              "reasoning": "帳本顯示假設中的 4,000 個 thinking tokens 成本為 $0.04，但沒有提供不同工單類型啟用與不啟用時的品質改善、錯誤成本或延遲資料，無法由單一成本例子推導出只能用於高風險或複雜工單。",
+              "correct_value": "依各類任務的品質收益、錯誤風險、延遲與成本評測，決定是否及何時啟用。"
+            },
+            {
+              "claim": "越早截斷，後續回合省下的輸入成本與延遲越多。",
+              "verdict": "imprecise",
+              "reasoning": "在相同減量、更多次完整重送、相同計價且沒有快取或 Compaction 改變計費的假設下，越早截斷可累積更多輸入 token 節省；但章內沒有提供延遲與 token 數之間的量化關係，也未證明截斷一定降低端到端延遲。",
+              "correct_value": "在其餘條件相同且被刪內容原會於更多後續回合重送時計費輸入節省較多；延遲影響須實測。"
+            },
+            {
+              "claim": "兩份程式皆實作了 buildLayeredPrompt、truncateToolResult 與 compactHistory，並支援未設定 ANTHROPIC_API_KEY 時自動切換為離線驗證模式。",
+              "verdict": "imprecise",
+              "reasoning": "提供的章節僅展示部分程式碼，基準資料與 source-evidence 也未包含兩份完整實作或執行結果，因此無法核實所有函式與離線切換行為。",
+              "correct_value": "須檢視兩份完整程式並驗證未設定 API 金鑰時的行為，才能確認。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 基準參數與 5 回合未優化基準消耗／成本：每天 50,000 筆工單、每筆平均 5 回合；基準前綴 6,000 tokens（System Prompt 2,400 + 18 個工具 Schema 3,600）；第 2–5 回合每回合新增輸入 1,200 tokens、每回合輸出 350 tokens；5 回合未優化累計 42,000 input / 1,750 output tokens，以 Sonnet 5.5（Input $2.00 / MTok、Output $10.00 / MTok）計單筆成本 $0.1015。",
+              "verdict": "correct",
+              "reasoning": "依基準表與章內定義獨立重算：前綴 = 2,400 + 3,600 = 6,000 tokens。若首回合輸入為前綴 6,000 + 首輪新增輸入 1,200 = 7,200 tokens（或 5 回合前綴 6,000×5 = 30,000 tokens 加上 1,200×(1+2+3+4) = 12,000 tokens），5 回合累計輸入 = 7,200 + 8,400 + 9,600 + 10,800 + 6,000（或 30,000 + 12,000）= 42,000 tokens，與 baseline『42,000 累計輸入 tokens』一致；5 回合累計輸出 = 350 × 5 = 1,750 tokens。未優化單筆成本 = (42,000 × $2.00 + 1,750 × $10.00) / 1,000,000 = $0.0840 + $0.0175 = $0.1015。與章節及 baseline 完全吻合。",
+              "correct_value": "42,000 input tokens / 1,750 output tokens，單筆 $0.1015"
+            },
+            {
+              "claim": "Prompt Caching 機制與倍率：前綴評估順序固定為 tools → system → messages；讀取倍率在 Sonnet 5.5 / Opus 5.5 為基礎輸入單價的 0.05×，在 Haiku 5.5 為 0.10×；寫入倍率為 5 分鐘 TTL 1.25×、1 小時 TTL 2.0×；最低快取門檻於 claude-opus-5-5 為 512 tokens、claude-sonnet-5 為 1,024 tokens、部分較舊模型為 4,096 tokens，OrderOps 的 3,600（tools）與 6,000（tools+system）tokens 前綴均超過 512 與 1,024 tokens 門檻。",
+              "verdict": "correct",
+              "reasoning": "比對 baseline 與 source-evidence 第 1、2 節：評估順序為 tools → system → messages；讀取倍率 Sonnet/Opus 5.5 為 0.05×、Haiku 5.5 為 0.10×；寫入倍率 5m TTL 為 1.25×、1h TTL 為 2.0×；最低門檻 opus-5-5 為 512、sonnet-5 為 1,024、舊版 4.5/4.6 為 4,096。數值比較：3,600 > 1,024 > 512 且 6,000 > 1,024 > 512，推導正確。",
+              "correct_value": "讀取倍率 0.05×（Sonnet/Opus 5.5）/ 0.10×（Haiku 5.5）；寫入倍率 1.25×（5m）/ 2.0×（1h）；3,600 與 6,000 tokens 均大於 512 與 1,024 tokens"
+            },
+            {
+              "claim": "Worked Example 情境 A：單筆工單第 1 回合寫入 6,000-token 前綴（Sonnet 5.5 輸入 $2.00/MTok，5m TTL 寫入倍率 1.25×），首輪動態輸入 1,200 tokens，計費輸出為 4,000 thinking tokens + 350 回覆 tokens（合計 4,350 output tokens，Sonnet 5.5 輸出 $10.00/MTok），則前綴快取寫入成本 $0.015000、新增輸入成本 $0.002400、輸出成本 $0.043500、單回合總計 $0.060900（其中 thinking 4,000 tokens 佔 $0.040000）。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：前綴快取寫入成本 = 6,000 × $2.00 × 1.25 / 1,000,000 = $0.015000；新增輸入成本 = 1,200 × $2.00 / 1,000,000 = $0.002400；總輸出 tokens = 4,000 + 350 = 4,350，輸出成本 = 4,350 × $10.00 / 1,000,000 = $0.043500（其中 thinking 佔 4,000 × $10.00 / 1,000,000 = $0.040000）；單回合總計 = $0.015000 + $0.002400 + $0.043500 = $0.060900。與作者計算完全一致。",
+              "correct_value": "前綴寫入 $0.015000、新增輸入 $0.002400、輸出 $0.043500（thinking 佔 $0.040000）、總計 $0.060900"
+            },
+            {
+              "claim": "Worked Example 情境 B：第 2 回合工具回傳從 8,000 tokens 裁剪為 600 tokens，單次省下 7,400 tokens；後續第 3、4、5 回合共 3 次重送累計省下 22,200 input tokens（加計第 2 回合首次送入為 29,600 tokens）；以 Sonnet 5.5 輸入單價 $2.00/MTok 計，後續重送節省 $0.044400（含首次送入為 $0.059200）。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：單次節省 = 8,000 - 600 = 7,400 tokens。後續第 3、4、5 回合共 3 回合重送：7,400 × 3 = 22,200 tokens，成本節省 = 22,200 × $2.00 / 1,000,000 = $0.044400。若加計第 2 回合首次送入（共 4 次）：7,400 × 4 = 29,600 tokens，成本節省 = 29,600 × $2.00 / 1,000,000 = $0.059200。與章內數字完全一致。",
+              "correct_value": "單次省 7,400 tokens；後續 3 回合省 22,200 tokens（$0.044400）；含首次送入共 4 次省 29,600 tokens（$0.059200）"
+            },
+            {
+              "claim": "自我檢核第 3 題：工具回傳由 5,000 tokens 截斷為 500 tokens，單次省下 4,500 tokens；僅計後續 4 個回合重送，每筆省下 18,000 input tokens 與 $0.036，每日 50,000 筆、每月（30 天，1,500,000 筆）共省下 $54,000；若加計首次送入（共 5 次），每筆省下 22,500 tokens 與 $0.045，每月省下 $67,500。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：單次省下 = 5,000 - 500 = 4,500 tokens。僅計後續 4 回合：4,500 × 4 = 18,000 tokens/筆；單筆節省 = 18,000 × $2.00 / 1,000,000 = $0.036/筆；每月（50,000 × 30 = 1,500,000 筆）節省 = $0.036 × 1,500,000 = $54,000/月。加計首次送入（共 5 次）：4,500 × 5 = 22,500 tokens/筆；單筆節省 = 22,500 × $2.00 / 1,000,000 = $0.045/筆；每月節省 = $0.045 × 1,500,000 = $67,500/月。所有推導結果均正確。",
+              "correct_value": "僅計後續 4 回合：18,000 tokens/筆、$0.036/筆、$54,000/月；含首次送入（5 次）：22,500 tokens/筆、$0.045/筆、$67,500/月"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "5 回合未優化基準累計 42,000 input / 1,750 output，單筆 $0.1015（第 2–5 回合每回合新增歷史輸入 1,200 tokens、每回合輸出 350 tokens）",
+              "verdict": "correct",
+              "reasoning": "第 1 回合只有 6,000 前綴，之後每回合多 1,200，所以五回合的輸入是 6,000、7,200、8,400、9,600、10,800，加總 42,000。輸出 5×350=1,750。輸入成本 42,000×$2/1e6=$0.084，輸出成本 1,750×$10/1e6=$0.0175，合計 $0.1015，和基準一致。這個算法的前提是第 1 回合沒有額外動態輸入，章內寫的是「第 2–5 回合」新增，和這個前提一致。",
+              "correct_value": "42,000 / 1,750 / $0.1015"
+            },
+            {
+              "claim": "情境 A：前綴快取寫入 $0.015000、新增輸入 $0.002400、輸出（含思考）$0.043500，單回合總計 $0.060900，thinking 4,000 tokens 佔 $0.040000",
+              "verdict": "correct",
+              "reasoning": "6,000×2×1.25/1e6=0.015；1,200×2/1e6=0.0024；4,350×10/1e6=0.0435；三項合計 0.0609；4,000×10/1e6=0.04。全部重算吻合。要注意的是，情境 A 假設首輪另有 1,200 動態輸入，和基準首輪只有 6,000 前綴的口徑不同。章內已標明這是「獨立首輪載荷情境」，不影響這組算術。",
+              "correct_value": "$0.060900（thinking 佔 $0.040000）"
+            },
+            {
+              "claim": "情境 B：工具回傳 8,000→600，後續第 3、4、5 回合重送省 22,200 tokens／$0.044400；含首次送入 29,600 tokens／$0.059200",
+              "verdict": "correct",
+              "reasoning": "8,000−600=7,400。第 2 回合首次送入後，第 3 到 5 回合共重送 3 次，7,400×3=22,200，換算 22,200×2/1e6=$0.0444。加上首次送入是 7,400×4=29,600，換算 $0.0592。前提是這段內容沒有命中快取，中途也沒有經過 Compaction。",
+              "correct_value": "22,200 tokens / $0.0444；含首次 29,600 tokens / $0.0592"
+            },
+            {
+              "claim": "自我檢核 3 解答：每筆省 18,000 tokens／$0.036，每月 $54,000；含首次送入 22,500 tokens／$0.045，每月 $67,500",
+              "verdict": "correct",
+              "reasoning": "5,000−500=4,500。後續 4 回合為 4,500×4=18,000，換算 $0.036。每月 50,000×30=1,500,000 筆，乘上去是 $54,000。含首次送入為 4,500×5=22,500，換算 $0.045，每月 $67,500。",
+              "correct_value": "$54,000／月（含首次 $67,500／月）"
+            },
+            {
+              "claim": "快取讀取以基礎輸入單價 0.05×（Sonnet 5.5 / Opus 5.5）或 0.10×（Haiku 5.5）計；5m 寫入 1.25×、1h 寫入 2.0×",
+              "verdict": "correct",
+              "reasoning": "和基準表及 source-evidence 第 1 節的倍率一致。",
+              "correct_value": "讀取 0.05× / 0.10×；寫入 1.25× / 2.0×"
+            },
+            {
+              "claim": "最低快取門檻：claude-opus-5-5 為 512 tokens，claude-sonnet-5 為 1,024 tokens，部分較舊模型 4,096；OrderOps 3,600 與 6,000 tokens 前綴均超過 512 與 1,024 門檻，Sonnet 5.5 須另行確認",
+              "verdict": "correct",
+              "reasoning": "source-evidence 列的是 Opus 5.5 為 512、標準 Sonnet（Sonnet 5 / 4.5 / 4.6）為 1,024、舊 Haiku 4.5 與 Opus 4.5/4.6 為 4,096，章節數值忠實。3,600 和 6,000 都大於 1,024。證據沒有列出 Sonnet 5.5 與 Haiku 5.5 的確切門檻，章節已加上「另行確認」的限定，處理得當。",
+              "correct_value": "同章節所述（Sonnet 5.5 / Haiku 5.5 門檻待官方文件確認）"
+            },
+            {
+              "claim": "時間戳記插入 system 最前端時，tools 斷點（3,600 tokens）仍可命中讀取，但 system（2,400 tokens）與後續斷點會失配重寫",
+              "verdict": "correct",
+              "reasoning": "依 source-evidence，前綴比對順序是 tools → system → messages，較早的區塊有變動，其後所有斷點都會失效。改動發生在 system，tools 前綴的位元組不變，所以 tools 斷點只要快取仍有效就能命中，system 以後則全部 miss。",
+              "correct_value": "tools 命中（有效快取存在時）；system 起失配重寫"
+            },
+            {
+              "claim": "設定 budget_tokens 時，max_tokens 必須嚴格大於 budget_tokens；多回合需原樣保留 thinking block 與 signature",
+              "verdict": "correct",
+              "reasoning": "和 source-evidence 第 3 節一致：max_tokens 必須大於 budget_tokens，tool loop 中要保留先前 assistant 的 thinking blocks 及其 signatures。",
+              "correct_value": "同章節所述"
+            },
+            {
+              "claim": "Python 範例使用 thinking={\"type\": \"adaptive\"}；防禦段提及 model_context_window_exceeded 截斷",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 只寫了「或較新模型的 adaptive reasoning modes」，沒有給出確切的參數形式 {\"type\": \"adaptive\"}，也沒有提到 model_context_window_exceeded 這個 stop reason。現有材料無法確認這兩個 API 細節是否正確。",
+              "correct_value": "標註「參數名稱與 stop_reason 值依官方文件確認」，或改用證據已確認的 {\"type\": \"enabled\", \"budget_tokens\": N} 寫法"
+            },
+            {
+              "claim": "Extended Thinking 的輸出單價極高，必須只針對高風險或複雜工單按需開啟",
+              "verdict": "imprecise",
+              "reasoning": "thinking tokens 按一般輸出單價計費（Sonnet 5.5 為 $10/MTok），不是另有更高的「思考單價」。真正的成本來源是輸出單價為輸入的 5 倍，加上 thinking 大幅增加輸出量。章內前文也說 thinking 計費口徑須依官方確認。「單價極高」容易讓人以為 thinking 另有費率。",
+              "correct_value": "thinking tokens 按輸出單價計（輸入的 5×），成本主要來自 thinking 大幅增加輸出量，應按需開啟"
+            },
+            {
+              "claim": "Compaction／截斷觸發示例：「Agent 進入較長對話（例如示例第 4 回合以後）」與「當對話進入多回合（例如示例第 3 回合以後）」",
+              "verdict": "imprecise",
+              "reasoning": "同一章對膨脹或觸發的示例回合，一處寫第 4 回合，一處寫第 3 回合。兩者都只是示例，不影響計算，但讀者可能誤以為門檻不一致。",
+              "correct_value": "統一示例回合數（例如工具結果截斷從第 2 回合寫入時就套用，歷史 Compaction 以第 4 回合為示例），並註明實際以 token 預算觸發"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch04-state-memory-and-retrieval.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "每月節省 = $19,500.00 - $1,890.00 = $17,610.00 / 月（檢索片段輸入費降幅 90.3%）",
+              "verdict": "correct",
+              "reasoning": "依情境假設，方案 A 每月成本為 50,000 × 30 × 6,500 ÷ 1,000,000 × $2 = $19,500；方案 B 為 50,000 × 30 × 35% × 1,800 ÷ 1,000,000 × $2 = $1,890。差額為 $17,610，降幅為 17,610 ÷ 19,500 ≈ 90.31%。這只成立於章節限定的單次未快取檢索片段輸入費口徑。",
+              "correct_value": "每月節省 $17,610，降幅約 90.3%；不能直接視為端到端淨節省。"
+            },
+            {
+              "claim": "單回合最多允許 max_search_retries = 2 次改寫重試（串行檢索最多耗 2.4 s）",
+              "verdict": "correct",
+              "reasoning": "初次檢索一次，加上最多兩次重試，共三次；每次 timeout 為 800 ms，檢索等待時間上限為 3 × 800 ms = 2,400 ms。此值不包含改寫、排隊及模型延遲。",
+              "correct_value": "三次檢索的 timeout 合計為 2.4 秒，完整流程還須計入其他延遲。"
+            },
+            {
+              "claim": "上界合計至多 7.5 s",
+              "verdict": "correct",
+              "reasoning": "依基底 500 ms 的指數退避，四次重試前的等待上界依序為 0.5、1、2、4 秒，合計 7.5 秒；各次均未達 16 秒上限。Full Jitter 的實際等待不高於這些上界。",
+              "correct_value": "四次退避等待的上界合計 7.5 秒，不含請求執行時間。"
+            },
+            {
+              "claim": "在 5 回合對話中，若均按未快取費率計價，前綴每多 1,000 tokens 就會乘以 5 倍消耗；以 Sonnet 5.5 $2.00 / MTok 計算，單筆多花 $0.01，每日 50,000 筆就是 $500。",
+              "verdict": "correct",
+              "reasoning": "每回合重送 1,000 tokens，五回合共增加 5,000 tokens。按每百萬 tokens $2 計算，單筆增加 5,000 ÷ 1,000,000 × $2 = $0.01；50,000 筆為 $500。",
+              "correct_value": "單筆增加 $0.01，每日增加 $500，前提是五回合均按未快取輸入費率計價。"
+            },
+            {
+              "claim": "verifyCitations 只檢查至少存在一個可辨識引用，且所有可辨識引用均在檢索結果清單中。",
+              "verdict": "correct",
+              "reasoning": "函式先以正規表示式擷取指定格式的引用，再以檢索結果建立的集合檢查擷取到的 ID，並在 requireCitation 為真且沒有匹配時標示漏引。其他格式的引用不會被擷取，因此也不會被列為 fabricated；函式亦不檢查每項主張是否獲引用支持。",
+              "correct_value": "只能驗證符合正規表示式的引用 ID 是否出現在檢索結果，並可要求至少一個符合格式的引用。"
+            },
+            {
+              "claim": "當 OrderOps 工單在等待供應商回覆超過 24 小時後被喚醒，如何確保先前已經呼叫過的唯讀查詢或寫入型工具不會被重複執行？參考解答以保存工具配對、CAS、操作紀錄及寫入工具冪等或對帳回應。",
+              "verdict": "imprecise",
+              "reasoning": "保存結果與 CAS 可支持恢復和限制併發推進，但章節也承認模型可能再次要求工具。寫入工具的冪等或對帳旨在避免重複產生業務副作用，並不保證不會再次發出呼叫；解答也未指定唯讀查詢的去重規則。此外，若外部等待的 expires_at 設為 24 小時，正常喚醒的條件要求 expires_at > NOW()，超過期限的事件不能走該正常喚醒路徑。",
+              "correct_value": "已保存的工具結果應供續跑使用；若要保證同一操作不再次呼叫工具，須由應用層按穩定操作識別碼檢查紀錄並禁止重派。寫入操作另須以冪等或對帳避免重複副作用；超過 expires_at 的事件應依逾期狀態機處理。"
+            },
+            {
+              "claim": "本章完整可執行範例分別位於 examples/ts/ch04/index.ts 與 examples/py/ch04/main.py，兩個範例都實作了所列功能。",
+              "verdict": "imprecise",
+              "reasoning": "提供的材料只有引用驗證函式片段與預期輸出，沒有兩個完整範例的原始碼或實際執行結果，因此無法獨立確認檔案存在、可執行，或兩個版本均實作所有列出的功能。",
+              "correct_value": "須取得並檢查兩個完整範例及其執行結果，才能確認所列實作與預期輸出。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "Agentic RAG 單次檢索工具 timeout 設為 800 ms，單回合最多允許 max_search_retries = 2 次改寫重試，串行檢索最多耗 2.4 s。",
+              "verdict": "correct",
+              "reasoning": "單回合初次檢索 1 次加上最多 2 次改寫重試，共計最多 1 + 2 = 3 次串行檢索。每次 timeout 上限為 800 ms，因此串行檢索最大耗時為 3 × 800 ms = 2,400 ms = 2.4 s，且加計改寫與模型延遲後適用 18 s 多步處置 SLO（基準資料：分流 p95 ≤ 2.5s；多步工具處置 p95 ≤ 18s）。",
+              "correct_value": "2.4 s（3 次檢索 × 800 ms）"
+            },
+            {
+              "claim": "Claude 依 tools → system → messages 順序建立快取前綴；System Prompt（2,400 tokens）與 18 個工具定義（3,600 tokens）合計構成 6,000 tokens 的穩定前綴；若只把 cache_control 放在最後一個工具僅涵蓋約 3,600 tokens，設在最後一個穩定的 system 內容區塊才能涵蓋 6,000 tokens，且 5 分鐘 TTL 讀取僅需基礎輸入單價的 0.05×。",
+              "verdict": "correct",
+              "reasoning": "依據基準資料與 source-evidence，前綴匹配順序為 tools → system → messages，OrderOps 基準前綴為 18 個工具 Schema 3,600 tokens + System Prompt 2,400 tokens = 6,000 tokens。因此斷點在 tools 結尾僅涵蓋 3,600 tokens，在 system 結尾則涵蓋 3,600 + 2,400 = 6,000 tokens。Sonnet/Opus 5.5 的 Prompt Caching 讀取倍率為基礎輸入單價的 0.05×。",
+              "correct_value": "前綴順序 tools → system → messages，總計 6,000 tokens，讀取倍率 0.05×"
+            },
+            {
+              "claim": "Worked Example：靜態 RAG（每筆固定 +6,500 tokens）與 Agentic RAG（35% 工單觸發、每次 +1,800 tokens）在每日 50,000 筆（每月 1,500,000 筆）、Claude Sonnet 5.5（Input $2.00 / MTok）下的單次未快取檢索片段輸入費：方案 A 每日 $650.00、每月 $19,500.00；方案 B 每日 $63.00、每月 $1,890.00；每日節省 $587.00、每月節省 $17,610.00（降幅 90.3%）。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：方案 A 每日額外 tokens = 50,000 × 6,500 = 325,000,000 tokens = 325.0 MTok；每日成本 = 325.0 × $2.00 = $650.00；30 天月成本 = $650.00 × 30 = $19,500.00。方案 B 每日觸發 = 50,000 × 0.35 = 17,500 筆；每日額外 tokens = 17,500 × 1,800 = 31,500,000 tokens = 31.5 MTok；每日成本 = 31.5 × $2.00 = $63.00；30 天月成本 = $63.00 × 30 = $1,890.00。每日節省 = $650.00 - $63.00 = $587.00；每月節省 = $19,500.00 - $1,890.00 = $17,610.00；降幅 = 17,610 / 19,500 = 90.3077% ≈ 90.3%。與章節完全一致。",
+              "correct_value": "方案 A $650/天（$19,500/月），方案 B $63/天（$1,890/月），月省 $17,610（降幅 90.3%）"
+            },
+            {
+              "claim": "針對 529 採用指數退避加 Full Jitter（基底 500 ms、上限 16,000 ms、最多重試 4 次，上界合計至多 7.5 s）。",
+              "verdict": "correct",
+              "reasoning": "標準指數退避第 i 次重試（i = 0, 1, 2, 3，共 4 次）的上界為 min(cap, base × 2^i)。以 base = 500 ms、cap = 16,000 ms 計算，4 次重試的等待上界分別為 500 ms、1,000 ms、2,000 ms、4,000 ms（皆未達 16,000 ms 上限），加總上界為 500 + 1,000 + 2,000 + 4,000 = 7,500 ms = 7.5 s。",
+              "correct_value": "7.5 s（500 + 1,000 + 2,000 + 4,000 = 7,500 ms）"
+            },
+            {
+              "claim": "動手做預期輸出：Retrieved chunks input cost (USD): 0.003600；Retrieved chunks (1,800) + 350 output tokens cost (excl. prefix/other input/history, USD): 0.007100。",
+              "verdict": "correct",
+              "reasoning": "以預設模型 Claude Sonnet 5.5（Input $2.00 / MTok、Output $10.00 / MTok）計算：1,800 input tokens 成本 = 1,800 × ($2.00 / 1,000,000) = $0.003600；350 output tokens（基準每回合輸出 tokens）成本 = 350 × ($10.00 / 1,000,000) = $0.003500；兩者合計 = $0.003600 + $0.003500 = $0.007100。",
+              "correct_value": "檢索輸入成本 $0.003600，加計 350 輸出 tokens 合計 $0.007100"
+            },
+            {
+              "claim": "自我檢核解答 1：在 5 回合對話中，若均按未快取費率計價，前綴每多 1,000 tokens 就會乘以 5 倍消耗；以 Sonnet 5.5 $2.00 / MTok 計算，單筆多花 $0.01，每日 50,000 筆就是 $500。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：前綴每增加 1,000 tokens，5 回合累計增加 1,000 × 5 = 5,000 input tokens = 0.005 MTok。按 Sonnet 5.5 未快取輸入單價 $2.00 / MTok 計，單筆增加成本 = 0.005 × $2.00 = $0.01。每日 50,000 筆工單增加成本 = 50,000 × $0.01 = $500。",
+              "correct_value": "單筆 $0.01，每日 $500"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "方案 A 靜態 RAG：50,000 × 6,500 = 325.0 MTok/天，以 $2.00/MTok 計為每天 $650.00、每月 $19,500.00",
+              "verdict": "correct",
+              "reasoning": "50,000 × 6,500 = 325,000,000 tokens，即 325 MTok。325 × $2.00 = $650/天，乘以 30 天為 $19,500/月。Sonnet 5.5 輸入牌價 $2.00 與基準資料一致。",
+              "correct_value": "$650.00/天；$19,500.00/月"
+            },
+            {
+              "claim": "方案 B Agentic RAG：每天 17,500 筆 × 1,800 = 31.5 MTok，即每天 $63.00、每月 $1,890.00；每月節省 $17,610，降幅 90.3%",
+              "verdict": "correct",
+              "reasoning": "50,000 × 35% = 17,500 筆。17,500 × 1,800 = 31,500,000 tokens，乘以 $2/MTok 為 $63/天，30 天為 $1,890。$650 − $63 = $587/天；$19,500 − $1,890 = $17,610/月。17,610 / 19,500 = 90.31%。章節已標明這只是檢索片段單次未快取口徑，限定恰當。",
+              "correct_value": "$63/天；$1,890/月；每月節省 $17,610（90.3%）"
+            },
+            {
+              "claim": "預期輸出：檢索片段輸入費 0.003600 USD；1,800 輸入 tokens 加 350 輸出 tokens 合計 0.007100 USD",
+              "verdict": "correct",
+              "reasoning": "1,800 × $2 / 1M = $0.0036。350 × $10 / 1M = $0.0035。兩者相加為 $0.0071。",
+              "correct_value": "0.003600 / 0.007100"
+            },
+            {
+              "claim": "5 回合未快取時，前綴每多 1,000 tokens，單筆多花 $0.01，每天 50,000 筆就是 $500",
+              "verdict": "correct",
+              "reasoning": "1,000 × 5 回合 = 5,000 tokens，乘以 $2/MTok 為 $0.01/筆。$0.01 × 50,000 = $500/天。",
+              "correct_value": "$0.01/筆；$500/天"
+            },
+            {
+              "claim": "斷點只放在最後一個工具時僅涵蓋約 3,600 tokens；放在最後一個穩定的 system 區塊才能涵蓋 6,000 tokens；5 分鐘 TTL 讀取為 0.05×",
+              "verdict": "correct",
+              "reasoning": "史料記載前綴順序為 tools → system → messages。斷點放在最後一個工具時，只快取工具 Schema 的 3,600 tokens；放在 system 末端則涵蓋 3,600 + 2,400 = 6,000 tokens。Sonnet 5.5 的快取讀取倍率為 0.05×，與基準資料一致。6,000 tokens 也高於史料列出的 Sonnet 最小可快取門檻 1,024。",
+              "correct_value": "成立"
+            },
+            {
+              "claim": "單次檢索 timeout 800 ms，max_search_retries = 2，串行檢索最多耗 2.4 s，因此適用 18 s SLO 而非 2.5 s SLO",
+              "verdict": "correct",
+              "reasoning": "首次查詢加 2 次重試共 3 次，3 × 800 ms = 2.4 s。再加上改寫與模型延遲，必然超過 2.5 s 的分流 SLO，所以歸入 18 s 的多步處置 SLO 合理。",
+              "correct_value": "2.4 s（僅檢索部分）"
+            },
+            {
+              "claim": "針對 529 採用 Full Jitter 退避，基底 500 ms、上限 16,000 ms、最多重試 4 次，上界合計至多 7.5 s",
+              "verdict": "correct",
+              "reasoning": "4 次重試的上界依序為 500、1,000、2,000、4,000 ms，都沒碰到 16,000 ms 的上限，合計 7,500 ms = 7.5 s。",
+              "correct_value": "7.5 s"
+            },
+            {
+              "claim": "RRF 公式 rrf_score = 1/(60+rank_bm25) + 1/(60+rank_vector)，採 1-based 名次，未出現在某一路結果時該路貢獻為 0",
+              "verdict": "correct",
+              "reasoning": "這是標準 RRF 的定義，k = 60 是常用值。缺席的一路以 0 計入，符合 RRF 常見的實作方式。",
+              "correct_value": "成立"
+            },
+            {
+              "claim": "平均 0.58 req/s，尖峰 12 req/s 約為 20×；Redis TTL 86,400 秒 = 24 小時",
+              "verdict": "correct",
+              "reasoning": "50,000 / 86,400 ≈ 0.579 req/s，0.58 × 20 = 11.6 ≈ 12。86,400 / 3,600 = 24 小時。",
+              "correct_value": "成立"
+            },
+            {
+              "claim": "stop_reason 的值包含 model_context_window_exceeded、refusal、pause_turn，且 HTTP 200 之後仍可能出現 SSE error 事件",
+              "verdict": "imprecise",
+              "reasoning": "提供的 source-evidence 沒有列出 stop_reason 的值，也沒有記載串流錯誤事件。這些值是否存在、在哪些模型與 API 版本可用，閉卷無法確認。",
+              "correct_value": "建議註明「依撰寫時官方 Messages API 文件所列的 stop_reason 值，各模型版本可能不同」，並對照官方文件確認"
+            },
+            {
+              "claim": "可為 (tenant_id, acl_roles) 建立帶 btree_gin 的 GIN 複合索引，並驗證是否達到 50 ms 目標",
+              "verdict": "imprecise",
+              "reasoning": "btree_gin 讓 GIN 索引可以同時涵蓋純量欄位與陣列欄位，做法可行。但「50 ms 目標」在本章正文和基準資料中都沒有定義，讀者無從得知它的來源與口徑（p95 還是平均？只算檢索還是端到端？）。",
+              "correct_value": "在正文定義檢索延遲預算（例如：前置過濾後單路檢索 p95 ≤ 50 ms），或刪除這個數字"
+            },
+            {
+              "claim": "應用連線角色不可為表擁有者或具備 BYPASSRLS 權限，否則 RLS 不生效",
+              "verdict": "correct",
+              "reasoning": "PostgreSQL 預設不對表擁有者套用 RLS（除非設定 FORCE ROW LEVEL SECURITY），具 BYPASSRLS 權限的角色也會略過 RLS，所以這個建議成立。若要更周全，可補充 FORCE ROW LEVEL SECURITY 這個選項。",
+              "correct_value": "成立；可補充 ALTER TABLE ... FORCE ROW LEVEL SECURITY"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch05-multi-agent-orchestration.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "方案 B 合計平均純前綴成本 = $0.005085 / 筆；純前綴成本降幅 = 91.53%。",
+              "verdict": "correct",
+              "reasoning": "依題設分別計算：Router 為 450 × 0.10 / 1,000,000 = $0.000045；唯讀 Worker 為 2,800 × 2 × 0.10 / 1,000,000 = $0.000560；Opus 仲裁攤提為 2,800 × 2 × 4.00 / 1,000,000 × 20% = $0.004480。合計 $0.005085；相對方案 A 的 $0.060000，降幅為 91.525%，四捨五入為 91.53%。此結果僅適用於章內列出的純前綴與流量假設。",
+              "correct_value": "平均純前綴成本 $0.005085／筆，降幅 91.53%。"
+            },
+            {
+              "claim": "若平均每筆扇出 2 個等量 Worker 則為 $0.005645，降幅 90.59%。",
+              "verdict": "correct",
+              "reasoning": "在其他假設不變下，再加一個唯讀 Worker 的 $0.000560，得到 $0.005645；1 − 0.005645 / 0.060000 = 90.5917%。",
+              "correct_value": "$0.005645／筆，降幅約 90.59%。"
+            },
+            {
+              "claim": "尖峰 12 tickets/s 下，每筆扇出 3–4 個 Worker 代表 36–48 次 Worker 啟動／秒（若耗滿 4 回合則達 144–192 次呼叫／秒）。",
+              "verdict": "imprecise",
+              "reasoning": "12 × 3–4 = 36–48，若每個 Worker 均有 4 次模型呼叫，12 × 3–4 × 4 = 144–192 次呼叫／筆工單到達所對應的每秒平均負載。但各回合分散在執行時間內，且可能發生排隊或同步重試，不能僅由工單到達率推出任一瞬間的實際 API 呼叫率或峰值。",
+              "correct_value": "在持續穩態、所有 Worker 完成 4 次模型呼叫且無其他放大因素時，長期平均約 144–192 次模型呼叫／秒；瞬間峰值須依時間分布、併發及重試測量或建模。"
+            },
+            {
+              "claim": "facts 應具備版本化欄位、大小上限、證據來源與觀測時間……以下是 OrderOps 採用的 WorkerHandoff 契約。",
+              "verdict": "imprecise",
+              "reasoning": "列出的介面僅將 facts 定義為 Record<string, unknown>，未要求版本、證據來源或觀測時間，也未表達大小限制。文字提出的保障可能由外部驗證器實作，但提供的介面與節錄無法證明這些限制確實被強制執行。",
+              "correct_value": "在契約中明定版本、來源及觀測時間等必填欄位，並以執行期驗證明確實施大小與欄位限制；否則應說明這些要求由何處強制。"
+            },
+            {
+              "claim": "每次 API 回應的 usage……分別換算為美元後累加寫入 WorkerHandoff.costUsd；逾時等無法確認的帳務則另行標示並對帳。",
+              "verdict": "incorrect",
+              "reasoning": "展示的失敗分支對所有逾時或例外一律回傳 costUsd: 0。若 Worker 在失敗前已有成功回應並產生可確認費用，這些已知費用不會由該分支帶入，與累加已知成本的要求不一致。costStatus: unconfirmed 能標示未知部分，不能補回已知的漏計金額。",
+              "correct_value": "將每次已確認呼叫的累積費用保存在失敗時仍可讀取的狀態，失敗交接時填入該已知金額，並另外標示及對帳未確認費用。"
+            },
+            {
+              "claim": "新增 2 個工具會使每日多出 20,000,000 輸入 tokens，按 Haiku ≤100K 無快取牌價約多 $2／日。",
+              "verdict": "correct",
+              "reasoning": "依章內每個工具約 200 tokens、每天 50,000 筆，且每筆 Router 呼叫一次的假設，新增輸入為 2 × 200 × 50,000 = 20,000,000 tokens／日。以每百萬輸入 tokens $0.10 計，費用為 $2／日。",
+              "correct_value": "每日約增加 2,000 萬輸入 tokens 與 $2；多回合或快取等情況須另算。"
+            },
+            {
+              "claim": "Claude Agent SDK 原生支援工作目錄隔離、權限控制（allowedTools / disallowedTools）與 Sub-agent 上下文切分。",
+              "verdict": "imprecise",
+              "reasoning": "提供的 source-evidence 支持 SDK 具備 Agent loop、hooks、MCP 與 allowedTools／disallowedTools 等權限控制，但未記載工作目錄隔離或 Sub-agent 上下文切分的具體保證。章內雖另說租戶與行程隔離仍需實際沙盒，仍無法據此確認 SDK 原生提供的隔離範圍。",
+              "correct_value": "可依提供的證據確認 SDK 具備所列權限控制；工作目錄隔離與 Sub-agent 上下文切分的具體能力和限制，須核對相應版本的官方文件。"
+            },
+            {
+              "claim": "示意輸出中 TKT-5001 的 totalCostUsd 為 0.00051，TKT-5002 為 0.01811。",
+              "verdict": "imprecise",
+              "reasoning": "章節未提供兩筆示例各次模型呼叫的輸入、輸出及快取 token 用量；不同模型與 token 類別的費率不同，無法僅憑 Worker 數量和 Opus 呼叫次數重算這兩個總額。",
+              "correct_value": "須提供或核對每次呼叫的模型、各類 token 用量與適用費率後，才能驗證兩筆金額。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "在 OrderOps 基準設定中，系統共有 18 個工具（12 唯讀 Read-only + 6 寫入／金流 Mutating），單一 Agent 的基準前綴大小為 6,000 tokens（System Prompt 2,400 + 18 工具 Schema 3,600）。",
+              "verdict": "correct",
+              "reasoning": "依據 baseline：OrderOps 工具總數為 18 個（12 唯讀 + 6 寫入／金流），基準前綴大小為 6,000 tokens（System Prompt 2,400 + 18 工具 Schema 3,600，即 2,400 + 3,600 = 6,000，平均每工具 Schema 為 3,600 / 18 = 200 tokens）。與基準完全一致。",
+              "correct_value": "18 個工具（12 唯讀 + 6 寫入／金流），基準前綴 6,000 tokens（2,400 + 3,600）"
+            },
+            {
+              "claim": "最小快取門檻：例如 claude-opus-5-5 為 512 tokens、claude-sonnet-5 與先前的 Sonnet 4.5／4.6 為 1,024 tokens，低於門檻時 cache_control: { type: \"ephemeral\" } 會靜默不寫入。",
+              "verdict": "correct",
+              "reasoning": "核對 source-evidence 第 2 節 Prompt Caching Mechanics：透過 cache_control: { \"type\": \"ephemeral\" } 控制；低於最小快取門檻時為 silent no-op（回傳 0 cache_creation_input_tokens 且不報錯）；claude-opus-5-5 為 512 tokens，claude-sonnet-5 與先前 Sonnet 4.5/4.6 為 1,024 tokens。與 source-evidence 完全相符。",
+              "correct_value": "claude-opus-5-5 最小快取門檻為 512 tokens，claude-sonnet-5 / Sonnet 4.5 / 4.6 為 1,024 tokens，低於門檻時靜默不寫入"
+            },
+            {
+              "claim": "在尖峰 12 tickets/s 下，每筆扇出 3–4 個 Worker 代表 36–48 次 Worker 啟動／秒（若耗滿 4 回合則達 144–192 次呼叫／秒）。",
+              "verdict": "correct",
+              "reasoning": "依據 baseline，OrderOps 尖峰流量為 12 req/s。獨立重算：每秒 12 筆工單 × 每筆 3~4 個 Worker = 36~48 次 Worker 啟動／秒；若每個 Worker 執行滿 max_turns = 4 回合，則每秒 API 呼叫數為 36 × 4 = 144 至 48 × 4 = 192 次呼叫／秒。推導結果與內文完全一致。",
+              "correct_value": "36–48 次 Worker 啟動／秒；耗滿 4 回合時為 144–192 次呼叫／秒"
+            },
+            {
+              "claim": "Worked Example 方案 A（單一 Sonnet 5.5 攜帶 18 工具）：前綴 6,000 tokens，5 回合累計前綴輸入 30,000 tokens，前綴輸入成本為 $0.060000 / 筆。",
+              "verdict": "correct",
+              "reasoning": "依據 baseline，基準前綴為 6,000 tokens，基準回合為 5 回合，Sonnet 5.5 輸入牌價為 $2.00 / MTok。獨立重算：6,000 × 5 = 30,000 tokens；30,000 × ($2.00 / 1,000,000) = $0.060000 / 筆。與作者計算完全一致。",
+              "correct_value": "30,000 tokens，$0.060000 / 筆"
+            },
+            {
+              "claim": "Worked Example 方案 B（Haiku Router + 專責 Specialist）：1. Haiku Router（1 回合、前綴 450 tokens）前綴輸入成本 $0.000045 / 筆（若計入 90 tokens 輸出另加 $0.000045，合計 $0.000090 / 筆）；2. 唯讀調查 Worker（Haiku 5.5、前綴 2,800 tokens、2 回合）前綴累計輸入 5,600 tokens，成本 $0.000560 / 筆；3. 高風險退款仲裁（20% 工單觸發 Opus 5.5、前綴 2,800 tokens、2 回合）觸發時前綴成本 $0.022400 / 筆，攤提至全量工單為 $0.004480 / 筆。方案 B 合計平均純前綴成本 = $0.005085 / 筆，較方案 A 降幅 91.53%（若平均每筆扇出 2 個等量 Worker 則為 $0.005645，降幅 90.59%）；預算熔斷閾值 $0.050 約為分層基準 $0.005085 的 10 倍。",
+              "verdict": "correct",
+              "reasoning": "依據 baseline 牌價（Haiku 5.5 ≤100K 為 $0.10 / $0.50 per MTok；Opus 5.5 為 $4.00 / $20.00 per MTok）獨立重算：(1) Router 輸入：450 × $0.10 / 10^6 = $0.000045，90 tokens 輸出：90 × $0.50 / 10^6 = $0.000045，合計 $0.000090；(2) 單一 Worker 輸入：(2,800 × 2) = 5,600 tokens，5,600 × $0.10 / 10^6 = $0.000560；(3) Opus 仲裁輸入：5,600 × $4.00 / 10^6 = $0.022400，乘以 20% 觸發率 = $0.004480。三項純前綴加總：$0.000045 + $0.000560 + $0.004480 = $0.005085 / 筆。降幅 = ($0.060000 - $0.005085) / $0.060000 = 0.91525 ≈ 91.53%。若扇出 2 個等量 Worker：$0.005085 + $0.000560 = $0.005645 / 筆，降幅 = ($0.060000 - $0.005645) / $0.060000 = 0.905916... ≈ 90.59%。熔斷閾值倍數：$0.050 / $0.005085 ≈ 9.83 倍（約 10 倍）。所有數值皆驗證無誤。",
+              "correct_value": "單 Worker 平均純前綴成本 $0.005085 / 筆（降幅 91.53%）；雙 Worker 為 $0.005645 / 筆（降幅 90.59%）"
+            },
+            {
+              "claim": "若外層再包重試而不關閉內建重試，內外層各「1 次初始呼叫 + 2 次重試」會膨脹成 (1+2) × (1+2) = 最多 9 次嘗試；指數退避加 Full Jitter（sleep = random(0, min(cap, base × 2^n))，n 從 0 起算，base = 500ms、cap = 8,000ms、max_retries = 2）第 1、2 次重試分別為 0–500ms 與 0–1,000ms，單次等待上界為 1,000ms，兩次累計等待上界為 1,500ms。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：外層最多執行 1 + 2 = 3 次嘗試，每次嘗試觸發內層最多 1 + 2 = 3 次請求，總計最多 3 × 3 = 9 次嘗試。退避公式 min(8000, 500 × 2^n)：當第 1 次重試（n = 0）時，上界為 min(8000, 500 × 1) = 500ms，範圍 0–500ms；當第 2 次重試（n = 1）時，上界為 min(8000, 500 × 2) = 1,000ms，範圍 0–1,000ms。單次等待最大上界為 max(500, 1000) = 1,000ms，兩次重試累計等待上界為 500 + 1,000 = 1,500ms。完全正確。",
+              "correct_value": "最多 9 次嘗試；第 1、2 次重試等待範圍分別為 0–500ms 與 0–1,000ms，累計等待上界 1,500ms"
+            },
+            {
+              "claim": "動手做離線模擬輸出中，TKT-5001 的 totalCostUsd 為 0.00051，TKT-5002 的 totalCostUsd 為 0.01811。",
+              "verdict": "imprecise",
+              "reasoning": "章節正文已註明這兩筆數值依賴外部範例檔案（examples/ts/ch05/index.ts 與 examples/py/ch05/main.py）內模擬的各模型輸入、輸出與快取 token 數量，而本章正文與 baseline / source-evidence 並未列出該模擬程式內部設定的具體 token 用量明細，因此在閉卷查核下無法僅憑章節提供的材料獨立重算 0.00051 與 0.01811。",
+              "correct_value": "需提供或於正文補充範例模擬程式中 Router、2 個 Worker 與 Opus Specialist 的具體模擬 token 用量（input / output / cache tokens），方能由正文獨立核驗 $0.00051 與 $0.01811"
+            },
+            {
+              "claim": "自我檢核參考解答 1：若在 Haiku Router 掛載 2 個常用查詢工具，工具 Schema 前綴（每個工具約 200 tokens，2 個工具即 400 tokens）乘上全量 50,000 筆／天的流量，每日多出 20,000,000 輸入 tokens，按 Haiku ≤100K 無快取牌價約多 $2／日。",
+              "verdict": "correct",
+              "reasoning": "依據 baseline：18 個工具 Schema 為 3,600 tokens，平均每個工具 3,600 / 18 = 200 tokens，2 個工具為 400 tokens；日工單量為 50,000 筆／天；Haiku 5.5（≤100K）輸入牌價為 $0.10 / MTok。獨立重算：400 tokens/筆 × 50,000 筆/天 = 20,000,000 tokens/天（即 20 MTok/天）；20 MTok × $0.10 / MTok = $2.00 / 日。完全正確。",
+              "correct_value": "每日多出 20,000,000 輸入 tokens，無快取下每日多出 $2.00"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "方案 A：前綴累計輸入 = 6,000 × 5 = 30,000 tokens；前綴輸入成本 = 30,000 × ($2.00 / 1,000,000) = $0.060000 / 筆",
+              "verdict": "correct",
+              "reasoning": "基準前綴是 6,000 tokens（2,400 + 3,600），Sonnet 5.5 輸入牌價為 $2.00/MTok。6,000 × 5 = 30,000；30,000 × 2 / 1,000,000 = 0.06。",
+              "correct_value": "$0.060000 / 筆（只計前綴輸入）"
+            },
+            {
+              "claim": "Haiku Router 前綴輸入成本 = 450 × ($0.10 / 1,000,000) = $0.000045；若計入 90 tokens 輸出則另加 $0.000045，合計 $0.000090",
+              "verdict": "correct",
+              "reasoning": "450 × 0.10 / 1e6 = 0.000045；90 × 0.50 / 1e6 = 0.000045；兩者相加為 0.00009。Haiku 5.5 在 ≤100K 時的牌價為 $0.10 / $0.50，與基準一致。",
+              "correct_value": "$0.000045（輸入）；$0.000090（含輸出）"
+            },
+            {
+              "claim": "唯讀 Worker（Haiku、前綴 2,800、2 回合）前綴成本 $0.000560；Opus 仲裁觸發時 $0.022400，攤提 20% 後 $0.004480",
+              "verdict": "correct",
+              "reasoning": "2,800 × 2 = 5,600；5,600 × 0.10 / 1e6 = 0.00056。5,600 × 4.00 / 1e6 = 0.0224；0.0224 × 0.2 = 0.00448。",
+              "correct_value": "$0.000560；$0.022400；$0.004480"
+            },
+            {
+              "claim": "方案 B 合計平均純前綴成本 $0.005085 / 筆，降幅 91.53%；若平均扇出 2 個 Worker 則為 $0.005645，降幅 90.59%",
+              "verdict": "correct",
+              "reasoning": "0.000045 + 0.00056 + 0.00448 = 0.005085。(0.06 − 0.005085) / 0.06 = 0.91525，四捨五入為 91.53%。多加一個 Worker：0.005085 + 0.00056 = 0.005645；(0.06 − 0.005645) / 0.06 = 0.90592，即 90.59%。需注意這只比較前綴，不含每回合新增輸入、輸出與快取，章節已有說明。",
+              "correct_value": "$0.005085 / 91.53%；$0.005645 / 90.59%"
+            },
+            {
+              "claim": "若單筆工單累計成本超過 $0.050（約為分層基準 $0.005085 的 10 倍），立即停止後續非必要扇出並轉入人工審核",
+              "verdict": "imprecise",
+              "reasoning": "算術上 0.005085 × 10 ≈ $0.0509，所以「約 10 倍」沒有錯。問題在比較口徑：熔斷比的是包含輸出、每回合新增輸入與快取的累計 totalCostUsd，$0.005085 卻只是純前綴輸入成本，不含輸出與動態輸入。拿全成本閾值去對照只算前綴的數字，會讓讀者高估實際的安全餘裕。基準的未優化全成本是 $0.1015/筆，優化目標是 ≤ $0.012/筆。",
+              "correct_value": "改以全成本為參照，例如「約為優化目標單筆成本 ≤ $0.012 的 4 倍」；或另外算出分層方案含輸出與動態輸入的全成本，再用它定倍數"
+            },
+            {
+              "claim": "尖峰 12 tickets/s、每筆扇出 3–4 個 Worker 代表 36–48 次 Worker 啟動／秒；若耗滿 4 回合則達 144–192 次呼叫／秒",
+              "verdict": "correct",
+              "reasoning": "12 × 3 = 36，12 × 4 = 48；36 × 4 = 144，48 × 4 = 192。尖峰 12 req/s 與基準一致。",
+              "correct_value": "36–48 次/秒；144–192 次/秒（未計 Router 與仲裁呼叫）"
+            },
+            {
+              "claim": "內外層各「1 次初始呼叫 + 2 次重試」會膨脹成 (1+2) × (1+2) = 最多 9 次嘗試",
+              "verdict": "correct",
+              "reasoning": "外層每次嘗試都會觸發內層最多 3 次 HTTP 嘗試，外層最多 3 次，所以 3 × 3 = 9。",
+              "correct_value": "最多 9 次"
+            },
+            {
+              "claim": "Full Jitter（base = 500ms、cap = 8,000ms、n 從 0 起算、max_retries = 2）：第 1、2 次重試分別為 0–500ms 與 0–1,000ms，兩次累計等待上界為 1,500ms",
+              "verdict": "correct",
+              "reasoning": "n=0：min(8000, 500 × 1) = 500；n=1：min(8000, 500 × 2) = 1000；500 + 1000 = 1500。",
+              "correct_value": "0–500ms、0–1,000ms；累計上界 1,500ms"
+            },
+            {
+              "claim": "Router 掛 2 個工具（各約 200 tokens，共 400）× 50,000 筆／天 = 每日多 20,000,000 輸入 tokens，按 Haiku ≤100K 無快取牌價約多 $2／日",
+              "verdict": "correct",
+              "reasoning": "3,600 / 18 = 200 tokens/工具，與基準一致。400 × 50,000 = 20,000,000；20M × $0.10/MTok = $2.00。這是 Router 單回合的成本；若真的變成多回合，增量會更高。",
+              "correct_value": "20,000,000 tokens／日，約 $2／日（單回合）"
+            },
+            {
+              "claim": "最小快取門檻：claude-opus-5-5 為 512 tokens、claude-sonnet-5 與 Sonnet 4.5／4.6 為 1,024 tokens；低於門檻時 cache_control 靜默不寫入",
+              "verdict": "correct",
+              "reasoning": "與 source-evidence 第 2 節一致（512 / 1,024，低於門檻時回傳 0 cache_creation_input_tokens 而不報錯）。Sonnet 5.5 的門檻章節保留為依官方文件確認，處理恰當。",
+              "correct_value": "同章節所述"
+            },
+            {
+              "claim": "Claude Agent SDK「原生支援工作目錄隔離、權限控制（allowedTools / disallowedTools）與 Sub-agent 上下文切分」",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 只支持 agent loop、context compaction、MCP、hooks 與 allowedTools/disallowedTools 權限控制。「工作目錄隔離」與「Sub-agent 上下文切分」這兩項原生能力，所附證據無法佐證，須另查官方 SDK 文件。",
+              "correct_value": "限定為「內建 agent loop、context compaction、hooks 與 allowedTools/disallowedTools 權限控制」；工作目錄隔離與 Sub-agent 機制註明須依官方文件確認"
+            },
+            {
+              "claim": "離線模擬輸出：TKT-5001 totalCostUsd = 0.00051；TKT-5002 totalCostUsd = 0.01811",
+              "verdict": "imprecise",
+              "reasoning": "這兩個數值取決於範例程式內模擬的 token 量，材料沒有提供，無法獨立重算。用正文的分層假設粗估：Router 約 $0.00009，加上 2 個 Haiku Worker 前綴約 $0.00112，已超過 0.00051，可見範例使用的 token 量與正文假設不同。章節雖已附上免責說明，數值仍無法查核。",
+              "correct_value": "需附上範例中各呼叫的 input/output/cache token 數，或標明這是示意值"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch06-reliability-and-durable-execution.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 尖峰流量為 12 req/s，每筆平均 5 次 API 呼叫，尖峰 API 請求率為 3,600 RPM。",
+              "verdict": "correct",
+              "reasoning": "依章內假設五回合的呼叫充分重疊且未計重試，12 × 5 = 60 calls/s，再乘以 60 秒為 3,600 RPM。此結果是該假設下的容量估算，並非僅憑工單進入速率就能保證的瞬時呼叫率。",
+              "correct_value": "在所述重疊假設下為 60 calls/s，或 3,600 RPM。"
+            },
+            {
+              "claim": "按 90% 限流設定，尖峰持續 30 秒累積 720 個 API 呼叫；若尖峰開始時桶滿且立即放行 burst = 54，則剩 666 個，約 20.1 秒排空；無初始額度約 21.8 秒。",
+              "verdict": "correct",
+              "reasoning": "2,400 RPM 的 90% 為 36 calls/s。尖峰淨流入為 60 − 36 = 24 calls/s，30 秒累積 720 個；扣除假設可立即使用的 54 個初始桶額度後為 666 個。尖峰後平均負載為 50,000 ÷ 86,400 × 5 ≈ 2.8935 calls/s，排空餘裕約為 33.1065 calls/s，因此 666 ÷ 33.1065 ≈ 20.1 秒，720 ÷ 33.1065 ≈ 21.7 秒，約為 21.8 秒。",
+              "correct_value": "積壓分別為 666 個或 720 個；在尖峰後持續以平均流量進入的假設下，排空約需 20.1 秒或 21.7～21.8 秒。"
+            },
+            {
+              "claim": "大促尖峰 20 req/s、每筆 5 次 API 呼叫、配額 3,600 RPM 時，持續 45 秒會按名目配額累積 1,800 個呼叫；按 90% 限流則累積 2,070 個。",
+              "verdict": "correct",
+              "reasoning": "尖峰呼叫率為 20 × 5 = 100 calls/s；3,600 RPM 為 60 calls/s，其 90% 為 54 calls/s。因此積壓分別為 (100 − 60) × 45 = 1,800 和 (100 − 54) × 45 = 2,070 個。這兩個數值均未扣除可能存在的初始桶額度，也未計重試。",
+              "correct_value": "名目配額下為 1,800 個；90% 限流下為 2,070 個，均以無可用初始桶額度估算。"
+            },
+            {
+              "claim": "Streaming 殘缺 JSON 的生產級防禦為「僅在收到 message_stop 且 JSON Schema 驗證通過後才寫入 llm_turn；否則丟棄重試」。",
+              "verdict": "incorrect",
+              "reasoning": "章內已指出 MCP Connector 等遠端代呼叫模式可能在串流中斷前執行工具。收到不完整串流時，丟棄殘缺輸出可以避免直接執行不完整參數，但不代表外部副作用尚未發生；直接重試整個回合可能重複派送寫入操作。",
+              "correct_value": "丟棄不可用的殘缺輸出；確認沒有外部副作用後才重試。若遠端工具可能已執行，應先查詢狀態，依冪等保障決定是否同鍵重送，無法安全確認時轉人工對帳。"
+            },
+            {
+              "claim": "「429 與 529 雖同屬瞬態錯誤」。",
+              "verdict": "incorrect",
+              "reasoning": "章內前文區分了暫時性的配額或流量限制，並指出支出上限型 429 可能沒有 retry-after、不應無止盡重試。因此不能把所有 429 都概括為會自行恢復的瞬態錯誤。",
+              "correct_value": "529 可按章內設定視為過載類瞬態故障；429 應先辨識原因，暫時性限流可依限制與預算重試，支出上限等情況則須先排除根因。"
+            },
+            {
+              "claim": "Batch API 提供 50% 折扣，Sonnet 5.5 的輸入／輸出費率為每 MTok 1／5 美元。",
+              "verdict": "correct",
+              "reasoning": "依提供的基準，Sonnet 5.5 標準輸入／輸出費率為每 MTok 2／10 美元；兩者各乘以 50% 後為 1／5 美元。提供的 source-evidence 亦記載相同折扣與費率。",
+              "correct_value": "依提供資料，輸入為每 MTok 1 美元，輸出為每 MTok 5 美元；實際費率應以使用時的官方資料為準。"
+            },
+            {
+              "claim": "TypeScript 與 Python 範例執行後都會先記錄 3 筆 Checkpoint，核准續跑後累積 6 筆，最終為 completed。",
+              "verdict": "imprecise",
+              "reasoning": "章內所列事件數在算術上相符：首次 3 筆，加上核准事件及續跑後 2 筆，共 6 筆；但提供的 Python 程式碼只有部分片段，TypeScript 節錄也只有退避函式，不能據此獨立確認完整工作流或實際終端輸出。",
+              "correct_value": "作為設計預期可列為 3 筆及 6 筆；兩個版本是否實際產生該輸出，須檢視並執行完整程式後確認。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "唯讀工具單次 timeout 設為 5s，若逾時或連線重置可直接重試 2 次（總預算 5s × 3 = 15s，未計退避）。",
+              "verdict": "correct",
+              "reasoning": "首次執行加上重試 2 次共 3 次呼叫，每次 timeout 上限 5s，未計退避時總時間上限為 5s × 3 = 15s，與文中計算一致。",
+              "correct_value": "5s × 3 = 15s（未計退避）"
+            },
+            {
+              "claim": "本地 Token Bucket 限流器補充速率設為租戶配額的 90%，例如 2,400 RPM 配額對應 36 calls/s。",
+              "verdict": "correct",
+              "reasoning": "2,400 RPM ÷ 60 s/min = 40 calls/s；取 90% 為 40 × 0.9 = 36 calls/s，與文中一致。",
+              "correct_value": "36 calls/s"
+            },
+            {
+              "claim": "base_delay_ms = 500ms、max_delay_ms = 30,000ms，前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s；同步 API 請求總 wall-clock 上限 120s，兩次 60s 呼叫即會耗盡同步預算；分流目標為 p95 ≤ 2.5s、多步處置 p95 ≤ 18s。",
+              "verdict": "correct",
+              "reasoning": "依公式 min(30000, 500 × 2^(attempt-1))，attempt = 1..4 的退避上限分別為 500ms (0.5s)、1000ms (1s)、2000ms (2s)、4000ms (4s)，總和為 0.5 + 1 + 2 + 4 = 7.5s。單次 HTTP timeout 60s × 2 = 120s，恰等於同步 wall-clock 上限 120s。延遲 SLO（分流 p95 ≤ 2.5s、多步工具處置 p95 ≤ 18s）亦與 baseline 一致。",
+              "correct_value": "前 4 次退避上限依序為 0.5s、1s、2s、4s（合計 7.5s）；2 × 60s = 120s；SLO 為 2.5s / 18s"
+            },
+            {
+              "claim": "Batch API 提供 50% 折扣（Sonnet 5.5 為 $1.00 / $5.00 per MTok）。",
+              "verdict": "correct",
+              "reasoning": "對照 baseline 與 source-evidence，Claude Sonnet 5.5 牌價為 Input $2.00 / Output $10.00 per MTok，Batch API 50% 折扣後為 $1.00 / $5.00 per MTok，完全吻合。",
+              "correct_value": "50% 折扣，Sonnet 5.5 為 $1.00 / $5.00 per MTok"
+            },
+            {
+              "claim": "Worked Example：OrderOps 日工單量 50,000 筆／天（1,500,000 筆／月，以 30 天計），尖峰流量 12 req/s（平均 0.5787 req/s，尖峰約 20.7×），單筆平均 5 次 API 呼叫，尖峰每秒 API 呼叫數 = 60 calls/s（3,600 RPM）。",
+              "verdict": "correct",
+              "reasoning": "50,000 × 30 = 1,500,000 筆／月；平均流量 = 50,000 ÷ 86,400 ≈ 0.5787037 req/s（四捨五入為 0.5787 req/s，baseline 四捨五入記為 0.58 req/s）；尖峰倍率 = 12 ÷ 0.5787037 = 20.736×（約 20.7×）；尖峰 API 呼叫率 = 12 req/s × 5 calls/req = 60 calls/s = 60 × 60 = 3,600 RPM。所有數值推導正確。",
+              "correct_value": "平均 0.5787 req/s（尖峰約 20.7×），尖峰 API 呼叫率 60 calls/s（3,600 RPM）"
+            },
+            {
+              "claim": "Worked Example：假設配額上限為 2,400 RPM（40 calls/s），按名目配額 40 calls/s，尖峰淨超額 20 calls/s，持續 30 秒累積 600 個 API 呼叫；尖峰後平均流量 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空。",
+              "verdict": "correct",
+              "reasoning": "2,400 RPM ÷ 60 = 40 calls/s；淨超額 = 60 - 40 = 20 calls/s；30 秒累積 = 20 × 30 = 600 calls。平均 API 呼叫率 = 0.5787037 req/s × 5 = 2.8935 calls/s（約 2.89 calls/s）；排空餘裕 = 40 - 2.89 = 37.11 calls/s；排空時間 = 600 ÷ 37.11 ≈ 16.168 s（約 16.2 秒）。推導與文中一致。",
+              "correct_value": "累積 600 calls，排空餘裕 37.11 calls/s，約 16.2 秒排空"
+            },
+            {
+              "claim": "Worked Example：按章內 90% 限流設定（36 calls/s），持續 30 秒累積 (60 - 36) × 30 = 720 個 API 呼叫（若尖峰開始時桶滿且立即放行 burst = 54，則剩 666 個，約 20.1 秒排空；無初始額度約 21.8 秒）。",
+              "verdict": "correct",
+              "reasoning": "限流速率 36 calls/s 下，淨超額 = 60 - 36 = 24 calls/s，30 秒累積 24 × 30 = 720 calls。扣除初始滿桶 burst = 54 後剩 720 - 54 = 666 calls。尖峰後在 36 calls/s 限流下之排空餘裕 = 36 - 2.8935 = 33.1065 calls/s（或 36 - 2.89 = 33.11 calls/s）；有初始桶額度時排空時間 = 666 ÷ 33.11 ≈ 20.11 s（約 20.1 秒），無初始桶額度時 = 720 ÷ 33.11 ≈ 21.75 s（約 21.8 秒）。推導正確。",
+              "correct_value": "無初始桶額度累積 720 個（約 21.8 秒排空），扣 burst = 54 剩 666 個（約 20.1 秒排空）"
+            },
+            {
+              "claim": "動手做範例：第一次執行因退款金額 $300 超過 $250 自動核准上限，會寫入 llm_turn、tool_call 與 hitl_pause 共 3 筆事件並回傳 waiting_hitl；人工核准寫入 hitl_resume 後，續跑寫入 tool_call 與 completed，最終累積 6 筆事件。",
+              "verdict": "correct",
+              "reasoning": "第一階段寫入 3 筆事件（llm_turn、tool_call、hitl_pause），人工審批寫入第 4 筆（hitl_resume），續跑寫入第 5 筆（tool_call）與第 6 筆（completed），合計 3 + 1 + 2 = 6 筆事件，且續跑時因 paused 為真跳過 call_llm()，不重複呼叫 LLM，計數與程式邏輯一致。",
+              "correct_value": "第一階段 3 筆事件，核准並續跑後共 6 筆事件"
+            },
+            {
+              "claim": "自我檢核第 3 題參考解答：20 req/s × 5 = 100 calls/s（6,000 RPM），名目配額為 3,600 RPM（60 calls/s），淨超額率為 40 calls/s，持續 45 秒累積 40 × 45 = 1,800 個 API 呼叫（約 37.5s 抵達 1,500 告警線）；若沿用 90% 限流（54 calls/s），未扣初始桶額度時積壓 (100 - 54) × 45 = 2,070 個。",
+              "verdict": "correct",
+              "reasoning": "尖峰呼叫率 = 20 × 5 = 100 calls/s = 6,000 RPM；名目配額 = 3,600 ÷ 60 = 60 calls/s；淨超額 = 100 - 60 = 40 calls/s；45 秒累積 = 40 × 45 = 1,800 calls；抵達 1,500 告警線時間 = 1,500 ÷ 40 = 37.5s。90% 限流速率 = 60 × 0.9 = 54 calls/s；淨超額 = 100 - 54 = 46 calls/s；45 秒累積 = 46 × 45 = 2,070 calls。所有數值完全正確。",
+              "correct_value": "名目配額下累積 1,800 個（37.5s 達 1,500），90% 限流下未扣初始桶額度累積 2,070 個"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "Token Bucket 補充速率設為租戶配額的 90%，例如 2,400 RPM 配額對應 36 calls/s",
+              "verdict": "correct",
+              "reasoning": "2,400 RPM ÷ 60 = 40 calls/s，乘以 0.9 等於 36 calls/s。burst = 54 等於 1.5 秒的補充量。這是設計選擇，本身沒有矛盾。",
+              "correct_value": "36 calls/s（名目配額 40 calls/s）"
+            },
+            {
+              "claim": "base_delay_ms = 500ms 時，前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s",
+              "verdict": "correct",
+              "reasoning": "依公式 min(30000, 500 × 2^(attempt−1))，attempt 1 到 4 分別得 500、1000、2000、4000 ms，加總 7,500 ms，四個值都沒有碰到 30s 上限。",
+              "correct_value": "0.5 / 1 / 2 / 4 s，合計 7.5 s"
+            },
+            {
+              "claim": "唯讀工具單次 timeout 5s，重試 2 次，總預算 5s × 3 = 15s（未計退避）",
+              "verdict": "correct",
+              "reasoning": "首次呼叫加 2 次重試共 3 次，3 × 5s = 15s。",
+              "correct_value": "15 s"
+            },
+            {
+              "claim": "OrderOps 平均 0.5787 req/s，尖峰約 20.7×",
+              "verdict": "correct",
+              "reasoning": "50,000 ÷ 86,400 = 0.5787 req/s，12 ÷ 0.5787 = 20.74。基準表寫的「平均 0.58 req/s、尖峰 20×」是四捨五入後的概數，章內 20.7× 比較精確，兩者不衝突。",
+              "correct_value": "0.5787 req/s；約 20.7×（基準表概略值為 20×）"
+            },
+            {
+              "claim": "尖峰 API 呼叫率 = 12 req/s × 5 calls/req = 60 calls/s = 3,600 RPM",
+              "verdict": "correct",
+              "reasoning": "12 × 5 = 60 calls/s，60 × 60 = 3,600 RPM。章內已註明前提是五回合完全重疊、未計重試，屬於上限估算。",
+              "correct_value": "60 calls/s；3,600 RPM"
+            },
+            {
+              "claim": "按名目配額 40 calls/s，尖峰 30 秒累積 600 個 API 呼叫；尖峰後平均流量 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空",
+              "verdict": "correct",
+              "reasoning": "超額 (60 − 40) × 30 = 600。尖峰後流量 0.5787 × 5 = 2.894 calls/s，餘裕 40 − 2.894 = 37.106，600 ÷ 37.106 = 16.17 秒。",
+              "correct_value": "600 個；約 16.2 秒"
+            },
+            {
+              "claim": "按 90% 限流（36 calls/s）累積 720 個；扣除 burst 54 後剩 666 個，約 20.1 秒排空；沒有初始額度時約 21.8 秒",
+              "verdict": "correct",
+              "reasoning": "(60 − 36) × 30 = 720，720 − 54 = 666。排空餘裕 36 − 2.894 = 33.106，666 ÷ 33.106 = 20.12 秒，720 ÷ 33.106 = 21.75 秒。",
+              "correct_value": "720 / 666 個；20.1 s / 21.8 s"
+            },
+            {
+              "claim": "挑戰題：20 req/s × 5 = 100 calls/s，配額 3,600 RPM，45 秒累積 1,800 個（約 37.5s 抵達 1,500 告警線）；90% 限流下積壓 2,070 個",
+              "verdict": "correct",
+              "reasoning": "3,600 RPM = 60 calls/s，超額 40 calls/s，40 × 45 = 1,800，1,500 ÷ 40 = 37.5 s。90% 限流為 54 calls/s，(100 − 54) × 45 = 2,070。",
+              "correct_value": "1,800 個（37.5 s 抵達 1,500）；2,070 個"
+            },
+            {
+              "claim": "Batch API 提供 50% 折扣，Sonnet 5.5 降為 $1.00 / $5.00 per MTok",
+              "verdict": "correct",
+              "reasoning": "基準表與 source-evidence 都記載輸入與輸出同步半價，$2.00 / $10.00 × 0.5 = $1.00 / $5.00。",
+              "correct_value": "$1.00 / $5.00 per MTok"
+            },
+            {
+              "claim": "範例第一輪寫入 llm_turn、tool_call、hitl_pause 共 3 筆事件，核准後累積 6 筆，最終狀態為 completed",
+              "verdict": "correct",
+              "reasoning": "依章內流程，第一輪寫入 3 筆；核准後再寫入 hitl_resume、tool_call、completed 共 3 筆，合計 6 筆。$300 大於 $250 上限、小於 $340 訂單總額，觸發 HITL 的條件成立。不過實際程式輸出未經執行，這裡只確認敘述內部一致。",
+              "correct_value": "3 → 6 筆（敘述內部一致）"
+            },
+            {
+              "claim": "Silent Cache Miss 告警條件：cache_creation_input_tokens > 0 且 attempt > 1",
+              "verdict": "imprecise",
+              "reasoning": "如果前一次嘗試是在處理前就被拒絕（例如 429，或 529 過載），快取根本還沒寫入，重試時正當地寫入快取也會觸發這條告警，造成誤報。此外，快取已因 TTL 過期，或前綴低於最低可快取長度時（source-evidence 指出低於門檻會默默不生效），也會出現同樣的觀測值。",
+              "correct_value": "限定為「前一次嘗試已回報 cache_creation 或 cache_read > 0，或前一次已收到 200」且 prefix hash 相同、仍在 TTL 內，重試才出現 cache_read_input_tokens = 0 時告警；被拒絕的嘗試不應納入判斷基準。"
+            },
+            {
+              "claim": "熔斷器：滑動視窗 60s 內「連續」發生 failure_threshold = 5 次 529 或 5xx 即切為 OPEN",
+              "verdict": "imprecise",
+              "reasoning": "「連續 N 次」與「滑動視窗內累計 N 次」是兩種不同的觸發語意：中間夾一次成功時，前者會歸零，後者不會。章內把兩者混在一起，實作者可能做出不同的行為。",
+              "correct_value": "明確擇一，例如「60s 滑動視窗內累計 ≥ 5 次 529/5xx」或「連續 5 次失敗（不限時間窗）」。"
+            },
+            {
+              "claim": "LLM API 錯誤語意：429 rate_limit_error 帶 retry-after、支出上限型 429 可能沒有 retry-after、529 overloaded_error、413 request_too_large 屬於不可重試錯誤",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 只涵蓋價格、快取、SDK 與 MCP，沒有記載 HTTP 錯誤碼、錯誤類型或 retry-after 行為。章內雖已加註「依官方文件為準」，但這些具體主張無法用現有證據判定，閉卷也不能代替查證。",
+              "correct_value": "需對照官方 Errors 與 Rate Limits 文件，逐一確認錯誤碼列舉、支出上限型 429 的標頭行為，以及 anthropic-ratelimit-* 標頭名稱。"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch07-evals-and-systematic-tuning.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "第 1 回合 6,000 input tokens、第 2–5 回合各新增 1,200 歷史 input tokens，未優化基準單筆 5 回合累計 42,000 input tokens / 1,750 output tokens，單筆成本 $0.1015。",
+              "verdict": "correct",
+              "reasoning": "五回合輸入分別為 6,000、7,200、8,400、9,600、10,800 tokens，合計 42,000；每回合輸出 350 tokens，五回合合計 1,750。依基準牌價，成本為 42,000 × 2 / 1,000,000 + 1,750 × 10 / 1,000,000 = $0.1015。",
+              "correct_value": "42,000 input tokens、1,750 output tokens，單筆 $0.1015。"
+            },
+            {
+              "claim": "單步準確率從 90% 提升到 98%，5 步任務的 Pass^5 穩定度從 7.18% 提升至 60.35%（約 8.41 倍）。",
+              "verdict": "correct",
+              "reasoning": "依章內各步條件成功率相同、各次試驗獨立的假設，五步任務連續五次成功的機率為 p^25。0.9^25 約為 0.07179，0.98^25 約為 0.60346；後者除以前者約為 8.41。",
+              "correct_value": "約 7.18% 提升至 60.35%，約 8.41 倍；結果依賴所述機率假設。"
+            },
+            {
+              "claim": "每次完整 CI 執行總成本 = $30.45 + $0.0675 = $30.52 USD（精確值 $30.5175）。",
+              "verdict": "correct",
+              "reasoning": "100 題各執行三次共 300 次。Agent 成本為 300 × $0.1015 = $30.45；每次裁判成本為 (1,500 × 0.10 + 150 × 0.50) / 1,000,000 = $0.000225，300 次為 $0.0675。兩者合計 $30.5175。",
+              "correct_value": "$30.5175，四捨五入為 $30.52；這是每次 Trial 均使用所列 token 數、全送裁判且不含重試的估算。"
+            },
+            {
+              "claim": "若 10 個 worker 各耗盡 45 秒上限需 22.5 分鐘，每日夜間跑 30 次約 $915.53／月。",
+              "verdict": "imprecise",
+              "reasoning": "300 次 Trial 以 10 個 worker 並行，若每次 Trial 均耗盡 45 秒且無額外排程開銷，需 30 批、合計 1,350 秒，即 22.5 分鐘。成本部分，$30.5175 × 30 = $915.525，約 $915.53，對應的是一個月共執行 30 次；原句的「每日夜間跑 30 次」也可解讀成每天跑 30 次，與該月成本不符。",
+              "correct_value": "若每日夜間跑 1 次、每月跑 30 次，約 $915.53／月；若每日跑 30 次且以 30 天計，約 $27,465.75／月。"
+            },
+            {
+              "claim": "這一層執行時間在毫秒級、零 API 成本，應涵蓋 100% 的測試案例。",
+              "verdict": "imprecise",
+              "reasoning": "純程式碼斷言本身可以不產生模型 API 費用，但其執行時間取決於檢查內容與環境。章節同時要求驗證交易狀態、授權及寫入交易內的重驗；若評測過程需查詢外部服務或資料庫，無法僅依材料保證整層皆為毫秒級或沒有相關服務成本。",
+              "correct_value": "純本地 Code Grader 不需模型 API 費用；實際延遲與其他服務成本應依檢查範圍及執行環境量測。"
+            },
+            {
+              "claim": "未受控的併發會觸發 HTTP `429`（Rate Limit，附帶 `retry-after` Header）或 `529 overloaded_error`（服務過載）。",
+              "verdict": "imprecise",
+              "reasoning": "未受控併發可能增加觸及配額或服務過載的機會，但實際是否發生取決於請求速率、配額及服務狀態。提供的 source-evidence 未記錄這些狀態碼或 `retry-after` 標頭的具體規則，因此也不足以確認 429 回應必然附帶該標頭。",
+              "correct_value": "未受控併發可能導致限流或過載；狀態碼與重試標頭的適用條件應依當時官方文件確認。"
+            },
+            {
+              "claim": "若完整執行該評測器，預期輸出範例會顯示……Total Eval Cost: $0.2097，且 CI 閘門回傳非零 exit code 阻斷合併。",
+              "verdict": "imprecise",
+              "reasoning": "依章內定義，若 EVAL-003 三次中有兩次通過、一次失敗，Pass@3 確為 1、Pass^3 確為 0。但提供的材料沒有完整模擬器程式碼、各次 token 用量或退出碼邏輯，無法獨立重算 $0.2097 或驗證程式實際回傳非零 exit code。",
+              "correct_value": "給定所述三次結果，EVAL-003 的 Pass@3 = 1、Pass^3 = 0；總成本與退出碼需依完整程式及實際執行結果確認。"
+            },
+            {
+              "claim": "單次執行成功率為 `0.95^6 ≈ 0.7351`（73.51%）；`k=3` 的 `Pass^3` 為 `0.95^18 ≈ 0.3972`（39.72%）。",
+              "verdict": "correct",
+              "reasoning": "依題目所給各步獨立及重複試驗獨立的假設，六步均成功的機率為 0.95^6 ≈ 0.73509；三次均成功為 (0.95^6)^3 = 0.95^18 ≈ 0.39721。",
+              "correct_value": "單次約 73.51%；三次全通過約 39.72%。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 基準：第 1 回合 6,000 input tokens、第 2–5 回合各新增 1,200 歷史 input tokens，未優化基準單筆 5 回合累計 42,000 input tokens / 1,750 output tokens，Sonnet 5.5 單筆成本 $0.1015",
+              "verdict": "correct",
+              "reasoning": "獨立推導：第 1 至 5 回合輸入 token 數分別為 6,000、7,200、8,400、9,600、10,800，五回合加總 = 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 input tokens；輸出每回合 350 tokens × 5 回合 = 1,750 output tokens。以 Sonnet 5.5 牌價（$2.00 / $10.00 per MTok）計算：(42,000 × 2.00 + 1,750 × 10.00) / 1,000,000 = (84,000 + 17,500) / 1,000,000 = $0.1015。與章節及基準表一致。",
+              "correct_value": "42,000 input tokens / 1,750 output tokens，單筆成本 $0.1015"
+            },
+            {
+              "claim": "多步任務與 Pass^k 數學實算：情境 A（p = 0.90）下 5 步成功率 = 59.05%、10 步 = 34.87%、5 步 Pass^5 = 7.18%；情境 B（p = 0.98）下 5 步成功率 = 90.39%、10 步 = 81.71%、5 步 Pass^5 = 60.35%；Pass^5 提升約 8.41 倍",
+              "verdict": "correct",
+              "reasoning": "獨立計算：0.90^5 = 0.59049 ≈ 59.05%；0.90^10 = 0.348678 ≈ 34.87%；0.90^25 = 0.0717898 ≈ 7.18%。0.98^5 = 0.90392 ≈ 90.39%；0.98^10 = 0.81707 ≈ 81.71%；0.98^25 = 0.60346 ≈ 60.35%。比值：0.60346 / 0.0717898 ≈ 8.406（若以四捨五入後 60.35 / 7.18 = 8.4053 ≈ 8.41 倍）。計算無誤。",
+              "correct_value": "情境 A 為 59.05% / 34.87% / 7.18%；情境 B 為 90.39% / 81.71% / 60.35%；比值約 8.41 倍"
+            },
+            {
+              "claim": "100 題黃金集 CI 回歸測試成本核算（k = 3，共 300 次 Trial）：被測 Agent（Sonnet 5.5）成本 $30.45，LLM-as-a-Judge（Haiku 5.5，每次 1,500 input / 150 output tokens）單次 $0.000225、300 次 $0.0675，每次完整 CI 總成本 $30.52（精確值 $30.5175），每日夜間跑 30 次約 $915.53／月，較 $35.00 預算硬上限預留 $4.4825 緩衝",
+              "verdict": "correct",
+              "reasoning": "獨立計算：300 × $0.1015 = $30.45。Haiku 5.5（≤100K 牌價 $0.10 / $0.50 per MTok）單次裁判成本 = (1,500 × 0.10 + 150 × 0.50) / 1,000,000 = 225 / 1,000,000 = $0.000225；300 次 = $0.0675。總成本 = $30.45 + $0.0675 = $30.5175 ≈ $30.52。每月 30 次 = 30 × $30.5175 = $915.525 ≈ $915.53。緩衝 = $35.00 - $30.5175 = $4.4825。全部數值一致。",
+              "correct_value": "單次 CI 總成本 $30.5175（約 $30.52），月成本（30 次）$915.53，與 $35.00 上限差額 $4.4825"
+            },
+            {
+              "claim": "Error Taxonomy 表格與調校幅度：100 題黃金集中失敗 22 題分別為 tool_order_violation 8 題（8%）、policy_violation 7 題（7%）、schema_error 4 題（4%）、excessive_steps 3 題（3%），修復後搭配餘下 5 題長尾與新回歸案例，通過率由 78% 提升至 95%",
+              "verdict": "correct",
+              "reasoning": "獨立驗算：8 + 7 + 4 + 3 = 22 題失敗，對應 100 題黃金集之調校前通過率為 100 - 22 = 78%；調校後餘下 5 題失敗，通過率為 100 - 5 = 95%。數字前後吻合。",
+              "correct_value": "失敗合計 22 題（22%），初始通過率 78%，修復後餘 5 題失敗（通過率 95%）"
+            },
+            {
+              "claim": "故障模式時間與重試上限核算：保留驗證集（Holdout Set, 30 題）每錯一題變動 3.33 個百分點；SDK 預設重試 2 次且外層再重試 3 次時，每個邏輯請求最多送出 12 次；100 題 × k=3 由 10 個 worker 各耗盡 45 秒上限需 22.5 分鐘；PR Smoke Gate（20 題 × k=1）由 10 個 worker 各耗盡 45 秒理論上限為 90 秒",
+              "verdict": "correct",
+              "reasoning": "獨立驗算：(1) 1 / 30 = 3.333...%；(2) 單次外層嘗試含首次 + SDK 重試 2 次 = 3 次，外層首次 + 重試 3 次 = 4 次，共 3 × 4 = 12 次；(3) 300 次 Trial / 10 workers = 30 批，30 × 45 秒 = 1,350 秒 = 22.5 分鐘；(4) 20 次 Trial / 10 workers = 2 批，2 × 45 秒 = 90 秒。全部正確。",
+              "correct_value": "每題佔 3.33 個百分點；最多 12 次請求；Full Regression 上限 22.5 分鐘；Smoke Gate 上限 90 秒"
+            },
+            {
+              "claim": "自我檢核第 2 與第 3 題計算：6 步任務單步準確率 0.95 時，單次執行成功率為 0.95^6 ≈ 0.7351（73.51%），k=3 的 Pass^3 為 0.95^18 ≈ 0.3972（39.72%）；挑戰題若新增 3 次試驗平均成本與原 9 次（總成本 $0.2097）相同，估計總成本增至 $0.2796（增加 33⅓%）",
+              "verdict": "correct",
+              "reasoning": "獨立驗算：0.95^6 = 0.73509189 ≈ 0.7351（73.51%）；(0.95^6)^3 = 0.95^18 = 0.397214 ≈ 0.3972（39.72%）。挑戰題：原 3 案例 × k=3 = 9 次試驗共 $0.2097（單次平均 $0.0233），新增 1 案例 × k=3 後共 12 次試驗，12 × $0.0233 = $0.2796，增幅為 (12 - 9) / 9 = 1/3 = 33⅓%。推導正確且已適當限定實際成本取決於模擬器 token 計費。",
+              "correct_value": "0.95^6 ≈ 73.51%，0.95^18 ≈ 39.72%；等均值假設下 12 次試驗成本為 $0.2796（+33⅓%）"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "情境 A：0.90^5 = 0.5905、0.90^10 = 0.3487、Pass^5 = 0.90^25 = 0.0718（7.18%）",
+              "verdict": "correct",
+              "reasoning": "0.9^5 = 0.59049；0.9^10 = 0.348678；0.9^25 = 0.0717898。前提是各步獨立（或各步在前序成功下的條件成功率都是 p），且各次試驗彼此獨立。章節已寫明這兩項假設，在此前提下 (p^5)^k = p^25 成立。",
+              "correct_value": "59.05% / 34.87% / 7.18%"
+            },
+            {
+              "claim": "情境 B：0.98^5 = 0.9039、0.98^10 = 0.8171、0.98^25 = 0.6035；Pass^5 由 7.18% 升到 60.35%（約 8.41 倍）",
+              "verdict": "correct",
+              "reasoning": "0.98^5 = 0.903921；0.98^10 = 0.817073；ln0.98 × 25 = −0.505068，e^−0.505068 ≈ 0.60346。倍數為 0.60346 / 0.07179 ≈ 8.406，四捨五入是 8.41。",
+              "correct_value": "90.39% / 81.71% / 60.35%，約 8.41 倍"
+            },
+            {
+              "claim": "未優化單筆 42,000 input + 1,750 output，用 Sonnet 5.5 計價為 $0.1015；第 1 回合 6,000 tokens，第 2–5 回合各新增 1,200",
+              "verdict": "correct",
+              "reasoning": "各回合輸入依序為 6,000、7,200、8,400、9,600、10,800，加總 42,000；輸出為 350 × 5 = 1,750。成本為 42,000 × $2 / 1M = $0.084，加上 1,750 × $10 / 1M = $0.0175，合計 $0.1015，與基準資料一致。",
+              "correct_value": "$0.1015"
+            },
+            {
+              "claim": "100 題 × k=3 共 300 次 Trial（約 1,500 次模型請求）；Agent 成本 $30.45，Haiku 裁判成本 $0.0675，CI 總計 $30.5175",
+              "verdict": "correct",
+              "reasoning": "300 × 5 回合 = 1,500 次請求。300 × $0.1015 = $30.45。裁判單次為 (1,500 × 0.10 + 150 × 0.50) / 1M = $0.000225（Haiku 5.5 在 ≤100K 的牌價適用），× 300 = $0.0675。總計 $30.5175，四捨五入為 $30.52。",
+              "correct_value": "$30.5175"
+            },
+            {
+              "claim": "Error Taxonomy：8 + 7 + 4 + 3 = 22 題失敗，對應調校前通過率 78%；修復後 95%，剩 5 題",
+              "verdict": "correct",
+              "reasoning": "加總為 22，100 − 22 = 78%；95% 對應剩下 5 題失敗，算術一致。修復後的數字本身是示意，章節已註明。",
+              "correct_value": "22 題 / 78% → 5 題 / 95%（示意）"
+            },
+            {
+              "claim": "Holdout 30 題，每錯一題變動 3.33 個百分點",
+              "verdict": "correct",
+              "reasoning": "100 / 30 = 3.333 個百分點。",
+              "correct_value": "3.33 個百分點"
+            },
+            {
+              "claim": "SDK 預設重試 2 次、外層再重試 3 次時，每個邏輯請求最多送出 12 次",
+              "verdict": "correct",
+              "reasoning": "內層每次呼叫最多送出 1 + 2 = 3 次，外層最多呼叫 1 + 3 = 4 次，3 × 4 = 12。SDK 預設重試次數不在提供的 source-evidence 內，本項只驗算算術；預設值仍需對照官方文件確認。",
+              "correct_value": "12 次（前提是 SDK 預設確實為 2 次重試）"
+            },
+            {
+              "claim": "全套 300 次 Trial，10 個 worker 各用滿 45 秒需 22.5 分鐘；PR Smoke 20 題 × k=1 理論上限 90 秒",
+              "verdict": "correct",
+              "reasoning": "300 / 10 = 30 輪，× 45 秒 = 1,350 秒 = 22.5 分鐘。20 / 10 = 2 輪，× 45 秒 = 90 秒。",
+              "correct_value": "22.5 分鐘 / 90 秒"
+            },
+            {
+              "claim": "每日夜間跑 30 次約 $915.53／月",
+              "verdict": "imprecise",
+              "reasoning": "30 × $30.5175 = $915.525，四捨五入為 $915.53，算術正確。但「每日夜間跑 30 次」讀起來像每晚跑 30 次，那樣的月成本約為 $27,466。實際語意應是每晚跑 1 次、每月 30 天。",
+              "correct_value": "每日夜間跑 1 次，每月共 30 次，約 $915.53／月"
+            },
+            {
+              "claim": "單次 CI 預算上限 $35.00，比基準 $30.5175 多留 $4.4825 緩衝",
+              "verdict": "correct",
+              "reasoning": "35 − 30.5175 = 4.4825。",
+              "correct_value": "$4.4825"
+            },
+            {
+              "claim": "maxSteps 設為 6，對應 OrderOps 平均 5 回合加 1 回合緩衝；同時又說模型回合數與工具呼叫數應分開計數",
+              "verdict": "imprecise",
+              "reasoning": "maxSteps 是用模型回合推出來的，但 gradeTrajectory 拿 trace.length（工具呼叫筆數）和 maxSteps 比較。一個回合可能平行呼叫多個工具，最後一回合也可能完全不呼叫工具，所以兩種計數單位不同，和章節自己「分開計數」的要求互相矛盾。",
+              "correct_value": "分別設定 maxModelTurns = 6 與 maxToolCalls（依實測另行設定），不要用工具呼叫數去比對回合上限"
+            },
+            {
+              "claim": "自我檢核：0.95^6 ≈ 0.7351；Pass^3 = 0.95^18 ≈ 0.3972",
+              "verdict": "correct",
+              "reasoning": "0.95^6 = 0.735092；0.735092^3 = 0.397214。",
+              "correct_value": "73.51% / 39.72%"
+            },
+            {
+              "claim": "挑戰題：試驗數由 9 次增至 12 次，按平均成本估算，總成本由 $0.2097 增至 $0.2796（+33⅓%）",
+              "verdict": "correct",
+              "reasoning": "$0.2097 / 9 = $0.0233，× 12 = $0.2796；12 / 9 − 1 = 33⅓%。章節已註明實際值要依模擬器的計數重算。另外，maxSteps 為 4 而 trace 有 5 筆，因 5 > 4，確實會觸發 excessive_steps。",
+              "correct_value": "$0.2796（估算）"
+            },
+            {
+              "claim": "Haiku 5.5 裁判單價 $0.10 / $0.50 per MTok",
+              "verdict": "correct",
+              "reasoning": "裁判輸入只有 1,500 tokens，遠低於 100K，適用基準資料與 source-evidence 中 ≤100K 的牌價。",
+              "correct_value": "$0.10 / $0.50（≤100K）"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch08-cost-and-latency-optimization.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "每筆工單歷經 5 回合、累計消耗 42,000 輸入 tokens 與 1,750 輸出 tokens，單筆成本高達 $0.1015，每月帳單就是 $152,250。",
+              "verdict": "correct",
+              "reasoning": "依章節帳本，輸入為 5×6,000＋1,200×(0＋1＋2＋3＋4)＝42,000 tokens，輸出為 5×350＝1,750 tokens。按提供的 Sonnet 單價計算，單筆為 42,000×2／1,000,000＋1,750×10／1,000,000＝$0.1015；每月 1,500,000 筆為 $152,250。",
+              "correct_value": "單筆 $0.1015；每月 $152,250。"
+            },
+            {
+              "claim": "Stage 5 疊加 0.85 倍率後單筆 $0.0098597025，月成本 $14,789.55。",
+              "verdict": "correct",
+              "reasoning": "以各模型 Stage 5 單筆成本及路由比例加權，得 0.6×0.00126525＋0.35×0.02409＋0.05×0.04818＝$0.01159965；乘以 Batch 假設倍率 0.85 為 $0.0098597025，再乘 1,500,000 筆為 $14,789.55375。這是所列假設下的模型 token 費用，並非已驗證的完整成本。",
+              "correct_value": "單筆 $0.0098597025；月成本四捨五入為 $14,789.55。"
+            },
+            {
+              "claim": "結構化輸出精簡（平均回合 5 -> 3.5，輸出 1,750 -> 1,050）。",
+              "verdict": "imprecise",
+              "reasoning": "提供的證據支持結構化輸出可約束最終輸出的格式，但未提供它能使平均回合數或輸出量降至指定數值的量測。章節將此標為待實測情境，故這些數值可作試算假設，不能視為已證實的效果。",
+              "correct_value": "平均 3.5 回合及 1,050 輸出 tokens 均為待實測假設。"
+            },
+            {
+              "claim": "於 system 陣列最後一塊與 tools 陣列最後一個工具加上 cache_control: { \"type\": \"ephemeral\", \"ttl\": \"5m\" }（或 \"1h\"）。",
+              "verdict": "imprecise",
+              "reasoning": "提供的 source-evidence 記載 5 分鐘 TTL 可由不帶 ttl 的 ephemeral 設定使用，並記載 1 小時可指定 ttl: \"1h\"；它沒有確認明確指定 ttl: \"5m\" 的語法有效。",
+              "correct_value": "依提供的證據，5 分鐘使用 {\"type\":\"ephemeral\"}；1 小時使用 {\"type\":\"ephemeral\",\"ttl\":\"1h\"}。明確指定 \"5m\" 是否有效須另查文件。"
+            },
+            {
+              "claim": "以 Redis Token Bucket 控制租戶速率（示例單租戶佔比上限 25%，即 4 個），並以 Worker Semaphore 控制本機在途量（示例 16）。",
+              "verdict": "imprecise",
+              "reasoning": "4 確實是 16 的 25%，但 16 在文中是本機在途量，屬併發數；Token Bucket 控制的速率則需要時間單位。僅憑 25% 和 16，不能推導每租戶的請求速率或 Token Bucket 參數。",
+              "correct_value": "若指併發配額，可表述為每租戶最多 4 個在途請求；若指速率，須另訂總速率、時間單位與桶容量。"
+            },
+            {
+              "claim": "在三次請求共用前綴、後兩次命中 1h 快取且 5m 均冷寫入的假設下，1h TTL 省下 44% 前綴成本。",
+              "verdict": "correct",
+              "reasoning": "5m 三次等效輸入為 3×6,000×1.25＝22,500 tokens；1h 為 6,000×2＋2×6,000×0.05＝12,600 tokens。差額 9,900 除以 22,500 為 44%。",
+              "correct_value": "在所列命中與冷寫入假設下，前綴成本降低 44%。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "Stage 0 基準線：日工單量 50,000 筆／天（1,500,000 筆／月，以 30 天計），全用 Claude Sonnet 5.5 且不開快取，每筆 5 回合累計消耗 42,000 輸入 tokens 與 1,750 輸出 tokens，單筆成本 $0.1015，每月帳單 $152,250。",
+              "verdict": "correct",
+              "reasoning": "依基準資料，基準前綴為 6,000 tokens，5 回合每回合新增輸入 1,200 tokens、輸出 350 tokens。累計輸入 = 5 × 6,000 + 1,200 × (0 + 1 + 2 + 3 + 4) = 30,000 + 12,000 = 42,000 tokens；累計輸出 = 5 × 350 = 1,750 tokens。Sonnet 5.5 牌價為 Input $2.00 / MTok、Output $10.00 / MTok，單筆成本 = 42,000 × $2.00 / 10^6 + 1,750 × $10.00 / 10^6 = $0.084 + $0.0175 = $0.1015。每日成本 = 50,000 × $0.1015 = $5,075，每月成本 = 1,500,000 × $0.1015 = $152,250.00。與章節數據完全一致。",
+              "correct_value": "單筆 42,000 input / 1,750 output tokens，單筆成本 $0.1015，月成本 $152,250.00。"
+            },
+            {
+              "claim": "Stage 1 Model Routing（60% Haiku 5.5 + 35% Sonnet 5.5 + 5% Opus 5.5）：Haiku 單筆 $0.005075、Sonnet 單筆 $0.101500、Opus 單筆 $0.203000，加權單筆 $0.048720，月成本 $73,080.00（累積降幅 52.0%）。",
+              "verdict": "correct",
+              "reasoning": "依牌價（Haiku ≤100K $0.10/$0.50、Sonnet $2.00/$10.00、Opus $4.00/$20.00 per MTok）：Haiku 單筆 = 42,000 × $0.10 / 10^6 + 1,750 × $0.50 / 10^6 = $0.0042 + $0.000875 = $0.005075；Sonnet 單筆 = $0.101500；Opus 單筆 = 42,000 × $4.00 / 10^6 + 1,750 × $20.00 / 10^6 = $0.168 + $0.035 = $0.203000。加權單筆 = 0.60 × $0.005075 + 0.35 × $0.1015 + 0.05 × $0.2030 = $0.003045 + $0.035525 + $0.01015 = $0.048720。月成本 = 1,500,000 × $0.048720 = $73,080.00。累積降幅 = (152,250 - 73,080) / 152,250 = 79,170 / 152,250 = 52.0%。與章節完全一致。",
+              "correct_value": "加權單筆 $0.048720，月成本 $73,080.00，累積降幅 52.0%。"
+            },
+            {
+              "claim": "Stage 2 Prompt Caching（30,000 cached + 12,000 uncached，5m TTL 下 90% 讀取占比、10% 冷寫入）：實效讀取倍率 Haiku 0.215、Sonnet/Opus 0.170；Haiku 等效 input 18,450（單筆 $0.002720）、Sonnet 等效 input 17,100（單筆 $0.051700）、Opus 單筆 $0.103400，加權單筆 $0.024897，月成本 $37,345.50（累積降幅 75.5%）。",
+              "verdict": "correct",
+              "reasoning": "5m TTL 寫入倍率為 1.25×，讀取倍率 Haiku 為 0.10×、Sonnet/Opus 為 0.05×。90% 讀取 + 10% 寫入下：Haiku 實效倍率 = 0.9 × 0.10 + 0.1 × 1.25 = 0.09 + 0.125 = 0.215；Sonnet/Opus 實效倍率 = 0.9 × 0.05 + 0.1 × 1.25 = 0.045 + 0.125 = 0.170。Haiku 等效 input = 30,000 × 0.215 + 12,000 = 6,450 + 12,000 = 18,450 tokens，單筆成本 = 18,450 × $0.10 / 10^6 + $0.000875 = $0.001845 + $0.000875 = $0.002720。Sonnet 等效 input = 30,000 × 0.170 + 12,000 = 5,100 + 12,000 = 17,100 tokens，單筆成本 = 17,100 × $2.00 / 10^6 + $0.0175 = $0.0342 + $0.0175 = $0.051700。Opus 單筆成本 = 2 × $0.051700 = $0.103400。加權單筆 = 0.60 × $0.002720 + 0.35 × $0.051700 + 0.05 × $0.103400 = $0.001632 + $0.018095 + $0.005170 = $0.024897。月成本 = 1,500,000 × $0.024897 = $37,345.50。累積降幅 = 1 - 37,345.50 / 152,250 = 75.471% ≈ 75.5%。與章節完全一致。",
+              "correct_value": "加權單筆 $0.024897，月成本 $37,345.50，累積降幅 75.5%。"
+            },
+            {
+              "claim": "Stage 3 工具分組精簡（5 × 3,600 = 18,000 cached）+ 回傳裁剪（7,000 uncached）：Haiku 單筆 $0.001962、Sonnet 單筆 $0.037620、Opus 單筆 $0.075240，加權單筆 $0.0181062，月成本 $27,159.30（累積降幅 82.2%）。",
+              "verdict": "correct",
+              "reasoning": "前綴從 6,000 降至 3,600 tokens（System Prompt 2,400 + 6 工具 × 200 = 3,600），5 回合可快取前綴 = 18,000 tokens，未快取輸入裁剪至 7,000 tokens。Haiku 等效 input = 18,000 × 0.215 + 7,000 = 3,870 + 7,000 = 10,870 tokens，單筆成本 = 10,870 × $0.10 / 10^6 + $0.000875 = $0.001087 + $0.000875 = $0.001962。Sonnet 等效 input = 18,000 × 0.170 + 7,000 = 3,060 + 7,000 = 10,060 tokens，單筆成本 = 10,060 × $2.00 / 10^6 + $0.0175 = $0.02012 + $0.0175 = $0.037620。Opus 單筆成本 = 2 × $0.037620 = $0.075240。加權單筆 = 0.60 × $0.001962 + 0.35 × $0.037620 + 0.05 × $0.075240 = $0.0011772 + $0.013167 + $0.003762 = $0.0181062。月成本 = 1,500,000 × $0.0181062 = $27,159.30。累積降幅 = 1 - 27,159.30 / 152,250 = 82.161% ≈ 82.2%。與章節完全一致。",
+              "correct_value": "加權單筆 $0.0181062，月成本 $27,159.30，累積降幅 82.2%。"
+            },
+            {
+              "claim": "Stage 4 Batch API 50% 折扣（假設佔成本加權 30% 之工作負載轉入 Batch，整體倍率 0.85）：加權單筆 $0.01539027，月成本 $23,085.41（累積降幅 84.8%）。",
+              "verdict": "correct",
+              "reasoning": "30% 成本享 50% 折扣，整體倍率 = 0.70 × 1.0 + 0.30 × 0.5 = 0.85。加權單筆 = $0.0181062 × 0.85 = $0.01539027。月成本 = 1,500,000 × $0.01539027 = $23,085.405，四捨五入至美分為 $23,085.41。累積降幅 = 1 - 23,085.405 / 152,250 = 84.837% ≈ 84.8%。與章節完全一致。",
+              "correct_value": "加權單筆 $0.01539027，月成本 $23,085.41，累積降幅 84.8%。"
+            },
+            {
+              "claim": "Stage 5 結構化輸出精簡（平均回合 5 -> 3.5，輸出 1,750 -> 1,050，輸入 13,500 cached + 4,500 uncached）：折扣前單筆 Haiku $0.00126525、Sonnet $0.024090、Opus $0.048180；疊加 0.85 倍率後單筆 $0.0098597025，月成本 $14,789.55（累積降幅 90.3%）；以及四項敏感度提示金額（$17,114.79、$18,826.27、$16,268.51、$16,028.85、$17,631.74）。",
+              "verdict": "correct",
+              "reasoning": "3.5 回合輸出 = 3.5 × 300 = 1,050 tokens（或由 1,750 按比例縮減），cached = 3.5 × 3,600 + 900 = 13,500 tokens，uncached = 4,500 tokens。Haiku 等效 input = 13,500 × 0.215 + 4,500 = 2,902.5 + 4,500 = 7,402.5 tokens，折扣前單筆 = 7,402.5 × $0.10 / 10^6 + 1,050 × $0.50 / 10^6 = $0.00074025 + $0.000525 = $0.00126525。Sonnet 等效 input = 13,500 × 0.170 + 4,500 = 2,295 + 4,500 = 6,795 tokens，折扣前單筆 = 6,795 × $2.00 / 10^6 + 1,050 × $10.00 / 10^6 = $0.01359 + $0.0105 = $0.024090。Opus 折扣前單筆 = 2 × $0.024090 = $0.048180。折扣前加權單筆 = 0.60 × $0.00126525 + 0.35 × $0.024090 + 0.05 × $0.048180 = $0.00075915 + $0.0084315 + $0.002409 = $0.01159965。疊加 0.85 倍率後單筆 = $0.01159965 × 0.85 = $0.0098597025；月成本 = 1,500,000 × $0.0098597025 = $14,789.55375 ≈ $14,789.55，累積降幅 = 1 - 14,789.55375 / 152,250 = 90.286% ≈ 90.3%。敏感度驗算：(1) 僅 30% 單量且全屬 Haiku 走 Batch（即 Haiku 60% 單量中有一半享 50% 折扣，等效權重 0.45）：加權單筆 = 0.45 × $0.00126525 + 0.35 × $0.024090 + 0.05 × $0.048180 = $0.0114098625，月成本 = 1,500,000 × $0.0114098625 = $17,114.79375 ≈ $17,114.79；再乘 1.1×（us 駐留）= $18,826.273125 ≈ $18,826.27。(2) 0.85 倍率 + 1.1× us 駐留 = $14,789.55375 × 1.1 = $16,268.509125 ≈ $16,268.51。(3) 改 1h TTL（寫入 2.0×，10% 冷寫入使實效倍率各加 0.075，即 Haiku 0.290、Sonnet/Opus 0.245）：Haiku 單筆 = (13,500 × 0.290 + 4,500) × $0.10 / 10^6 + $0.000525 = $0.0013665，Sonnet 單筆 = (13,500 × 0.245 + 4,500) × $2.00 / 10^6 + $0.0105 = $0.026115，Opus 單筆 = $0.052230；加權單筆 = $0.01257165，乘 0.85 與 1,500,000 筆 = $16,028.85375 ≈ $16,028.85；再乘 1.1× = $17,631.739125 ≈ $17,631.74。全部驗算吻合。",
+              "correct_value": "Stage 5 月成本 $14,789.55（單筆 $0.0098597025，降幅 90.3%），各項敏感度金額均正確。"
+            },
+            {
+              "claim": "自我檢核第 1 題參考解答：前綴 6,000 tokens、3 次請求（5m TTL 每次冷寫入付 1.25×，3 次共 22,500 等效 tokens；1h TTL 第 1 次付 2.0× 寫入 12,000、第 2 與 3 次各付 0.05× 讀取 300，3 次共 12,600 等效 tokens），改用 1h TTL 省下 44% 前綴成本。",
+              "verdict": "correct",
+              "reasoning": "5m TTL 下 3 次皆過期冷寫入：3 × (6,000 × 1.25) = 3 × 7,500 = 22,500 等效 tokens。1h TTL 下第 1 次寫入 + 後 2 次讀取：6,000 × 2.0 + 2 × (6,000 × 0.05) = 12,000 + 600 = 12,600 等效 tokens。節省比例 = (22,500 - 12,600) / 22,500 = 9,900 / 22,500 = 44%。若為 2 次請求，1h TTL 為 2.05× 對 5m TTL 的 2.50×。計算完全正確。",
+              "correct_value": "22,500 對 12,600 等效 tokens，節省 44%。"
+            },
+            {
+              "claim": "自我檢核第 2 題參考解答：以 Sonnet 5.5 為例，減少 700 個輸出 tokens 可省 $0.007（$10.00 / MTok），同量未快取輸入僅省 $0.0014（$2.00 / MTok），若輸入已命中快取（0.05× 即 $0.10 / MTok）更只省 $0.00007（輸出單價為快取輸入的 100 倍）。",
+              "verdict": "correct",
+              "reasoning": "Sonnet 5.5 輸出單價 $10.00 / MTok，700 tokens = 700 × $10.00 / 10^6 = $0.007。未快取輸入單價 $2.00 / MTok，700 tokens = 700 × $2.00 / 10^6 = $0.0014。快取命中輸入單價 = $2.00 × 0.05 = $0.10 / MTok，700 tokens = 700 × $0.10 / 10^6 = $0.00007。倍率比 = $10.00 / $0.10 = 100 倍。完全正確。",
+              "correct_value": "分別節省 $0.007、$0.0014、$0.00007，輸出單價為快取命中輸入的 100 倍。"
+            },
+            {
+              "claim": "自我檢核第 3 題參考解答：50,000 筆／天相當於全量平均 34.72 筆／分鐘、均分四組約 8.68 筆／分鐘。",
+              "verdict": "correct",
+              "reasoning": "一天有 24 × 60 = 1,440 分鐘。50,000 / 1,440 = 34.7222... ≈ 34.72 筆／分鐘。均分 4 組：34.7222... / 4 = 8.6805... ≈ 8.68 筆／分鐘。完全正確。",
+              "correct_value": "全量平均 34.72 筆／分鐘，均分四組約 8.68 筆／分鐘。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "Stage 0 基準線：每筆 42,000 輸入、1,750 輸出 tokens，單筆 $0.1015，月成本 $152,250",
+              "verdict": "correct",
+              "reasoning": "每回合前綴 6,000 tokens，5 回合為 30,000。各回合新增輸入累計為 1,200×(0+1+2+3+4)=12,000，合計 42,000。輸入費用 42,000×$2/1M=$0.084，輸出費用 1,750×$10/1M=$0.0175，單筆合計 $0.1015。乘以每月 1,500,000 筆得 $152,250，與基準資料一致。",
+              "correct_value": "$0.1015／筆；$152,250／月"
+            },
+            {
+              "claim": "Stage 1 Model Routing：Haiku 單筆 $0.005075，Opus 單筆 $0.203，加權單筆 $0.04872，月成本 $73,080，降幅 52.0%",
+              "verdict": "correct",
+              "reasoning": "Haiku：42,000×0.1/1M+1,750×0.5/1M=0.0042+0.000875=$0.005075。Opus：0.168+0.035=$0.203。加權：0.6×0.005075+0.35×0.1015+0.05×0.203=0.003045+0.035525+0.01015=$0.04872。月成本 0.04872×1.5M=$73,080。降幅 1−73,080/152,250=52.0%。每次請求遠低於 100K tokens，所以 Haiku 套用 ≤100K 費率是正確的。",
+              "correct_value": "$0.04872／筆；$73,080／月；52.0%"
+            },
+            {
+              "claim": "Stage 2 快取：實效讀取倍率 Haiku 0.215、Sonnet/Opus 0.170，加權單筆 $0.024897，月成本 $37,345.50，降幅 75.5%",
+              "verdict": "correct",
+              "reasoning": "實效倍率：Haiku 0.9×0.10+0.1×1.25=0.215；Sonnet/Opus 0.9×0.05+0.125=0.170。Haiku：30,000×0.215+12,000=18,450 等效 tokens，換算 $0.001845，加輸出 $0.000875，得 $0.00272。Sonnet：17,100×2/1M+0.0175=$0.0517。Opus 為 $0.1034。加權：0.001632+0.018095+0.00517=$0.024897。月成本 $37,345.50，降幅 1−37,345.5/152,250=75.47%，四捨五入為 75.5%。90/10 讀寫比是作者的假設，不是量測值。",
+              "correct_value": "$0.024897／筆；$37,345.50／月；75.5%（在 90% 讀取占比的假設下）"
+            },
+            {
+              "claim": "Stage 3：前綴 6,000→3,600（6 工具×200 + 2,400），18,000 cached + 7,000 uncached，加權單筆 $0.0181062，月成本 $27,159.30，降幅 82.2%",
+              "verdict": "correct",
+              "reasoning": "前綴：2,400+6×200=3,600，5 回合為 18,000。Haiku：(3,870+7,000)×0.1/1M+0.000875=$0.001962。Sonnet：(3,060+7,000)×2/1M+0.0175=$0.03762。Opus 為 $0.07524。加權：0.0011772+0.013167+0.003762=$0.0181062，乘以 1.5M 得 $27,159.30。降幅 82.16%，四捨五入為 82.2%。7,000 uncached 是作者的假設值，章內沒有推導過程。",
+              "correct_value": "$0.0181062／筆；$27,159.30／月；82.2%"
+            },
+            {
+              "claim": "Stage 4：假設成本加權 30% 的工作負載轉入 Batch，整體倍率 0.85，月成本 $23,085.41",
+              "verdict": "imprecise",
+              "reasoning": "算術本身沒錯：1−0.3×0.5=0.85，0.0181062×0.85=$0.01539027，乘以 1.5M 得 $23,085.41，降幅 84.8%。問題在假設與章內路由器矛盾。在 Stage 3 的成本結構中，Haiku 只占加權成本約 6.5%（0.0011772/0.0181062），Sonnet 約 72.7%，Opus 約 20.8%。routeTicket 只把低優先發票類的 Haiku 工單標為 batchEligible，Sonnet 與 Opus 都是 false。所以依章內路由邏輯，成本加權 30% 轉入 Batch 不可能達成，可達成的整體倍率最多約 0.967。此外，Sonnet 工單多屬即時、多步工具流程，受 18 秒 SLO 約束，也不適合交給非同步 Batch。",
+              "correct_value": "只能當成情境假設。若依 routeTicket，只有 Haiku 低優先發票工單能進 Batch，整體倍率約 0.97–0.98，不是 0.85。"
+            },
+            {
+              "claim": "Stage 5：13,500 cached + 4,500 uncached + 1,050 輸出，疊加 0.85 後單筆 $0.0098597025，月成本 $14,789.55，降幅 90.3%",
+              "verdict": "imprecise",
+              "reasoning": "算術可重現。Haiku：(2,902.5+4,500)×0.1/1M+0.000525=$0.00126525。Sonnet：6,795×2/1M+0.0105=$0.02409。Opus 為 $0.04818。加權 $0.01159965，乘以 0.85 得 $0.0098597025，再乘以 1.5M 得 $14,789.55，降幅 90.29%。但數字依賴兩個問題假設。第一，900 對話前綴和 4,500 uncached 沒有推導；若照 Stage 3 每回合 1,400 uncached 的比例，3.5 回合應約 4,900。第二，沿用了與路由器矛盾的 0.85 Batch 倍率。依路由器一致的情境，章內敏感度分析算出 $17,114.79，我驗算一致：0.01159965−0.3×0.00126525×0.5=0.0114098625，乘以 1.5M 得 $17,114.79。這仍低於 $18,000，但降幅只有約 88.8%，不是 90.3%。標題數字應改用路由器一致的情境，或明確標註這只是假設上限。",
+              "correct_value": "依路由器一致的 Batch 情境約 $17,114.79／月（約 $0.01141／筆，降幅約 88.8%）；$14,789.55 只在成本加權 30% 轉入 Batch 的假設下成立"
+            },
+            {
+              "claim": "敏感度：us 駐留 $18,826.27；0.85 倍率加 us $16,268.51；1h TTL $16,028.85；兩者並用 $17,631.74",
+              "verdict": "correct",
+              "reasoning": "17,114.79375×1.1=$18,826.27。14,789.55375×1.1=$16,268.51。1h TTL 的實效倍率：Haiku 0.9×0.1+0.1×2.0=0.29，Sonnet 0.245。Haiku：(3,915+4,500)×0.1/1M+0.000525=$0.0013665；Sonnet：7,807.5×2/1M+0.0105=$0.026115；Opus $0.05223。加權 $0.01257165，乘以 0.85 再乘以 1.5M 得 $16,028.85，再乘以 1.1 得 $17,631.74。全部吻合。注意：1h TTL 情境沿用 90/10 讀寫比，偏保守；路由器一致加 us 的情境會超出 $18,000 目標，章內已自行揭露。",
+              "correct_value": "數值皆正確"
+            },
+            {
+              "claim": "目標門檻：≤$18,000 需降幅 ≥88.18%、單筆 ≤$0.012；若只降 88% 仍為 $18,270",
+              "verdict": "correct",
+              "reasoning": "1−18,000/152,250=88.177%，約 88.18%。18,000/1.5M=$0.012。152,250×0.12=$18,270。",
+              "correct_value": "88.18%；$0.012；$18,270"
+            },
+            {
+              "claim": "5m TTL 命中 ≥1 次即划算：1.25+0.05=1.30<2，Haiku 1.35<2",
+              "verdict": "correct",
+              "reasoning": "兩次請求的無快取成本為 2.0×。有快取時為寫入 1.25× 加一次讀取 0.05×（Sonnet/Opus）或 0.10×（Haiku）。與 source-evidence 的損益兩平說明一致：5m TTL 一次讀取即回本，1h TTL 需兩次。",
+              "correct_value": "1.30× / 1.35× < 2.0×"
+            },
+            {
+              "claim": "自我檢核 1：每 20 分鐘 1 筆，5m 共 22,500 等效 tokens，1h 共 12,600，節省 44%；兩次請求為 2.05× 對 2.5×",
+              "verdict": "correct",
+              "reasoning": "5m：3×6,000×1.25=22,500。1h：6,000×2.0+2×6,000×0.05=12,000+600=12,600。節省 1−12,600/22,500=44%。兩次請求：1h 為 2.0+0.05=2.05×，5m 為 2×1.25=2.5×。",
+              "correct_value": "44%"
+            },
+            {
+              "claim": "自我檢核 2：700 輸出 tokens 省 $0.007，未快取輸入省 $0.0014，快取輸入省 $0.00007，輸出單價為快取輸入的 100 倍",
+              "verdict": "correct",
+              "reasoning": "700×10/1M=$0.007；700×2/1M=$0.0014；700×0.10/1M=$0.00007；$10/$0.10=100。",
+              "correct_value": "數值正確"
+            },
+            {
+              "claim": "尖峰 12 req/s 約為平均的 20.7 倍；semaphore 16 在 12 req/s 下平均占用時間約 1.33s；單租戶 25% 即 4 個",
+              "verdict": "correct",
+              "reasoning": "50,000/86,400=0.5787 req/s，12/0.5787=20.74 倍。依 Little's Law，W=L/λ=16/12=1.33s。16×25%=4。另外說明：多步處置 p95 可達 18s，若 16 是全域在途上限，尖峰時明顯不夠，章內已點出這一點。",
+              "correct_value": "約 20.7 倍；1.33s；4"
+            },
+            {
+              "claim": "重試退避等待上限依序 0.5/1/2s，合計 3.5s；50,000 筆/天約 34.72 筆/分鐘，四組均分約 8.68 筆/分鐘",
+              "verdict": "correct",
+              "reasoning": "0.5+1+2=3.5。50,000/1,440=34.72，除以 4 得 8.68。",
+              "correct_value": "3.5s；34.72；8.68"
+            },
+            {
+              "claim": "快取比對順序 tools→system→messages；System Prompt 開頭放動態時間戳時，前方不變的工具前綴若已有斷點仍可能命中",
+              "verdict": "correct",
+              "reasoning": "source-evidence 寫明前綴從 tools、system 到 messages 依序精確比對，較早區塊變動會使後方所有斷點失效。工具區塊排在 system 之前，且末端設有斷點，所以 system 的變動不影響工具前綴命中。",
+              "correct_value": "與已提供的證據一致"
+            },
+            {
+              "claim": "最小可快取門檻：claude-opus-5-5 為 512 tokens，Sonnet 5.5／Haiku 5.5 須另行查證",
+              "verdict": "correct",
+              "reasoning": "source-evidence 列出 Claude 5／5.5 旗艦（claude-opus-5-5）為 512；1,024 只對應 claude-sonnet-5 與舊版 Sonnet，沒有明列 Sonnet 5.5 或 Haiku 5.5。章節的保留說法忠於證據。",
+              "correct_value": "與證據一致"
+            },
+            {
+              "claim": "Batch 折扣可與 Prompt Caching 及 inference_geo 1.1× 倍率疊加；stop_reason 包含 model_context_window_exceeded 與 compaction",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 只寫明 Batch 對輸入與輸出都打 5 折，以及 geo 倍率適用所有 token 類別，沒有明說 Batch 可與快取折扣疊加。列出的 stop_reason 值也完全不在提供的證據中。這些細節無法依現有材料判定。",
+              "correct_value": "標註須依官方 Batch API 與 Messages API 文件查證後才能確認可疊加性與 stop_reason 列舉"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch09-security-guardrails-and-governance.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "單筆 Haiku 護欄成本為 $0.000075，每日成本為 $3.75，每月成本為 $112.50；啟用 inference_geo: \"us\" 後每月為 $123.75。",
+              "verdict": "correct",
+              "reasoning": "依基準牌價獨立計算：500 個輸入 token 費用為 $0.00005，50 個輸出 token 費用為 $0.000025，合計 $0.000075。乘以每日 50,000 筆及每月 30 天，分別為 $3.75 與 $112.50；再乘 1.1 為每月 $123.75。",
+              "correct_value": "標準費率為 $3.75／天、$112.50／月；套用 1.1× 後為 $4.125／天、$123.75／月。"
+            },
+            {
+              "claim": "若分類器能獨立避免兩筆各 $5,000 的損失，淨 ROI = ($10,000 - $112.50) / $112.50 ≈ 87.89×。",
+              "verdict": "correct",
+              "reasoning": "在兩筆損失均可歸因於分類器避免，且以 $112.50 為其全部增量成本的假設下，淨收益為 $9,887.50，除以成本約為 87.89。若既有防線已攔下這些攻擊，則不能將相同損失歸因於新增分類器。",
+              "correct_value": "符合所列假設時淨 ROI 約為 87.89×；實際增量效益須以既有防線之上的減損估算。"
+            },
+            {
+              "claim": "每次工具呼叫都由 PolicyEngine 強制比對過期時間與 tenantId，工單結案後立即刪除 Redis Key，以防禦 Scoped Token 重放攻擊。",
+              "verdict": "imprecise",
+              "reasoning": "過期檢查、租戶比對及結案撤銷能縮小可使用的範圍和時間，但被竊取的有效 token 在到期或撤銷前，仍可能於相同租戶與授權範圍內被重放。章節另行提出的持久冪等紀錄可防止特定業務操作重複執行，但不等於全面防止 token 重放。",
+              "correct_value": "這些措施可限制重放的影響；若要進一步防範重放，須視威脅模型加入請求綁定、一次性憑證或 nonce，並以持久冪等機制處理寫入。"
+            },
+            {
+              "claim": "在未修改程式與雜湊邏輯的情況下，兩份範例的預期輸出包含指定的三個 hash 前綴，且 Audit chain verified 為 True。",
+              "verdict": "imprecise",
+              "reasoning": "提供的材料沒有兩份範例程式、雜湊輸入序列化方式及完整初始資料，無法獨立重算雜湊或確認實際輸出。章節本身也限定實際結果須於本地執行後確認。",
+              "correct_value": "指定 hash 前綴與驗證結果有待取得程式及輸入後獨立重算或執行確認。"
+            },
+            {
+              "claim": "800 input tokens、100 output tokens，套用 1.1× 資料駐留倍率後，護欄成本為 $7.15／天及 $214.50／月。",
+              "verdict": "correct",
+              "reasoning": "依基準牌價，單筆基礎成本為 800 × $0.10／1,000,000 + 100 × $0.50／1,000,000 = $0.00013；乘 1.1 得 $0.000143。每日 50,000 筆為 $7.15，30 天為 $214.50。",
+              "correct_value": "$0.000143／筆、$7.15／天、$214.50／30 天。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "將 OrderOps 暴露在每天 50,000 筆工單（全站尖峰基準 12 req/s）的真實環境中；且分流延遲 SLO 為端到端 p95 ≤ 2.5s。",
+              "verdict": "correct",
+              "reasoning": "核對 <baseline>：OrderOps 日工單量為 50,000 筆／天（1,500,000 筆／月，以 30 天計）；OrderOps 尖峰流量為 12 req/s；OrderOps 延遲 SLO 為分流 p95 ≤ 2.5s、多步工具處置 p95 ≤ 18s。與基準完全一致。",
+              "correct_value": "50,000 筆／天，尖峰 12 req/s，分流延遲 SLO p95 ≤ 2.5s"
+            },
+            {
+              "claim": "OrderOps 的完整工具集基準前綴大小為 6,000 tokens（System Prompt 2,400 tokens + 18 個工具 Schema 3,600 tokens），且總共有 18 個工具（12 個唯讀 Read-only 工具與 6 個寫入／金流 Mutating 工具）。",
+              "verdict": "correct",
+              "reasoning": "獨立計算：2,400 + 3,600 = 6,000 tokens；12 + 6 = 18 個工具。核對 <baseline>：OrderOps 基準前綴大小為 6,000 tokens（System Prompt 2,400 + 18 工具 Schema 3,600），OrderOps 工具總數為 18 個工具（12 唯讀 Read-only + 6 寫入／金流 Mutating）。與基準一致。",
+              "correct_value": "6,000 tokens（2,400 + 3,600）；18 個工具（12 Read-only + 6 Mutating）"
+            },
+            {
+              "claim": "在最後一個靜態 System content block 掛載 cache_control: {\"type\": \"ephemeral\"}，覆蓋按 tools → system → messages 排序的完整前綴。",
+              "verdict": "correct",
+              "reasoning": "核對 <source-evidence> 第 2 節 Prompt Caching Mechanics：Controlled via cache_control: { \"type\": \"ephemeral\" } (default 5-minute TTL)，且 Prefix matching is exact from the start of the request (tools → system → messages): any mutation in an earlier block invalidates all downstream cache breakpoints。章節敘述與證據相符。",
+              "correct_value": "前綴匹配順序為 tools → system → messages，由 cache_control: {\"type\": \"ephemeral\"} 控制"
+            },
+            {
+              "claim": "Worked Example：每日 50,000 筆工單，入口加上 Claude Haiku 5.5 護欄分類器（每筆 500 input tokens、50 output tokens），以 ≤100K 牌價 $0.10 / $0.50 USD/MTok 計算：單筆合計 $0.000075、每日成本 $3.75、每月成本（30 天）$112.50；若啟用 inference_geo: \"us\"（1.1× 倍率）則為 $4.125 / 天、$123.75 / 月；對比每月 2 次每次 $5,000 的未攔截事故損失（$10,000 / 月），淨 ROI 為 ($10,000 - $112.50) / $112.50 ≈ 87.89×。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：(1) 單筆 Input 成本 = 500 × ($0.10 / 1,000,000) = $0.000050；單筆 Output 成本 = 50 × ($0.50 / 1,000,000) = $0.000025；單筆合計 = $0.000050 + $0.000025 = $0.000075。(2) 每日成本 = 50,000 × $0.000075 = $3.75 / 天；每月（30 天）成本 = $3.75 × 30 = $112.50 / 月。(3) 啟用 inference_geo: \"us\"（1.1×）：每日 = $3.75 × 1.1 = $4.125 / 天；每月 = $112.50 × 1.1 = $123.75 / 月。(4) 每月預期損失 = 2 × $5,000 = $10,000；淨 ROI = ($10,000 - $112.50) / $112.50 = $9,887.50 / $112.50 = 87.888... ≈ 87.89×。所有數值與章節計算完全吻合。",
+              "correct_value": "單筆 $0.000075、每日 $3.75、每月 $112.50（1.1× 下每日 $4.125、每月 $123.75）、淨 ROI ≈ 87.89×"
+            },
+            {
+              "claim": "自我檢核第 3 題參考解答：若啟用 inference_geo: \"us\"（1.1× 倍率），且 Haiku 護欄改為平均每筆 800 input tokens 與 100 output tokens，50,000 筆／天的單筆基礎成本為 $0.000130、套用 1.1× 後為 $0.000143／筆、每日成本為 $7.15／天、每月成本（30 天）為 $214.50／月。",
+              "verdict": "correct",
+              "reasoning": "獨立推導：(1) 單筆基礎成本 = 800 × ($0.10 / 1,000,000) + 100 × ($0.50 / 1,000,000) = $0.000080 + $0.000050 = $0.000130。(2) 套用 1.1× 資料駐留倍率 = $0.000130 × 1.1 = $0.000143／筆。(3) 每日成本 = 50,000 × $0.000143 = $7.15／天。(4) 每月成本（30 天）= $7.15 × 30 = $214.50／月。與參考解答完全一致。",
+              "correct_value": "單筆基礎 $0.000130、含 1.1× 為 $0.000143／筆、每日 $7.15、每月 $214.50"
+            },
+            {
+              "claim": "結構化輸出與嚴格工具呼叫機制：透過 output_config.format 的 JSON Schema 約束回應；strict: true 放在 client tool 定義上時驗證工具名稱與參數形狀；Batch API 輸入與輸出半價（50% 折扣）；Claude API MCP Connector 使用 mcp_servers 與 mcp_toolset。",
+              "verdict": "correct",
+              "reasoning": "核對 <baseline> 與 <source-evidence> 第 1、3、5 節：Batch API 折扣為 50%（Input 與 Output 同步半價）；output_config.format 接受 JSON Schema 強制結構化輸出；strict: true 於 tool definitions 強制檢驗 schema-compliant tool names 與 input payloads；Messages API MCP Connector 接受 mcp_servers 與 tools: [{ type: \"mcp_toolset\", mcp_server_name: \"...\" }]。全部與基準及證據吻合。",
+              "correct_value": "output_config.format、strict: true、Batch API 50% 折扣、mcp_servers / mcp_toolset 均符合規格"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "單筆 Haiku 護欄成本：500 × $0.10/MTok + 50 × $0.50/MTok = $0.000050 + $0.000025 = $0.000075",
+              "verdict": "correct",
+              "reasoning": "500 tokens 屬於 ≤100K 級距，適用 $0.10/$0.50 牌價。500×0.10/1e6 = 0.00005；50×0.50/1e6 = 0.000025；兩者相加為 0.000075。",
+              "correct_value": "$0.000075／筆"
+            },
+            {
+              "claim": "每日 50,000 筆的附加成本為 $3.75／天、$112.50／月；套用 1.1× 後為 $4.125／天，約 $123.75／月",
+              "verdict": "correct",
+              "reasoning": "50,000×0.000075 = 3.75；3.75×30 = 112.5；3.75×1.1 = 4.125；4.125×30 = 123.75。基準資料寫明 1.1× 倍率適用於全部 token 類別，所以 input 與 output 都要乘。",
+              "correct_value": "$3.75/天、$112.50/月；啟用 inference_geo:\"us\" 後為 $4.125/天、$123.75/月"
+            },
+            {
+              "claim": "淨 ROI = ($10,000 − $112.50) / $112.50 ≈ 87.89×",
+              "verdict": "correct",
+              "reasoning": "9,887.5 / 112.5 = 87.888…，四捨五入為 87.89。章節也註明：增量 ROI 應以分類器在既有 PolicyEngine 之上額外減少的損失為分子；如果 $200 上限已能攔下這兩筆，增量效益為 $0。這項限定是恰當的。另外，所採用的 $112.50 是 global 費率，沒有套用 1.1×。",
+              "correct_value": "≈87.89×（只在『分類器能獨立避免這兩筆損失』的假設下成立；增量 ROI 可能為 0）"
+            },
+            {
+              "claim": "自我檢核第 3 題：800 input + 100 output，套用 1.1× 後為 $0.000143／筆、$7.15／天、$214.50／月",
+              "verdict": "correct",
+              "reasoning": "800×0.10/1e6 = 0.00008；100×0.50/1e6 = 0.00005；合計 0.00013。乘 1.1 得 0.000143；乘 50,000 得 7.15；乘 30 得 214.5。",
+              "correct_value": "$0.000143/筆、$7.15/天、$214.50/月"
+            },
+            {
+              "claim": "第 3 題參考解答建議：若延遲逼近 SLO，可在驗證完整輸出率後把護欄 max_tokens 降到 64",
+              "verdict": "imprecise",
+              "reasoning": "這一題自己假設平均每筆輸出 100 tokens。如果平均輸出已達 100 tokens，max_tokens 設為 64 會讓大多數回應以 stop_reason=max_tokens 截斷，依 Layer 1 的規則全部走降級（轉人工）路徑，等於讓護欄失效。即使是 Layer 1 的初值 128，也只比平均 100 多出 28%。這個建議只在實際輸出遠低於 64 tokens 時才可行，例如範例 JSON 大約只有 25 tokens。",
+              "correct_value": "在平均輸出 100 tokens 的假設下，不宜降到 64。應先縮減輸出 schema（例如只保留 decision/category），讓實際輸出明顯低於上限，再考慮下調 max_tokens"
+            },
+            {
+              "claim": "完整工具集基準前綴為 6,000 tokens（System Prompt 2,400 + 18 個工具 Schema 3,600），工具共 12 個唯讀加 6 個寫入",
+              "verdict": "correct",
+              "reasoning": "2,400 + 3,600 = 6,000；12 + 6 = 18。兩組數字都與基準資料一致。",
+              "correct_value": "6,000 tokens；18 = 12 + 6"
+            },
+            {
+              "claim": "在最後一個靜態 System content block 設 cache_control，可涵蓋依 tools → system → messages 排序的完整前綴；前綴中較早的區塊一旦變動，下游斷點就會失效",
+              "verdict": "correct",
+              "reasoning": "source-evidence 記載前綴從 tools 開始，依 tools→system→messages 精確比對，任一較早區塊變動都會讓下游斷點失效。6,000 tokens 也高於 source-evidence 列出的各個最低快取門檻（512／1,024／4,096）。",
+              "correct_value": "與已提供的證據一致"
+            },
+            {
+              "claim": "全站尖峰基準為 12 req/s",
+              "verdict": "correct",
+              "reasoning": "50,000 / 86,400 ≈ 0.579 req/s，乘以 20 倍約為 11.57，進位後與基準的 12 req/s 一致。",
+              "correct_value": "≈12 req/s（平均 0.58 req/s × 20）"
+            },
+            {
+              "claim": "退款上限 20,000 分 = $200.00；500000 分 = $5,000；25_000 分 = $250；ScopedToken TTL 300s = 5 分鐘",
+              "verdict": "correct",
+              "reasoning": "以 1 美元 = 100 分換算：20,000/100 = 200，500,000/100 = 5,000，25,000/100 = 250。300 秒 / 60 = 5 分鐘。",
+              "correct_value": "全部正確"
+            },
+            {
+              "claim": "Batch API 適用於離線護欄評估，輸入與輸出都是半價",
+              "verdict": "correct",
+              "reasoning": "基準資料與 source-evidence 都記載 input 與 output 同時打五折。章節把需要 800ms 判定的即時入口排除在 Batch 之外，這個邏輯也正確。",
+              "correct_value": "input/output 皆 50% 折扣"
+            },
+            {
+              "claim": "以 output_config.format 的 JSON Schema 約束分類器輸出；strict: true 驗證工具名稱與參數形狀，但金額上限與資源歸屬仍須由後端驗證",
+              "verdict": "correct",
+              "reasoning": "source-evidence 記載 output_config.format 接受 JSON Schema，strict: true 會在解碼時強制工具名稱與 input 符合 schema。schema 層級的驗證本來就無法表達租戶歸屬、剩餘可退額這類業務規則，所以必須另由後端檢查。",
+              "correct_value": "與證據一致"
+            },
+            {
+              "claim": "PolicyEngine 範例中 currency 預設為 \"USD\"，用來檢查幣別",
+              "verdict": "imprecise",
+              "reasoning": "如果呼叫端沒有提供 currency，程式會預設為 USD；當 token.currency 也是 USD 時，幣別檢查就會靜默通過，與正文『幣別須原子檢查』的要求不一致。確定性的政策檢查應拒絕缺少幣別的請求，而不是替它補上預設值。此外，金額與幣別檢查只套用在 issue_refund，其他 5 個寫入工具在這個範例裡只檢查白名單與租戶。",
+              "correct_value": "issue_refund 若缺少 currency 應 deny；其他寫入工具也應有對應的業務檢查，或在正文明示交由執行器處理"
+            },
+            {
+              "claim": "Claude API MCP Connector（mcp_servers／mcp_toolset）為 beta，Anthropic 會在回應交給應用前呼叫 MCP 工具，因此寫入政策必須由 MCP server 或其 gateway 強制執行",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 支持：Connector 可直接呼叫遠端 MCP 工具，不經過自訂的 client loop，只支援遠端 HTTP。由此推論『政策執行點必須移到 MCP server 端』是合理的。但『beta』這個狀態在已提供的證據中找不到。",
+              "correct_value": "保留推論；『beta』標註須另查官方文件"
+            },
+            {
+              "claim": "啟用 inference_geo:\"us\" 會帶來 1.1× 全類別費率，且可能因區域路由增加些許延遲；ZDR 資格（含 MCP Connector、Message Batches）須另行查核",
+              "verdict": "imprecise",
+              "reasoning": "1.1× 全類別倍率與證據一致。但『增加延遲』，以及 ZDR 與 Batch、Connector 之間的資格關係，都不在已提供的證據中，閉卷無法判定。章節把 ZDR 寫成『須查核』而不下斷言，這個做法是恰當的。",
+              "correct_value": "1.1× 正確；延遲影響與 ZDR 適用範圍須以官方文件查證"
+            },
+            {
+              "claim": "範例預期輸出的雜湊值（125dcbcf70d5…、2b759fb5b981…、669e919ad057…）與『Audit chain verified: True』",
+              "verdict": "imprecise",
+              "reasoning": "沒有提供範例程式碼與雜湊輸入格式，無法重算 SHA-256。成本那一行的 $3.75 與前面的計算一致。章節已註明『實際結果仍須於本地執行後確認』。",
+              "correct_value": "雜湊值須實際執行範例後確認"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch10-observability-and-operations.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "PostgreSQL 帳本應保留 ticket_id、turn_index 與上游 request_id 供對帳。",
+              "verdict": "incorrect",
+              "reasoning": "文字要求保留 ticket_id，但緊接著的 CREATE TABLE 只有 trace_id、turn_index、upstream_request_id 等欄位，沒有 ticket_id。若 trace_id 與工單並非一對一，也不能僅憑現有欄位可靠地按工單對帳。",
+              "correct_value": "在帳本加入 ticket_id 欄位，例如 ticket_id TEXT NOT NULL；或明確提供可可靠連回工單的關聯方式。"
+            },
+            {
+              "claim": "Cache Hit Ratio 的目標基線為 ≥ 85%。",
+              "verdict": "correct",
+              "reasoning": "章節將 85% 限定為特定工作負載目標，沒有宣稱它必然由 OrderOps 基準達成。依基準的 42,000 輸入 tokens，若僅有 6,000-token 固定前綴在第 2 至第 5 回合讀取快取，讀取占比為 24,000 ÷ 42,000，約 57.1%；因此 85% 需要額外的可快取內容或不同的工作負載組成。",
+              "correct_value": "85% 可作為特定工作負載目標；僅憑基準中固定前綴跨後四回合命中，約為 57.1%。"
+            },
+            {
+              "claim": "4 小時事故期間受影響工單期望值為 8,333.33 筆，事故總成本為 $845.83，淨多燒 $745.83。",
+              "verdict": "correct",
+              "reasoning": "在均勻到達、事故期間全部改用全 Sonnet 且停用快取等明示假設下，50,000 × 4 ÷ 24 = 8,333.33 筆；42,000 × $2／百萬加上 1,750 × $10／百萬，單筆為 $0.1015。事故成本約 $845.83，正常成本為 $100，差額約 $745.83。這是情境估算，不能單由快取命中率為零推得。",
+              "correct_value": "符合所列假設時，4 小時預期淨增成本約 $745.83。"
+            },
+            {
+              "claim": "12 req/s 持續 10 分鐘、單筆成本 $0.012 時，燃燒 $86.40；若視窗初始耗用為零，約 174 秒觸及 $25。",
+              "verdict": "correct",
+              "reasoning": "12 × 600 = 7,200 筆，乘以 $0.012 為 $86.40；每秒成本為 $0.144，$25 ÷ $0.144 約為 173.61 秒。此時間假設工單成本按該速率均勻結算，且期間沒有跨越固定視窗邊界。",
+              "correct_value": "10 分鐘 $86.40；符合上述結算及視窗假設時，約 174 秒觸及 $25。"
+            },
+            {
+              "claim": "範例中兩個 Turn 的成本分別為 $0.00658 與 $0.01950，且總計 $0.02608。",
+              "verdict": "imprecise",
+              "reasoning": "兩個列出的金額相加確為 $0.02608，但提供的章節沒有列出兩次呼叫各計費類別的完整 token 數、模型及適用費率，也沒有提供範例程式內容，因此無法獨立重算各回合成本或確認程式實際輸出。",
+              "correct_value": "兩個所列金額的算術和為 $0.02608；各回合實際成本須提供完整 Usage、模型和費率後才能判定。"
+            },
+            {
+              "claim": "依 OpenTelemetry GenAI 語意慣例，LLM 呼叫應採 CLIENT Span Kind，並固定記錄所列 gen_ai 欄位。",
+              "verdict": "imprecise",
+              "reasoning": "所附 source-evidence 沒有列出 OpenTelemetry 特定版本的 Span Kind、欄位名稱或必填規則；章節亦未指定所採用的規範版本。因此無法僅依提供的材料確認這些要求是否符合相應版本的語意慣例。",
+              "correct_value": "應指定 OpenTelemetry GenAI 語意慣例版本，並逐項依該版本文件核對 Span Kind 與屬性要求。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 全用 Sonnet 5.5、無快取之單筆基準成本為 $0.1015（5 回合累計輸入 42,000 tokens、輸出 1,750 tokens），優化後單筆目標成本 ≤ $0.012（月成本 ≤ $18,000）。",
+              "verdict": "correct",
+              "reasoning": "依 baseline，OrderOps 基準前綴為 6,000 tokens，5 回合每回合新增輸入 1,200 tokens（首回合若由前綴 6,000 起算，5 回合輸入序列為 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens），每回合輸出 350 tokens（5 × 350 = 1,750 tokens）。以 Sonnet 5.5 牌價 Input $2.00/MTok、Output $10.00/MTok 計算：42,000 × $2/10^6 + 1,750 × $10/10^6 = $0.084 + $0.0175 = $0.1015。每月 1,500,000 筆 × $0.012 = $18,000，與 baseline 完全吻合。",
+              "correct_value": "單筆未優化成本 $0.1015，優化目標單筆 ≤ $0.012（月成本 ≤ $18,000）"
+            },
+            {
+              "claim": "示意 Usage（input_tokens: 1,200、cache_creation_input_tokens: 0、cache_read_input_tokens: 6,800、output_tokens: 350）含快取讀寫的總輸入為 8,000 tokens，快取命中率為 85%；若對應 OrderOps 基準第 2 回合則為 1,200 + 0 + 6,000 = 7,200 tokens，快取命中率約 83.3%。",
+              "verdict": "correct",
+              "reasoning": "1,200 + 0 + 6,800 = 8,000 tokens；快取讀取占比 = 6,800 ÷ 8,000 = 0.85 = 85.0%。OrderOps 基準前綴 6,000 tokens，第 2 回合新增 1,200 tokens，總輸入 1,200 + 0 + 6,000 = 7,200 tokens，快取讀取占比 = 6,000 ÷ 7,200 = 5/6 ≈ 83.33%。若以 Sonnet 5.5 計價（Input $2/MTok、Cache Read $0.10/MTok、Output $10/MTok），示意 Usage 成本為 1,200×$2/10^6 + 6,800×$0.10/10^6 + 350×$10/10^6 = $0.0024 + $0.00068 + $0.0035 = $0.00658；若 8,000 全數未命中快取則為 8,000×$2/10^6 + 350×$10/10^6 = $0.016 + $0.0035 = $0.01950，亦與「動手做」預期輸出（Turn 1: $0.00658 / 85.0%；Turn 2: $0.01950 / 0.0%）一致。",
+              "correct_value": "示意總輸入 8,000 tokens（命中率 85.0%，Sonnet 成本 $0.00658；0% 命中時 $0.01950）；基準第 2 回合總輸入 7,200 tokens（命中率 83.3%）"
+            },
+            {
+              "claim": "單筆工單上限 maxTicketCostUsd = 0.15 約為目標單筆成本 $0.012 的 12.5×；當達 12 req/s 穩態且平均 5 回合時，平均約需 12 × 5 = 60 次 LLM 呼叫／秒。",
+              "verdict": "correct",
+              "reasoning": "0.15 ÷ 0.012 = 12.5；12 筆工單/秒 × 5 回合/筆 = 60 次 LLM 呼叫/秒，推導正確。",
+              "correct_value": "12.5×；60 次 LLM 呼叫／秒"
+            },
+            {
+              "claim": "Shadow Mode 量測 1,000 筆工單在均勻到達下約需 28.8 分鐘；Canary Rollout 切出 5% 流量約為 2,500 筆／日。",
+              "verdict": "correct",
+              "reasoning": "日工單量 50,000 筆，均勻到達速率為 50,000 ÷ 1,440 分鐘 ≈ 34.722 筆/分鐘（或 0.5787 筆/秒）。1,000 筆所需時間 = 1,000 ÷ (50,000 / 1,440) = 1,440 ÷ 50 = 28.8 分鐘。每日 5% 流量 = 50,000 × 0.05 = 2,500 筆／日。",
+              "correct_value": "28.8 分鐘；2,500 筆／日"
+            },
+            {
+              "claim": "Worked Example：4 小時快取失效事故受影響工單期望值為 8,333.33 筆，正常成本 $100.00（$25.00/hr），事故成本 $845.83（$211.46/hr），淨多燒 $745.83（總成本 8.46×、淨增額 7.46×）；5 分鐘觀測窗期望工單 173.61 筆，淨增額約 $15.54，5 分鐘完成回滾理論可省下 $730.30。",
+              "verdict": "correct",
+              "reasoning": "每小時平均工單 = 50,000 ÷ 24 = 2,083.333... 筆；4 小時 = 8,333.333... 筆。正常 4 小時成本 = (25,000/3) × $0.012 = $100.00（$25.00/hr）。事故 4 小時成本 = (25,000/3) × $0.1015 = $845.833... ≈ $845.83（$211.458.../hr ≈ $211.46/hr）。淨多燒 = $845.833... - $100.00 = $745.833... ≈ $745.83。倍率 = 0.1015 ÷ 0.012 = 8.4583... ≈ 8.46×（淨增 7.46×）。5 分鐘（1/12 小時）工單數 = 50,000 ÷ 288 ≈ 173.611 筆，淨增額 = 173.611 × ($0.1015 - $0.012) = 173.611 × $0.0895 ≈ $15.538 ≈ $15.54。4 小時淨多燒減去 5 分鐘淨多燒 = $745.833 - $15.538 = $730.295 ≈ $730.30。",
+              "correct_value": "4 小時受影響 8,333.33 筆、正常 $100.00、事故 $845.83、淨多燒 $745.83；5 分鐘 173.61 筆、淨增額 $15.54、理論省下 $730.30"
+            },
+            {
+              "claim": "自我檢核第 3 題：尖峰 12 req/s 持續 10 分鐘共處理 7,200 筆工單，單筆 $0.012 下燃燒速率為 $0.144/s，10 分鐘消耗 $86.40（約 174s 觸及 $25、313s 觸及 $45）；剩餘 50 分鐘回到日均速率（$25/hr × 5/6 = $20.83），整小時約 $107.23；若尖峰持續整小時則是 $518.40/hr。",
+              "verdict": "correct",
+              "reasoning": "12 req/s × 600s = 7,200 筆；燃燒速率 = 12 × $0.012 = $0.144/s；10 分鐘消耗 = 7,200 × $0.012 = $86.40。觸及 $25 時間 = 25 ÷ 0.144 ≈ 173.61s ≈ 174s；觸及 $45 時間 = 45 ÷ 0.144 = 312.5s ≈ 313s。日均每小時費用 = (50,000 ÷ 24) × $0.012 = $25.00/hr，50 分鐘費用 = $25.00 × (50/60) ≈ $20.833。整小時費用 = $86.40 + $20.833 = $107.233 ≈ $107.23。尖峰持續整小時 = $0.144/s × 3,600s = $518.40/hr。所有數值均精確吻合。",
+              "correct_value": "10 分鐘 7,200 筆（$86.40，速率 $0.144/s，174s 達 $25、313s 達 $45），整小時 $107.23，全小時尖峰 $518.40/hr"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "全 Sonnet、停用快取的基準單筆成本為 $0.1015（首輪 6,000 起算的 5 輪序列：累計輸入 42,000、輸出 1,750）",
+              "verdict": "correct",
+              "reasoning": "每輪輸入為 6,000、7,200、8,400、9,600、10,800，加總 42,000。輸出 5×350＝1,750。成本：42,000×$2/MTok＝$0.084；1,750×$10/MTok＝$0.0175；合計 $0.1015，與基準一致。",
+              "correct_value": "$0.1015"
+            },
+            {
+              "claim": "示意 Usage 的總輸入 1,200+0+6,800＝8,000，命中率 6,800÷8,000＝85%；OrderOps 基準第 2 回合為 1,200+0+6,000＝7,200，命中率約 83.3%",
+              "verdict": "correct",
+              "reasoning": "8,000 和 85% 都算得對。基準第 2 回合的快取前綴為 6,000，新增輸入 1,200，所以 6,000/7,200＝0.8333。",
+              "correct_value": "8,000 / 85%；7,200 / 83.3%"
+            },
+            {
+              "claim": "範例輸出：Turn 1（cached）cost=$0.00658、cache_hit=85.0%；Turn 2（cache miss）cost=$0.01950",
+              "verdict": "correct",
+              "reasoning": "以 Sonnet 5.5 計算。Turn 1：非快取輸入 1,200×$2＝$0.0024，快取讀取 6,800×$0.10＝$0.00068，輸出 350×$10＝$0.0035，合計 $0.00658。Turn 2：8,000 tokens 全部按原價計，8,000×$2＝$0.016，加輸出 $0.0035，合計 $0.0195。這個結果的前提是 Turn 2 不收快取寫入附加費；如果 cache_control 仍啟用、前綴改變而觸發寫入，要另加 1.25× 的寫入費。",
+              "correct_value": "$0.00658 / $0.01950（前提：Turn 2 不收快取寫入費）"
+            },
+            {
+              "claim": "熔斷驗證：0.14＋0.01950＝$0.1595 > $0.15；0.00658＋0.01950＝$0.02608 > $0.02；單筆上限 0.15 約為 0.012 的 12.5×",
+              "verdict": "correct",
+              "reasoning": "三個算式逐一重算都成立：0.1595、0.02608，以及 0.15/0.012＝12.5。",
+              "correct_value": "$0.1595；$0.02608；12.5×"
+            },
+            {
+              "claim": "Worked Example：4 小時受影響 8,333.33 筆，正常成本 $100.00，事故成本 $845.83，淨多燒 $745.83（8.46× / 7.46×）；5 分鐘窗 173.61 筆，淨增約 $15.54，可省 $730.30",
+              "verdict": "correct",
+              "reasoning": "50,000×4/24＝8,333.33。8,333.33×0.012＝$100；8,333.33×0.1015＝$845.83；差額 $745.83。0.1015/0.012＝8.458，淨增額倍數為 7.458。每小時成本 845.83/4＝$211.46。5 分鐘窗：50,000/288＝173.61 筆，173.61×0.0895＝$15.538。可省金額 745.833−15.538＝$730.295，四捨五入為 $730.30。",
+              "correct_value": "數值全部正確"
+            },
+            {
+              "claim": "檢核題 3：12 req/s 持續 600 秒共 7,200 筆，燃燒 $0.144/s，10 分鐘 $86.40，約 174s 觸及 $25；剩餘 50 分鐘以日均速率約 $20.83，整小時約 $107.23；尖峰持續整小時為 $518.40",
+              "verdict": "correct",
+              "reasoning": "12×0.012＝0.144/s；×600＝$86.40；25/0.144＝173.6s（不到 3 分鐘）；45/0.144＝312.5s。日均每小時為 2,083.33×0.012＝$25，乘 5/6 得 $20.83；86.40＋20.83＝$107.23；0.144×3600＝$518.40。平均 0.58 req/s＝50,000/86,400，可見 req 與工單是一對一，前提一致。",
+              "correct_value": "數值全部正確；$120–150 是根據題設推出的合理候選值"
+            },
+            {
+              "claim": "Shadow 1,000 筆在均勻到達下約需 28.8 分鐘；Canary 5% 約 2,500 筆／日；12 req/s × 5 回合＝60 次 LLM 呼叫／秒；max_turns 由 5 增至 8 或 10 為 1.6× 或 2×",
+              "verdict": "correct",
+              "reasoning": "50,000/1,440＝34.72 筆/分，1,000/34.72＝28.8 分。50,000×5%＝2,500。12×5＝60。8/5＝1.6，10/5＝2。",
+              "correct_value": "數值全部正確"
+            },
+            {
+              "claim": "1% 隨機頭部採樣下，單筆故障有 99% 機率被漏掉",
+              "verdict": "correct",
+              "reasoning": "每條 Trace 被保留的機率是 0.01，所以某一筆特定故障被漏掉的機率是 0.99。",
+              "correct_value": "99%"
+            },
+            {
+              "claim": "目標月均單筆 ≤ $0.012 對應月成本 ≤ $18,000，降幅 ≥ 88%",
+              "verdict": "correct",
+              "reasoning": "0.012×1,500,000＝$18,000。1−0.012/0.1015＝88.2%，降幅確實 ≥ 88%。",
+              "correct_value": "$18,000；降幅約 88.2%"
+            },
+            {
+              "claim": "「若觸發多步迴圈或 Prompt Cache 失效，單筆成本會瞬間跳升至全 Sonnet 停用快取基準的 $0.1015 甚至更高」",
+              "verdict": "imprecise",
+              "reasoning": "單是快取失效，不會讓已分層到 Haiku 的模型路由改回全 Sonnet。所以快取失效本身不必然把成本推到 $0.1015。反過來，如果 cache_control 仍啟用、每輪都重新寫入，Sonnet 下的輸入會按 1.25× 計費：42,000×$2.50＝$0.105，加輸出 $0.0175，約 $0.1225，高於 $0.1015。Worked Example 有明確寫出「全改用 Sonnet、停用快取」的假設，但導言這句沒有，容易讓讀者把兩件事混為一談。",
+              "correct_value": "加上限定：在「全改用 Sonnet、停用快取、token 回到基準」的假設下為 $0.1015；若快取仍啟用卻每輪重寫，全 Sonnet 下約 $0.1225"
+            },
+            {
+              "claim": "依 OpenTelemetry GenAI 語意慣例，LLM 呼叫採 CLIENT Span Kind，並記錄 gen_ai.provider.name、gen_ai.usage.cache_creation.input_tokens／cache_read.input_tokens 等屬性",
+              "verdict": "imprecise",
+              "reasoning": "提供的基準資料和 source-evidence 都沒有涵蓋 OpenTelemetry GenAI semconv 的屬性名稱或版本，無法閉卷判定這些名稱屬於正式規範還是實驗性名稱。章節已附註「依所採版本為準」，但正文仍用「依語意慣例」的確定語氣陳述。",
+              "correct_value": "需對照所採用 semconv 版本的官方屬性清單後再確認；正文宜標示為實驗性或依版本而定"
+            },
+            {
+              "claim": "Thinking 費用採 API Usage 的輸出 token 計費",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 只說明 Extended Thinking 的啟用方式、budget_tokens 和 thinking 區塊的保留規則，沒有說明計費類別，所以無法從提供的證據驗證。",
+              "correct_value": "需對照 Anthropic 官方計價文件確認 thinking tokens 的計費方式"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch11-enterprise-patterns-in-action.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "OrderOps 每天處理 50,000 筆工單，平均流量 0.58 req/s，尖峰流量 12 req/s（約 20×）。",
+              "verdict": "correct",
+              "reasoning": "一天有 86,400 秒，50,000 ÷ 86,400 ≈ 0.579 req/s；12 ÷ 0.579 ≈ 20.74。章節數值是合理的近似值。",
+              "correct_value": "平均約 0.579 req/s；尖峰約為平均的 20.7 倍。"
+            },
+            {
+              "claim": "全量 Sonnet、無快取基準為每筆 $0.1015、每月 $152,250；相同 token 量全用 Opus 為每月 $304,500。",
+              "verdict": "correct",
+              "reasoning": "依基準，每筆輸入 42,000 tokens、輸出 1,750 tokens。Sonnet 成本為 42,000 × $2/MTok + 1,750 × $10/MTok = $0.1015；乘以 1,500,000 筆為 $152,250。Opus 的輸入與輸出單價均為 Sonnet 的兩倍，故每筆 $0.203、每月 $304,500。",
+              "correct_value": "Sonnet：$0.1015／筆、$152,250／月；Opus：$0.203／筆、$304,500／月。"
+            },
+            {
+              "claim": "每回合皆以 5 分鐘 TTL 重寫 6,000 前綴為 $174,750／月，前綴全命中約為 $66,750／月。",
+              "verdict": "correct",
+              "reasoning": "五回合前綴共 30,000 tokens，其餘輸入 12,000 tokens。以 Sonnet 5 分鐘寫入價 $2.50/MTok 計，單筆為 $0.075 + $0.024 + $0.0175 = $0.1165，月成本 $174,750。以前綴讀取價 $0.10/MTok 計，單筆為 $0.003 + $0.024 + $0.0175 = $0.0445，月成本 $66,750；後者依題意忽略首次寫入。",
+              "correct_value": "每回合重寫為 $174,750／月；前綴全讀取且忽略首次寫入為 $66,750／月。"
+            },
+            {
+              "claim": "必須把 cache_control 放在最後一個靜態 system block，才能同時快取工具定義與靜態 System Prompt。",
+              "verdict": "imprecise",
+              "reasoning": "提供的證據支持前綴順序為 tools → system → messages，且前段變動會使後續斷點失效；它沒有證明最後一個靜態 system block 是唯一能涵蓋工具與 System Prompt 的斷點位置。因此可將該位置描述為適合此靜態前綴的配置，但不能由現有證據推出「必須」。",
+              "correct_value": "可在最後一個靜態 system block 設置斷點，以涵蓋此前的工具定義與靜態 System Prompt；其他可行配置須依相關 API 文件確認。"
+            },
+            {
+              "claim": "ch08 的帳本未套用 Batch 時為 $17,399.47／月，套用後為 $14,789.55／月，分別較基準降低約 88.57% 與 90.29%。",
+              "verdict": "imprecise",
+              "reasoning": "以提供的兩個月成本除以 $152,250，降幅分別約為 88.57% 與 90.29%，百分比算術成立；兩者之比也約為 0.85，符合 30% 用量半價的整體折減。惟材料未提供 ch08 逐模型、快取及回合用量帳本，無法獨立驗證兩個成本底數。",
+              "correct_value": "若月成本底數分別為 $17,399.47 與 $14,789.55，降幅約為 88.57% 與 90.29%；底數仍待 ch08 逐項帳本驗證。"
+            },
+            {
+              "claim": "合約審核使用 Batch 時每份 $0.0355、每月 $213；每日 2,000 份全改即時 API 則每月 $4,260。",
+              "verdict": "correct",
+              "reasoning": "依每份輸入 18,000、輸出 3,500 tokens 及 Batch 價格，成本為 $0.018 + $0.0175 = $0.0355。每日 200 份、30 天為 6,000 份，成本 $213。標準價是 Batch 的兩倍，即每份 $0.071；每日 2,000 份、30 天共 60,000 份，成本 $4,260。這些結果以所列 token 均為計費總量為前提。",
+              "correct_value": "Batch：$0.0355／份、每日 200 份時 $213／月；即時：$0.071／份、每日 2,000 份時 $4,260／月。"
+            },
+            {
+              "claim": "On-call 全 Sonnet 為 $316.80／月；部分 Opus 取代 Sonnet 時為 $316.80 × (1 + Opus 比例)。",
+              "verdict": "correct",
+              "reasoning": "每次 Sonnet 成本為 24,000 × $2/MTok + 4,000 × $10/MTok = $0.088；120 次／天乘 30 天為 3,600 次，月成本 $316.80。Opus 的兩類單價均為兩倍，若相同 token 量的請求中有比例 p 由 Opus 取代，混合成本即為 Sonnet 基準的 1 + p 倍。",
+              "correct_value": "$316.80 × (1 + p)／月，其中 p 為以相同 token 量使用 Opus 取代 Sonnet 的請求比例；追加呼叫須另計。"
+            },
+            {
+              "claim": "實務上可先將雙方字串做空白正規化再比對，避免換行差異造成誤殺。",
+              "verdict": "imprecise",
+              "reasoning": "空白正規化可以降低格式差異造成的拒絕，但正規化後相符不代表模型輸出的字串與來源逐字相同。這與章節先前要求原始引文必須直接通過 source.text.includes(verbatimQuote) 的嚴格逐字規則不同。",
+              "correct_value": "若採空白正規化，應明示允許空白差異，並保留或回填來源中的原始字串；若要求嚴格逐字引用，應直接比對未正規化的原文。"
+            },
+            {
+              "claim": "執行所附 TypeScript 與 Python 範例後會產生指定驗證結果，修改測資後也會出現指定的拒絕結果。",
+              "verdict": "imprecise",
+              "reasoning": "章節提供了部分 TypeScript 驗證函式，但未提供完整範例、測試資料、Python 程式或執行結果，因此無法從現有材料重建並核對全部預期輸出。",
+              "correct_value": "需檢視並執行完整範例及其測試資料，才能確認所列輸出與兩項邊界實驗。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "`OrderOps` 每天處理 `50,000` 筆工單（每月 `1,500,000` 筆，以 30 天計），平均流量 `0.58` req/s，尖峰流量達 `12` req/s（約 `20×`）。",
+              "verdict": "correct",
+              "reasoning": "依基準資料，日工單量 50,000 筆 × 30 天 = 1,500,000 筆／月。每日 86,400 秒，平均流量 = 50,000 / 86,400 ≈ 0.5787 req/s（四捨五入為 0.58 req/s）。尖峰 12 req/s ÷ 0.5787 req/s ≈ 20.74×（約 20×），與基準表完全一致。",
+              "correct_value": "50,000 筆/天、1,500,000 筆/月、平均 0.58 req/s、尖峰 12 req/s（約 20×）"
+            },
+            {
+              "claim": "相較於「全量 Sonnet、無快取」基準（`$152,250/月`、`$0.1015/筆`；若全量 Opus 5.5 同 token 量則為 `$304,500/月`、`$0.203/筆`），`ch08` 的 `3,600`-token 帳本在未套用 Batch 時（`$17,399.47/月`）相對基準約降 `88.57%`，套用 Batch 後（`$14,789.55/月`）則約降 `90.29%`",
+              "verdict": "correct",
+              "reasoning": "獨立驗算：單筆 5 回合累計輸入 42,000 tokens、輸出 1,750 tokens。全量 Sonnet 5.5（$2.00 / $10.00 per MTok）單筆成本 = 0.042 × $2.00 + 0.00175 × $10.00 = $0.084 + $0.0175 = $0.1015；月成本 = $0.1015 × 1,500,000 = $152,250。Opus 5.5 單價（$4.00 / $20.00 per MTok）為 Sonnet 的 2 倍，故單筆 $0.203、每月 $304,500。以章內給定的 ch08 帳本數值驗算降幅：(152,250 - 17,399.47) / 152,250 = 134,850.53 / 152,250 ≈ 88.5718%（約 88.57%）；(152,250 - 14,789.55) / 152,250 = 137,460.45 / 152,250 ≈ 90.2860%（約 90.29%）。",
+              "correct_value": "全量 Sonnet 基準 $0.1015/筆、$152,250/月；全量 Opus $0.203/筆、$304,500/月；相對降幅分別為 88.57% 與 90.29%"
+            },
+            {
+              "claim": "在相同 Sonnet 五回合基準（`42,000` 輸入 tokens）下，完全無快取為 `$152,250/月`，每回合皆以 5 分鐘 TTL 重寫 `6,000` 前綴為 `$174,750/月`，前綴全命中約為 `$66,750/月`（忽略首次寫入）；五回合基準即使 `30,000` 前綴 tokens 全命中也僅占 `71.43%`",
+              "verdict": "correct",
+              "reasoning": "獨立推導：五回合基準中，固定前綴 6,000 tokens × 5 回合 = 30,000 前綴輸入 tokens；非前綴（對話歷史與每回合新增 1,200 tokens）共 42,000 - 30,000 = 12,000 輸入 tokens；累計輸出 1,750 tokens（輸出成本每筆 0.00175 × $10.00 = $0.0175）。(1) 每回合皆以 5m TTL 重寫前綴（寫入倍率 1.25×，即 $2.50/MTok）：單筆輸入成本 = 0.030 × $2.50 + 0.012 × $2.00 = $0.075 + $0.024 = $0.099；加輸出 $0.0175 得單筆 $0.1165；月成本 = $0.1165 × 1,500,000 = $174,750。(2) 前綴全命中（Sonnet 讀取倍率 0.05×，即 $0.10/MTok）：單筆輸入成本 = 0.030 × $0.10 + 0.012 × $2.00 = $0.003 + $0.024 = $0.027；加輸出 $0.0175 得單筆 $0.0445；月成本 = $0.0445 × 1,500,000 = $66,750。(3) 快取讀取占比 = 30,000 / 42,000 = 5/7 ≈ 71.4286%（71.43%）。全部吻合。",
+              "correct_value": "無快取 $152,250/月、每回合重寫前綴 $174,750/月、前綴全命中 $66,750/月、前綴占總輸入 71.43%"
+            },
+            {
+              "claim": "場景 B（合約審核）選用 Sonnet 5.5 + Batch 50%，日請求量 200 份/天，平均輸入 18,000 tokens/份、輸出 3,500 tokens/份：單次成本 Input 18K * $1.00/M + Output 3.5K * $5.00/M = $0.018 + $0.0175 = $0.0355 / 份，月度 API 成本（30 天）= 200 * 30 * $0.0355 = $213.00 / 月。",
+              "verdict": "correct",
+              "reasoning": "依基準與 source-evidence，Sonnet 5.5 標準價為 $2.00 / $10.00 per MTok，Batch API 享 50% 折扣後為 $1.00 / $5.00 per MTok。單份成本 = 0.018 MTok × $1.00 + 0.0035 MTok × $5.00 = $0.018 + $0.0175 = $0.0355。每月 200 × 30 = 6,000 份，月成本 = 6,000 × $0.0355 = $213.00。",
+              "correct_value": "$0.0355 / 份，$213.00 / 月"
+            },
+            {
+              "claim": "場景 C（On-call 分診）日請求量 120 次/天，平均輸入 24,000 tokens/次、輸出 4,000 tokens/次：全 Sonnet 基準單次成本 = Input 24K * $2.00/M + Output 4K * $10.00/M = $0.0880 / 次，月成本（30 天）= $316.80 / 月；若以部分 Opus 取代 Sonnet（同 token 量），月成本為 $316.80 * (1 + Opus 比例)（全 Opus 為 $633.60/月）。",
+              "verdict": "correct",
+              "reasoning": "獨立驗算：Sonnet 5.5 單次成本 = 0.024 × $2.00 + 0.004 × $10.00 = $0.048 + $0.040 = $0.0880。每月 120 × 30 = 3,600 次，全 Sonnet 月成本 = 3,600 × $0.0880 = $316.80。Opus 5.5 牌價（$4.00 / $20.00）恰為 Sonnet 5.5 的 2 倍（單次 $0.1760），設 Opus 取代比例為 p，混合月成本 = $316.80 × [(1 - p) + 2p] = $316.80 × (1 + p)，當 p = 1 時為 $633.60/月。",
+              "correct_value": "全 Sonnet $0.0880/次、$316.80/月；混用取代為 $316.80 × (1 + Opus 比例)"
+            },
+            {
+              "claim": "自我檢核第 2 題：每日合約掃描量 2,000 份（每月 30 天），若全數改為即時 Messages API，單份成本從 `$0.0355` 跳回標準價 `$0.0710`（Input `18K × $2.00/M = $0.036` + Output `3.5K × $10.00/M = $0.035`），月成本從 `2,000 × 30 × $0.0355 = $2,130` 暴增為 `2,000 × 30 × $0.0710 = $4,260` USD。",
+              "verdict": "correct",
+              "reasoning": "獨立驗算：無 Batch 折扣時，Sonnet 5.5 單份成本 = 0.018 × $2.00 + 0.0035 × $10.00 = $0.036 + $0.035 = $0.0710（恰為 Batch 價 $0.0355 的 2 倍）。每月 2,000 × 30 = 60,000 份，Batch 月成本 = 60,000 × $0.0355 = $2,130，即時 API 月成本 = 60,000 × $0.0710 = $4,260。",
+              "correct_value": "標準單份成本 $0.0710，Batch 月成本 $2,130，即時 API 月成本 $4,260"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "相較於「全量 Sonnet、無快取」基準（$152,250/月、$0.1015/筆；若全量 Opus 5.5 同 token 量則為 $304,500/月、$0.203/筆）",
+              "verdict": "correct",
+              "reasoning": "我按 5 回合重算。每回合輸入為 6,000 前綴加上先前累積的對話，即 6,000+1,200×(i−1)，加總是 30,000+12,000=42,000 tokens，輸出 5×350=1,750 tokens。Sonnet 單筆成本為 42,000×$2/M + 1,750×$10/M = $0.084+$0.0175 = $0.1015，每月 ×1,500,000 = $152,250。Opus 5.5 的輸入與輸出單價都正好是 Sonnet 的 2 倍，所以是 $0.203/筆、$304,500/月。",
+              "correct_value": "$0.1015/筆、$152,250/月；Opus 為 $0.203/筆、$304,500/月"
+            },
+            {
+              "claim": "ch08 帳本未套用 Batch 時（$17,399.47/月）相對基準約降 88.57%，套用 Batch 後（$14,789.55/月）約降 90.29%；約 $0.0116/筆",
+              "verdict": "correct",
+              "reasoning": "17,399.47/152,250 = 0.11428，降幅 88.57%。14,789.55/152,250 = 0.09714，降幅 90.29%。17,399.47/1,500,000 = $0.0116，低於 $0.012 的目標，也達到降幅 ≥88% 的要求（$18,000 相當於降 88.18%）。這裡只驗算了比例；兩個月成本底數本身無法從提供的材料驗證。",
+              "correct_value": "88.57% / 90.29% / $0.0116 每筆（底數需由 ch08 驗證）"
+            },
+            {
+              "claim": "該章逐項帳本以縮減後的 3,600-token 前綴與 30% 離線 Batch 折扣計得 $14,789.55/月",
+              "verdict": "imprecise",
+              "reasoning": "14,789.55/17,399.47 = 0.85，也就是總成本只少了 15%。這符合「30% 的流量走 Batch，各享 50% 折扣」，不符合「30% 折扣」（那樣會是 ×0.70）。另外，3,600 正好等於基準表裡 18 個工具 Schema 的大小，這裡的「縮減後前綴」到底怎麼組成，本章沒有交代。",
+              "correct_value": "應改成「30% 離線流量套用 Batch 50% 折扣（整體成本約降 15%）」，並說明 3,600-token 前綴的組成"
+            },
+            {
+              "claim": "每回合皆以 5 分鐘 TTL 重寫 6,000 前綴為 $174,750/月，前綴全命中約為 $66,750/月；30,000 前綴 tokens 全命中僅占 71.43%",
+              "verdict": "correct",
+              "reasoning": "每回合都重寫時，前綴成本為 30,000×$2×1.25/M = $0.075，其餘輸入 12,000×$2/M = $0.024，輸出 $0.0175，合計 $0.1165，×1.5M = $174,750。全部命中時，前綴成本為 30,000×$2×0.05/M = $0.003，合計 $0.0445，×1.5M = $66,750。命中占比為 30,000/42,000 = 71.43%。",
+              "correct_value": "$174,750 / $66,750 / 71.43%"
+            },
+            {
+              "claim": "平均 0.58 req/s、尖峰 12 req/s（約 20×）；持續尖峰約 60 次模型請求/s；8 × 6,000 ms = 48s 已超過 18s",
+              "verdict": "correct",
+              "reasoning": "50,000/86,400 = 0.579 req/s，12/0.579 ≈ 20.7×。若每筆工單呼叫模型 5 次，12×5 = 60 次/s。8×6 = 48 秒，大於 18 秒。",
+              "correct_value": "0.58 req/s、約 20×、60 req/s、48s"
+            },
+            {
+              "claim": "base = 500ms、最多重試 3 次，Full Jitter 等待上限合計 3.5s",
+              "verdict": "correct",
+              "reasoning": "指數退避三次的上限依序是 500、1,000、2,000 ms，合計 3,500 ms，都沒有碰到 8,000 ms 的上限。Full Jitter 只會在 [0, 上限] 之間取值，所以合計上限仍是 3.5 秒。",
+              "correct_value": "3.5s"
+            },
+            {
+              "claim": "場景 B：Input 18K × $1.00/M + Output 3.5K × $5.00/M = $0.0355/份；200 × 30 × $0.0355 = $213.00/月",
+              "verdict": "correct",
+              "reasoning": "Batch 價格下，0.018+0.0175 = $0.0355；200×30 = 6,000 份，×0.0355 = $213。Sonnet 5.5 的 Batch 價格為 $1/$5，與 source-evidence 一致。",
+              "correct_value": "$0.0355/份、$213/月"
+            },
+            {
+              "claim": "改為即時 API 後單份成本 $0.0710；每日 2,000 份月成本從 $2,130 增為 $4,260",
+              "verdict": "correct",
+              "reasoning": "18K×$2/M = $0.036，3.5K×$10/M = $0.035，合計 $0.071。2,000×30×0.0355 = $2,130，2,000×30×0.071 = $4,260。",
+              "correct_value": "$0.0710/份；$2,130 → $4,260/月"
+            },
+            {
+              "claim": "場景 C：24K × $2.00/M + 4K × $10.00/M = $0.0880/次；全 Sonnet $316.80/月；混用 Opus 為 $316.80 × (1 + Opus 比例)，全 Opus 為 $633.60/月",
+              "verdict": "correct",
+              "reasoning": "0.048+0.04 = $0.088；120×30×0.088 = $316.80。Opus 兩項單價都是 Sonnet 的 2 倍，把比例 p 的呼叫換成 Opus 時，成本為 316.8(1−p)+633.6p = 316.8(1+p)。p=1 時為 $633.60。",
+              "correct_value": "$0.088/次、$316.80/月、316.80×(1+p)、$633.60/月"
+            },
+            {
+              "claim": "必須把 cache_control 放在最後一個靜態 system block，才能同時快取工具定義與靜態 System Prompt",
+              "verdict": "correct",
+              "reasoning": "source-evidence 寫明前綴依 tools → system → messages 的順序做精確比對。斷點設在 system 的最後一個靜態 block，涵蓋範圍就包含它前面的 tools 與 system。6,000 tokens 也高於材料列出的所有最低快取門檻。",
+              "correct_value": "成立；但 Sonnet 5.5 的最低門檻需依官方文件確認（材料只列出 Sonnet 5／4.x 為 1,024）"
+            },
+            {
+              "claim": "場景 A 對比表列「6,000 前綴 + Prompt Caching（無Batch）」，同時引用「ch08 未用Batch省88.57%」與 ≤ $0.012/筆",
+              "verdict": "imprecise",
+              "reasoning": "88.57% 是從 ch08 那份 3,600-token 前綴帳本算出來的，表中卻標成 6,000-token 前綴的即時設計，兩者的前提不同。本章正文也承認 6,000-token 設計的實際降幅需要另外計算，所以表格把這兩個前提並列，容易讓讀者誤以為 6,000 前綴的設計已經驗證能達到 ≤$0.012。",
+              "correct_value": "在表內註明 88.57% 對應 3,600-token 帳本；6,000-token 即時設計的單價改為「待完整帳本驗證」"
+            },
+            {
+              "claim": "Batch 結果需待 processing_status === \"ended\"，結果類型含 succeeded、errored、canceled、expired；錯誤碼 529 overloaded_error 與 retry-after 標頭",
+              "verdict": "imprecise",
+              "reasoning": "提供的 source-evidence 沒有涵蓋 Batch 狀態欄位、結果類型或 HTTP 錯誤碼，閉卷查核無法判定這些細節是否正確。",
+              "correct_value": "需對照官方 Batch API 與 Errors 文件查證後保留"
+            },
+            {
+              "claim": "MCP Connector 需設定 mcp_servers 與 mcp_toolset、OAuth 2.1／Bearer，僅支援遠端 Streamable HTTP（不支援本地 stdio）",
+              "verdict": "correct",
+              "reasoning": "與 source-evidence 第 5 節的描述一致。",
+              "correct_value": "同原文"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    },
+    {
+      "file": "ch12-production-readiness-blueprint.md",
+      "verdict": "WARN",
+      "panels": [
+        {
+          "family": "openai",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "「月成本從未優化基準的 $152,250 壓低至 ≤ $18,000（降幅 ≥ 88%，單筆 ≤ $0.012）」",
+              "verdict": "correct",
+              "reasoning": "每月 50,000 × 30 = 1,500,000 筆，$18,000 ÷ 1,500,000 = $0.012／筆；相較 $152,250 的降幅為 (152,250 − 18,000) ÷ 152,250，約 88.18%，符合至少 88%。",
+              "correct_value": "每月 ≤ $18,000、每筆 ≤ $0.012，降幅約 ≥ 88.18%。"
+            },
+            {
+              "claim": "「滿載 API 成本（含 us 1.1x 資料駐留）：$16,500 × 1.1 = $18,150/月（$605/天）」",
+              "verdict": "correct",
+              "reasoning": "以 1,500,000 筆／月及每筆基礎 API 成本 $0.011 計算，全球推論成本為 $16,500；乘以 1.1 為 $18,150，除以 30 天為 $605／天。此結果超過章內 $18,000 月預算及 $600 日預算。",
+              "correct_value": "$18,150／月，或 $605／天。"
+            },
+            {
+              "claim": "「若將滿載 $605/天視為固定支出，至少需處理 ≥ 459 筆/天……方能打平；若依變動成本計算……每處理一筆即為正效益。」",
+              "verdict": "correct",
+              "reasoning": "70% L2 與 30% L3 的每筆加權人工成本節省為 0.7 × $1.20 + 0.3 × $1.60 = $1.32。固定支出假設下，$605 ÷ $1.32 約為 458.33，因此至少需 459 筆；佔 50,000 筆約 0.918%。若 API 成本完全隨筆數變動，每筆成本為 $0.011 × 1.1 = $0.0121，單筆淨節省為 $1.3079。兩者均未計其他營運或退款損失。",
+              "correct_value": "固定 API 支出假設下至少 459 筆／天；純變動 API 成本假設下，每筆估算淨節省 $1.3079。"
+            },
+            {
+              "claim": "「新月度滿載 API 成本」為「$21,780/月」；若將全量 API 成本視為固定支出，「每日處理 605 筆 L2 工單……恰好打平、606 筆起淨效益為正」。",
+              "verdict": "correct",
+              "reasoning": "60,000 × 30 × $0.011 × 1.1 = $21,780／月，即 $726／天。每筆 L2 節省 $1.20，$726 ÷ $1.20 = 605 筆，因此第 606 筆起估算淨效益為正。此計算以全量 API 成本固定、其餘成本不變為前提，且 $21,780 超過原月預算上限。",
+              "correct_value": "$21,780／月；固定全量 API 支出假設下，605 筆／天打平，606 筆／天起為正。"
+            },
+            {
+              "claim": "「若 OrderOps 計畫將某類低風險退款工單從 L2 升級為 L3 有界全自動……必須滿足哪三個必要條件？」參考解答僅列離線 Pass^3、單筆金額上限，以及連續 14 天達標且零嚴重誤判。",
+              "verdict": "imprecise",
+              "reasoning": "三項條件均有章內依據，但章內 PRR 也要求 L3 執行累計退款上限，且每次寫入須由工具服務端重新授權。題目若將三項視為升級 L3 的完整必要條件，會遺漏這些要求；30 秒退場機制與其他通用 PRR 門檻也仍須滿足。",
+              "correct_value": "除所列三項外，L3 還須設定並執行累計退款上限，寫入時由工具服務端重新授權，並滿足適用的通用 PRR 門檻。"
+            },
+            {
+              "claim": "「第三方編排框架常隱藏 Prompt 組裝、動態摘要與內部重試邏輯，容易破壞 Prompt Caching 的穩定前綴……大幅增加線上除錯時間。」",
+              "verdict": "imprecise",
+              "reasoning": "已提供的證據支持快取前綴須精確匹配，因此框架若改動已快取的前綴，確實可能造成失效；但材料沒有比較具體第三方框架的實作、快取命中率或除錯時間，無法判定這些問題是否經常發生或影響是否一定重大。",
+              "correct_value": "第三方框架若隱藏請求組裝或重試、或改動快取前綴，可能增加快取失效與除錯困難；應針對候選框架驗證其可觀測性、前綴穩定性與實測成本。"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "google",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "對 OrderOps 而言，日工單量達 50,000 筆／天（1,500,000 筆／月，尖峰 12 req/s 若每單 5 次模型呼叫，持續穩態下平均約 60 次模型請求／秒），且必須將月成本從未優化基準的 $152,250 壓低至 ≤ $18,000（降幅 ≥ 88%，單筆 ≤ $0.012），同時滿足分流 p95 ≤ 2.5 秒、多步工具處置 p95 ≤ 18 秒的延遲 SLO。",
+              "verdict": "correct",
+              "reasoning": "依據基準資料：日工單 50,000 筆 × 30 天 = 1,500,000 筆／月；尖峰 12 req/s × 5 回合 = 60 次模型請求／秒；未優化月成本為 $152,250，目標 ≤ $18,000，降幅為 ($152,250 - $18,000) / $152,250 ≈ 88.18% ≥ 88%，目標單筆成本為 $18,000 / 1,500,000 = $0.012；延遲 SLO 為分流 p95 ≤ 2.5s、多步工具處置 p95 ≤ 18s。數值全部與基準一致。",
+              "correct_value": "月工單 1,500,000 筆、尖峰穩態 60 次模型呼叫／秒、成本降幅 ≥ 88%（單筆 ≤ $0.012）、延遲 SLO 2.5s / 18s"
+            },
+            {
+              "claim": "設定每日（$18,000 ÷ 30 = $600）與每月（≤ $18,000）硬性預算上限……另設單日消耗達 150%（$900）的後備告警與自動降級。",
+              "verdict": "correct",
+              "reasoning": "每月預算上限 $18,000 除以 30 天 = $600／天；$600 × 150% = $900／天。算術完全正確。",
+              "correct_value": "每日預算上限 $600，150% 後備告警門檻為 $900"
+            },
+            {
+              "claim": "人工處理每筆工單平均耗時 4 分鐘（4/60 小時），客服人力時薪成本為 $24／小時，則純人工處理單筆成本為 $1.60（月成本 $2,400,000）。本案例採 rollout 假設單筆基礎 API 成本為 $0.011（全球推論月滿載 API 成本為 $16,500，啟用 inference_geo: \"us\" 的 1.1× 倍率後為 $18,150，即 $605/天）。若 $18,000 為含 US 加價的硬上限，則階段四須將基礎單價壓低至 ≤ $0.010909/筆（例如 $0.0108/筆 對應 $17,820/月）。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：(1) 純人工單筆成本 = (4 / 60) × $24 = $1.60；月成本 = 1,500,000 × $1.60 = $2,400,000。(2) 全球推論月滿載 API 成本 = 1,500,000 × $0.011 = $16,500；啟用 US 1.1× 後 = $16,500 × 1.1 = $18,150／月，除以 30 天 = $605／天。(3) 若含 1.1× 後上限為 $18,000，則基礎單價上限 = $18,000 / (1,500,000 × 1.1) = $0.010909...／筆；若取 $0.0108／筆，則 1,500,000 × $0.0108 × 1.1 = $17,820／月 ≤ $18,000。全部正確。",
+              "correct_value": "純人工單筆 $1.60（月 $2,400,000）；API 全球月成本 $16,500、US 1.1× 月成本 $18,150（$605/天）；符合 $18,000 上限之基礎單價 ≤ $0.010909/筆"
+            },
+            {
+              "claim": "階段一（Day 1–14 Shadow 模式）：100% 旁路鏡像（50,000 筆/天），月化 API 成本 $16,500（14 天實際 $7,700）。階段二（Day 15–35 Canary L2，5% 流量）：每日 2,500 筆（75,000 筆/月），每筆節省 3 分鐘 = 0.05 小時 = $1.20，每月節省人工 $90,000/月，5% 流量 API 成本 $825/月，估算淨效益 +$89,175/月。階段三（Day 36–60 擴大 L2，30% 流量）：每日 15,000 筆（450,000 筆/月），每月節省人工 $540,000/月，30% 流量 API 成本 $4,950/月，估算淨效益 +$535,050/月。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：(1) 階段一：每日 API 成本 = 50,000 × $0.011 = $550／天；月化（30 天）= $16,500；14 天實際 = 14 × $550 = $7,700。(2) 階段二：50,000 × 5% = 2,500 筆／天（75,000 筆／月）；每筆節省 (4 - 1)/60 = 0.05 小時，0.05 × $24 = $1.20；月省人工 = 75,000 × $1.20 = $90,000；5% API 月成本 = 75,000 × $0.011 = $825；淨效益 = $90,000 - $825 = $89,175。(3) 階段三：50,000 × 30% = 15,000 筆／天（450,000 筆／月）；月省人工 = 450,000 × $1.20 = $540,000；30% API 月成本 = 450,000 × $0.011 = $4,950；淨效益 = $540,000 - $4,950 = $535,050。全部正確。",
+              "correct_value": "階段一 14 天成本 $7,700；階段二月淨效益 +$89,175；階段三月淨效益 +$535,050"
+            },
+            {
+              "claim": "階段四（Day 61–90 100% L2/L3 混合：70% L2 + 30% L3 有界全自動，啟用 us 1.1x）：L2 工單（70%，1,050,000 筆/月）節省 $1,260,000/月，L3 工單（30%，450,000 筆/月）節省 $720,000/月，總節省人工成本 $1,980,000/月；滿載 API 成本 $18,150/月（$605/天）；估算淨效益 +$1,961,850/月；70/30 組合加權節省 $1.32/筆，固定支出 $605/天之損益平衡點為 ≥ 459 筆/天（605 ÷ 1.32 = 458.33，約佔總量 0.92%），變動成本下單筆淨節省為 $1.32 − $0.0121 = $1.3079。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：(1) L2 月量 = 1,500,000 × 70% = 1,050,000 筆，節省 1,050,000 × $1.20 = $1,260,000；L3 月量 = 1,500,000 × 30% = 450,000 筆，節省 450,000 × $1.60 = $720,000；合計節省 $1,980,000／月。(2) 滿載含 US 1.1× API 成本 = $16,500 × 1.1 = $18,150／月（$605／天）；估算淨效益 = $1,980,000 - $18,150 = $1,961,850／月。(3) 加權單筆節省 = 0.7 × $1.20 + 0.3 × $1.60 = $0.84 + $0.48 = $1.32／筆；固定支出損益平衡點 = $605 / $1.32 = 458.333... 筆／天（整數須 ≥ 459 筆／天，458.33 / 50,000 ≈ 0.917% ≈ 0.92%）；變動成本單筆 API 費用 = $0.011 × 1.1 = $0.0121，單筆淨節省 = $1.32 - $0.0121 = $1.3079。全部正確。",
+              "correct_value": "總節省人工 $1,980,000/月、API 成本 $18,150/月、淨效益 +$1,961,850/月、固定支出損益平衡點 ≥ 459 筆/天（變動單筆淨省 $1.3079）"
+            },
+            {
+              "claim": "自我檢核第 3 題解答：日工單量提升至 60,000 筆／天（1,800,000 筆／月），單筆基礎 API 成本 $0.011，啟用 inference_geo: \"us\"（1.1×）後，新月度滿載 API 成本為 $21,780/月（$726/天）；以 L2 每筆節省 $1.20 計算，若將 $726/天視為固定支出，每日處理 605 筆 L2 工單（約佔總量 1.01%）恰好打平、606 筆起淨效益為正。",
+              "verdict": "correct",
+              "reasoning": "獨立重算：60,000 × 30 = 1,800,000 筆／月；基礎月成本 = 1,800,000 × $0.011 = $19,800；乘以 1.1× = $21,780／月；每日 API 成本 = $21,780 / 30 = $726／天。以 L2 單筆節省 $1.20 計，$726 / $1.20 = 605 筆／天（恰好打平，605 / 60,000 = 1.0083% ≈ 1.01%），606 筆起淨效益為正。完全正確。",
+              "correct_value": "新月度滿載 API 成本 $21,780/月（$726/天），固定支出下每日 605 筆 L2 工單恰好打平、606 筆起為正效益"
+            }
+          ],
+          "cached": false
+        },
+        {
+          "family": "anthropic",
+          "status": "complete",
+          "claims": [
+            {
+              "claim": "月成本從未優化基準的 $152,250 壓低至 ≤ $18,000（降幅 ≥ 88%，單筆 ≤ $0.012）",
+              "verdict": "correct",
+              "reasoning": "1 − 18,000 ÷ 152,250 = 0.8818，降幅約 88.2%，符合 ≥ 88%。18,000 ÷ 1,500,000 = $0.012/筆。兩者都與基準表一致。",
+              "correct_value": "降幅約 88.2%；單筆 ≤ $0.012"
+            },
+            {
+              "claim": "尖峰 12 req/s 若每單 5 次模型呼叫，持續穩態下平均約 60 次模型請求／秒",
+              "verdict": "correct",
+              "reasoning": "12 × 5 = 60。只有尖峰流量持續時，穩態吞吐量才會是 60 次/秒；全日平均是 0.58 × 5 ≈ 2.9 次/秒。原句寫的是「尖峰持續穩態」，也註明瞬間尖峰須另行估算，算式成立。不過「平均」一詞容易被讀成全日平均。",
+              "correct_value": "尖峰持續時約 60 次模型請求/秒；全日平均約 2.9 次/秒"
+            },
+            {
+              "claim": "每日預算上限 $18,000 ÷ 30 = $600；150% 後備告警為 $900",
+              "verdict": "correct",
+              "reasoning": "18,000 ÷ 30 = 600；600 × 1.5 = 900。",
+              "correct_value": "$600/天；$900/天"
+            },
+            {
+              "claim": "人工每筆 4 分鐘、時薪 $24 → 單筆 $1.60，月成本 $2,400,000",
+              "verdict": "correct",
+              "reasoning": "4/60 × 24 = 1.60；1.60 × 1,500,000 = 2,400,000。",
+              "correct_value": "$1.60/筆；$2,400,000/月"
+            },
+            {
+              "claim": "單筆 $0.011 → 月 $16,500；乘 1.1× 後為 $18,150（$605/天）；須將基礎單價壓到 ≤ $0.010909，例如 $0.0108 對應 $17,820",
+              "verdict": "correct",
+              "reasoning": "0.011 × 1,500,000 = 16,500；× 1.1 = 18,150；÷ 30 = 605。18,000 ÷ (1.1 × 1,500,000) = 0.0109090…。0.0108 × 1,500,000 × 1.1 = 17,820。1.1× 倍率套用到所有 token 類別，與 source-evidence 一致。",
+              "correct_value": "$16,500 / $18,150 / $605 每天；上限單價 ≈ $0.010909；$0.0108 → $17,820"
+            },
+            {
+              "claim": "Shadow 階段 14 天實際 API 成本 $7,700",
+              "verdict": "correct",
+              "reasoning": "50,000 × 14 × 0.011 = 7,700。",
+              "correct_value": "$7,700"
+            },
+            {
+              "claim": "階段二：每月 75,000 筆 × 0.05 小時 × $24 = $90,000；API $825；淨效益 +$89,175/月",
+              "verdict": "correct",
+              "reasoning": "2,500 × 30 = 75,000；75,000 × 0.05 × 24 = 90,000；75,000 × 0.011 = 825；90,000 − 825 = 89,175。這是月化估算，實際階段只有 21 天。",
+              "correct_value": "+$89,175/月（月化）"
+            },
+            {
+              "claim": "階段三：450,000 筆 → 節省 $540,000、API $4,950、淨效益 +$535,050/月",
+              "verdict": "correct",
+              "reasoning": "450,000 × 0.05 × 24 = 540,000；450,000 × 0.011 = 4,950；兩者相減得 535,050。",
+              "correct_value": "+$535,050/月"
+            },
+            {
+              "claim": "階段四：L2 節省 $1,260,000、L3 節省 $720,000、合計 $1,980,000，扣除 $18,150 後淨效益 +$1,961,850/月",
+              "verdict": "imprecise",
+              "reasoning": "算術正確：1,050,000 × 0.05 × 24 = 1,260,000；450,000 × (4/60) × 24 = 720,000；1,980,000 − 18,150 = 1,961,850。但有兩個前提未經證實：一是有 30% 工單符合 ≤ $50 低風險條件；二是 L3 工單完全不需人工，節省整整 4 分鐘。抽樣覆核、例外退回 L2、退款損失都沒有計入。作者雖註明是估算，結論仍偏樂觀。",
+              "correct_value": "算術為 +$1,961,850/月；應註明 30% L3 比例與「零人工殘留」都是假設，並扣除覆核與錯誤退款成本"
+            },
+            {
+              "claim": "70/30 加權節省 $1.32/筆；固定支出 $605/天須 ≥ 459 筆/天（約 0.92%）；變動成本下單筆淨節省 $1.3079",
+              "verdict": "correct",
+              "reasoning": "0.7 × 1.20 + 0.3 × 1.60 = 1.32；605 ÷ 1.32 = 458.33，取整為 459；459 ÷ 50,000 = 0.918%。0.011 × 1.1 = 0.0121；1.32 − 0.0121 = 1.3079。",
+              "correct_value": "$1.32；459 筆/天（0.92%）；$1.3079"
+            },
+            {
+              "claim": "自我檢核 3：60,000 筆/天 → $19,800，乘 1.1 為 $21,780/月（$726/天）；605 筆 L2 恰好打平（約 1.01%）",
+              "verdict": "correct",
+              "reasoning": "60,000 × 30 × 0.011 = 19,800；× 1.1 = 21,780；÷ 30 = 726；726 ÷ 1.20 = 605，剛好整除，所以 605 筆打平、606 筆起為正；605 ÷ 60,000 = 1.008%。",
+              "correct_value": "$21,780/月；$726/天；605 筆打平（約 1.01%）"
+            },
+            {
+              "claim": "超時階層 toolTimeoutMs 5,000 < llmTimeoutMs 12,000 < wallClockTimeoutMs 60,000，並設 max_turns 上限 8",
+              "verdict": "imprecise",
+              "reasoning": "不等式成立。但 8 回合 × 12 秒 = 96 秒，超過 60 秒的 wall-clock 上限，所以真正限制執行時間的是 wall-clock，不是回合數；這點應明說。另外，本章自己註明 max_turns 是 Agent SDK 選項，而 OrderOps 走的是裸 Messages API，這裡應改稱應用層自訂的回合上限。",
+              "correct_value": "階層成立；應註明 8 × 12s > 60s 時由 wall-clock 先截斷，並把 max_turns 改稱應用層回合上限"
+            },
+            {
+              "claim": "Claude Agent SDK 抽象洩漏風險「低」，而第三方框架的記憶體管理或摘要策略常破壞快取前綴",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 記載 Agent SDK 內建 context compaction（上下文壓縮）。本章批評第三方框架的摘要策略會破壞快取前綴，但沒有說明 SDK 的壓縮為何不會；「低」的評等缺乏證據支持。",
+              "correct_value": "應註明 Agent SDK 也有 context compaction，可能影響快取前綴，風險取決於設定"
+            },
+            {
+              "claim": "線上應依模型採 adaptive thinking 與 output_config.effort，並以 strict: true 與 output_config.format 約束結構",
+              "verdict": "imprecise",
+              "reasoning": "source-evidence 支持 strict: true、output_config.format，也提到新模型有「adaptive reasoning modes」，但完全沒有提到 output_config.effort 這個參數。手上證據無法確認它存在或名稱正確。",
+              "correct_value": "strict 與 output_config.format 有證據支持；output_config.effort 須查官方文件確認"
+            },
+            {
+              "claim": "inference_geo: \"us\" 的 1.1× 倍率適用於 input、output、cache write 與 cache read",
+              "verdict": "correct",
+              "reasoning": "與 source-evidence「1.1× multiplier across all token categories」一致。",
+              "correct_value": "1.1×，適用全部 token 類別"
+            }
+          ],
+          "cached": false
+        }
+      ],
+      "degraded": false
+    }
+  ]
+}

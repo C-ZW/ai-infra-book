@@ -1,0 +1,60 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "方案 A 每月檢索輸入成本為 $19,500；方案 B 為 $1,890；檢索片段輸入費降幅為 90.3%。",
+      "verdict": "correct",
+      "reasoning": "依題設，方案 A 每月輸入為 1,500,000 × 6,500 = 9,750,000,000 tokens，乘以每百萬 tokens $2 得 $19,500。方案 B 為 1,500,000 × 35% × 1,800 = 945,000,000 tokens，成本 $1,890。降幅為 (19,500 − 1,890) ÷ 19,500 ≈ 90.31%。這只成立於章節所列的單次、未快取檢索片段輸入口徑。",
+      "correct_value": "方案 A：$19,500／月；方案 B：$1,890／月；降幅約 90.3%。"
+    },
+    {
+      "claim": "在 5 回合對話中，若均按未快取費率計價，前綴每多 1,000 tokens 就會乘以 5 倍消耗；以 Sonnet 5.5 計算，單筆多花 $0.01，每日 50,000 筆就是 $500。",
+      "verdict": "correct",
+      "reasoning": "前綴在五次請求中各重送 1,000 tokens，共增加 5,000 個輸入 tokens。按 $2／百萬 tokens 計，單筆增加 5,000 ÷ 1,000,000 × $2 = $0.01；50,000 筆增加 $500。",
+      "correct_value": "單筆增加 $0.01，每日增加 $500，前提是五次均完整重送且按未快取輸入費率計價。"
+    },
+    {
+      "claim": "單回合最多允許 max_search_retries = 2 次改寫重試，串行檢索最多耗 2.4 s。",
+      "verdict": "correct",
+      "reasoning": "一次初始檢索加兩次重試，合計最多三次；每次 timeout 為 800 ms，故檢索等待的期限上界為 3 × 800 ms = 2.4 s。這不包含查詢改寫、排隊及模型推理時間。",
+      "correct_value": "最多三次檢索，各次均遵守 800 ms timeout 時，檢索等待合計最多 2.4 秒。"
+    },
+    {
+      "claim": "針對 529 採用指數退避加 Full Jitter（基底 500 ms、上限 16,000 ms、最多重試 4 次，上界合計至多 7.5 s）。",
+      "verdict": "correct",
+      "reasoning": "若四次重試的退避上界依序為 0.5、1、2、4 秒，四次上界相加為 7.5 秒，均未觸及 16 秒上限。這只是退避等待的上界，未含 API 呼叫時間。",
+      "correct_value": "四次退避等待的合計上界為 7.5 秒；總耗時還須計入請求執行時間。"
+    },
+    {
+      "claim": "Prompt Caching 靜默失效導致成本暴增（cache_creation_input_tokens = 0 且 cache_read_input_tokens = 0）；動態段落破壞前綴雜湊或工具陣列順序未固定，導致快取鍵值每回合都 miss。",
+      "verdict": "imprecise",
+      "reasoning": "提供的證據指出，低於最小可快取門檻會使建立快取的計數為零；但前綴改變造成未命中，與沒有建立快取是不同情況。若新前綴符合門檻且成功建立快取，miss 仍可能伴隨 cache_creation_input_tokens 大於零。因此不能把所有這類失效都描述為兩個計數皆為零。",
+      "correct_value": "前綴變動可能造成讀取 miss 並產生新的快取寫入；兩項計數皆為零時，應另查斷點、門檻及快取是否實際啟用。"
+    },
+    {
+      "claim": "將每回合的 messages、已執行的 tool_use 與 tool_result 配對以及 waiting_for 狀態持久化到 PostgreSQL，就能在任何無狀態 Worker 節點上安全喚醒續跑。",
+      "verdict": "imprecise",
+      "reasoning": "保存對話與等待狀態可提供恢復所需資訊，但單靠這些資料無法排除多個 Worker 同時喚醒，也無法處理外部退款已成功、結果尚未寫入時的崩潰。章節後文另要求狀態與版本 CAS、操作紀錄、下游冪等或對帳及權限重查，顯示原句的條件不足以單獨保證安全。",
+      "correct_value": "持久化狀態可讓無狀態 Worker 恢復上下文；安全續跑還須結合併發控制、可恢復操作紀錄、外部副作用的冪等或對帳，以及授權檢查。"
+    },
+    {
+      "claim": "喚醒與到期排程皆須以 agent_sessions.version 與 status = 'waiting_external' 執行條件 CAS 搶佔；搶佔失敗立即放棄。",
+      "verdict": "imprecise",
+      "reasoning": "相同狀態與版本的條件更新，若成功時同時變更狀態或遞增版本，能使競爭同一版本的更新至多一方成功；但僅憑版本與狀態不能判定是否已到期。若喚醒在到期之後先搶佔，仍可能違反到期規則。",
+      "correct_value": "除狀態與版本外，正常喚醒應檢查 expires_at > NOW()；到期轉移應檢查 expires_at ≤ NOW()，並在成功時改變狀態或遞增版本。"
+    },
+    {
+      "claim": "Claude Messages API 嚴格要求每個 client-side tool_use 的對應 tool_result 出現在緊接其後的 user 訊息，且 tool_result 必須排在文字區塊之前。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 支持工具使用及多回合中保留 thinking 區塊，但沒有記錄此訊息配對與區塊順序的具體規則，無法僅依材料獨立確認完整的 wire-level 契約。",
+      "correct_value": "此具體訊息順序與配對規則須以相應版本的官方 Messages API 工具使用文件核對。"
+    },
+    {
+      "claim": "檢索回來的動態段落必須放在 tool_result 內，絕不能插入 tools 或 system 之間。",
+      "verdict": "imprecise",
+      "reasoning": "提供的證據顯示快取以前綴精確匹配，較早區塊變動會使後續斷點失效；因此把動態內容放在穩定前綴之後有助於保留前綴命中。這不能推出動態段落只能放在 tool_result：章節後文也容許放在最新 user 訊息中。",
+      "correct_value": "為維持穩定快取前綴，動態段落應放在穩定 tools 與 system 前綴之後的適當訊息中；工具檢索結果通常放在對應 tool_result。"
+    }
+  ]
+}

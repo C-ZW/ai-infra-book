@@ -1,0 +1,66 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "5 回合累計輸入 = 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens；5 回合累計輸出 = 350 × 5 = 1,750 tokens",
+      "verdict": "correct",
+      "reasoning": "首輪輸入是 6,000，之後每回合加 1,200，所以五輪依序是 6,000、7,200、8,400、9,600、10,800，加總為 42,000。輸出為 350 × 5 = 1,750。兩者都與基準表一致。",
+      "correct_value": "42,000 / 1,750 tokens"
+    },
+    {
+      "claim": "未優化單筆成本 = $0.0840 + $0.0175 = $0.1015；每日 $5,075；每月 $152,250",
+      "verdict": "correct",
+      "reasoning": "依 Sonnet 5.5 牌價計算：輸入 42,000/1M × $2.00 = $0.084，輸出 1,750/1M × $10.00 = $0.0175，合計 $0.1015。每日 $0.1015 × 50,000 = $5,075，每月 $0.1015 × 1,500,000 = $152,250。都與基準表一致。",
+      "correct_value": "$0.1015 / $5,075 / $152,250"
+    },
+    {
+      "claim": "尖峰流量：12 req/s（日均 0.5787 req/s，尖峰約 21×）",
+      "verdict": "imprecise",
+      "reasoning": "日均流量 50,000 / 86,400 = 0.5787 req/s，所以 12 / 0.5787 ≈ 20.7 倍。章節寫「約 21×」，算術上比較接近實際值。但基準表寫的是「平均 0.58 req/s，尖峰 20×」，章節寫法與基準不一致，全書應統一用語。",
+      "correct_value": "約 20.7×（基準表記為 20×；建議改寫為「約 20.7×」或統一沿用基準的 20×）"
+    },
+    {
+      "claim": "尖峰 12 req/s × 5 回合 ≈ 60 calls/s，平均停留時間 1.5 秒，依 Little's Law 平均在途連線約 90 條；5 輪各 5,000 ms 即達 25 s",
+      "verdict": "correct",
+      "reasoning": "12 × 5 = 60 calls/s，L = λW = 60 × 1.5 = 90。另外 5 × 5,000 ms = 25,000 ms，超過 18 s 的 wall-clock 上限，所以章節說兩者需分別驗證是合理的。",
+      "correct_value": "60 calls/s；約 90 條在途連線；25 s"
+    },
+    {
+      "claim": "maxTotalInputTokens = 50,000 高於 5 回合基準 42,000 tokens；maxCostUsd = 0.25",
+      "verdict": "correct",
+      "reasoning": "50,000 > 42,000。基準單筆成本 $0.1015 也低於 $0.25，所以正常工單不會觸發這兩個護欄。",
+      "correct_value": "50,000 > 42,000；$0.1015 < $0.25"
+    },
+    {
+      "claim": "60% 簡單工單改用 Haiku 5.5、2 回合：單筆 $0.00167，每日 $50.10，每月 $1,503，相較 Sonnet 單筆降幅 98.35%",
+      "verdict": "correct",
+      "reasoning": "輸入 6,000 + 7,200 = 13,200，乘 $0.10/MTok 得 $0.00132。輸出 700 乘 $0.50/MTok 得 $0.00035。合計 $0.00167。這兩輪的輸入都低於 100K，適用 ≤100K 的價格。每日 × 30,000 = $50.10，每月 × 30 = $1,503。降幅 1 − 0.00167/0.1015 = 98.35%。",
+      "correct_value": "$0.00167 / $50.10 / $1,503 / 98.35%"
+    },
+    {
+      "claim": "剩餘 40% 仍按 Sonnet 基準時月總成本 $62,403；達成 ≤ $18,000 需平均 $0.012/筆、總降幅 88.18%，複雜工單須壓至 ≤ $0.027495/筆",
+      "verdict": "correct",
+      "reasoning": "複雜工單每月 600,000 筆 × $0.1015 = $60,900，加上簡單工單 $1,503，合計 $62,403。平均單筆 18,000 / 1,500,000 = $0.012。總降幅 1 − 18,000/152,250 = 88.18%。扣掉簡單工單後剩 18,000 − 1,503 = $16,497，除以 600,000 筆得 $0.027495。",
+      "correct_value": "$62,403；$0.012；88.18%；$0.027495"
+    },
+    {
+      "claim": "將 maxTurns 改為 1，迴圈會在第一輪 tool_use 派發前攔截並回傳 budget_exceeded（stopReason: \"max_turns\"）",
+      "verdict": "correct",
+      "reasoning": "依節錄程式碼追蹤：turns 先遞增為 1，收到 tool_use 後檢查 turns >= maxTurns（1 >= 1）成立，因此在執行 executeTool 之前就回傳 max_turns。行為與章節描述一致。",
+      "correct_value": "與描述一致"
+    },
+    {
+      "claim": "Sonnet 5.5 預設啟用 adaptive thinking，max_tokens: 1024 同時涵蓋思考與可見輸出",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料只說 extended thinking 以 budget_tokens 啟用，「或新模型有 adaptive 模式」，並要求 max_tokens 大於 budget_tokens。史料沒有說 Sonnet 5.5 預設啟用 adaptive thinking，所以這一點無法從提供的證據判定。",
+      "correct_value": "限定說法：若啟用 extended/adaptive thinking，max_tokens 須涵蓋思考與最終輸出；Sonnet 5.5 是否預設啟用需查官方文件"
+    },
+    {
+      "claim": "多個 tool_use 的 tool_result 若未在同一則 user 訊息中完整回填，API 會回傳 400 invalid_request_error",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 沒有記載 tool_result 的配對規則，也沒有記載對應的錯誤碼，閉卷無法確認。",
+      "correct_value": "需另行對照 Tool Use 官方文件確認錯誤行為"
+    }
+  ]
+}

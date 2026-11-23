@@ -1,0 +1,60 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "第 1~5 回合輸入：6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens；基準單筆成本為 $0.1015。",
+      "verdict": "correct",
+      "reasoning": "依章內第 1 回合輸入 6,000 tokens、之後每回合增加 1,200 tokens，五回合合計為 42,000 tokens；輸出為 350 × 5 = 1,750 tokens。依基準單價計算，輸入成本為 $0.084，輸出成本為 $0.0175，合計 $0.1015。",
+      "correct_value": "42,000 輸入 tokens、1,750 輸出 tokens，合計 $0.1015／筆。"
+    },
+    {
+      "claim": "12% 工單多出 1 回合且錯因可由 strict 消除時，每日節省 $165，情境估算每月 $4,950。",
+      "verdict": "correct",
+      "reasoning": "第 6 回合輸入為 10,800 + 1,200 = 12,000 tokens，成本為 12,000 × $2／百萬加上 350 × $10／百萬，即 $0.0275。乘以 12% 為每筆 $0.0033，再乘每日 50,000 筆及每月 30 天，分別為 $165 與 $4,950。此結果依賴 12% 的額外回合均可完全消除等情境假設。",
+      "correct_value": "在所列假設成立時，每日 $165、每 30 天 $4,950；實際節省須以測量驗證。"
+    },
+    {
+      "claim": "五回合基準的固定前綴總量占輸入 71.43%；第一回合冷啟動寫入、後四回合均命中時，快取讀取量占總輸入 57.14%。",
+      "verdict": "correct",
+      "reasoning": "五次固定前綴共 5 × 6,000 = 30,000 tokens，除以總輸入 42,000 為 71.43%。若只有後四回合讀取快取，讀取量為 24,000 tokens，除以 42,000 為 57.14%。",
+      "correct_value": "固定前綴占 71.43%；首次寫入、其後四次命中時，讀取占總輸入 57.14%。"
+    },
+    {
+      "claim": "若 12 req/s 為工單進件率，5 回合穩態下約對應 60 次模型請求／秒（未計重試）。",
+      "verdict": "correct",
+      "reasoning": "每秒 12 筆工單各產生 5 次模型請求，穩態平均工作量為 12 × 5 = 60 次／秒。這是工作量換算，未必等於每一瞬間的模型請求峰值。",
+      "correct_value": "在持續進件且每筆均使用 5 回合的穩態假設下，約 60 次模型請求／秒，未計重試。"
+    },
+    {
+      "claim": "整條呼叫鏈必須共同執行 18,000 ms wall-clock deadline（對齊多步處置 p95 ≤ 18s SLO）。",
+      "verdict": "imprecise",
+      "reasoning": "18 秒 deadline 可限制呼叫鏈等待與重試時間，但 p95 SLO 衡量的是定義中的完成延遲分布。若超時工單被轉人工或視為失敗，仍須明確定義其是否納入分母及如何計算，不能僅憑設置 deadline 推得 SLO 達成。",
+      "correct_value": "18 秒可作為呼叫鏈預算；應另定義完成、超時及轉人工的 SLO 計算方式，並以實際延遲與結果驗證。"
+    },
+    {
+      "claim": "以下為 Wire-Level tool_use 回應範例：usage 中 input_tokens 為 1200，cache_read_input_tokens 為 6000。",
+      "verdict": "imprecise",
+      "reasoning": "若 1,200 是未快取的新增輸入，則此範例總輸入為 1,200 + 6,000 = 7,200 tokens，對應成本算例中的第二回合，而非該算例的第 1 回合。範例本身未標明回合，也未說明 usage 欄位的計數關係，因此不足以判定其與算例是否一致。",
+      "correct_value": "應標明此為已有 6,000 tokens 快取命中的後續回合，並說明 1,200 tokens 為未快取輸入；依成本算例，其總輸入為 7,200 tokens。"
+    },
+    {
+      "claim": "依序發送 initialize → notifications/initialized → tools/list → tools/call。",
+      "verdict": "incorrect",
+      "reasoning": "所附 curl 命令依序只發送 initialize、notifications/initialized 與 tools/call，沒有發送 tools/list，因此實際命令不能完成文字指定的驗證序列。",
+      "correct_value": "在 notifications/initialized 與 tools/call 之間補上一個 JSON-RPC tools/list 請求，並檢查其回應。"
+    },
+    {
+      "claim": "本章的完整可執行程式碼已建置於 examples/ts/ch02/index.ts 與 examples/py/ch02/main.py。",
+      "verdict": "imprecise",
+      "reasoning": "提供的材料只有路徑、程式片段與預期輸出，沒有兩個檔案的完整內容或實際執行結果，無法獨立確認檔案存在、功能完整或可執行。",
+      "correct_value": "應以提供的原始碼及實際執行與測試結果驗證；目前只能視為待查的程式碼位置與預期行為。"
+    },
+    {
+      "claim": "將操作鍵傳給支付商並結合共享帳本，可確保在高併發與跨節點重試下維持帳務零重複。",
+      "verdict": "imprecise",
+      "reasoning": "持久操作紀錄、酬載比對與支付商冪等鍵能降低重複退款風險，但零重複還依賴支付商實際支援的冪等範圍與保留期限、未知結果的查詢及對帳，以及重試時是否沿用相同鍵。提供的材料未證明這些外部條件均成立。",
+      "correct_value": "在支付商冪等契約覆蓋所有重試與對帳情境，且系統正確實作操作狀態及餘額保留時，可防止所涵蓋情境的重複退款；須依支付商契約與故障測試驗證。"
+    }
+  ]
+}

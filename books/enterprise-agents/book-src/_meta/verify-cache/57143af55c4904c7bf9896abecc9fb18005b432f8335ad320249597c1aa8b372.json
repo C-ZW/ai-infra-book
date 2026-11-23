@@ -1,0 +1,78 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "未優化帳本：5 回合累計輸入 = 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens；累計輸出 = 350 × 5 = 1,750 tokens",
+      "verdict": "correct",
+      "reasoning": "固定前綴是 6,000（2,400 + 3,600），每回合再加 1,200，各回合輸入依序為 6,000、7,200、8,400、9,600、10,800。用等差級數求和：5 × (6,000 + 10,800) / 2 = 42,000。輸出為 350 × 5 = 1,750。兩者都與基準一致。",
+      "correct_value": "42,000 / 1,750 tokens"
+    },
+    {
+      "claim": "未優化單筆成本 $0.1015、每日 $5,075、每月 $152,250（全用 Sonnet 5.5、無快取）",
+      "verdict": "correct",
+      "reasoning": "輸入：42,000 / 1M × $2.00 = $0.084。輸出：1,750 / 1M × $10.00 = $0.0175。單筆合計 $0.1015。每日：× 50,000 = $5,075。每月：× 1,500,000 = $152,250。與基準及 source-evidence 的 Sonnet 牌價一致。",
+      "correct_value": "$0.1015 / $5,075 / $152,250"
+    },
+    {
+      "claim": "尖峰 12 req/s，平均 0.58 req/s，精確比值約 20.7×",
+      "verdict": "correct",
+      "reasoning": "平均流量：50,000 / 86,400 ≈ 0.5787 req/s。比值：12 / 0.5787 ≈ 20.74，所以「約 20.7×」與基準的「20×」都成立。",
+      "correct_value": "≈0.579 req/s；≈20.7×"
+    },
+    {
+      "claim": "尖峰時每筆 5 回合，原始負載約 60 calls/s；平均停留 1.5 秒，依 Little's Law 平均在途連線約 90 條；5 輪各耗滿 5,000 ms 為 25 s",
+      "verdict": "correct",
+      "reasoning": "12 × 5 = 60 calls/s。依 Little's Law L = λW = 60 × 1.5 = 90。5 × 5,000 ms = 25 s，超過 18 s 的 wall-clock 上限，所以章節要求兩者分開驗證是合理的。停留 1.5 秒是作者自訂的假設，算式本身沒有錯。",
+      "correct_value": "60 calls/s；90 條在途連線；25 s"
+    },
+    {
+      "claim": "若首輪工單另占 U tokens 且每輪重送，5 回合累計輸入為 42,000 + 5U tokens",
+      "verdict": "correct",
+      "reasoning": "U 屬於每輪都會重送的歷史，5 回合各多出 U，總共多 5U。",
+      "correct_value": "42,000 + 5U"
+    },
+    {
+      "claim": "挑戰題：60% 簡單工單用 Haiku 5.5 跑 2 回合，單筆 $0.00167、每日 $50.10、每月 $1,503、單筆降幅 98.35%",
+      "verdict": "correct",
+      "reasoning": "累計輸入 6,000 + 7,200 = 13,200，算得 13,200 / 1M × $0.10 = $0.00132。累計輸出 700，算得 700 / 1M × $0.50 = $0.00035。單筆合計 $0.00167。每日：× 30,000 = $50.10；每月：× 30 = $1,503。降幅：1 − 0.00167 / 0.1015 = 1 − 0.016453 ≈ 98.35%。13,200 tokens 遠低於 100K，適用 Haiku 的 ≤100K 費率。",
+      "correct_value": "$0.00167 / $50.10 / $1,503 / 98.35%"
+    },
+    {
+      "claim": "剩餘 40% 仍按 Sonnet 基準，月總成本 $62,403；達成 ≤ $18,000/月（$0.012/筆，降幅 88.18%），複雜工單成本須 ≤ $0.027495/筆",
+      "verdict": "correct",
+      "reasoning": "複雜工單：20,000 × $0.1015 × 30 = $60,900，加上 $1,503 得 $62,403。目標單筆：18,000 / 1,500,000 = $0.012。降幅：1 − 18,000 / 152,250 ≈ 88.18%。複雜工單可用預算：(18,000 − 1,503) / 600,000 = $0.027495。全部正確。",
+      "correct_value": "$62,403；$0.012；88.18%；≤ $0.027495/筆"
+    },
+    {
+      "claim": "護欄設定 maxTotalInputTokens = 50,000（高於 5 回合基準 42,000）、maxCostUsd = 0.25、wallClockTimeoutMs = 18,000（對齊多步處置 p95 SLO）",
+      "verdict": "correct",
+      "reasoning": "50,000 > 42,000，0.25 > 0.1015，正常基準工單不會誤觸護欄。18,000 ms 與基準的多步處置 p95 ≤ 18 s 一致。",
+      "correct_value": "設定與基準相容"
+    },
+    {
+      "claim": "maxTurns = 1 時，迴圈會在第一輪 tool_use 派發前攔截，回傳 budget_exceeded（stopReason: \"max_turns\"）",
+      "verdict": "correct",
+      "reasoning": "依程式碼：turns 遞增到 1，收到 tool_use 後檢查 turns >= maxTurns（1 >= 1）為真，在執行工具前就 return，行為與敘述相符。另外節錄中的 toolBlocks 沒有定義，應該是節錄省略的部分，不影響這段邏輯。",
+      "correct_value": "行為與敘述一致"
+    },
+    {
+      "claim": "Batch API 結果最長可達 24 小時",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只記載 Batch API 的 input/output 各打 50% 折扣、適用非同步工作負載，沒有任何處理時限的資料。這段材料無法支持「24 小時」這個數字。",
+      "correct_value": "限定為「依官方 Batch API 文件的處理時限為準」，或補上可查證的出處"
+    },
+    {
+      "claim": "完整 API 的 stop_reason 尚包含 stop_sequence、pause_turn 與 model_context_window_exceeded；平台過載回傳 HTTP 529 overloaded_error",
+      "verdict": "imprecise",
+      "reasoning": "提供的基準資料與 source-evidence 都沒有列出這些 stop_reason 值或 529 錯誤碼，閉卷無法查證，需要對照官方 Handling Stop Reasons 與 Errors 文件。",
+      "correct_value": "保留，但需註明以官方文件列舉為準並另行查證"
+    },
+    {
+      "claim": "回傳上一輪 assistant 內容區塊時須原樣保留 thinking signature",
+      "verdict": "correct",
+      "reasoning": "source-evidence 第 3 節明載：在多輪工具迴圈中，先前 assistant 的 thinking 區塊（含 signature）回傳給 API 時必須保留，與章節敘述一致。",
+      "correct_value": "與 source-evidence 一致"
+    }
+  ]
+}

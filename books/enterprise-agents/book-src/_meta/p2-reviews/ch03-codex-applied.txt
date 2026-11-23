@@ -1,0 +1,19 @@
+已根據 Codex 審查意見完成 [ch03-context-and-prompt-engineering.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch03-context-and-prompt-engineering.md)（透過 `.tmp` 原子替換）、[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch03/index.ts) 與 [main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch03/main.py) 的修正：
+
+### 已修正項目
+1. **第 1 回合基準與獨立情境區分**：在 Worked Example 明確區分全書 5 回合基準（`42,000` input / `1,750` output，第 2–5 回合每回合新增 `1,200` tokens 已含重送輸出與工具結果），並將情境 A 標為首輪另有 `1,200`-token 動態載荷與假設觀測 `4,000` thinking tokens 的獨立情境。
+2. **Prompt Caching 失效範圍與監控公式**：修正「故障模式 1」與「自我檢核第 1 題」，說明 `system` 前端插入時間戳時 `tools`（3,600 tokens）仍可命中讀取、僅 `system`（2,400 tokens）需重寫；將命中率公式更正為 `cache_read_input_tokens / (input_tokens + cache_creation_input_tokens + cache_read_input_tokens)`，並補充 70% 示例門檻、並發 miss 與前綴版本區分。
+3. **裁剪節省口徑**：在情境 B 與自我檢核第 3 題區分「後續重送節省」（`22,200` tokens / `$0.044400`；`18,000` tokens / `$0.036` / `$54,000`）與「含首次送入的端到端節省」（`29,600` tokens / `$0.059200`；`22,500` tokens / `$0.045` / `$67,500`）。
+4. **Extended Thinking 與 API 涵蓋面**：將兩份範例的線上呼叫改為 `thinking: { type: "adaptive" }`（對應 `claude-sonnet-5-5`），正文補充自適應思考與手動 `budget_tokens` 的差異、`usage.output_tokens` 計費口徑，以及 `strict: true` / `output_config.format` 的用途說明。
+5. **XML 安全、Compaction 與截斷器修正**：
+   - 兩份範例新增 XML escaping（`escapeXml` / `html.escape`）並納入 `createdAt`／`created_at`，移除未使用的 mock 初始化；正文補充租戶身分驗證與 `refund_eligible: true` 待驗證邊界。
+   - 修正 `truncateToolResult` / `truncate_tool_result` 在 `maxChars` 極小時 `slice(-0)` 導致反向膨脹的 bug，並將字元／token 換算標為粗估。
+   - 改善 `compactHistory` / `compact_history` 避免切斷 `tool_use` 與 `tool_result` 配對並摘要 block 內容；離線模式新增多回合工具歷史示範並標註帳本演示。
+6. **類比與細節微調**：收斂 CPU Cache 類比邊界、標註示例數值與估算時間，並更新延伸閱讀連結至 `platform.claude.com`。
+
+### 驗證結果
+- `python3 books/enterprise-agents/examples/py/ch03/main.py` 離線驗證通過（`32000 -> 2191 chars`，`$0.060900`）。
+- 未略過任何 Codex 有效建議。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

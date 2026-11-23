@@ -1,0 +1,164 @@
+{
+  "chapter": "ch10-browser-and-client-attacks.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "NexusPay JWT（RS256，有效期 `900 s`）",
+      "verdict": "correct",
+      "reasoning": "基準表指定 Access Token 使用 RS256 與 2048 位元 RSA，有效期為 900 秒。900 除以 60 等於 15 分鐘。",
+      "correct_value": "NexusPay Access Token 使用 RS256，有效期為 900 秒（15 分鐘）。"
+    },
+    {
+      "claim": "使用者的 NexusPay JWT（RS256，有效期 `900 s`）存放在 `localStorage.getItem(\"nexus_jwt\")`，典型長度為 `780` 字元（Header `36` + `.` + Payload `398` + `.` + Signature `344` + `2` 個點）。",
+      "verdict": "incorrect",
+      "reasoning": "2048 位元 RSA 簽章佔 256 位元組。255 位元組編碼為 340 個 Base64 字元，剩餘 1 位元組在移除填充後佔 2 字元，因此簽章段為 342 字元。JWT 的三段之間共有兩個句點。基準表也未提供足以判定 Header、Payload 或儲存位置具代表性的資料。",
+      "correct_value": "若假設 Header 為 36 字元、Payload 為 398 字元，則總長為 36 + 398 + 342 + 2 = 778 字元。儲存位置與前兩段長度可列為範例假設。"
+    },
+    {
+      "claim": "RFC 6454 定義了 Origin 的嚴格等價關係：兩個 URL 唯有在 `scheme`、`host` 與 `port` 三者完全一致時才屬於同源（`Same-Origin`）。",
+      "verdict": "imprecise",
+      "reasoning": "四個 HTTP(S) 範例均可由三元組重建。省略 HTTPS 預設埠時仍以 443 比較，另外三列各至少有一項不同。章內後文也列出不透明來源，因此三元組規則的適用範圍應明列。",
+      "correct_value": "對表中的 HTTP(S) URL，比較協定、主機與有效埠號。四列依序為同源、跨來源、跨來源、跨來源。不透明來源須另行判定。"
+    },
+    {
+      "claim": "現代瀏覽器自 Chrome 115 起預設啟用 `Origin-Agent-Cluster` 並棄用 `document.domain` 寫入能力，除非伺服器明確回傳 `Origin-Agent-Cluster: ?0`。",
+      "verdict": "imprecise",
+      "reasoning": "所附史料摘錄沒有 Chrome 115 的發布紀錄、Chrome 的預設行為或退出條件，也沒有其他瀏覽器的對照資料。章內機制說明無法獨立推出版本與部署範圍。",
+      "correct_value": "將版本、預設行為及 `?0` 的適用條件限定到有瀏覽器發布紀錄支持的版本。"
+    },
+    {
+      "claim": "Cookie 的作用域不遵循 Origin，而是遵循「同站（Same-Site）」與路徑模型。",
+      "verdict": "imprecise",
+      "reasoning": "依章內定義，兩個 HTTPS 子網域可以同站，但某一子網域設定的 host-only Cookie 仍只匹配該主機。同站判定與 Cookie 的目的地主機匹配是獨立條件。同一主機的不同埠也不會因埠號而分開 Cookie 作用域。",
+      "correct_value": "Cookie 先依 host-only 或 Domain、Path、Secure 等條件匹配請求，再依 SameSite 與請求情境判定能否附送。一般 Cookie 的作用域不區分埠號。"
+    },
+    {
+      "claim": "如果 `promo` 子網域存在 XSS 或被接管，攻擊者便能以 `document.cookie = \"csrf_token=attacker_val; Domain=.nexuspay.example; Path=/\"` 覆寫主站的 Cookie（Cookie Tossing），讓後續請求帶著攻擊者預知的值送往主站。",
+      "verdict": "imprecise",
+      "reasoning": "依章內的主機與 Domain 區別，父網域 Cookie 和主站 host-only Cookie 可以同名並存。主站收到同名值後採用哪一個，還取決於伺服器的解析方式。因此範例無法單憑同站關係推出覆寫成功。",
+      "correct_value": "子網域可能設定同名的父網域 Cookie。是否取代既有 Cookie，或在兩者並存時影響應用程式，取決於既有 Cookie 的作用域與保護屬性，以及伺服器如何解析同名值。"
+    },
+    {
+      "claim": "瀏覽器直接發送請求至後端，只在收到回應後檢查 `Access-Control-Allow-Origin`（ACAO）是否匹配；若不匹配，JS 讀不到回應內容，但後端副作用已經發生。",
+      "verdict": "imprecise",
+      "reasoning": "直接發送的請求先到伺服器，瀏覽器之後才檢查回應。這個順序證明 CORS 拒絕讀取時無法撤銷已執行的操作，但無法證明伺服器一定接受請求或變更狀態。",
+      "correct_value": "不需預檢的請求可在 CORS 回應檢查前抵達後端。若後端接受請求並變更狀態，瀏覽器之後拒絕分享回應也不會撤銷該變更。"
+    },
+    {
+      "claim": "只要出現自訂標頭（如 `Authorization: Bearer ...`）或 `Content-Type: application/json`，瀏覽器會先發送 `OPTIONS` 請求。",
+      "verdict": "imprecise",
+      "reasoning": "章內前一段已允許安全清單內的自訂標頭，因此觸發條件是方法或標頭超出安全清單。是否每次都送出 OPTIONS 還取決於瀏覽器是否已有適用的預檢快取。",
+      "correct_value": "跨來源 CORS 請求使用非安全清單的方法或標頭時，通常需要預檢許可。已有適用的預檢快取時，可省略新的 OPTIONS 請求。"
+    },
+    {
+      "claim": "這等於宣告任何網站都能帶著受害者的 Cookie 讀取 API 回應。",
+      "verdict": "incorrect",
+      "reasoning": "CORS 回應標頭決定瀏覽器是否向呼叫端分享回應。Cookie 的附送取決於請求的憑證模式、Cookie 屬性及瀏覽器政策。回應端允許憑證的設定無法反過來讓原請求取得 Cookie。同一限制也適用於章內信任 `null` 來源的主張。",
+      "correct_value": "任意反射來源並允許憑證會放寬回應讀取權限。讀取帶有會話身分的敏感回應仍以瀏覽器實際附送適用憑證為前提。"
+    },
+    {
+      "claim": "DOM XSS 的整個污點鏈（Source-to-Sink）完全發生在瀏覽器記憶體中，後端 WAF 甚至可能完全看不到任何異常 Payload。",
+      "verdict": "imprecise",
+      "reasoning": "章內列舉的 URL 查詢字串可以隨 HTTP 請求送至後端，片段則可由瀏覽器自行處理。兩者都可能流入客戶端匯點，因此來源是否經過伺服器與漏洞在哪裡觸發是兩個問題。",
+      "correct_value": "DOM XSS 由客戶端程式將不可信資料送入可觸發腳本執行的匯點。後端能否觀察該資料取決於資料來源與傳輸路徑。"
+    },
+    {
+      "claim": "CSP 值總長 `103 bytes`",
+      "verdict": "incorrect",
+      "reasoning": "顯示的值全為 ASCII。第一個指令佔 18 位元組，第二個指令佔 59 位元組，第三個指令佔 17 位元組，兩處分隔符 `; ` 共佔 4 位元組。合計為 98 位元組。",
+      "correct_value": "標頭值為 98 bytes，未計標頭名稱、冒號後的空格及行尾。"
+    },
+    {
+      "claim": "瀏覽器只比對重導向目標是否符合該條目或其餘允許來源的 `scheme` 與 `host`（忽略路徑部分）。",
+      "verdict": "imprecise",
+      "reasoning": "省略重新導向後的路徑比對，無法推出埠號等其他匹配條件一併失效。依章內同一套匹配原則，自我檢核第 3 題的第一個初始 URL 已不符合允許條目的精確路徑，故可在送出初始請求前被阻擋。第二個初始 URL 則符合 `'self'`，重導後適用忽略路徑的規則。",
+      "correct_value": "初始請求仍須符合來源與路徑條件。重新導向後可省略主機來源條目的路徑比對，但仍須符合協定、主機與埠號等其餘條件。"
+    },
+    {
+      "claim": "遠低於常見瀏覽器與 HTTP 伺服器 8,192 bytes 的 URL 上限，可在 1 次請求內完整帶出 900 s 有效的 JWT。",
+      "verdict": "imprecise",
+      "reasoning": "材料沒有建立瀏覽器、代理與 HTTP 伺服器共用的 URL 上限。900 秒是基準表定義的總有效期，任一時刻的剩餘效期仍取決於權杖的到期時間。",
+      "correct_value": "8,192 bytes 須限定到特定產品、設定與所計量的欄位。900 秒是權杖的簽發效期，剩餘效期須另算。"
+    },
+    {
+      "claim": "只要該 Cookie 在最近 `120 秒` 內剛透過 `Set-Cookie` 寫入（或刷新），跨站的頂層導航 `POST` 表單（`<form method=\"POST\">`）依然會夾帶該 Cookie。",
+      "verdict": "imprecise",
+      "reasoning": "即使採用章內的 120 秒規則，時間仍只是其中一項條件。文中未證明更新既有 Cookie 一律會重置用於判斷的建立時間，所附摘錄也未提供 Chromium 的版本或實作證據。",
+      "correct_value": "限定於實作該例外的瀏覽器、未明確指定 SameSite 且符合建立時間門檻的 Cookie，以及符合條件的跨站頂層導航。刷新是否重設計時須依實際的 Cookie 建立或替換行為判定。"
+    },
+    {
+      "claim": "只要攻擊者控制了同一個 `eTLD+1` 下的任一子網域（例如 `blog.nexuspay.example`），對 `api.nexuspay.example` 發出的請求在瀏覽器眼中屬於 Same-Site，因此就連 `SameSite=Strict` 的 Cookie 都會被完整附上。",
+      "verdict": "incorrect",
+      "reasoning": "依章內定義，協定也參與同站判定。即使判為同站，Cookie 仍須匹配目的地，跨來源 Fetch 也仍受憑證模式約束。",
+      "correct_value": "同協定且共用可註冊網域的子網域在適用情境下可判為同站。`SameSite=Strict` 可允許符合條件的同站請求附送 Cookie，前提是其他 Cookie 條件與請求憑證模式也允許。"
+    },
+    {
+      "claim": "同源同站，完全繞過 CSRF Token 與 `SameSite=Strict`。",
+      "verdict": "incorrect",
+      "reasoning": "同站條件可通過 SameSite 檢查，但 Cookie 的傳送無法證明請求含有有效的 CSRF Token。章內示例也未建立目標端點忽略 Token 或前端會自動附上該端點接受的 Token。",
+      "correct_value": "路徑污染可能改變前端請求的目的端點。若目標端點獨立驗證 CSRF Token，仍須通過該驗證。"
+    },
+    {
+      "claim": "未編碼的 `../` 在瀏覽器解析 URL 時會向上退兩層目錄，將原本無害的 GET 請求導向 `/api/v1/users/me/tokens`。",
+      "verdict": "incorrect",
+      "reasoning": "一個 `..` 只移除前一個路徑段，題示基底保留 `/api/v1/` 的結果本身也只移除了 `reports` 一層。範例的模板字串沒有展示把百分號編碼解碼的步驟，因此無法直接推出尾端 `/summary` 消失。正文的發票範例則明確用了 `URLSearchParams.get()`，兩段程式的輸入處理不能混為一談。",
+      "correct_value": "一個 `..` 向上移除一層，兩個才移除兩層。應先明列插值前的字串及是否已解碼，再判定編碼的井號是路徑資料還是片段分隔符。"
+    },
+    {
+      "claim": "強制使用 `encodeURIComponent()` 編碼斜線與點號（`.` 與 `/`），確保參數無法改變路徑層級。",
+      "verdict": "incorrect",
+      "reasoning": "`encodeURIComponent()` 會編碼斜線，但保留句點。若參數本身是 `.` 或 `..`，編碼後仍可能被當成點路徑段。範例的 `/^[0-9a-f-]{36}$/` 也只規範長度及字元集合，未核對 UUID 的連字號位置。",
+      "correct_value": "依參數實際型別驗證格式，拒絕點路徑段。若要求 UUID，使用能驗證完整 UUID 格式的解析器或格式規則。"
+    },
+    {
+      "claim": "若搜尋有結果時頁面會多渲染 1 個交易明細 iframe，無結果時為 0，攻擊者只需檢查 `win.length === 1` 就能逐字元二分或枚舉受害者的交易紀錄。",
+      "verdict": "imprecise",
+      "reasoning": "依假設，一次觀察可區分該次搜尋是否命中。逐字元推斷需要可測試前綴等查詢語意，二分還需要能將候選集合分割的查詢。章內只提供命中與未命中的畫面差別。",
+      "correct_value": "在 Cookie、視窗參照及頁面行為都符合假設時，計數可揭露單次查詢是否命中。可推斷的紀錄範圍取決於搜尋端點實際支援的條件。"
+    },
+    {
+      "claim": "若目標搜尋端點在有命中結果時需要查詢關聯表（耗時 `180 ms`），未命中時直接返回（耗時 `15 ms`），攻擊者多次取樣平均即可區分結果有無。",
+      "verdict": "imprecise",
+      "reasoning": "兩個假設耗時相差 165 毫秒。瀏覽器量到的是含網路與排程的總耗時。缺少量測變異、樣本數及可觀測條件，無法由 165 毫秒直接推出分類可靠度。同段對快取分割已全面部署的斷言也缺少跨瀏覽器版本資料。",
+      "correct_value": "理想化的後端耗時差為 165 ms。能否從瀏覽器量測可靠區分，取決於觀測條件與延遲分布。快取分割的部署範圍應按瀏覽器與版本限定。"
+    },
+    {
+      "claim": "生成至少 `128 bits`（`16 bytes` Base64）的單次隨機數 `nonce`。",
+      "verdict": "imprecise",
+      "reasoning": "128 位元等於 16 個原始位元組。每 3 位元組編碼為 4 個 Base64 字元，16 位元組編碼後為 24 字元，包含兩個填充字元。另就快取主張而言，重複使用與讓攻擊者讀取快取內容涉及不同條件。",
+      "correct_value": "每次產生 16 bytes 的安全亂數，再以 Base64 編碼為 24 字元（含填充，省略填充時為 22 字元）。若快取會重放帶 nonce 的 HTML，應防止該重用，或在交付回應時重新產生匹配的 nonce。"
+    },
+    {
+      "claim": "瀏覽器會直接拒絕把原始 `string` 傳入 `innerHTML`、`document.write` 或 `eval`，強制要求先經過集中定義的 `TrustedTypePolicy`（內部呼叫 `DOMPurify.sanitize()`）轉型為 `TrustedHTML`。",
+      "verdict": "incorrect",
+      "reasoning": "HTML 匯點與腳本執行匯點接收不同類型。`innerHTML` 和 `document.write` 涉及 `TrustedHTML`，`eval` 一類的腳本匯點涉及 `TrustedScript`，並受適用的 CSP 腳本執行規則約束。指令也不會自行指定淨化函式或集中政策。",
+      "correct_value": "在支援 Trusted Types 的瀏覽器中，依各匯點要求使用相應的可信型別。應用程式須自行定義與限制政策，HTML 政策可使用適當的淨化器。"
+    },
+    {
+      "claim": "凡 `Sec-Fetch-Site === \"cross-site\"` 且非頂層導航（`Sec-Fetch-Mode !== \"navigate\"`），一律拒絕狀態變更或敏感資料讀取。",
+      "verdict": "incorrect",
+      "reasoning": "`navigate` 表示導航模式，子框架載入文件也可屬於導航。條件還會略過真正的跨站頂層導航，包括章內已討論的表單 POST，因此不能獨立從這條規則推出狀態變更受到保護。",
+      "correct_value": "以 `Sec-Fetch-Mode` 搭配 `Sec-Fetch-Dest` 區分請求情境，並讓狀態變更端點獨立執行 CSRF 驗證。"
+    },
+    {
+      "claim": "接收端的第一行必須是嚴格全等比對 `if (event.origin !== \"https://auth.nexuspay.example\") return;`，並對 `event.data` 執行 Schema 驗證。",
+      "verdict": "imprecise",
+      "reasoning": "`event.origin` 驗證來源，Schema 驗證資料形狀。章內描述的 OAuth 流程還有一個已知的彈窗參照。來源相同的其他文件也可能符合前兩項條件，故前兩項無法單獨把訊息綁定到這次登入。",
+      "correct_value": "OAuth 彈窗流程應驗證完整 `targetOrigin`、接收訊息的 `event.origin`、預期的 `event.source`、訊息結構及與當次交易的關聯。"
+    },
+    {
+      "claim": "修補後的 `targetServer` 關鍵段落如下（完整保護三條邊界）。",
+      "verdict": "imprecise",
+      "reasoning": "程式可靜態確認三種防護設定已加入，但範例只展示單一跨站操作。若 COOP 已切斷視窗參照，後面的訊息來源檢查就不會在同次操作被觸發。範例也沒有提供合法 OAuth 彈窗到後台的成功案例。",
+      "correct_value": "範例加入 COOP、來源檢查與 nonce CSP。三項各自生效，以及修補後仍支援合法登入流程，須由分別的防禦測試與正常流程測試支持。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 的四組進階實驗具有章內列出的名稱與 Practitioner／Expert 分級。",
+      "verdict": "imprecise",
+      "reasoning": "所附摘錄只支持學院提供免費教材並涵蓋若干 Web／API 安全主題。它未列出本章四組實驗的逐項名稱、分級或課程位置。",
+      "correct_value": "可將四組內容列為主題式練習。若要標註官方實驗名稱與難度，須有對應的官方目錄摘錄。"
+    }
+  ]
+}

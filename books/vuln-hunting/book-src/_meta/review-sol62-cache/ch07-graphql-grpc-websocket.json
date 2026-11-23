@@ -1,0 +1,206 @@
+{
+  "chapter": "ch07-graphql-grpc-websocket.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "預設巢狀深度上限 `8` 層，以及單次 HTTP Batch 請求上限 `20` 個操作。",
+      "verdict": "correct",
+      "reasoning": "兩個數值及各自的計量單位都與全書基準表一致。",
+      "correct_value": "NexusPay 的預設巢狀深度上限為 8 層，單次 HTTP Batch 上限為 20 個操作。"
+    },
+    {
+      "claim": "GraphQL 把所有讀取與寫入收斂到單一 `POST /graphql` 端點。",
+      "verdict": "incorrect",
+      "reasoning": "章內只建立 NexusPay 報表服務使用此端點的前提，無法把該部署方式推廣為 GraphQL 的協定約束。查詢語言本身沒有固定 HTTP 路徑，也沒有要求所有讀取一律使用 POST。",
+      "correct_value": "NexusPay 將本章討論的 GraphQL 操作集中在 `POST /graphql`。其他部署的端點與支援的 HTTP 方法取決於傳輸層實作。"
+    },
+    {
+      "claim": "執行引擎會以深度優先或廣度優先走訪這棵抽象語法樹（AST），在每個節點呼叫對應的 `resolve()` 函式去查詢資料庫或呼叫下游微服務。",
+      "verdict": "incorrect",
+      "reasoning": "AST 描述欄位選取，實際工作量還取決於父物件的執行結果。一個欄位選取可能因列表而對多個物件求值，也可能只讀取記憶體中的屬性。AST 節點數、欄位求值次數與後端查詢次數是三種不同的量。",
+      "correct_value": "執行器依欄位選取與父物件結果求值，後端呼叫次數取決於 Resolver、批次載入與快取的實作。"
+    },
+    {
+      "claim": "執行樹的「分支度」與「深度」直接決定後端資源消耗，而樹上每一個節點的「邊緣轉換」都是獨立的資料存取點。",
+      "verdict": "imprecise",
+      "reasoning": "分支度與深度可以估計展開規模，實際成本還取決於每項操作的權重、回傳基數和共用工作。章內的 gRPC 流程只顯示請求分派至指定方法，未建立 Protobuf 欄位會自行展開成多層資料流的前提。",
+      "correct_value": "GraphQL 的深度與分支度影響欄位求值規模。gRPC 的資料存取範圍與成本由服務方法的實作決定。"
+    },
+    {
+      "claim": "GraphQL 規範（June 2018 / October 2021）定義了 `__schema` 與 `__type` 內省查詢。",
+      "verdict": "imprecise",
+      "reasoning": "提供的外部證據沒有收錄這兩個版本的規範條文或相應位置，無法在閉卷條件下核定版本歸屬。",
+      "correct_value": "可先稱 `__schema` 與 `__type` 為 GraphQL 內省欄位。兩版規範的歸屬須有對應條文支持。"
+    },
+    {
+      "claim": "就算關閉 Introspection，仍能逐步還原整份隱藏 Schema 與管理員 Mutation。",
+      "verdict": "incorrect",
+      "reasoning": "章內範例只顯示特定型別的驗證錯誤可能揭露候選欄位。部分欄位可被提示，並不能推出所有型別、參數及管理操作都能被完整還原。",
+      "correct_value": "欄位建議可能揭露目前驗證所用 Schema 中的部分名稱。完整還原 Schema 或發現管理操作需要額外證據。"
+    },
+    {
+      "claim": "在 GraphQL 語法中，Alias（別名）允許客戶端在同一個 Operation（單一查詢文件）內多次呼叫同一個欄位並重新命名結果鍵。",
+      "verdict": "imprecise",
+      "reasoning": "別名可讓同一操作中的欄位選取使用不同回應鍵。括號把操作與文件等同，但一份文件可以含多個操作及片段定義。",
+      "correct_value": "別名為同一操作內的欄位選取指定不同回應鍵。文件是承載操作與片段定義的單位。"
+    },
+    {
+      "claim": "「單次 HTTP Batch 請求上限 `20` 個操作」只計算 JSON 陣列裡的頂級物件數量，完全不會限制單一 Operation 內部的 Alias 數量。",
+      "verdict": "correct",
+      "reasoning": "依章內描述，該檢查只讀取外層批次陣列長度。同一個操作內增加欄位選取時，陣列長度維持不變。",
+      "correct_value": "批次上限約束批次項目數。操作內的欄位數與執行成本須由個別規則約束。"
+    },
+    {
+      "claim": "就能以 1 次 HTTP 請求完成 1,000 次 OTP 暴力猜測。",
+      "verdict": "imprecise",
+      "reasoning": "章內只建立 HTTP 請求計數與操作執行次數不同，未證明所有驗證都會實際執行。請求大小、複雜度規則及驗證服務自己的限制均未交代。",
+      "correct_value": "HTTP 閘道的請求計數不足以推定 OTP 實際驗證次數。具體次數需依執行與限流紀錄確認。"
+    },
+    {
+      "claim": "單次請求 Batch / Alias 數量：20（<= 上限 20）",
+      "verdict": "incorrect",
+      "reasoning": "基準上限計量批次操作，範例的 20 計量單一操作內的別名。後文參考請求傳送一個 JSON 物件，沒有傳送批次陣列。",
+      "correct_value": "範例包含 1 個 GraphQL 操作與 20 個別名。20 個操作的 HTTP Batch 上限沒有約束這 20 個別名。"
+    },
+    {
+      "claim": "20 × 4^5 = 20 × 1,024 = 20,480 次 resolver 呼叫；20 × (4 + 16 + 64 + 256 + 1,024) = 20 × 1,364 = 27,280 次",
+      "verdict": "correct",
+      "reasoning": "從每棵子樹的單一根節點開始，每層固定展開 4 個子節點，第五層共有 1,024 個節點，第一至第五層共有 1,364 條父子邊。乘上 20 棵得到原文兩個數值。葉節點呼叫數還採用了每個葉節點恰執行一次 Resolver 的模型。",
+      "correct_value": "抽象模型有 20,480 個葉節點與 27,280 條關聯邊走訪。只有在每個葉節點執行一次 Resolver 的前提下，前者才等於葉節點 Resolver 呼叫數。"
+    },
+    {
+      "claim": "構造 20 個 Alias × 5 層深度的合法規格查詢",
+      "verdict": "imprecise",
+      "reasoning": "章內參考查詢有五層物件或列表欄位，再下一層才選取純量。依欄位深度的定義，可能計為五層或六層，兩者都小於 8。查詢只明列三個列表上限為 4，且未提供 `counterParty` 的欄位型別或實際資料基數，因而無法將五層均四倍的模型套到此查詢。",
+      "correct_value": "範例有五層物件或列表欄位，若計入純量葉欄位則有六層。若頂層與對手方皆為單值、三個列表都滿四筆，20 個別名最多產生 1,280 筆發票結果，實際 Resolver 與資料庫查詢次數另計。"
+    },
+    {
+      "claim": "若每個 Resolver 未搭配 DataLoader 且每次查詢耗時 2 ms，單一連線即可佔用約 40.96 s 總資料庫查詢工作時間，直接逼近 Nginx proxy_read_timeout (30 s) 並拖垮連線池。",
+      "verdict": "incorrect",
+      "reasoning": "20,480 乘以 2 ms 得 40.96 秒，僅涵蓋假定每個葉節點各查詢一次的總量。若 27,280 次走訪各對應一筆查詢，總量為 54.56 秒。查詢耗時相加無法直接得到牆鐘延遲，`proxy_read_timeout` 的比較基準是代理兩次讀取之間的等待時間。連線池是否耗盡還取決於併發與容量。",
+      "correct_value": "葉節點各查詢一次時，累計查詢時間為 40.96 秒。每條走訪邊各查詢一次時則為 54.56 秒。判定 30 秒讀取逾時與連線池耗盡需要獨立的時序及容量資料。"
+    },
+    {
+      "claim": "一旦某條邊的過濾條件漏寫 `tenant_id`，攻擊者只要從一個合法擁有的 `Transaction` 節點出發，就能順著關聯邊橫向讀取其他租戶的帳戶餘額與手續費設定。",
+      "verdict": "imprecise",
+      "reasoning": "缺少單一過濾條件只證明一道控制缺失。章內沒有交代交易能否指向其他租戶、資料層是否另行隔離，以及餘額和手續費欄位是否另外授權。",
+      "correct_value": "當關聯可指向其他租戶、有效授權均未攔截且目標欄位可回傳時，巢狀欄位才會造成跨租戶資料外洩。"
+    },
+    {
+      "claim": "加入 AST 複雜度計算（例如每層 `limit` 乘數相乘，單一 Alias 成本遠超 `500`）後，伺服器在解析 AST 階段即回傳錯誤訊息",
+      "verdict": "imprecise",
+      "reasoning": "明列的三個 `limit: 4` 相乘為 64，沒有提供欄位權重與完整加總規則來證明單一別名遠超 500。成本檢查需要已解析的 AST，錯誤內容、HTTP 狀態碼及是否有其他前置資料庫查詢則取決於整合方式。",
+      "correct_value": "在 AST 解析完成後、欄位執行前檢查成本。須依實際估算器計算整個操作及批次總成本，並用測試確認錯誤回應及報表 Resolver 沒有執行。"
+    },
+    {
+      "claim": "PIN 驗證在第 6 個 Alias 執行時即由內部計數器拒絕。",
+      "verdict": "imprecise",
+      "reasoning": "第六次被拒絕的推論需要同一計數鍵、空白視窗、上限五次，以及每次驗證皆在執行前計數。章內只設定外層閘道每分鐘五次，沒有定義內部計數器是否沿用該門檻與初始狀態。",
+      "correct_value": "若內部限流為同一主體每分鐘五次、視窗起始為零且在驗證前計數，第六次驗證應被拒絕。"
+    },
+    {
+      "claim": "能直接列出所有 Package、Service、RPC 名稱與每個 Request/Response 的精確欄位型別",
+      "verdict": "imprecise",
+      "reasoning": "章內由 Reflection 可達推到整個部署的契約均可枚舉，沒有提供反射服務的註冊與描述元範圍。描述元也不足以重建原始 `.proto` 的所有文字。",
+      "correct_value": "可取得該 Reflection 實例實際公開的服務及描述元，欄位型別與方法範圍以回傳描述元為準。"
+    },
+    {
+      "claim": "卻忘了在 `streamInterceptor` 套用同一套邏輯，導致所有雙向或伺服器端串流 RPC（例如即時帳務對帳流）完全無驗證暴露。",
+      "verdict": "imprecise",
+      "reasoning": "Unary Interceptor 的檢查未覆蓋串流，只能推出串流缺少該檢查。可信閘道、共用驗證層或服務方法仍可能有獨立控制。",
+      "correct_value": "串流 RPC 須有實際涵蓋其執行路徑的驗證與授權。若缺漏且沒有其他有效控制，串流方法才會無驗證暴露。"
+    },
+    {
+      "claim": "如果 gRPC 服務本身沒有驗證閘道與服務之間的 mTLS 身分，或者未在閘道層先強制剝除（strip）外部客戶端傳來的 `x-user-id`，攻擊者就能透過請求偽造（或從相鄰微服務橫向發包）直接冒充任意身分。",
+      "verdict": "imprecise",
+      "reasoning": "任一控制缺失都不足以單獨證明身分可冒充。關鍵是來源是否可達、服務是否採信該來源提供的欄位，以及該欄位是否經可信的身分綁定。閘道可靠覆寫客戶端值時，單純缺少剝除動作也不足以證明破口。",
+      "correct_value": "服務採信可由不受信任來源控制的身分 Metadata 時才會出現冒充風險。服務應驗證有權傳遞身分的呼叫方，閘道應以已驗證身分產生 Metadata。"
+    },
+    {
+      "claim": "任何未傳送的純量欄位都會被解碼為該型別的預設零值",
+      "verdict": "incorrect",
+      "reasoning": "章內後段已引入 `optional` 的存在性追蹤，這使「任何」不成立。即使某個語言的取值介面在欄位缺席時回傳預設值，顯式 presence 仍可區分缺席與明確指定零值。",
+      "correct_value": "採隱式存在語意的 proto3 純量通常無法在訊息 API 中區分缺席與預設值。具顯式存在語意的欄位可追蹤缺席，授權與更新邏輯必須檢查其存在性。"
+    },
+    {
+      "claim": "當客戶端刻意省略 `role` 欄位時，伺服器解碼後就會直接得到 `Role.ADMIN`。",
+      "verdict": "imprecise",
+      "reasoning": "若 `role` 採隱式存在語意且零值為 `ADMIN`，讀值會落到該列舉值。是否形成提權還要看伺服器是否將該請求欄位用於可信授權。",
+      "correct_value": "隱式存在的角色欄位缺席時，預設讀值為編號 0。零值應代表未指定，權限應從可信身分及授權資料取得。"
+    },
+    {
+      "claim": "預設會保留這些未知欄位並在重新序列化時原樣附帶轉發。",
+      "verdict": "imprecise",
+      "reasoning": "章內推論需要代理解碼後仍保留未知欄位並重新輸出同一訊息的二進位表示。重新建構訊息、經 JSON 中轉或主動捨棄未知欄位都會改變結論。保留未知欄位也不足以推定整份線路位元組與順序不變。",
+      "correct_value": "支援未知欄位保留的二進位解碼與重新序列化路徑，可能把未知欄位傳到下游。須確認實際代理的 runtime 與轉換行為，並由下游對敏感欄位獨立授權。"
+    },
+    {
+      "claim": "負 `int32` 在線上會固定編碼成 10 bytes 的 64-bit varint",
+      "verdict": "correct",
+      "reasoning": "負 `int32` 符號延伸後，其 64 位元補數表示最高位為 1。Varint 每個位元組攜帶 7 個資料位元，9 個位元組只能容納 63 位，因此標準編碼需要 10 個位元組。",
+      "correct_value": "負 `int32` 的標準 varint 值本體佔 10 bytes，欄位 tag 另計。"
+    },
+    {
+      "claim": "配合跨語言（例如 Node.js `number` 53-bit 精度 vs Go/Rust `int64`）截斷，就可能觸發負金額轉帳或驗證繞過。",
+      "verdict": "imprecise",
+      "reasoning": "整數超出安全表示範圍時可能發生捨入，捨入本身不會把正數變成負數。章內沒有交代實際的解碼型別、窄化轉型及金額驗證路徑，無法推導所述業務結果。",
+      "correct_value": "跨語言精度流失、窄化與符號重解讀須分別分析。金額是否錯判取決於具體型別、轉換及驗證順序。"
+    },
+    {
+      "claim": "瀏覽器發起跨站 WebSocket 連線時會自動夾帶目標網域 Cookie",
+      "verdict": "imprecise",
+      "reasoning": "自我檢核省略了正文已承認的 SameSite 限制。Cookie 是否送出還取決於目標 URL、Cookie 屬性和瀏覽器政策。因此，缺少 Origin 驗證只建立伺服器端控制缺失，不能證明跨站握手會帶上有效會話。",
+      "correct_value": "瀏覽器只會附帶符合該握手請求資格的 Cookie。Cookie 型跨站 WebSocket 劫持需要瀏覽器送出有效會話，且伺服器接受該來源與握手。"
+    },
+    {
+      "claim": "使用者的 JWT 在 `900 s`（15 分鐘）後過期",
+      "verdict": "correct",
+      "reasoning": "基準表給出 900 秒有效期，900 除以每分鐘 60 秒得到 15 分鐘。",
+      "correct_value": "NexusPay 的 JWT Access Token 有效期為 900 秒，即 15 分鐘。"
+    },
+    {
+      "claim": "那條已建立的 WebSocket 長連線只要沒斷開，在接下來數小時甚至數天內依然保有握手當下的完整權限",
+      "verdict": "imprecise",
+      "reasoning": "JWT 過期或帳戶撤權本身沒有定義 WebSocket 連線的後續行為。若服務只在握手授權且持續使用快照，才可能殘留舊權限。章內也沒有連線存活數小時或數天的量測資料。",
+      "correct_value": "服務若缺少重新授權、有效期限檢查與撤銷機制，既有連線可能保有過期權限，持續時間取決於應用程式與基礎設施的連線生命週期。"
+    },
+    {
+      "claim": "每當收到 `subscribe` 或業務動作訊框，必須重新依據連線綁定的 `session.tenantId` 與最新角色權限驗證目標資源",
+      "verdict": "correct",
+      "reasoning": "握手驗證的是會話身分，後續訊息才指定業務動作與目標。依目前權限檢查該目標，能覆蓋握手當下無法知道的資源存取決策。",
+      "correct_value": "在每個需要授權的業務訊息核對目前身分、動作與目標資源。已建立的推播訂閱也須在撤權時失效或重新授權。"
+    },
+    {
+      "claim": "徹底切斷瀏覽器自動帶入 Cookie 的跨站劫持路徑。",
+      "verdict": "imprecise",
+      "reasoning": "短效與單次消費只限制票證的使用期間及次數。能否消除 Cookie 認證路徑，取決於握手是否強制使用有效票證、是否仍接受 Cookie 作為替代，以及票證核發與消費是否確實綁定會話和租戶。",
+      "correct_value": "若握手強制要求已驗證、綁定會話且原子性單次消費的票證，單靠瀏覽器附帶的 Cookie 無法通過握手。"
+    },
+    {
+      "claim": "在 Redis Pub/Sub 建立一個控制頻道；當使用者登出、權限降級或超過連線最長存活時間時，由伺服器主動發送 Close Frame",
+      "verdict": "imprecise",
+      "reasoning": "發布撤銷事件與連線節點成功接收是兩個條件。章內未指定事件漏收時的補償，連線存活上限也需要獨立的時間檢查。",
+      "correct_value": "連線節點應依撤銷訊號停止推播並關閉連線，同時用服務端期限或持久撤銷狀態限制事件漏收時的舊權限。"
+    },
+    {
+      "claim": "[!] Upgrade succeeded despite untrusted Origin (CSWSH vulnerable)",
+      "verdict": "incorrect",
+      "reasoning": "非瀏覽器客戶端手動提供 Cookie 並收到 Upgrade 成功，最多顯示服務接受該次不受信任的 Origin。這無法證明真實瀏覽器在跨站情境會附帶該 Cookie。腳本將握手與握手後操作包在同一例外處理區，後續逾時也可能被誤報為拒絕連線。",
+      "correct_value": "將成功結果記為伺服器接受該次握手。分別記錄握手、訂閱授權與推播驗證結果，並以瀏覽器的實際 Cookie 行為確認 CSWSH。"
+    },
+    {
+      "claim": "`Origin` 驗證必須解析完整 URL（`new URL(origin).origin === ALLOWED_ORIGIN`）",
+      "verdict": "imprecise",
+      "reasoning": "只抽取 `.origin` 再比對，會忽略輸入中的路徑等部分。若把這個表達式作為完整驗證，便沒有先確認標頭本身是正常序列化的單一來源值。",
+      "correct_value": "先驗證標頭是有效且受支援的單一 Origin 值，再對正規化的 scheme、host 與 port 執行精確白名單比對。"
+    },
+    {
+      "claim": "*Accessing private GraphQL posts* / *Find the hidden GraphQL endpoint*：對照 Introspection 與 Field Suggestion 探測機制。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 PortSwigger 證據只支持 Academy 涵蓋現代 Web 與 API 議題，未收錄這兩個實驗的頁面或題解，因此無法核定名稱和機制的對應。",
+      "correct_value": "保留 Academy 作為外部參考。個別題名及其與 Introspection、Field Suggestion 的對應，須以官方實驗頁面確認。"
+    }
+  ]
+}

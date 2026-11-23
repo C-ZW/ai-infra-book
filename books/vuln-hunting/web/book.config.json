@@ -1,0 +1,102 @@
+{
+  "id": "vuln",
+  "title": "邊界失守",
+  "subtitle": "從後端系統到獨立漏洞挖掘與資安工程",
+  "footer": "內容基準 2026-11（37 章全數完稿＋4 份附錄）",
+  "inline_images": true,
+  "output": "index.html",
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 心智模型與邊界理論",
+      "files": [
+        "../book-src/ch01-trust-boundaries.md",
+        "../book-src/ch02-recon-and-audit-workflow.md",
+        "../book-src/ch03-http-smuggling.md"
+      ]
+    },
+    {
+      "title": "Part II — Web、API、現代協定與後端漏洞",
+      "files": [
+        "../book-src/ch04-authentication-and-sessions.md",
+        "../book-src/ch05-enterprise-sso-and-mfa.md",
+        "../book-src/ch06-authorization-and-multitenancy.md",
+        "../book-src/ch07-graphql-grpc-websocket.md",
+        "../book-src/ch08-injection-families.md",
+        "../book-src/ch09-file-parsers-and-xxe.md",
+        "../book-src/ch10-browser-and-client-attacks.md",
+        "../book-src/ch11-ssrf-parsers-and-cache.md",
+        "../book-src/ch12-race-conditions-and-logic.md",
+        "../book-src/ch13-deserialization-and-nodejs-runtime.md",
+        "../book-src/ch14-waf-and-defense-bypass.md"
+      ]
+    },
+    {
+      "title": "Part III — 密碼學、AI 系統、雲端與供應鏈",
+      "files": [
+        "../book-src/ch15-applied-crypto-flaws.md",
+        "../book-src/ch16-ai-and-agent-security.md",
+        "../book-src/ch17-containers-and-kubernetes.md",
+        "../book-src/ch18-cloud-iam-and-lateral-movement.md",
+        "../book-src/ch19-supply-chain-and-cicd.md"
+      ]
+    },
+    {
+      "title": "Part IV — 逆向、記憶體與 FFI 底層",
+      "files": [
+        "../book-src/ch20-binary-and-memory-layout.md",
+        "../book-src/ch21-reverse-engineering.md",
+        "../book-src/ch22-stack-overflow-and-rop.md",
+        "../book-src/ch23-heap-internals-and-primitives.md",
+        "../book-src/ch24-advanced-heap-and-allocators.md",
+        "../book-src/ch25-rust-unsafe-and-ffi.md",
+        "../book-src/ch26-jit-type-confusion-and-ubercage.md",
+        "../book-src/ch27-linux-kernel-exploitation.md"
+      ]
+    },
+    {
+      "title": "Part V — 自動化挖掘與真實開源 0-day",
+      "files": [
+        "../book-src/ch28-static-and-variant-analysis.md",
+        "../book-src/ch29-fuzzing-engineering.md",
+        "../book-src/ch30-symbolic-execution-and-hybrid-fuzzing.md",
+        "../book-src/ch31-real-world-oss-fuzzing.md",
+        "../book-src/ch32-chaining-ai-and-0day-workflow.md"
+      ]
+    },
+    {
+      "title": "Part VI — AppSec 防禦工程與職涯落地",
+      "files": [
+        "../book-src/ch33-disclosure-and-bug-bounty.md",
+        "../book-src/ch34-appsec-engineering-and-sdlc.md",
+        "../book-src/ch35-nexuspay-red-blue-capstone.md",
+        "../book-src/ch36-security-career-and-interviews.md",
+        "../book-src/ch37-certifications-and-proof-of-work.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-a-lab-index.md",
+        "../book-src/appendix-b-audit-checklists.md",
+        "../book-src/appendix-c-standards-cheatsheet.md",
+        "../book-src/appendix-d-interview-bank.md"
+      ]
+    },
+    {
+      "title": "內部文件（_meta）",
+      "files": [
+        "../book-src/_meta/outline.md",
+        "../book-src/_meta/style-guide.md",
+        "../book-src/_meta/maintenance.md",
+        "../book-src/_meta/landscape-2026-11.md",
+        "../book-src/_meta/terms.md"
+      ]
+    }
+  ]
+}

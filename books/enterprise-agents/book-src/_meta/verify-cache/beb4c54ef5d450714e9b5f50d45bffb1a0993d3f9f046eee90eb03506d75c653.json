@@ -1,0 +1,72 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "全量 Sonnet、無快取的基準成本為 $0.1015/筆、$152,250/月；同 token 量改用全量 Opus 5.5 為 $0.203/筆、$304,500/月",
+      "verdict": "correct",
+      "reasoning": "每回合輸入為 6,000 + 1,200×(k−1)，5 回合合計 30,000 + 12,000 = 42,000 tokens；輸出為 5×350 = 1,750 tokens。Sonnet：42,000×$2/M = $0.084，1,750×$10/M = $0.0175，合計 $0.1015；乘以 1,500,000 筆得 $152,250。Opus 單價剛好是 Sonnet 的 2 倍，所以是 $0.203/筆、$304,500/月。",
+      "correct_value": "$0.1015/筆、$152,250/月；Opus 為 $0.203/筆、$304,500/月"
+    },
+    {
+      "claim": "每回合以 5 分鐘 TTL 重寫 6,000 前綴為 $174,750/月，前綴全命中約為 $66,750/月；30,000 前綴 tokens 全命中只占 71.43%",
+      "verdict": "correct",
+      "reasoning": "重寫：前綴 30,000×$2.50/M = $0.075，其餘輸入 12,000×$2/M = $0.024，輸出 $0.0175，合計 $0.1165/筆，乘以 1.5M 得 $174,750。全命中：30,000×$0.10/M = $0.003，加上 $0.024 與 $0.0175，合計 $0.0445/筆，乘以 1.5M 得 $66,750。占比：30,000/42,000 = 71.43%。",
+      "correct_value": "$174,750/月；$66,750/月；71.43%"
+    },
+    {
+      "claim": "ch08 最終帳本（3,600-token 前綴，30% 離線流量享 Batch 折扣）為 $14,789.55/月；移除 Batch 折扣後為 $17,399.47/月，約 $0.0116/筆",
+      "verdict": "imprecise",
+      "reasoning": "內部算式自洽：17,399.47×(1 − 0.3×0.5) = 17,399.47×0.85 ≈ 14,789.55；17,399.47/1,500,000 ≈ $0.0116；降幅約 88.57%，符合 ≥88% 與 ≤$18,000 的目標。不過 $17,399.47 這個底數，以及 3,600-token 前綴的設定，都要依賴 ch08 的帳本（基準前綴是 6,000），本章與基準都沒有提供，因此無法獨立重算。",
+      "correct_value": "比例關係正確；$17,399.47 的底數須以 ch08 逐項帳本驗證"
+    },
+    {
+      "claim": "平均 0.58 req/s、尖峰 12 req/s（約 20×）；若每單 5 次模型呼叫，持續尖峰約 60 次模型請求/s；8 × 6,000 ms = 48s 超過 18s",
+      "verdict": "correct",
+      "reasoning": "50,000/86,400 ≈ 0.579 req/s；12/0.58 ≈ 20.7，約 20×；12×5 = 60；8×6s = 48s，大於 18s。",
+      "correct_value": "數字正確"
+    },
+    {
+      "claim": "base = 500ms 指數退避，最多重試 3 次，Full Jitter 等待上限合計 3.5s",
+      "verdict": "correct",
+      "reasoning": "三次重試的退避上限依序為 500 + 1,000 + 2,000 = 3,500ms，都低於 max 8,000ms。Full Jitter 的實際等待值落在 0 到這個上限之間。",
+      "correct_value": "3.5s"
+    },
+    {
+      "claim": "場景 B 的 Batch 單份成本 $0.0355、月成本 $213；擴到 2,000 份/日時，Batch 為 $2,130/月，改用即時 API 則為 $4,260/月（單份 $0.0710）",
+      "verdict": "correct",
+      "reasoning": "18K×$1/M = $0.018，3.5K×$5/M = $0.0175，合計 $0.0355；×6,000 份 = $213。標準價：18K×$2/M = $0.036，3.5K×$10/M = $0.035，合計 $0.071。60,000 份×$0.0355 = $2,130；×$0.071 = $4,260。",
+      "correct_value": "數字正確"
+    },
+    {
+      "claim": "場景 C 全 Sonnet 為 $0.088/次、$316.80/月；部分改用 Opus 時為 $316.80×(1+Opus 比例)，全 Opus 為 $633.60/月",
+      "verdict": "correct",
+      "reasoning": "24K×$2/M = $0.048，4K×$10/M = $0.04，合計 $0.088；×3,600 次 = $316.80。設 Opus 比例為 p：316.8(1−p) + 633.6p = 316.8(1+p)；p = 1 時為 $633.60。",
+      "correct_value": "數字正確"
+    },
+    {
+      "claim": "cache_control 要放在最後一個靜態 system block，才能同時快取工具定義與 System Prompt",
+      "verdict": "correct",
+      "reasoning": "source-evidence 指出前綴依 tools → system → messages 的順序從頭精確比對。把斷點放在最後一個 system block，涵蓋範圍就包含所有 tools 與 system；只放在最後一個工具則不含 system。",
+      "correct_value": "正確"
+    },
+    {
+      "claim": "在 Sonnet／Opus 5.5 中，舊版 thinking: { type: \"enabled\", budget_tokens: 2048 } 會觸發 HTTP 400，應改用 adaptive",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 寫的是 Extended Thinking 透過 thinking: { type: \"enabled\", budget_tokens: N } 啟用，新模型「或」可用 adaptive 模式，完全沒提到 budget_tokens 在 5.5 會回 400。這與章節說法有落差，現有證據不支持。",
+      "correct_value": "依現有證據，應改寫為「新模型可改用 adaptive 推理模式」；要宣稱會回 400，須另行查證官方文件"
+    },
+    {
+      "claim": "同時啟用原生 Citations 與 output_config.format 會回 400；Batch 的 custom_id 須符合 ^[a-zA-Z0-9_-]{1,64}$；Batch 有 24 小時 SLA",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只記載 Batch 的 50% 折扣與 output_config.format 的用途，沒有 Citations 衝突、custom_id 格式或 24 小時時限的資料，無法判定。",
+      "correct_value": "unknown；須以官方 Batch 與 Structured Outputs 文件查證"
+    },
+    {
+      "claim": "Messages API MCP Connector 需要可公開連線的 Streamable HTTP + SSE 端點，且不適用 ZDR，並須明確設定 beta 版本",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只指出 Connector 接受遠端 Streamable HTTP（OAuth 2.1／Bearer），透過 mcp_servers 與 mcp_toolset 設定，不支援 local stdio。該證據也說 Streamable HTTP 已取代舊版 HTTP+SSE。「需要 SSE」「不適用 ZDR」「須設 beta 版本」都沒有證據支持。",
+      "correct_value": "依現有證據：Connector 需要遠端 Streamable HTTP 端點（不支援 stdio）；SSE、ZDR 與 beta header 要求須另行查證"
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "chapter": "ch19-supply-chain-and-cicd.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "在 OWASP Top 10:2025 中，「A03: Software Supply Chain Failures」已成為獨立的高風險類別。",
+      "verdict": "correct",
+      "reasoning": "source-evidence 逐項列出 2025 版的類別，並將 Software Supply Chain Failures 列為獨立的 A03，與章文一致。",
+      "correct_value": "OWASP Top 10:2025 的 A03 為 Software Supply Chain Failures。"
+    },
+    {
+      "claim": "`package-lock.json` 與 `Cargo.lock` 則是確保建置可重現的確定性配方。",
+      "verdict": "imprecise",
+      "reasoning": "鎖定檔約束依賴解析結果。即使使用同一份鎖定檔，工具鏈版本、平台、建置環境與非確定性輸入仍可能改變輸出。",
+      "correct_value": "鎖定檔有助於重現依賴解析。若要求產物逐位元相同，還須控制工具鏈、環境及其他建置輸入。"
+    },
+    {
+      "claim": "一旦握有發布或簽章權限的建置節點失守，攻擊者無須尋找應用程式執行期的記憶體破口，就能將惡意程式碼隨建置產物簽章並推送到下游伺服器。",
+      "verdict": "incorrect",
+      "reasoning": "將前提拆成兩種情況即可看出問題。只有發布權時，簽章驗證仍可能阻擋部署。只有簽章權時，也無法據此推出具有推播權。若另有受信任的自動發布流程，則要看該流程會接受哪些產物。",
+      "correct_value": "建置節點失守可能危及產物。惡意產物須能通過下游要求的簽章、發布和部署控制，才會沿正常交付渠道進入生產環境。"
+    },
+    {
+      "claim": "這種攻擊直接繞過應用程式本身的授權、WAF 與輸入驗證，讓所有拉取該產物的微服務與下游客戶在啟動瞬間即遭接管。",
+      "verdict": "incorrect",
+      "reasoning": "拉取產物、接受部署、觸發其中的程式碼，以及取得足以接管服務的權限，分別是不同條件。前一個條件成立無法推出後一個條件。",
+      "correct_value": "遭竄改的產物可能繞過應用層的請求防線。下游影響取決於產物是否獲准部署、程式碼是否執行，以及執行身分的權限。"
+    },
+    {
+      "claim": "Dependency Confusion（依賴混淆）的根源，在於套件管理器對「套件名稱所屬來源」缺乏唯一綁定，且預設優先採用較高的語意化版本號（SemVer）。",
+      "verdict": "incorrect",
+      "reasoning": "依章內的 Cargo 例子，私有依賴若漏寫來源且直接解析到公開登錄檔，只要公開候選符合版本條件，就可能選到錯誤來源。這個過程沒有公私有版本比較，因此偏好較高版本並非必要條件。",
+      "correct_value": "依賴混淆發生於套件名稱未可靠綁定預期來源。偏好較高版本只在公私有候選同時可見，而且解析規則確實偏好較高相容版本時影響結果。"
+    },
+    {
+      "claim": "在 `*`、`>=1.0.0` 下舉 `99.0.0` 為例，並針對 `^1.4.2` 舉 `1.99.0` 為例。",
+      "verdict": "correct",
+      "reasoning": "`99.0.0` 符合列出的兩個無上界範圍。`^1.4.2` 對這組穩定版本的範圍為 `>=1.4.2 <2.0.0`，因此 `1.99.0` 在範圍內，`99.0.0` 在範圍外。",
+      "correct_value": "兩組 SemVer 比較成立，並以對應版本可見且沒有鎖定結果約束為前提。"
+    },
+    {
+      "claim": "將直接執行 `npm install nexuspay-ledger-core` 與使用 `*`、`>=1.0.0` 並列，據此推導會選中 `99.0.0`。",
+      "verdict": "incorrect",
+      "reasoning": "未帶版本的 npm 安裝涉及預設 dist-tag。只知道來源列出 `99.0.0`，無法推出預設標籤也指向該版本。",
+      "correct_value": "無版本參數的安裝應另外確認預設 dist-tag 的指向。顯式版本範圍則按該範圍和可見候選解析。"
+    },
+    {
+      "claim": "若該名稱在 `crates.io` 尚未被註冊，攻擊者搶註後即可在新解析時被拉取。",
+      "verdict": "imprecise",
+      "reasoning": "依章內前提，漏寫來源會使公開登錄檔成為解析來源。名稱相同只決定搜尋哪個套件，能否選中仍取決於該來源是否有符合依賴條件的可用版本。",
+      "correct_value": "若依賴誤指向 `crates.io`，且公開來源存在符合該依賴約束的可用同名版本，新解析才可能選到該版本。"
+    },
+    {
+      "claim": "專案根目錄若遺留測試用的 `[patch.crates-io]` 或不當的 `source.crates-io.replace-with` 設定，可能將特定 crate 的解析重新導向至未受驗證的來源。",
+      "verdict": "imprecise",
+      "reasoning": "兩種設定的作用範圍不同。`[patch]` 為指定套件提供替代候選。`replace-with` 替換整個來源，且預期替代來源提供相同內容。章文未說明既有鎖定與校驗如何約束替換結果。",
+      "correct_value": "分別查核 `[patch]` 的套件與版本候選，以及來源替換的範圍、來源政策和內容校驗。設定指向其他來源，單憑這點無法判定修改過的內容會獲接受。"
+    },
+    {
+      "claim": "Lockfile 驗證的是「記錄在案的雜湊」，不是「來源的合法性」。",
+      "verdict": "correct",
+      "reasoning": "完整性比對只能證明資料符合鎖定檔記載的摘要。當期待值本身缺乏可信來源時，比對成功無法獨立證明發布者身分或來源獲准。",
+      "correct_value": "`integrity` 驗證內容是否符合鎖定紀錄。來源授權和鎖定檔的可信度需要另外驗證。"
+    },
+    {
+      "claim": "「`npm ci` 檢查 `package.json` 與 `package-lock.json` 整體依賴樹的版本範圍相容性——通過（因為該條目與套件的 `version` 欄位仍為相容的 `4.17.21`）。」",
+      "verdict": "imprecise",
+      "reasoning": "單一版本相容僅支持該項版本條件成立。章文另行假定其餘依賴樹相容，實際結果仍受鎖定格式、安裝設定與既有樹結構約束。安裝成功也無法單獨推出生命週期腳本已執行。",
+      "correct_value": "在鎖定資料、依賴樹和安裝設定均一致時，該版本相容條件可以通過。生命週期腳本是否執行，須另看套件內容與腳本政策。"
+    },
+    {
+      "claim": "「`npm install` 與 `npm ci` 預設會以當前使用者的完整權限呼叫 `/bin/sh` 執行 `package.json` 中的生命週期腳本。在 CI Runner 上，這代表攻擊者已取得與建置任務同等的環境變數存取權。」",
+      "verdict": "imprecise",
+      "reasoning": "子行程可見的是執行步驟交給它的環境，權限也受執行身分和隔離設定限制。章文後面的工作流程只有顯式把 Secret 映射到步驟時，才提供該環境變數。`/bin/sh` 也有平台與設定前提。",
+      "correct_value": "生命週期腳本啟用時，以腳本行程實際獲得的權限執行，並可讀取傳入該行程的環境。Shell 依平台及 npm 設定而定。"
+    },
+    {
+      "claim": "「Rust 的 `build.rs` 與 `proc_macro`（衍生巨集）只要進入當次檢查的編譯圖，就會在編譯期被編譯並執行。」",
+      "verdict": "incorrect",
+      "reasoning": "編譯圖描述相依關係，無法保證每項工作在這次執行時重新發生。Cargo 可沿用仍有效的建置腳本結果，程序巨集也須在本次編譯中實際展開才會執行其程式碼。程序巨集的範圍也不限於衍生巨集。",
+      "correct_value": "`cargo check` 可能執行建置腳本及實際展開的程序巨集。是否發生取決於目標、功能、增量建置狀態與巨集使用情形。IDE 背景分析另須標示版本與設定。"
+    },
+    {
+      "claim": "表格把 `pull_request_target` 的執行程式碼來源列為「基礎分支（Base Branch，如 `main`）」。",
+      "verdict": "imprecise",
+      "reasoning": "章文自己的下一段說明，workflow 可顯式取得 PR 的程式碼並交給後續步驟。由此可知基礎分支描述的是事件提供的 workflow 上下文及預設參照，不能視為對所有執行程式碼的保證。",
+      "correct_value": "表格應分別標示 workflow 的事件上下文，以及各步驟實際取得、載入和執行的程式碼來源。"
+    },
+    {
+      "claim": "「`pull_request_target` 並掛載高權限 Secrets」且後續執行受 PR 控制的程式碼時，暴露「該步驟與環境可存取的 Secret」。",
+      "verdict": "correct",
+      "reasoning": "章文將影響限定於執行步驟可存取的 Secret。若不受信任的程式碼在同一權限邊界內執行，便能使用該執行身分已取得的資源。僅將檔案拉入工作區尚未滿足執行條件。",
+      "correct_value": "風險取決於是否執行不受信任的程式碼，以及執行步驟實際可取得的憑證、權限和網路存取。"
+    },
+    {
+      "claim": "「總計：4 + 24 + 17 = 45 bytes（45 個 ASCII 字元）。」以及「固定前綴 10 bytes + 標題 45 bytes + 結尾 1 byte」。",
+      "verdict": "correct",
+      "reasoning": "逐字計數得到三段 4、24、17，合計 45；全部都是 ASCII，因此字元數與位元組數相同。只計展開後單行的文字內容，固定部分再增加 11，得到 56。",
+      "correct_value": "標題為 45 bytes，展開後的單行為 56 bytes，後者未計行尾換行。"
+    },
+    {
+      "claim": "「Runner 發出 HTTP POST，Content-Length = 40 bytes，直接將明文權杖送達攻擊者伺服器。」",
+      "verdict": "imprecise",
+      "reasoning": "測試權杖的 4 字元前綴加 36 個 ASCII 英數字元，確為 40 bytes。這等式只支持模型中的本文長度。送達仍需要工具、網路、TLS 驗證和接收端可用。以 HTTPS 傳輸時，明文是接收端解密後可讀的內容。",
+      "correct_value": "若按模型成功送出且請求本文只有該測試值，本文為 40 bytes。接收端可在解密後讀到該值，閉卷材料不足以確認實際送達。"
+    },
+    {
+      "claim": "「GitHub Runner 僅對 stdout / stderr 日誌串流執行 `::add-mask::` 字串替換為 `***`。」",
+      "verdict": "imprecise",
+      "reasoning": "章文的防禦推理成立的部分，是日誌遮罩與網路出口屬於不同控制點。提供的史料摘錄沒有說明 Runner 的遮罩實作及所有遮罩來源，無法支持將其限縮為 `::add-mask::`。",
+      "correct_value": "日誌遮罩降低值在紀錄中被顯示的風險。網路外傳需由步驟權限、憑證隔離和網路出口控制處理。"
+    },
+    {
+      "claim": "「只要發布補丁版號（例如 `2.4.1` -> `2.4.2`），所有使用 `^2.4.0` 範圍、未鎖定 Lockfile 且重新向該來源解析最高可用版本的下游客戶與微服務，在下次建置時便會選中並載入惡意版本 `2.4.2`。」",
+      "verdict": "incorrect",
+      "reasoning": "`^2.4.0` 涵蓋 `>=2.4.0 <3.0.0` 的穩定版本。`2.4.2` 確在其中，但若有可用的 `2.5.0`，按作者設定的最高可用版本規則就會選 `2.5.0`。建置時選中也無法推出應用程式一定載入。",
+      "correct_value": "只有在 `2.4.2` 是該次解析實際選中的可用候選時，下游才會安裝該版本。是否載入取決於建置和執行路徑。"
+    },
+    {
+      "claim": "「整個竊取流程在單一自動化 job 啟動後的數秒內即可走完，往往早於人工審核介入與關閉 PR 的時間。」",
+      "verdict": "imprecise",
+      "reasoning": "基準表沒有這項延遲或人工處理時間的數據。章文也沒有提供實測、樣本數或執行條件，無法推出「數秒內」或「往往」的頻率。",
+      "correct_value": "自動化步驟可能早於人工審查執行。完成時間和發生頻率須以指定環境的量測支持。"
+    },
+    {
+      "claim": "「若步驟 A 允許不可信輸入寫入 `$GITHUB_ENV` 或 `$GITHUB_PATH`，後續步驟 B 的 `PATH` 搜尋順序就會被劫持。」",
+      "verdict": "incorrect",
+      "reasoning": "從章文例子只能推出有效的路徑變更會影響命令搜尋。寫入任意環境值未必更動 `PATH`，路徑順序有變也未必會改變後續步驟實際執行的檔案。",
+      "correct_value": "`GITHUB_ENV` 和 `GITHUB_PATH` 可影響同一 job 的後續步驟。只有成功更改搜尋路徑，且後續以受影響的搜尋方式查找命令時，才會改變命令解析結果。"
+    },
+    {
+      "claim": "「低權限 job 在 Runner 上啟動一個背景 daemon 行程，持續監控……等待高權限部署 job 啟動時讀取其記憶體或環境變數。」",
+      "verdict": "imprecise",
+      "reasoning": "重用主機可能保留跨 job 狀態，但列出的結果還要求背景行程能存活、後續 job 排到同一主機，而且作業系統允許該行程讀取後續 job 的資料。",
+      "correct_value": "重用且隔離不足的 Runner 可能發生跨 job 污染。跨行程讀取取決於清理機制、排程、執行身分與作業系統隔離。"
+    },
+    {
+      "claim": "「`job_workflow_ref`：實際執行該 job 的 workflow 檔案路徑與版本。」",
+      "verdict": "imprecise",
+      "reasoning": "章文後段用這個欄位綁定可重用發布 workflow，但前段的定義未區分呼叫端與被呼叫端，也未限定宣告何時存在。提供的證據沒有完整的 claim 欄位表可供核對。",
+      "correct_value": "在可重用 workflow 情境，應明確標示 `job_workflow_ref` 用於識別被呼叫的 workflow 參照。設定信任條件前，應確認呼叫端與被呼叫端各自的宣告及欄位可用性。"
+    },
+    {
+      "claim": "「只要 `nexuspay/core` 倉庫裡任何分支、任何 tag 或 PR 觸發的 workflow 具備 `id-token: write` 權限（且滿足 `aud` 等其餘信任條件），其簽發的 OIDC JWT 都能通過這項 `sub` 檢查並換取生產環境的部署角色。」",
+      "verdict": "imprecise",
+      "reasoning": "字串規則可直接推出，實際 `sub` 以 `repo:nexuspay/core:` 開頭時便符合所示模式。事件類型與 `id-token: write` 本身無法決定每張權杖的 subject，尤其本章也提出可以自訂 subject。角色核發還須滿足其餘信任條件。",
+      "correct_value": "萬用字元涵蓋所有實際符合該前綴的 subject。應按有效 subject 格式與權杖核發條件評估受影響範圍，並對預期的發布身分使用精確比對。"
+    },
+    {
+      "claim": "「正確的邊界必須在 Trust Policy 中精確鎖定 `aud` 與特定 `sub`……並結合 GitHub Environment 的『Required Reviewers』人工核准閘門。」",
+      "verdict": "imprecise",
+      "reasoning": "精確 subject 比對只約束該 subject 表示的身分。分支 subject 不會憑自身啟用環境審核。環境 subject 若要搭配人工核准，也要由實際使用的 GitHub Environment 設定保護規則。",
+      "correct_value": "按發布政策精確驗證受眾與 subject。若政策要求人工核准，另須確認發布 job 確實受已設定核准規則的環境約束。"
+    },
+    {
+      "claim": "「SLSA Build L1 僅要求產出建置來源中繼資料（Provenance）；L2 要求由託管建置平台產生並簽章 Provenance；SLSA Build L3 則強制要求『建置執行環境與 Provenance 簽發控制平面隔離』。」",
+      "verdict": "imprecise",
+      "reasoning": "章文對 L3 的推導支持一項重要控制，即使用者可控的建置步驟不能自行簽發可信 provenance。這項控制本身無法推出整個等級已達成。所附證據也沒有 SLSA v1.0 的規範摘錄可供逐條核對。",
+      "correct_value": "將這三句標為各等級的重點摘要。若用於合規判定，L3 應一併核對建置之間的隔離，以及 provenance 不可由建置步驟偽造的要求。"
+    },
+    {
+      "claim": "「Fulcio……核發一張短效（預設有效期如 10 分鐘）的 X.509 程式碼簽章憑證。」",
+      "verdict": "imprecise",
+      "reasoning": "基準表的 900 秒是 NexusPay 的 JWT Access Token 規格，與 Fulcio 憑證效期沒有推導關係。source-evidence 也未提供 Fulcio 版本、部署設定或效期紀錄。",
+      "correct_value": "Fulcio 核發短效簽章憑證。若需寫出 10 分鐘，應補上適用部署或版本的憑證效期證據。"
+    },
+    {
+      "claim": "「Rekor（基於 Merkle Tree 的不可竄改透明日誌）……簽章完成後，記憶體中的臨時私鑰立即銷毀。」",
+      "verdict": "imprecise",
+      "reasoning": "Merkle Tree 及對照可信檢查點的驗證可以揭露與既有日誌承諾不一致的變更，無法使儲存媒體本身無法被改寫。採用臨時金鑰也無法推出記憶體會在簽章後立即安全清零。",
+      "correct_value": "將 Rekor 描述為可驗證的附加式透明日誌。將無金鑰流程的私鑰描述為短期使用，只有在具備實作證據時才主張立即清除記憶體。"
+    },
+    {
+      "claim": "「可在分鐘級內從已驗證的 SBOM 庫反查所有含該元件的服務；搭配 VEX 文件標註『該元件雖存在於映像檔內，但受影響函式未被呼叫』，能大幅降低無效告警噪音。」",
+      "verdict": "imprecise",
+      "reasoning": "依章內前提，SBOM 的完整度取決於產生工具的涵蓋範圍。簽章綁定只能驗證該紀錄與產物的關係，無法補出漏列元件或服務。VEX 的影響判定也須對應到指定產品及部署條件。材料未量測查詢時間或降噪幅度。",
+      "correct_value": "可從已建立索引、涵蓋在役產物的 SBOM 反查已知受影響服務。VEX 可記錄有證據的產品影響判定。查詢速度和降噪效果須以實際涵蓋範圍與量測支持。"
+    },
+    {
+      "claim": "「由於 `bash` 在參數展開階段對雙引號內的變數 `\"$PR_TITLE\"` 不會再做二次語法分詞（Word Splitting）與命令替換……也只會被當作純文字資料列印出來，資料平面與控制平面從此徹底分離。」",
+      "verdict": "imprecise",
+      "reasoning": "就這一行命令而言，固定格式字串決定 `printf` 的格式，雙引號令變數值作為單一引數傳入，且變數值不會重新被 Bash 當成程式碼解析。這項推導的範圍只涵蓋該命令的 Shell 解析。",
+      "correct_value": "固定 `printf` 格式並以雙引號傳入環境變數，可封住此處從 PR 標題進入 Shell 程式碼的路徑。輸出或變數若交給其他解析器，須按該處的語境另行評估。"
+    },
+    {
+      "claim": "「使用 40 字元 Commit SHA 鎖定第三方 Action（防止上游維護者帳號遭劫持後移動 `@v4` tag）。」",
+      "verdict": "correct",
+      "reasoning": "兩個示例引用值各可分為五組 8 個十六進位字元，共 40 個。直接指定提交時，移動標籤不會改變該引用。字元數只能驗證格式，無法證明指定提交存在或內容可信。",
+      "correct_value": "兩個示例都符合 40 字元十六進位提交識別碼的格式。固定提交可避免可變 tag 改指其他提交，仍須驗證提交來源與內容。"
+    },
+    {
+      "claim": "任務一參考解答要驗證「`--ignore-scripts` 與 `.npmrc` Scope 綁定如何阻斷此路徑」。",
+      "verdict": "incorrect",
+      "reasoning": "前後兩次都直接指定相同的本機 tarball，而且套件名稱沒有 Scope。沒有任何安裝步驟使用 Scope 路由，也沒有兩個登錄來源提供候選。因此即使預期結果出現，也只能證明腳本停用效果。",
+      "correct_value": "現有實驗驗證直接安裝本機套件時的生命週期腳本行為，以及停用腳本後的差異。範圍綁定與跨來源版本選擇仍未驗證。"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "方案 A 靜態 RAG：每日額外輸入 = 50,000 × 6,500 = 325.0 MTok/天，每日 $650.00，每月 $19,500.00",
+      "verdict": "correct",
+      "reasoning": "50,000 × 6,500 = 325,000,000 tokens，也就是 325 MTok。依基準，Sonnet 5.5 的輸入價是 $2.00/MTok，所以 325 × 2 = $650/天，乘以 30 天是 $19,500/月。",
+      "correct_value": "$650.00/天；$19,500.00/月"
+    },
+    {
+      "claim": "方案 B Agentic RAG：17,500 筆 × 1,800 = 31.5 MTok/天，每日 $63.00，每月 $1,890.00",
+      "verdict": "correct",
+      "reasoning": "50,000 × 35% = 17,500 筆。17,500 × 1,800 = 31,500,000 tokens，也就是 31.5 MTok。31.5 × $2 = $63/天，乘以 30 天是 $1,890/月。",
+      "correct_value": "$63.00/天；$1,890.00/月"
+    },
+    {
+      "claim": "每日節省 $587.00、每月節省 $17,610.00，檢索片段輸入費降幅 90.3%",
+      "verdict": "correct",
+      "reasoning": "650 − 63 = 587；19,500 − 1,890 = 17,610；17,610 / 19,500 = 0.90308，約 90.3%。章節也已把口徑限定在「單次未快取的檢索片段輸入費」。",
+      "correct_value": "$587/天；$17,610/月；90.3%"
+    },
+    {
+      "claim": "範例輸出：Retrieved chunks input cost 0.003600；Single Agentic RAG turn cost incl. 350 output tokens 0.007100",
+      "verdict": "imprecise",
+      "reasoning": "1,800 × $2/MTok = $0.0036；350 × $10/MTok = $0.0035，合計 $0.0071，數字算得對。但「Single Agentic RAG turn cost」只算了檢索片段輸入和輸出，沒有包含 6,000 tokens 前綴（快取讀取時為 6,000 × $0.10/MTok = $0.0006）、每回合 1,200 tokens 新增輸入，也沒有包含歷史重送。標籤容易被讀成整個回合的完整成本。",
+      "correct_value": "建議改標為「檢索片段輸入 + 350 輸出 tokens 成本 $0.0071（不含前綴、其他輸入與歷史）」"
+    },
+    {
+      "claim": "自我檢核解答 1：前綴每多 1,000 tokens，在 5 回合未快取時單筆多花 $0.01，每日 50,000 筆就是 $500",
+      "verdict": "correct",
+      "reasoning": "1,000 × 5 = 5,000 tokens；5,000 × $2/MTok = $0.01；$0.01 × 50,000 = $500/天。",
+      "correct_value": "$0.01/筆；$500/天"
+    },
+    {
+      "claim": "快取斷點只放在最後一個工具時，只涵蓋約 3,600 tokens；放在最後一個穩定的 system 區塊，才能涵蓋 6,000 tokens；5 分鐘 TTL 讀取為基礎輸入單價的 0.05×",
+      "verdict": "correct",
+      "reasoning": "根據 source-evidence，快取前綴順序是 tools → system → messages。工具 schema 是 3,600 tokens，排在前面，所以斷點放在最後一個工具只會快取 3,600 tokens。System Prompt 2,400 tokens 加上工具 3,600 tokens 是 6,000 tokens。Sonnet 5.5 的讀取倍率是 0.05×，而且讀取倍率與 TTL 無關。",
+      "correct_value": "3,600 / 6,000 tokens；0.05×（Sonnet/Opus 5.5）"
+    },
+    {
+      "claim": "單次檢索 timeout 800 ms、max_search_retries = 2，串行檢索最多耗時 2.4 s",
+      "verdict": "correct",
+      "reasoning": "首次檢索 1 次加上改寫重試 2 次，共 3 次；3 × 800 ms = 2,400 ms。2.4 s 已接近 2.5 s 的分流 SLO，章節把它歸到 18 s 的多步處置 SLO，判斷合理。",
+      "correct_value": "2.4 s"
+    },
+    {
+      "claim": "529 採指數退避加 Full Jitter（基底 500 ms、上限 16,000 ms、最多重試 4 次），上界合計至多 7.5 s",
+      "verdict": "correct",
+      "reasoning": "4 次重試的等待上限依序是 500、1,000、2,000、4,000 ms，都還沒碰到 16,000 ms 的上限，加總是 7,500 ms。",
+      "correct_value": "7.5 s（上限 16,000 ms 在 4 次重試內不會觸及）"
+    },
+    {
+      "claim": "平均 0.58 req/s、尖峰 12 req/s 約 20×",
+      "verdict": "correct",
+      "reasoning": "50,000 / 86,400 ≈ 0.579 req/s；12 / 0.579 ≈ 20.7×，與基準一致。",
+      "correct_value": "≈0.58 req/s；約 20.7×"
+    },
+    {
+      "claim": "Redis 快取 TTL 設為 86,400 秒（24 小時）",
+      "verdict": "correct",
+      "reasoning": "24 × 3,600 = 86,400 秒。",
+      "correct_value": "86,400 s = 24 h"
+    },
+    {
+      "claim": "RRF（Cormack et al., 2009，k = 60）；延伸閱讀稱其為「無參數排名融合演算法」",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 沒有這項文獻出處與年份，閉卷無法查證，所以標為 imprecise。另外，章內明寫了常數 k = 60，又說 RRF「無參數」，前後不一致。比較準確的說法是：RRF 不需要訓練或分數正規化，但有一個平滑常數 k。",
+      "correct_value": "改為「只需單一平滑常數 k（常用 60）、無須分數正規化的排名融合方法」，文獻出處須另行查核"
+    },
+    {
+      "claim": "Anthropic 原生 Citations 不可與 output_config.format 同時使用，否則回傳 400；stop_reason 包含 model_context_window_exceeded",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只記錄了 output_config.format 與 strict: true，沒有提到 Citations 與結構化輸出不相容、會回傳 400，也沒有列出 model_context_window_exceeded 這個 stop_reason。依提供的證據無法判定。",
+      "correct_value": "須依官方 API 文件查證後再保留，或加註「依撰寫時文件」"
+    },
+    {
+      "claim": "pgvector 近似索引（HNSW/IVFFlat）預設可能先掃描候選再套用 WHERE 過濾，導致有效結果少於 K",
+      "verdict": "imprecise",
+      "reasoning": "這項主張在技術上合理，但提供的基準資料與 source-evidence 都沒有涵蓋 pgvector 的行為，閉卷無法確認。",
+      "correct_value": "須對照 pgvector 官方文件確認，包括 iterative scan 選項的版本需求"
+    }
+  ]
+}

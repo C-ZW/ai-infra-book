@@ -1,0 +1,170 @@
+{
+  "chapter": "ch03-http-smuggling.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "NexusPay 的 `proxy_read_timeout = 30 s`，Node.js `keepAliveTimeout = 5 s`（`5000 ms`）。",
+      "verdict": "correct",
+      "reasoning": "兩個數值都與基準表相符。每秒為 1,000 毫秒，因此 5 秒等於 5,000 毫秒。基準表給的是 NexusPay 的配置值。",
+      "correct_value": "Nginx 上游讀取逾時為 30 秒，Node.js Keep-Alive 設定值為 5 秒。"
+    },
+    {
+      "claim": "前端代理讀取 Client A 的完整請求（標頭 + Body），完整寫入後端連線池的某條空閒 TCP socket。",
+      "verdict": "imprecise",
+      "reasoning": "前後端對請求定界一致，並不要求代理先收完整個主體。章內也明確區分完整緩衝與邊收邊轉。基準表未指定 NexusPay 的請求緩衝配置。",
+      "correct_value": "採完整緩衝的代理可先收完整請求再轉送，採串流轉發的代理則可分段轉送。兩種模式都要求前後端對訊息邊界的解讀一致。"
+    },
+    {
+      "claim": "只要兩邊的 HTTP 解析器對訊息邊界長度出現分歧，且同一條上游連線未關閉並繼續複用於承載其他使用者的請求，就會發生兩類跨請求錯位。",
+      "verdict": "imprecise",
+      "reasoning": "從同一位元組流的兩個讀取位置推導，後端切得較早會剩下資料，切得較晚則可能等待更多資料。是否真的波及其他使用者，還取決於錯位狀態是否持續，以及後續請求是否到達同一上游連線。",
+      "correct_value": "解析邊界分歧會使前後端對位元組的歸屬產生不同判斷。只有後續流量進入仍處於錯位狀態的上游連線，才可能造成跨請求或跨使用者影響。"
+    },
+    {
+      "claim": "長度計算的誤差會跨越請求邊界，導致整條 TCP 位元組串流的讀取指標（stream cursor）永久錯位，把攻擊者構造的請求前綴永久嫁接到下一個無辜使用者的請求頭上。",
+      "verdict": "incorrect",
+      "reasoning": "TCP 傳送的是同一串位元組，分歧發生在 HTTP 解析器對位元組的歸屬判斷。若解析錯誤後關閉連線，該連線就不再承載後續請求。章內也把持續複用列為跨請求影響的前提，因此無法推出永久錯位。",
+      "correct_value": "前後端可能暫時對後續位元組的訊息歸屬失去同步。影響範圍取決於後續解析、錯誤處理與連線是否繼續複用。"
+    },
+    {
+      "claim": "將下一個無辜使用者的合法請求拼接到走私封包後方，直接截獲其 `Authorization` 標頭或會話憑證。",
+      "verdict": "imprecise",
+      "reasoning": "解析錯位能改變憑證欄位被歸入哪一筆請求。攻擊者能否讀取憑證是另一個推論，需要證明應用程式、儲存位置或回應流程會把資料暴露給攻擊者。章內展示的管理端點回應也無法證明瀏覽者的憑證已被讀取。",
+      "correct_value": "後續請求的憑證欄位可能被歸入非預期請求。憑證外洩另需有攻擊者可讀取的資料暴露路徑。"
+    },
+    {
+      "claim": "走私取得的高權限 JWT 憑證，可立即串接帳號全面接管與跨租戶特權操作。",
+      "verdict": "imprecise",
+      "reasoning": "基準表只給定簽章規格與有效期，無法推出帳號控制或跨租戶權限。要成立仍需知道權杖是否可重放、是否仍有效，以及服務採用的受眾、權限範圍與租戶檢查。",
+      "correct_value": "取得仍有效且可重放的存取權杖，可能使未授權者執行該權杖所允許的操作。帳號接管及跨租戶影響需另行驗證。"
+    },
+    {
+      "claim": "在無區塊擴充與無尾端欄位的最簡形式下，終止區塊連同結尾空行共 5 bytes。",
+      "verdict": "correct",
+      "reasoning": "依章內線路格式，零長度標記佔一個 ASCII 位元組，跟隨的行尾與最後空行各佔兩個位元組，合計 1 + 2 + 2 = 5。",
+      "correct_value": "5 bytes，適用於沒有區塊擴充與尾端欄位的最簡結尾。"
+    },
+    {
+      "claim": "當一個請求同時出現這兩個標頭時，RFC 9112 §6.3 明確規定：`Transfer-Encoding` 必須覆蓋（override）`Content-Length`。",
+      "verdict": "correct",
+      "reasoning": "按章內給定的定界優先序，若接收端接受並繼續處理同時帶兩種欄位的訊息，主體長度依傳輸編碼解讀。這項優先序與章內提出的直接拒收策略相容，因為優先序規定的是繼續處理時如何定界。",
+      "correct_value": "可拒收同帶兩種定界欄位的請求。若接受並繼續處理，依 `Transfer-Encoding` 定界。進行轉送的中介應先移除收到的 `Content-Length`。"
+    },
+    {
+      "claim": "chunked 格式要求在區塊資料後方必須跟著 `\\r\\n0\\r\\n\\r\\n`。",
+      "verdict": "incorrect",
+      "reasoning": "按本章先前定義，非終止區塊的資料後先接行尾，再讀下一個區塊的大小。中間區塊後可接另一個非零區塊。最後的零長度區塊之後也可能有尾端欄位。",
+      "correct_value": "每個非零區塊的資料後有 CRLF。只有最後一個非零區塊之後立即接無擴充的零長度區塊，且沒有尾端欄位時，才會出現所列的完整收尾。"
+    },
+    {
+      "claim": "TE.CL 幾乎總是以一個帶有足夠大 `Content-Length` 的 `POST` 作為走私前綴。",
+      "verdict": "imprecise",
+      "reasoning": "章內只分析一種特定訊息結構。單一例子可以說明該結構如何被解析，無法支持「幾乎總是」這項使用頻率的主張。提供的外部證據也未列出案例樣本或統計。",
+      "correct_value": "章內示例使用 POST。材料不足以判定其他案例採用 POST 的比例。"
+    },
+    {
+      "claim": "CVE-2022-32213（影響 Node.js `< 14.20.1`、`< 16.17.1`、`< 18.9.1`）中，`llhttp` 對模糊或折行（`obs-fold`）的 `Transfer-Encoding` 標頭驗證不嚴。",
+      "verdict": "imprecise",
+      "reasoning": "基準表沒有 CVE、版本分支或修補資料。提供的外部證據也未附 Node.js 安全公告或修補紀錄，無法核對識別碼、折行描述及三個版本界線是否屬於同一項漏洞。",
+      "correct_value": "待原始安全公告逐分支核對受影響範圍、首個修補版與缺陷描述後，再刊出具體版本號和成因。"
+    },
+    {
+      "claim": "CVE-2023-30589（影響 Node.js `< 16.20.1`、`< 18.16.1`、`< 20.3.1`）則因 `llhttp` 接受單獨的 `\\r`（CR without LF）作為標頭分隔符。",
+      "verdict": "imprecise",
+      "reasoning": "章內的解析模型可以說明不同分隔規則可能造成邊界分歧。模型本身無法確認該行為與 CVE 識別碼、受影響版本或修補版本的對應，提供的外部證據亦未附公告。",
+      "correct_value": "以 Node.js 原始公告及各分支修補紀錄確認缺陷描述和首個修補版。"
+    },
+    {
+      "claim": "若開發者為了相容舊系統而開啟 Node.js 的 `insecureHTTPParser: true`（或 `--insecure-http-parser`），便會主動關閉 `llhttp` 的嚴格 RFC 檢查，讓雙標頭與畸形標頭重新被靜默吞下。",
+      "verdict": "imprecise",
+      "reasoning": "本章後文承認 Node.js 22 即使啟用該選項，仍保留部分雙標頭保護。提供的證據沒有各版本的行為矩陣，因此無法從選項名稱推出所有相關檢查均失效。",
+      "correct_value": "該選項會放寬部分 HTTP 解析檢查。具體接受與拒收行為須按 Node.js 及 `llhttp` 版本查證。"
+    },
+    {
+      "claim": "HTTP/2 的 `DATA` frame 標頭帶有 24-bit `Length` 欄位，計算實際主體長度時須扣除填補相關位元組。",
+      "verdict": "correct",
+      "reasoning": "依章內定義，frame 的 `Length` 表示整個 frame payload 的長度。帶填補的 DATA payload 同時包含實際資料與填補相關欄位，只有實際資料計入 HTTP 訊息主體。",
+      "correct_value": "實際主體長度為各 DATA frame 的資料位元組數總和。帶填補的 frame 須扣除 Pad Length 欄位及 Padding。"
+    },
+    {
+      "claim": "自我檢核 (a) 攜帶 `content-length: 12` 但 `DATA` frame 總長為 `30` bytes，必須判為 malformed。",
+      "verdict": "imprecise",
+      "reasoning": "題目只寫「frame 總長」，未定義 30 bytes 是否已扣除填補相關位元組。依章內定義，如果 30 bytes 是實際資料長度，則 30 與 12 不相等。若 30 bytes 含填補，則仍可能只有 12 bytes 的實際資料。",
+      "correct_value": "若 DATA 的實際資料合計 30 bytes，必須判為 malformed。若只知道 frame 或 frame payload 總長，須先釐清實際資料長度。"
+    },
+    {
+      "claim": "自我檢核 (b) 攜帶 `te: trailers` 且 `content-length: 0`（無 `DATA` frame）的請求，合法可通過。",
+      "verdict": "correct",
+      "reasoning": "按章內列出的兩條規則，`te: trailers` 符合 HTTP/2 對 `TE` 欄位的例外。沒有 DATA frame 時，資料長度總和為 0，與 `content-length: 0` 一致。",
+      "correct_value": "在題目給定的欄位與長度條件下，兩項檢查皆可通過。完整請求仍須符合其他 HTTP/2 規則。"
+    },
+    {
+      "claim": "自我檢核 (c) 必須拒絕，因為 RFC 9113 §8.2.1 禁止標頭值包含 CR 與 LF。",
+      "verdict": "correct",
+      "reasoning": "按章內列出的欄位有效性規則，只要解碼後的值含有 CR 或 LF，就已違反規則。HPACK 能表示該字串，與解碼後欄位是否有效是兩項獨立判斷。",
+      "correct_value": "代理須將該請求視為 malformed，並在轉譯或轉送前拒絕。"
+    },
+    {
+      "claim": "同時收到 `CL` 與 `TE`、重複 `CL`、`TE` 非 `chunked` 結尾、或 H2 含 `\\r`/`\\n`/`\\0` 與違規 `content-length` 時，一律回 `400`/`PROTOCOL_ERROR` 並關閉連線。",
+      "verdict": "incorrect",
+      "reasoning": "章內已指出 HTTP/2 可在同一連線上多工多條串流。HTTP/2 的 malformed 請求須按該串流的 `PROTOCOL_ERROR` 處理，不能據此推定整條連線都須關閉。此外，拒收重複 `Content-Length` 可作為部署端的嚴格策略，應與規格本身的處理要求分開敘述。",
+      "correct_value": "分協定列明處理方式。對所列 HTTP/2 malformed 請求，使用串流層級的 `PROTOCOL_ERROR` 並停止轉送。HTTP/1.1 則按個別定界錯誤和部署策略決定回應及是否關閉連線。"
+    },
+    {
+      "claim": "當後端被不完整的 chunked 或短缺 `Content-Length` 卡住不回傳標頭時，將在 Nginx `proxy_read_timeout = 30 s` 後觸發閘道超時（`504 Gateway Timeout`）。",
+      "verdict": "imprecise",
+      "reasoning": "基準表只確立讀取逾時設定為 30 秒。章內前文另有「代理已轉發請求」及「若無其他逾時先觸發」兩項必要條件。若正在等待的是客戶端補送資料，或其他錯誤及逾時先發生，就不能從這個設定推出觀察結果。",
+      "correct_value": "若 Nginx 已進入等待上游讀取的階段，連續 30 秒沒有上游讀取進展，且沒有其他事件先結束請求，才預期由這個設定觸發逾時。尚未送出回應且其他配置未改變處理結果時，可能回傳 504。"
+    },
+    {
+      "claim": "非破壞性偵測：時間差探測法（Timing-Based Detection）。",
+      "verdict": "imprecise",
+      "reasoning": "章內已承認串流轉發可能將未完整的資料送入上游連線，也說明前端等待客戶端補資料時會出現延遲。由這兩點可知，延遲與特定解析分歧之間沒有唯一對應，探測也可能影響共享上游。",
+      "correct_value": "時間差可作為待查訊號。線上盤查可先比對代理與後端日誌、逾時來源及解析設定。主動驗證應在流量隔離的環境進行。"
+    },
+    {
+      "claim": "在高併發尖峰下，NexusPay 的同一條上游 socket 在幾毫秒內就會被連續複用。",
+      "verdict": "imprecise",
+      "reasoning": "基準表的 2,000 req/s 是系統整體的尖峰流量，無法推出單條連線的請求間隔。要估算該間隔，還需要知道實際池大小、上游服務時間及連線分配方式。",
+      "correct_value": "同一條上游連線可能在閒置逾時前被再次使用。實際複用間隔需由連線池配置和觀測資料判定。"
+    },
+    {
+      "claim": "無法靠縮短 `keepAliveTimeout` 消滅走私。",
+      "verdict": "correct",
+      "reasoning": "縮短閒置計時器只會縮短連線等待再次使用的時間。只要兩筆請求仍可在計時器到期前經過同一條連線，原有的定界分歧就仍可能影響後續請求。",
+      "correct_value": "縮短閒置逾時只能改變連線複用的機會，無法修正定界分歧。每筆外部請求使用專用上游連線，可阻斷不同外部請求經由同一上游連線相互污染。"
+    },
+    {
+      "claim": "前端代理與後端之間全面啟用 HTTP/2，可根除純文字長度與區塊切分歧義（`CL.TE`、`TE.CL`、`TE.TE`、`H2.*` 降級）。",
+      "verdict": "correct",
+      "reasoning": "按章內模型，所列前三類依賴 HTTP/1.1 文字主體定界，所列降級類型依賴轉譯成 HTTP/1.1。若相關路徑各段均使用合規 HTTP/2，且無任何中間降級，這些特定機制所需的前提即不存在。",
+      "correct_value": "無 HTTP/1.1 中間段的合規 HTTP/2 路徑，可排除表中列出的 HTTP/1.1 定界及 H2→H1.1 降級機制。"
+    },
+    {
+      "claim": "嚴格模式下，雙標頭請求收到 `400 Bad Request`，後繼使用者正常收到 `OK:GET:/v1/balance`，隔離邊界恢復完整。",
+      "verdict": "imprecise",
+      "reasoning": "從程式的嚴格模式分支可推導，符合條件的請求會在寫入上游前被拒絕。這只驗證該分支。後續請求仍使用同一套簡化解析器與共用上游，程式和提供的證據均不足以證明完整的訊息定界或租戶隔離。",
+      "correct_value": "嚴格模式會阻擋本示例中符合拒收條件的雙標頭請求。一次後繼請求得到正常回應，只能支持該測試案例的修補結果。"
+    },
+    {
+      "claim": "利用單一 HTTP/2 連線的特性，可在 `< 1 ms` 抖動視窗內把 `20` 個請求的最後 1 位元組同步送達。",
+      "verdict": "correct",
+      "reasoning": "基準表逐項給定同一 HTTP/2 連線、20 個請求、同步送達最後 1 位元組，以及伺服器端到達抖動小於 1 毫秒。這些是書內系統模型的設定。",
+      "correct_value": "本書模型採 20 個請求，伺服器端到達抖動小於 1 毫秒。具體競爭條件是否觸發，另取決於應用程式的實際執行時序。"
+    },
+    {
+      "claim": "章內列出的 PortSwigger Web Security Academy 模組名稱、分級和 Burp Repeater 介面操作與官方資料一致。",
+      "verdict": "imprecise",
+      "reasoning": "提供的外部證據只確認 Academy 涵蓋 HTTP 請求走私等議題，未附個別模組頁、官方分級或特定版本的介面文件。",
+      "correct_value": "可以確認 Academy 有 HTTP 請求走私相關教材。精確的模組名稱、分級與操作介面須以各模組官方頁及對應版本文件核對。"
+    },
+    {
+      "claim": "James Kettle 的 2019 年與 2021 年研究是系統化建立現代 CL.TE、TE.CL、H2 降級走私與時間差探測方法論的奠基論文。",
+      "verdict": "imprecise",
+      "reasoning": "提供的外部證據僅指向 PortSwigger Research，未收錄兩篇原文、發布紀錄，或足以判定技術優先性的比較史料。作者、年份、各篇涵蓋的方法及「奠基」評價須分別核對。",
+      "correct_value": "可將兩篇文章列為待核對的延伸閱讀。核對原文後，再依各篇實際涵蓋的機制描述其貢獻。"
+    }
+  ]
+}

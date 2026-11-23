@@ -1,0 +1,224 @@
+{
+  "chapter": "ch10-browser-and-client-attacks.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "JWT（有效期 `900 s`）",
+      "verdict": "correct",
+      "reasoning": "基準表將 NexusPay Access Token 的簽發效期定為 900 秒。以每分鐘 60 秒換算，900 ÷ 60 = 15 分鐘。",
+      "correct_value": "簽發效期為 900 秒，即 15 分鐘。"
+    },
+    {
+      "claim": "於前端截獲的有效憑證或建立之受控通道，可無縫串接後端 API 執行多租戶越權讀寫（見 ch06）與業務邏輯雙花（見 ch12）。",
+      "verdict": "imprecise",
+      "reasoning": "有效憑證可提供受害者身分所具備的權限。跨租戶存取還取決於後端的租戶授權，雙花則取決於帳本更新與併發控制。本章和基準表均未證明這兩道控制已失效。",
+      "correct_value": "受害者憑證可能被用來執行其有權執行的操作。跨租戶越權與雙花各需對應的後端缺陷。"
+    },
+    {
+      "claim": "每個 Origin 由 `(scheme, host, port)` 三元組定義",
+      "verdict": "imprecise",
+      "reasoning": "章內已區分三元組來源與不透明來源。依三元組規則，對照表的四列可獨立判為同源、跨源、跨源、跨源。第二列由 HTTPS 改為 HTTP 時，有效預設埠也從 443 改為 80。",
+      "correct_value": "一般 HTTP(S) URL 的來源由協定、主機與有效埠組成。另有不透明來源。表中四列的同源判定皆正確。"
+    },
+    {
+      "claim": "不透明來源 `Opaque Origin` 不與任何來源相等。",
+      "verdict": "incorrect",
+      "reasoning": "不透明來源具有內部識別身分。比較時，同一個不透明來源與自身相等。不同的不透明來源即使都序列化成 `null`，仍各有獨立身分。",
+      "correct_value": "不透明來源只與具有相同內部身分的來源相等。`null` 是序列化結果。"
+    },
+    {
+      "claim": "在現代瀏覽器的 Site Isolation 架構下，不同站點的頁面甚至被分配到獨立的作業系統渲染行程（Renderer Process）。",
+      "verdict": "imprecise",
+      "reasoning": "章內的三元組規則只能判定來源關係。實際的渲染行程配置還取決於瀏覽器、平台與隔離策略。附帶證據未提供這些實作條件。",
+      "correct_value": "部分瀏覽器會依站點或來源配置渲染行程，具體隔離粒度依實作與平台而異。"
+    },
+    {
+      "claim": "現代 Chromium 系瀏覽器已逐步預設啟用 `Origin-Agent-Cluster` 並停用 `document.domain` 鬆綁（除非伺服器回傳 `Origin-Agent-Cluster: ?0`）。",
+      "verdict": "imprecise",
+      "reasoning": "三元組模型無法推導 Chromium 何時更改預設值、哪些版本適用，或顯式標頭在所有情況下的效果。所附證據未包含 Chromium 發行記錄或相應規範段落。",
+      "correct_value": "將 `document.domain` 描述為舊式 DOM 來源鬆綁機制。Chromium 的版本範圍、預設行為與相容例外需有版本化證據支持。"
+    },
+    {
+      "claim": "一般 Cookie 的作用域不區分 `port`（除非加上 `__Host-` 前綴鎖定當前主機與 HTTPS）。",
+      "verdict": "incorrect",
+      "reasoning": "`__Host-` 前綴要求 `Secure`、`Path=/` 且省略 `Domain`。這三項條件分別限制傳輸、路徑及主機，均未將埠號納入比對。",
+      "correct_value": "一般 Cookie 與 `__Host-` Cookie 都不區分埠號。`__Host-` Cookie 必須設為 `Secure`、`Path=/` 且省略 `Domain`。"
+    },
+    {
+      "claim": "不同源，但 Cookie 會被自動附上。",
+      "verdict": "imprecise",
+      "reasoning": "443 與 8443 不同，因此兩個 URL 跨來源。同一協定與主機使兩者仍屬同站，Cookie 的主機與路徑也可以匹配。若請求由 `fetch()` 發起，還要看憑證模式。其預設 `same-origin` 會排除這個跨來源請求的 Cookie。",
+      "correct_value": "兩個 URL 跨來源且同站。符合 Cookie 條件的頂層導航可附送 Cookie。跨來源 `fetch()` 須允許附送憑證。"
+    },
+    {
+      "claim": "該父網域 Cookie 會被一併附送（甚至與主站原有的同名 host-only Cookie 並存），只要主站未採用 `__Host-` 前綴且伺服器解析採用攻擊者植入的值，就會造成跨子網域會話或 CSRF 權杖污染。",
+      "verdict": "imprecise",
+      "reasoning": "子網域設定的父網域 Cookie 與主站原有的 host-only Cookie 可具有不同的網域欄位，因此能同名並存。兩者是否送出仍需各自符合請求條件。伺服器選中其中一個值後，會話或 CSRF 驗證是否受影響還取決於應用如何驗證該值。",
+      "correct_value": "同名父網域 Cookie 與 host-only Cookie 可並存。安全影響取決於 Cookie 附送條件、伺服器的重名處理，以及會話或權杖驗證規則。"
+    },
+    {
+      "claim": "瀏覽器直接發送請求至後端，只在收到回應後檢查 `Access-Control-Allow-Origin`（ACAO）是否匹配。",
+      "verdict": "imprecise",
+      "reasoning": "對符合免預檢條件的 CORS 請求，正式請求先於回應的 CORS 檢查，伺服器已執行的副作用也會保留。使用憑證模式 `include` 時，回應還須允許憑證。正文只列出 ACAO，條件不完整。",
+      "correct_value": "符合免預檢條件的請求可先送出。瀏覽器收到回應後檢查來源，憑證模式為 `include` 時還會檢查 `Access-Control-Allow-Credentials: true`。"
+    },
+    {
+      "claim": "`<iframe sandbox=\"allow-scripts\">`（未賦予 `allow-same-origin`）以及 `data:` URI 內發出的請求，其 `Origin` 標頭都會被設為字面字串 `null`。",
+      "verdict": "imprecise",
+      "reasoning": "依章內模型，這兩類文件可以具有不透明來源。當跨來源 CORS `fetch()` 將該來源序列化到 `Origin` 標頭時，值是 `null`。原句的「都」涵蓋其他請求模式，但那些請求是否帶有 `Origin` 須另行判定。",
+      "correct_value": "由這類不透明來源文件發起的跨來源 CORS `fetch()` 會以 `null` 序列化其 `Origin`。"
+    },
+    {
+      "claim": "當 Source 來自不會隨 HTTP 請求送往伺服器的 `location.hash` 或跨視窗 `postMessage` 時，後端 WAF 甚至完全看不到任何異常 Payload。",
+      "verdict": "imprecise",
+      "reasoning": "URL 片段和視窗訊息內容都不會由各自的機制自動納入原始 HTTP 請求。後端可見性還取決於頁面有沒有在後續請求、記錄或遙測中傳送相關資料。",
+      "correct_value": "只檢查原始 HTTP 請求的 WAF 無法直接看到 URL 片段或瀏覽器內的視窗訊息。"
+    },
+    {
+      "claim": "只要未被 `Cross-Origin-Opener-Policy: same-origin`（COOP）切斷關聯，`window.open()` 依然能取得視窗參照（Window Reference）並發送 `postMessage`。",
+      "verdict": "imprecise",
+      "reasoning": "COOP 只是決定視窗參照是否可用的因素之一。彈窗可能未成功開啟，`noopener` 也可另行切斷關聯。即使訊息送達，接收端仍須已安裝監聽器才會處理。",
+      "correct_value": "彈窗須成功開啟、維持可用的視窗參照，且接收端須已就緒，才能完成所述訊息傳遞。"
+    },
+    {
+      "claim": "發送端使用萬用字元 `targetOrigin = \"*\"`，便可直接攔截有效機密。",
+      "verdict": "imprecise",
+      "reasoning": "萬用字元取消接收視窗的來源限制。實際資料流仍取決於彈窗是否完成授權、保有開啟者關聯，以及授權流程何時回傳何種資料。章中未給出足以驗證所有條件的 OAuth 實作。",
+      "correct_value": "以萬用字元傳送敏感資料會使訊息缺少接收來源約束。實際外洩仍須依授權與視窗流程判定。"
+    },
+    {
+      "claim": "初始請求必須完整符合白名單條目的來源與路徑前綴。",
+      "verdict": "imprecise",
+      "reasoning": "依章內的重導向匹配規則，自我檢核中的兩個初始請求都由 `'self'` 涵蓋。重導向後，未列入清單的主機仍遭拒，列入清單的主機可通過所述 CSP 檢查。原句把所有路徑都稱為前綴，但 `/v1/lib.js` 是精確路徑條件。通過 CSP 也只證明通過該項檢查。",
+      "correct_value": "初始請求須符合適用的來源表達式。主機來源條目的路徑以 `/` 結尾時採前綴比對，其他寫法採精確比對。自我檢核中的第二個重導向目標通過所述 CSP 檢查，實際執行還取決於回應與其他瀏覽器檢查。"
+    },
+    {
+      "claim": "HTML 注入只需插入 `<base href=\"https://evil.example/\">`，就能將所有後續相對路徑腳本導向攻擊者伺服器。",
+      "verdict": "imprecise",
+      "reasoning": "只有依賴有效文件基底 URL 解析的後續載入會受影響。基底元素還須成為有效基底。URL 解析完成後，腳本載入仍須通過 `script-src`。所印範例的腳本來源清單未允許該外部主機。",
+      "correct_value": "被採用的 `<base>` 可改變後續相對 URL 的解析結果，腳本是否載入另由有效的 CSP 判定。"
+    },
+    {
+      "claim": "CSP 標頭值本身總長 `98 bytes`。",
+      "verdict": "correct",
+      "reasoning": "標頭值全為 ASCII。第一段 `default-src 'self'; ` 為 20 bytes，第二段 `script-src 'self' ` 為 18 bytes，CDN 來源為 41 bytes，尾段 `; object-src 'none'` 為 19 bytes。相加為 98 bytes。",
+      "correct_value": "98 bytes，計入標頭值內的空格與分號。"
+    },
+    {
+      "claim": "`<script src>` 路徑完全符合 https://cdn.nexuspay-static.example/libs/ 前綴（長度 43 bytes）。",
+      "verdict": "incorrect",
+      "reasoning": "該來源表達式全為 ASCII。`https://` 為 8、`cdn.` 為 4、`nexuspay-static` 為 15、`.example` 為 8、`/libs/` 為 6。相加為 41。",
+      "correct_value": "來源表達式長 41 bytes。"
+    },
+    {
+      "claim": "注入兩組標籤（共 169 bytes）。",
+      "verdict": "incorrect",
+      "reasoning": "依印出的 ASCII 標籤逐字計數，第一個標籤佔 85 bytes，第二個佔 107 bytes。兩者合計 192 bytes。若另計中間一個 LF，則為 193 bytes。",
+      "correct_value": "192 bytes，或 193 bytes（計入中間一個 LF，均不計展示用縮排）。"
+    },
+    {
+      "claim": "範例權杖總長度為 `778` 字元（Header `36` 字元 + Payload `398` 字元 + 256-byte RSA 簽章經無填充 Base64URL 編碼後固定為 `342` 字元 + `2` 個句點分隔符）。",
+      "verdict": "correct",
+      "reasoning": "2048 bits ÷ 8 = 256 bytes。前 255 bytes 分成 85 組，每組編為 4 個字元，剩餘 1 byte 以無填充方式編為 2 個字元，簽章段共 342 個字元。採用題設的另外兩段長度後，36 + 398 + 342 + 2 = 778。",
+      "correct_value": "在題設段長與 2048-bit RSA 簽章條件下，範例權杖長 778 字元。"
+    },
+    {
+      "claim": "最終送往 evil.example 的 GET URL 長度為 800 chars。",
+      "verdict": "correct",
+      "reasoning": "依範例的字串假設，固定 URL 前段為 22 個 ASCII 字元，權杖為 778 個字元。兩者相加為 800。這項計算只驗證字串長度，無法由此判定瀏覽器是否實際發出請求。",
+      "correct_value": "假設的完整 URL 字串長 800 字元。"
+    },
+    {
+      "claim": "遠低於主流 HTTP 伺服器（如 Nginx 預設 large_client_header_buffers 8 KiB = 8,192 bytes）的請求行上限，可在 1 次導航請求內完整帶出該枚簽發效期 900 s 的 JWT。",
+      "verdict": "imprecise",
+      "reasoning": "8 × 1,024 = 8,192，單位換算正確。HTTP/1.1 請求行還包含方法、請求目標與版本等欄位，應按所用協定與部署逐一核對。基準表只給出 Nginx 逾時，未給緩衝區設定。URL 長度和簽發效期也無法確認請求已送達或權杖尚有效。",
+      "correct_value": "假設的 800 字元 URL 短於 8,192 bytes。實際請求限制、傳送結果及權杖剩餘效期須分別驗證。"
+    },
+    {
+      "claim": "在無 'unsafe-eval' 的 CSP 下，$on.constructor(...) 會呼叫 eval/Function 而被阻擋！",
+      "verdict": "correct",
+      "reasoning": "在章內假設該建構子解析為 `Function` 的條件下，呼叫它會嘗試將字串編譯成程式。所示 CSP 未授權這類執行。外部函式庫載入通過 `script-src` 並不會改變字串編譯所適用的規則。",
+      "correct_value": "若表達式確實嘗試透過 `Function` 編譯字串，所示 CSP 會阻擋該操作。"
+    },
+    {
+      "claim": "實驗 A 可用來觀察終端機是否成功印出外洩的 JWT，參考解答宣稱完成了「頂層導航外洩」。",
+      "verdict": "incorrect",
+      "reasoning": "依所印程式靜態判讀，導航發生在 `srcdoc` 子文件的視窗上下文，因此參考解答把子框架導航寫成了頂層導航。父文件的 CSP 也會由 `srcdoc` 繼承，不能由同源腳本符合 `script-src` 直接推得最後的外部框架導航或伺服器輸出。另就權杖而言，程式存入的是含 `sig_demo` 的固定示範字串，並無實際的 RS256 簽發流程。",
+      "correct_value": "此程式中的導航屬於子框架。終端機輸出須另有執行證據。所存資料應稱為 JWT 格式的示範字串。"
+    },
+    {
+      "claim": "自 Chrome 80 將未宣告 `SameSite` 屬性的 Cookie 預設值改為 `SameSite=Lax` 後，跨站 `<form method=\"POST\">` 與 `fetch(..., { credentials: \"include\" })` 預設不再攜帶 Cookie。",
+      "verdict": "imprecise",
+      "reasoning": "Cookie 是否附送取決於個別 Cookie 的屬性與請求上下文。章內隨後也列出對部分新建立 Cookie 的頂層 POST 例外，所以這一句不能用來判定所有跨站 POST。附帶證據未包含 Chrome 80 的推出時間或適用範圍。",
+      "correct_value": "對將未指定 `SameSite` 的 Cookie 視為 Lax 的瀏覽器，一般跨站子資源請求與跨站 POST 受限。是否有新 Cookie 的頂層 POST 寬限，取決於實作。"
+    },
+    {
+      "claim": "只要該 Cookie 距離新建立（或重新核發覆寫）的時間在 `120 秒` 內，跨站的頂層導航 `POST` 表單依然會夾帶該 Cookie。",
+      "verdict": "imprecise",
+      "reasoning": "依正文，寬限的判定量是 Cookie 年齡，因此重新送出 `Set-Cookie` 只有在實際更新用於判定的建立時間時，才會產生新的寬限。材料未提供覆寫時的時間保留規則，也未附瀏覽器實作證據確認 120 秒適用的版本。",
+      "correct_value": "在實作該寬限的瀏覽器中，符合條件的新 Cookie 可能隨跨站頂層 POST 附送。重新核發是否重啟寬限須依 Cookie 建立時間的實作判定。顯式設定 `SameSite=Lax` 或 `Strict` 可排除這項預設值例外。"
+    },
+    {
+      "claim": "前端框架支援 `_method=POST` / `X-HTTP-Method-Override` 參數讓 `GET` 請求在後端被路由成 `POST`/`DELETE`。",
+      "verdict": "imprecise",
+      "reasoning": "瀏覽器按線上實際方法判定 Lax 頂層導航，後端可能另行解讀查詢參數。一般連結或表單導航無法任意加上自訂 `X-HTTP-Method-Override` 標頭，因此兩種覆寫方式的前提不同。",
+      "correct_value": "若後端接受由 GET 導航送出的查詢參數來改寫方法，Lax Cookie 可能隨導航附送。依賴自訂標頭的方法覆寫須另有能送出該標頭的請求機制。"
+    },
+    {
+      "claim": "對 `reportId` 執行 `encodeURIComponent()` 雖會把 `/` 與 `#` 編碼為 `%2F` 與 `%23`，但它不會編碼點號 `.`。",
+      "verdict": "correct",
+      "reasoning": "編碼後，斜線與井號在這一步的 URL 解析中失去分隔字元作用。點號仍保留，因此完整參數遇上單獨的點路徑段時，瀏覽器仍可正規化路徑。將輸入限制在預期識別碼格式，可以排除這類值。",
+      "correct_value": "`encodeURIComponent()` 會編碼 `/` 與 `#`，保留 `.`。路徑參數仍須按預期識別碼格式驗證。"
+    },
+    {
+      "claim": "透過 `<script>`、`<link rel=\"stylesheet\">` 或 `<object>` 標籤掛載 `onload` 與 `onerror` 監聽器，就能分辨狀態碼與 `Content-Type` 差異。",
+      "verdict": "imprecise",
+      "reasoning": "事件能反映的是資源是否以該元素的規則成功載入。章內所述的 HTTP 狀態、MIME 類型和瀏覽器阻擋均可能落到相同的錯誤事件，因此無法從事件一般性地還原狀態碼或 MIME 類型。",
+      "correct_value": "只有當不同的伺服器狀態在特定瀏覽器與嵌入方式下穩定產生可區分事件時，事件才能用於推斷兩種狀態。"
+    },
+    {
+      "claim": "有命中結果時後端耗時 `180 ms`，未命中時後端耗時 `15 ms`，理想後端耗時差為 `165 ms`。",
+      "verdict": "correct",
+      "reasoning": "以題設的後端耗時相減，180 − 15 = 165 毫秒。瀏覽器端是否可辨識仍取決於網路、排程和快取造成的變異，以及樣本數。",
+      "correct_value": "假設的後端耗時差為 165 毫秒。"
+    },
+    {
+      "claim": "現代主流瀏覽器已導入 HTTP Cache Partitioning（依頂層站點分割快取）封堵。",
+      "verdict": "imprecise",
+      "reasoning": "從機制可推得，以頂層站點區分 HTTP 快取會降低不同分區共享快取命中的機會。材料未提供各瀏覽器的實作與版本，也未支持普遍封堵的說法。`< 5 ms` 和 `> 40 ms` 同樣缺少測量環境。",
+      "correct_value": "HTTP 快取分區可限制依賴跨分區重用同一快取項目的探測。適用範圍與時間差需以瀏覽器版本及測量條件限定。"
+    },
+    {
+      "claim": "`128 bits`（`16 bytes` 原始亂數，經 Base64 編碼後為 `24` 字元字串）。",
+      "verdict": "correct",
+      "reasoning": "128 ÷ 8 = 16 bytes。標準帶填充 Base64 以每 3 bytes 輸出 4 字元計算，16 bytes 需 6 組，因此有 24 字元，含末尾兩個 `=`。",
+      "correct_value": "16 bytes 使用帶填充 Base64 時為 24 字元，省略填充時為 22 字元。"
+    },
+    {
+      "claim": "Trusted Types 會直接拒絕把原始 `string` 傳入各類 DOM XSS 匯點。",
+      "verdict": "imprecise",
+      "reasoning": "Trusted Types 強制適用於規範涵蓋的匯點。若應用程式定義了適用的預設策略，瀏覽器可先把字串交給該策略處理。此外，可信型別只能證明資料經過相應機制，策略本身仍須正確驗證或淨化。",
+      "correct_value": "在支援且啟用強制模式的瀏覽器中，受保護的匯點要求相應可信型別，或由適用的預設策略轉換。安全性取決於策略內容。"
+    },
+    {
+      "claim": "`Cross-Origin-Opener-Policy: same-origin`（切斷跨站 `window.opener` 與彈窗參照，同時防禦 `postMessage` 視窗劫持與 `frames.length` 探測）。",
+      "verdict": "imprecise",
+      "reasoning": "COOP 作用於頂層文件的瀏覽上下文群組，因此能影響經由跨來源彈窗取得的視窗參照。章內的 frame 計數例子也包含 iframe，此路徑的前提是文件可以被嵌入，對應的限制是 `frame-ancestors`。此外，同站子網域仍可能跨來源。",
+      "correct_value": "COOP 可切斷跨來源彈窗參照。由框架嵌入取得的參照須以 `frame-ancestors` 等嵌入控制處理。"
+    },
+    {
+      "claim": "修補後，攻擊鏈在「COOP 切斷視窗參考」、「`event.origin` 攔截」與「Strict CSP 拒絕無 Nonce 的 `<script>`」三層皆被成功阻斷。",
+      "verdict": "imprecise",
+      "reasoning": "由程式可推得來源比對和 `textContent` 會改變訊息處理，但一次陰性結果無法證明三層各自生效。修補片段還省略原本的 JSONP 路由，使終端機無輸出有另一種解釋。範例也未實作可信的 OAuth 彈窗，無法用來驗證合法回傳仍能運作。`strict-dynamic` 會把信任傳遞給某些由可信腳本動態載入的腳本，因此無 nonce 的腳本是否被封鎖還要看載入方式。",
+      "correct_value": "程式呈現數項防禦變更。各層的獨立效果與合法 OAuth 回傳須個別驗證，並明確區分 CSP 變更與路由移除的影響。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 包含實驗 B 所列的題名與 Practitioner／Expert 分級。",
+      "verdict": "imprecise",
+      "reasoning": "附帶證據只支持 Academy 存在及涵蓋多種 Web 安全主題，未列出所引題目的正式名稱、等級或逐題位置。章內列表本身無法充當獨立證據。",
+      "correct_value": "可確認 Academy 的概括領域。各題正式名稱、分級與對應頁面仍待題目層級的證據確認。"
+    }
+  ]
+}

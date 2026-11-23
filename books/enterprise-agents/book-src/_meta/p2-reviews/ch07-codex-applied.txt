@@ -1,0 +1,21 @@
+已完成對 [ch07-evals-and-systematic-tuning.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch07-evals-and-systematic-tuning.md) 與雙語範例 [index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch07/index.ts)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch07/main.py) 的修訂（並以 `.tmp` → `mv` 原子寫入）：
+
+### 已修正項目
+1. **Error Taxonomy 與 `78% → 95%` 對帳**：改標為「示意」，移除「實錄」「穩定」「沒有任何猜測成分」，表格改列題數與佔全體比例（8/7/4/3 題，共 22 題），並交代餘下 5 題為長尾邊界與新回歸案例。
+2. **機率假設、`Pass^k` 解讀與 Holdout 門檻**：補上 `p^5` 條件獨立／各步獨立與試驗獨立假設，移除 `Pass^k`「唯一能採信」，補充單次成功率與嚴重錯誤率獨立追蹤；將 `> 5%` 改為 `> 5 個百分點`（註明 30 題 Holdout 每題 3.33 個百分點）並加入 Holdout 絕對門檻與關鍵安全案例閘門。
+3. **退款安全與裁判邊界**：明定退款安全以後端可信身分、租戶／訂單／幣別／剩餘可退額／有效人工核准與寫入交易內重驗為準，評測分別記錄工具嘗試、後端拒絕與實際落帳；裁判無工具權限且不得覆寫硬性契約。
+4. **CI 成本、限流與時間上限**：標明 300 次為 Agent Trial（約 1,500 次模型請求 + 最多 300 次全送裁判估算），補充 RPM／TPM 節流、45 秒端到端 deadline（10 worker 跑 300 題約 22.5 分鐘、Smoke 理論上限 90 秒，2 分鐘為目標）、`$35` 緩衝 `$4.4825` 與原子預留、`70%+` 降本標為待量測、30 次夜間執行約 `$915.53／月`。
+5. **持久化與環境隔離**：在 `eval_trial_results` 補上 `created_at` 與 `UNIQUE (run_id, case_id, trial_idx)`，註明持久化前遮罩憑證／個資／金流；Redis 鍵納入 `{suite_version}`，並區分 `TTL = 86,400s` 與每 Trial 狀態隔離。
+6. **Claude 5.5 API、快取、重試與 `stop_reason`**：Haiku 5.5／Sonnet 5.5 裁判省略 `temperature`／`top_p`／`top_k`，改用 `output_config.effort` 或 `thinking: {"type": "disabled"}` 與 `output_config.format`（`json_schema`）；`cache_control` 置於固定系統區塊末端並註明 512 tokens 門檻、`0.85` 定義與冷啟動分離；區分 `429`／`529`、單層重試（避免 SDK 預設 2 次 × 外層 3 次 = 12 次）與串流終止後才評分；補充 `tool_use`／`tool_result` 配對與 `end_turn`／`max_tokens`／`refusal`／`pause_turn` 分類。
+7. **TS／Python 範例與正文對齊**：
+   - 修正 `EVAL-003` 註解為固定第 3 次（1/3 失敗）且為「未呼叫退款工具卻誤報已核准」，並同步正文描述。
+   - 標註 `gradeWithCalibratedJudge` 為 Stub、於硬檢查失敗時短路，新增 `"judge_failed"` 錯誤分類。
+   - 輸出欄位 `lastError` 改為 `lastFailureCategory`，`Pass@3`/`Pass^3` 改由 `k` 動態產生；未全數通過時以 exit code `1` 結束阻斷 CI。
+   - 本機執行 `npx tsx index.ts` 與 `python3 main.py` 皆輸出 `2/3 passed Pass^3 | Total Eval Cost: $0.2097` 並回傳 `EXIT=1`。
+
+### 未採納／保留原樣之處
+- 保留 `ch07` 既有的 Claude Sonnet 5.5（`$2.00 / $10.00`）與 Haiku 5.5（`$0.10 / $0.50`）2026-11 基準定價與 5 回合 `42,000 / 1,750` tokens（`$0.1015`）計算，僅補充第 1 回合 6,000 與第 2–5 回合各新增 1,200 歷史輸入的記帳說明。
+- 本章未實作 MCP 與 Message Batches，未額外擴寫該兩項 API 規格以維持章節聚焦。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

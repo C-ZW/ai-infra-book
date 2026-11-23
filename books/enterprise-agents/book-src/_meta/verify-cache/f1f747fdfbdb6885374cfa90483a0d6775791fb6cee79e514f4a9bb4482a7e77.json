@@ -1,0 +1,54 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "Haiku 5.5 的最小快取門檻為 512 tokens；低於門檻時快取會靜默不寫入。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 將 512 tokens 列為 Opus 5.5 的門檻，也列出部分其他模型的門檻，但沒有提供 Haiku 5.5 的門檻。因此無法由所給證據推得 Haiku 5.5 是 512 tokens，也不能據此判斷章內 450-token Router 前綴是否低於該模型門檻。",
+      "correct_value": "Haiku 5.5 的最小快取門檻須依該模型的官方文件另行確認；450 tokens 是否可快取，在所給材料中無法判定。"
+    },
+    {
+      "claim": "對 529 採用指數退避加 Full Jitter，base = 500ms、cap = 8,000ms、max_retries = 2，此參數下等待上界為 1,000ms。",
+      "verdict": "imprecise",
+      "reasoning": "章節未定義重試次數的指數從 0 還是 1 起算，也未說明上界指單次等待或所有等待加總。若兩次重試的 Full Jitter 範圍分別為 0–500ms 與 0–1,000ms，則單次等待上界為 1,000ms，累計等待上界則為 1,500ms。",
+      "correct_value": "明訂退避公式；若第 1、2 次重試分別採 0–500ms、0–1,000ms，則單次上界為 1,000ms，兩次合計上界為 1,500ms。"
+    },
+    {
+      "claim": "例外應映射為安全錯誤碼；範例將 Worker 失敗轉成交接物件。",
+      "verdict": "incorrect",
+      "reasoning": "範例的 summary 使用 `Worker failed: ${String(res.reason)}`，把原始例外轉成字串交給父層，並未映射為安全錯誤碼；原始例外也可能含有不適合交接的內部資訊。",
+      "correct_value": "將例外分類成固定的安全錯誤碼與通用摘要，詳細錯誤僅寫入受控日誌。"
+    },
+    {
+      "claim": "Worker 失敗時，範例交接物件設置 latencyMs: WORKER_TIMEOUT_MS、costUsd: 0。",
+      "verdict": "incorrect",
+      "reasoning": "一般例外可能在逾時之前發生，因此固定填入 8,000ms 不一定是實際延遲；Worker 也可能在失敗或逾時前已產生 API 費用，填零會把未知或已發生成本誤報為零。這與章內區分已知成本及尚未確認帳務的要求不一致。",
+      "correct_value": "使用實際量測的延遲與已知累計費用；對未確認的費用另標示未知或待對帳。"
+    },
+    {
+      "claim": "方案 B 平均純前綴成本為每筆 $0.005085，較方案 A 的 $0.060000 下降 91.53%；平均兩個等量唯讀 Worker 時成本為 $0.005645，降幅 90.59%。",
+      "verdict": "correct",
+      "reasoning": "依題設價格及回合數重算：Router 為 450 × 0.10 / 1,000,000 = $0.000045；一個 Worker 為 2,800 × 2 × 0.10 / 1,000,000 = $0.000560；Opus 仲裁攤提為 2,800 × 2 × 4 / 1,000,000 × 20% = $0.004480。合計 $0.005085，較 $0.060000 下降 91.525%，四捨五入為 91.53%。增加一個等量 Worker 後為 $0.005645，降幅約 90.59%。",
+      "correct_value": "一個 Worker：$0.005085／筆、下降 91.53%；兩個 Worker：$0.005645／筆、下降 90.59%。上述皆僅為題設的純前綴輸入成本。"
+    },
+    {
+      "claim": "Router 增加兩個工具，每個工具約 200 tokens，在每日 50,000 筆工單下，每日多出 20,000,000 輸入 tokens，按 Haiku 無快取牌價約多 $2／日。",
+      "verdict": "correct",
+      "reasoning": "假設每筆工單的 Router 都發出一次帶有這兩個 Schema 的請求，則 2 × 200 × 50,000 = 20,000,000 tokens；按每百萬輸入 tokens $0.10 計算，為 20 × $0.10 = $2。",
+      "correct_value": "在每筆一次 Router 請求、無快取且適用所列 Haiku 輸入價格的假設下，每日增加 20,000,000 tokens，約 $2。"
+    },
+    {
+      "claim": "傳統 Saga 的每個步驟都是確定性 RPC，輸入與輸出 schema 嚴格固定。",
+      "verdict": "incorrect",
+      "reasoning": "Saga 是將跨服務工作分解為一連串本地交易及補償的協作模式；章內前提並未要求步驟必須使用 RPC，也不能由使用 RPC 推出結果必定確定。Saga 步驟可透過事件或訊息觸發，並可能依外部狀態產生不同結果。",
+      "correct_value": "傳統 Saga 可使用命令、RPC 或事件協調本地交易與補償；步驟通常採明確契約，但不必然是確定性 RPC。"
+    },
+    {
+      "claim": "Router 使用 `output_config.format` 約束結構化 JSON；Agent SDK 套件為 `@anthropic-ai/claude-agent-sdk` 與 `claude-agent-sdk`。",
+      "verdict": "correct",
+      "reasoning": "所附 source-evidence 明列 `output_config.format` 接受 JSON Schema，也列出相同的 TypeScript 與 Python Agent SDK 套件名稱；章節這些主張與所提供證據一致。",
+      "correct_value": "依所附證據，結構化輸出使用 `output_config.format`；兩個套件名稱分別為 `@anthropic-ai/claude-agent-sdk` 和 `claude-agent-sdk`。"
+    }
+  ]
+}

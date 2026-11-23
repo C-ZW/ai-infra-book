@@ -1,0 +1,42 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "首輪基準輸入（System Prompt + 18 工具 Schema + 首輪工單）= 6,000 tokens。",
+      "verdict": "incorrect",
+      "reasoning": "基準資料將 6,000 tokens 全部分配給 System Prompt 的 2,400 tokens 與工具 Schema 的 3,600 tokens，因此沒有剩餘空間計入非零的首輪工單內容。若首輪工單另占 U tokens，且後續每輪都重送，五輪累計輸入應為 42,000 + 5U tokens；章內雖有提及此調整，卻仍把工單內容納入 6,000 tokens 的定義。",
+      "correct_value": "固定前綴為 6,000 tokens；若首輪工單另占 U tokens，首輪輸入為 6,000 + U，五輪累計輸入為 42,000 + 5U。"
+    },
+    {
+      "claim": "5 回合累計輸入為 42,000 tokens，累計輸出為 1,750 tokens；未優化單筆成本為 $0.1015，每月成本為 $152,250。",
+      "verdict": "correct",
+      "reasoning": "依簡化帳本的假設，五輪輸入相加為 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000，輸出為 350 × 5 = 1,750。按基準費率計算，單筆成本為 42,000 × 2 / 1,000,000 + 1,750 × 10 / 1,000,000 = $0.1015；乘以每月 1,500,000 筆為 $152,250。此結果以沒有額外首輪工單開銷為條件。",
+      "correct_value": "在帳本假設下，單筆 $0.1015，每月 $152,250；若另有首輪工單輸入，成本須相應增加。"
+    },
+    {
+      "claim": "兩回合 Haiku 工單單筆成本為 $0.00167，每日 30,000 筆的總成本為 $50.10；複雜工單單筆成本須壓至 ≤ $0.027495。",
+      "verdict": "correct",
+      "reasoning": "兩輪輸入為 13,200 tokens，輸出為 700 tokens，按題定費率計得 $0.00132 + $0.00035 = $0.00167，每日乘以 30,000 筆為 $50.10。若整體平均單筆上限為 $0.012，則 0.6 × 0.00167 + 0.4 × 複雜工單單價 ≤ 0.012，解得後者 ≤ $0.027495。",
+      "correct_value": "簡單工單單筆 $0.00167、每日 $50.10；複雜工單單筆上限為 $0.027495，均以題定帳本與費率為條件。"
+    },
+    {
+      "claim": "把 wallClockTimeoutMs 檢查放在 while 迴圈結尾，會導致即使上一輪剛結束時已超時，仍會多發起一次無效的 API 呼叫才中斷。",
+      "verdict": "incorrect",
+      "reasoning": "若檢查確實位於每次迴圈的結尾，上一輪工作完成後會先檢查時間；若此時已超時，便可在進入下一輪及發出下一次 API 呼叫前中斷。實際行為仍取決於檢查相對於 continue、工具派發和其他分支的位置；只在結尾檢查也無法即時中止卡住的呼叫。",
+      "correct_value": "結尾檢查可攔截正常走到該檢查點後的下一輪，但仍應在首次呼叫前及派發工具前檢查剩餘時間，並為 API 與工具呼叫設置可執行的超時機制。"
+    },
+    {
+      "claim": "Sonnet 5.5 預設啟用 adaptive thinking。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據指出較新模型可使用 adaptive reasoning modes，但未說明 Sonnet 5.5 是否預設啟用，也未提供支持此預設行為的材料。因此無法僅憑提供的證據確認這項主張。",
+      "correct_value": "Sonnet 5.5 是否預設啟用 adaptive thinking，須以該模型的相關文件或可驗證的實際行為確認。"
+    },
+    {
+      "claim": "可續租的短暫 lease 含 owner token 與原子釋放，可防範 stale worker 覆寫。",
+      "verdict": "imprecise",
+      "reasoning": "owner token 搭配原子釋放可避免舊持有者誤刪新持有者的鎖；但舊 worker 在 lease 過期後仍可能繼續執行，單靠這些措施不能阻止它寫入外部狀態。要防止過期持有者覆寫，還需讓受保護的寫入端驗證有效的版本或 fencing token 等條件。",
+      "correct_value": "owner token 與原子釋放可保護鎖的釋放；防範 stale worker 寫入還需要寫入端執行版本檢查、fencing 或等效的原子條件驗證。"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "eagent",
+  "title": "企業級 Agent 工程",
+  "subtitle": "用 Claude API 打造可上線、可觀測、可控成本的代理系統",
+  "footer": "內容基準 2026-11（12 章＋附錄 A＋TS/Python 雙語言完整範例）",
+  "inline_images": false,
+  "output": "index.html",
+  "groups": [
+    {
+      "title": "開始",
+      "files": [
+        "../book-src/README.md"
+      ]
+    },
+    {
+      "title": "Part I — 核心引擎與契約",
+      "files": [
+        "../book-src/ch01-agent-architecture.md",
+        "../book-src/ch02-tool-use-and-mcp.md",
+        "../book-src/ch03-context-and-prompt-engineering.md"
+      ]
+    },
+    {
+      "title": "Part II — 狀態、記憶與多代理協作",
+      "files": [
+        "../book-src/ch04-state-memory-and-retrieval.md",
+        "../book-src/ch05-multi-agent-orchestration.md",
+        "../book-src/ch06-reliability-and-durable-execution.md"
+      ]
+    },
+    {
+      "title": "Part III — 優化、調校與單位經濟學",
+      "files": [
+        "../book-src/ch07-evals-and-systematic-tuning.md",
+        "../book-src/ch08-cost-and-latency-optimization.md",
+        "../book-src/ch09-security-guardrails-and-governance.md"
+      ]
+    },
+    {
+      "title": "Part IV — 可觀測性與企業實戰藍圖",
+      "files": [
+        "../book-src/ch10-observability-and-operations.md",
+        "../book-src/ch11-enterprise-patterns-in-action.md",
+        "../book-src/ch12-production-readiness-blueprint.md"
+      ]
+    },
+    {
+      "title": "附錄",
+      "files": [
+        "../book-src/appendix-code-index.md"
+      ]
+    },
+    {
+      "title": "內部文件（_meta）",
+      "files": [
+        "../book-src/_meta/outline.md",
+        "../book-src/_meta/style-guide.md",
+        "../book-src/_meta/maintenance.md",
+        "../book-src/_meta/landscape-2026-11.md",
+        "../book-src/_meta/terms.md"
+      ]
+    }
+  ]
+}

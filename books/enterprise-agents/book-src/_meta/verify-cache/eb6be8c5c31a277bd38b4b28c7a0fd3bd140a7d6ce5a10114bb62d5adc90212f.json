@@ -1,0 +1,48 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "補充速率設為租戶配額的 90%，例如 2,400 RPM 配額對應 36 calls/s",
+      "verdict": "correct",
+      "reasoning": "2,400 RPM = 2,400 / 60 = 40 calls/s。取 90% 為 40 × 0.9 = 36 calls/s，與文中數值完全一致。",
+      "correct_value": "36 calls/s"
+    },
+    {
+      "claim": "base_delay_ms = 500ms、max_delay_ms = 30,000ms（前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s）",
+      "verdict": "correct",
+      "reasoning": "依公式 min(max_delay_ms, base_delay_ms * 2^(attempt - 1))，attempt = 1..4 時的上限依序為 500ms (0.5s)、1,000ms (1s)、2,000ms (2s)、4,000ms (4s)，均未超過 30,000ms；四次加總為 0.5 + 1 + 2 + 4 = 7.5s，與文中完全一致。",
+      "correct_value": "前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s"
+    },
+    {
+      "claim": "Batch API 提供 50% 折扣（Sonnet 5.5 為 $1.00 / $5.00 per MTok）",
+      "verdict": "correct",
+      "reasoning": "依 baseline 與 source-evidence，Claude Sonnet 5.5 基礎牌價為 Input $2.00 / Output $10.00 per MTok，Batch API 提供 50% 折扣，折算後為 $1.00 / $5.00 per MTok，與文中一致。",
+      "correct_value": "$1.00 / $5.00 per MTok"
+    },
+    {
+      "claim": "OrderOps 日工單量 50,000 筆／天（1,500,000 筆／月，以 30 天計）、尖峰流量 12 req/s（平均 0.5787 req/s，尖峰約 20.7×），單筆平均 5 次 API 呼叫，尖峰每秒 API 呼叫數 = 60 calls/s（3,600 RPM）",
+      "verdict": "correct",
+      "reasoning": "50,000 筆 / 86,400 秒 ≈ 0.5787037 req/s（baseline 表記為 0.58 req/s）；尖峰倍率 12 / 0.5787037 = 20.736×（約 20.7×，baseline 概記為 20×）。尖峰 API 呼叫率 = 12 req/s × 5 calls/req = 60 calls/s = 60 × 60 = 3,600 RPM，推導完全正確。",
+      "correct_value": "平均 0.5787 req/s（尖峰約 20.7×），尖峰 60 calls/s（3,600 RPM）"
+    },
+    {
+      "claim": "配額 2,400 RPM（40 calls/s）下：按名目配額尖峰淨超額 20 calls/s，持續 30 秒累積 600 個 API 呼叫；尖峰後平均流量 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空。按 90% 限流（36 calls/s）持續 30 秒累積 720 個 API 呼叫（扣除 burst = 54 剩 666 個，約 20.1 秒排空；無初始額度約 21.8 秒）。",
+      "verdict": "correct",
+      "reasoning": "1) 名目配額：2,400 / 60 = 40 calls/s，尖峰淨超額 60 - 40 = 20 calls/s，30 秒累積 20 × 30 = 600 calls。平均 API 流量 = 0.5787037 × 5 ≈ 2.8935 calls/s（約 2.89 calls/s），排空餘裕 40 - 2.89 = 37.11 calls/s，排空時間 600 / 37.11 ≈ 16.168s（約 16.2 秒）。2) 90% 限流（36 calls/s）：30 秒累積 (60 - 36) × 30 = 720 calls；扣 burst 54 剩 720 - 54 = 666 calls。90% 限流下排空餘裕為 36 - 2.8935 = 33.1065 calls/s，有初始 burst 時排空時間 666 / 33.1065 ≈ 20.117s（約 20.1 秒），無初始額度時 720 / 33.1065 ≈ 21.748s（約 21.8 秒）。數值全部吻合。",
+      "correct_value": "名目累積 600 calls（約 16.2s 排空）；90% 限流累積 720 calls / 扣 burst 為 666 calls（約 21.8s / 20.1s 排空）"
+    },
+    {
+      "claim": "自我檢核第 3 題：尖峰 20 req/s（每筆 5 次呼叫）= 100 calls/s（6,000 RPM），配額 3,600 RPM（60 calls/s），淨超額 40 calls/s，持續 45 秒累積 1,800 個 API 呼叫（約 37.5s 抵達 1,500 告警線）；若沿用 90% 限流（54 calls/s），未扣初始桶額度時積壓 2,070 個。",
+      "verdict": "correct",
+      "reasoning": "20 req/s × 5 = 100 calls/s = 6,000 RPM。配額 3,600 RPM = 60 calls/s，淨超額 100 - 60 = 40 calls/s，45 秒累積 40 × 45 = 1,800 calls；抵達 1,500 告警線時間為 1,500 / 40 = 37.5s。90% 限流速率為 60 × 0.9 = 54 calls/s，淨超額 100 - 54 = 46 calls/s，45 秒累積 46 × 45 = 2,070 calls。推導與答案完全一致。",
+      "correct_value": "名目積壓 1,800 個（37.5s 達 1,500）；90% 限流積壓 2,070 個"
+    },
+    {
+      "claim": "Sonnet 5.5 預設 adaptive thinking（between_tools 可停用前置 thinking，disabled 與舊式 enabled 會被拒絕）",
+      "verdict": "imprecise",
+      "reasoning": "檢視 source-evidence 第 3 節僅記載：「Enabled via thinking: { type: \"enabled\", budget_tokens: N } (or adaptive reasoning modes on newer models).」，並未提供 Sonnet 5.5 預設為 adaptive thinking、`between_tools` 參數名稱，或「`disabled` 與舊式 `enabled` 會被拒絕」的證據（且與 source-evidence 明列 `type: \"enabled\"` 的說法存在表面張力）。僅憑所附基準與證據無法驗證該細節。",
+      "correct_value": "依已提供之 source-evidence，Extended Thinking 係透過 `thinking: { type: \"enabled\", budget_tokens: N }` 或較新模型上的 adaptive reasoning 模式啟用；關於 `between_tools` 及拒絕 `disabled`/`enabled` 的細節需補充官方文件依據或改按已驗證規格表述。"
+    }
+  ]
+}

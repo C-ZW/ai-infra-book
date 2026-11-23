@@ -1,0 +1,188 @@
+{
+  "chapter": "ch19-supply-chain-and-cicd.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "在 OWASP Top 10:2025 中，「A03: Software Supply Chain Failures」已成為獨立的高風險類別。",
+      "verdict": "correct",
+      "reasoning": "提供的史料摘錄明列 OWASP Top 10:2025 的 A03 為 Software Supply Chain Failures，編號與名稱均與章文一致。",
+      "correct_value": "OWASP Top 10:2025 A03 — Software Supply Chain Failures。"
+    },
+    {
+      "claim": "CI/CD 管線是整間公司權限密度最高的信任放大器。一旦建置平面失守，攻擊者就能將惡意程式碼合法簽章並推送到每一台線上伺服器。",
+      "verdict": "imprecise",
+      "reasoning": "章內模型顯示，建置節點可影響下游使用的輸入或產物，但影響範圍仍取決於各節點的權限、簽章政策及部署條件。材料也未定義權限密度或提供跨系統比較。",
+      "correct_value": "CI/CD 管線可能集中高權限。建置環境遭入侵後，能否簽章、發布及部署受污染的產物，取決於受影響工作可使用的權限與下游驗證政策。"
+    },
+    {
+      "claim": "當每個節點的上游輸入皆受密碼學雜湊或不可變版本鎖定約束、外部不可信輸入與高權限 Secrets 嚴格隔離，且每個 job 在無狀態的一次性 Runner 中執行時，整張 DAG 的信任傳遞具確定性與可稽核性。",
+      "verdict": "incorrect",
+      "reasoning": "內容固定與執行隔離可以約束輸入及權限，但同一組固定輸入仍可能因時間、亂數或建置工具差異而產生不同輸出。DAG 描述相依關係，無法自行產生稽核紀錄。",
+      "correct_value": "輸入鎖定與隔離有助於約束信任邊界。重現產物需要控制會影響輸出的變因，可稽核性則需要保留可驗證的輸入、執行身分及產物記錄。"
+    },
+    {
+      "claim": "解析器判定 `99.0.0 > 1.4.2`，直接從公有庫拉取惡意套件。",
+      "verdict": "incorrect",
+      "reasoning": "SemVer 先比較主版本，因此大小關係成立。解析時必須先確認來源是否提供該候選版本、版本是否符合相依條件，以及現有鎖定是否適用。若條件為 `^1.4.2`，上界為 `2.0.0` 且不含上界，`99.0.0` 不在候選範圍內。",
+      "correct_value": "`99.0.0 > 1.4.2`。是否選到 `99.0.0` 取決於登錄檔路由、代理提供的中繼資料、相依版本條件及鎖定狀態。"
+    },
+    {
+      "claim": "開發者在 `Cargo.toml` 只寫 `nexus-tlv-helper = \"0.3.1\"` 而未綁定私有 registry 名稱，Cargo 會直接向 `crates.io` 查詢。",
+      "verdict": "imprecise",
+      "reasoning": "章內先把 crates.io 定義為預設來源，後文也明示來源可被替換。依此可推得省略 `registry` 時採用預設來源的解析規則，但不能推得每次都直接連線到 crates.io。",
+      "correct_value": "省略 `registry` 時，依賴按 crates.io 預設來源解析。來源替換、快取及離線狀態會影響實際讀取的位置與是否發出請求。"
+    },
+    {
+      "claim": "在 Node.js 的 `package-lock.json` 中，每個套件條目同時包含 `resolved`（tarball 下載 URL）與 `integrity`（SHA-512 SRI 雜湊值）。",
+      "verdict": "incorrect",
+      "reasoning": "根專案及本機連結等條目並不都對應可下載的 tarball。SRI 表示式會標示雜湊演算法，格式本身沒有把所有值限定為 SHA-512。",
+      "correct_value": "`resolved` 與 `integrity` 常見於登錄檔套件條目，欄位是否存在及其值取決於依賴來源。SHA-512 是可使用的 SRI 演算法之一。"
+    },
+    {
+      "claim": "`integrity` 只驗證「下載檔案與 Lockfile 紀錄是否一致」，不驗證「檔案是否來自合法官方套件庫」。",
+      "verdict": "correct",
+      "reasoning": "若驗證值取自同一份待查鎖定檔，雜湊比對能證明檔案內容與該記錄相符。要從內容一致性推得發布者身分，還需要獨立可信的來源證據。",
+      "correct_value": "`integrity` 提供相對於鎖定檔記錄的內容完整性檢查。來源與發布者身分需要另外驗證。"
+    },
+    {
+      "claim": "`npm ci` 檢查 `package.json` 與 `package-lock.json` 的版本範圍相容性——通過（因為 `version` 欄位仍為 `4.17.21`）。",
+      "verdict": "incorrect",
+      "reasoning": "保留一個傳遞依賴條目的版本號，只能確認該欄位未改動。它既無法證明整棵依賴樹一致，也無法證明下載與其他安裝檢查會成功。內容摘要吻合只支持完整性比對會通過。",
+      "correct_value": "若清單與鎖定的依賴樹仍相容、來源可用，且套件通過其餘安裝檢查，安裝才可能繼續。單一 `version` 欄位不足以保證通過。"
+    },
+    {
+      "claim": "光是執行 `cargo check`、甚至開發者用 VS Code 開啟專案觸發 `rust-analyzer` 背景檢查，就足以執行攻擊者寫在 `build.rs` 或巨集內的惡意負載。",
+      "verdict": "imprecise",
+      "reasoning": "型別檢查可能需要建置腳本的輸出或展開程序巨集，因此即使不產出最終執行檔，也可能執行這些程式碼。是否真的執行取決於腳本與巨集是否進入本次檢查路徑，以及 IDE 的設定。",
+      "correct_value": "`cargo check` 與啟用相關功能的 IDE 背景分析可能執行建置腳本或程序巨集。單純開啟專案不足以斷定執行。"
+    },
+    {
+      "claim": "`pull_request` 無法讀取任何 Repository Secrets；`pull_request_target` 可讀取所有 Secrets（含 `NPM_TOKEN`）。",
+      "verdict": "incorrect",
+      "reasoning": "章內修補後的工作仍使用 `pull_request_target`，卻已移除 `NPM_TOKEN` 的環境變數映射，顯示事件上下文與步驟取得的秘密是不同條件。提供的史料也未列出所有存放庫設定與秘密可用性例外，無法支持表中的絕對用語。",
+      "correct_value": "外部 fork 的 `pull_request` 預設受到權杖與秘密限制。`pull_request_target` 在基礎存放庫的上下文執行，工作可使用的秘密與權杖權限仍受設定、適用範圍及工作流程授權控制。"
+    },
+    {
+      "claim": "這一步直接把外部攻擊者尚未審查的 PR 程式碼拉進握有 `NPM_TOKEN` 的 Runner 執行，後續無論執行 `npm ci`、`npm test` 還是 `cargo build`，攻擊者都能直接回傳所有 Secret。",
+      "verdict": "incorrect",
+      "reasoning": "取得檔案與執行其中程式碼是不同步驟。後續是否執行 PR 控制的內容，取決於工作所用的指令與設定。即使發生執行，能接觸的秘密也受該行程實際授權限制。",
+      "correct_value": "在高權限工作中取得未受信任的 PR 程式碼，並在後續步驟執行該程式碼時，可能暴露該執行環境可存取的秘密。"
+    },
+    {
+      "claim": "把使用者可控的 GitHub 事件欄位直接寫入 `run:` 腳本，就會觸發 Script Injection。",
+      "verdict": "imprecise",
+      "reasoning": "按章內的解析模型，直接插值使欄位內容進入 Shell 原始碼。實際是否改變執行行為，仍取決於欄位允許的字元、插入位置以及周邊 Shell 語法。",
+      "correct_value": "將可控欄位直接插入 `run:` 會形成指令碼注入風險。在章內的固定 `printf` 腳本中，雙引號內的環境變數以單一資料參數傳遞。"
+    },
+    {
+      "claim": "總計：4 + 24 + 17 = 45 bytes（45 個 ASCII 字元）。",
+      "verdict": "correct",
+      "reasoning": "依章內三段文字逐段計數得到 4、24、17 個 ASCII 字元。ASCII 每字元占 1 byte，合計 45 bytes。",
+      "correct_value": "45 個 ASCII 字元，共 45 bytes。"
+    },
+    {
+      "claim": "展開結果（60 bytes）。",
+      "verdict": "incorrect",
+      "reasoning": "展開後單行包含 10 bytes 的固定前綴、45 bytes 的標題及 1 byte 的結尾引號。若把 YAML 區塊保留的結尾換行納入計算，另加 1 byte。",
+      "correct_value": "展示的單行為 56 bytes。若計入一個結尾換行，為 57 bytes。"
+    },
+    {
+      "claim": "假設 secrets.NPM_TOKEN 為標準 40 字元（`npm_` 前綴 4 bytes + 36 bytes 隨機碼），Runner 發出 HTTP POST，Content-Length = 40 bytes。",
+      "verdict": "imprecise",
+      "reasoning": "本地模擬令牌由 4 個前綴字元、10 個數字及 26 個小寫英文字母組成，合計 40 bytes。材料沒有證據顯示 40 字元是 npm 權杖的通用格式。請求是否成功也需要額外的環境條件。",
+      "correct_value": "章內本地模擬使用 40-byte ASCII 測試字串。若請求實際送出且本文為該字串的原始位元組，本文長度為 40 bytes。"
+    },
+    {
+      "claim": "所有使用 `^2.4.0` 範圍且未鎖定 Lockfile 的下游客戶與微服務下次建置時即自動載入惡意版本。",
+      "verdict": "incorrect",
+      "reasoning": "`^2.4.0` 接受大於等於 `2.4.0` 且小於 `3.0.0` 的一般版本，所以 `2.4.2` 符合範圍。範圍相容只證明它具備候選資格。下次建置是否重新解析並選到它，還取決於可用版本、來源與安裝方式。",
+      "correct_value": "`2.4.2` 符合 `^2.4.0`，重新解析且選中該版本的下游建置才會受影響。"
+    },
+    {
+      "claim": "從 PR 開啟到攻擊者伺服器收到 `NPM_TOKEN` 僅約 8–15 秒，完全在人工發現與關閉 PR 之前完成。",
+      "verdict": "imprecise",
+      "reasoning": "8–15 秒需要事件、排程、Runner 啟動與收件時間戳才能驗證。基準數字表中的逾時及請求抖動適用於其他系統路徑，無法用於推導此段延遲。人工反應時間也未量測。",
+      "correct_value": "端到端耗時取決於工作排程、Runner 啟動、網路及接收端狀態。材料未提供可驗證的時間區間或人工反應比較。"
+    },
+    {
+      "claim": "GitHub 官方託管的 Runner 屬於短生命週期：每次 job 啟動全新的虛擬機，結束後銷毀。",
+      "verdict": "imprecise",
+      "reasoning": "一次性執行環境描述生命週期，無法由此推出所有 Runner 規格的隔離單位均為獨立虛擬機。提供的史料沒有列出涵蓋的規格或例外。",
+      "correct_value": "應指定所用 GitHub-hosted Runner 規格，再描述每個 job 的環境生命週期及虛擬機或容器隔離方式。"
+    },
+    {
+      "claim": "GitHub OIDC Provider 會動態簽發一張短效 JWT，內含該次建置的加密身分宣告（Claims）。",
+      "verdict": "incorrect",
+      "reasoning": "章內的驗證流程只要求驗證簽章，沒有解密步驟。簽章可用來確認宣告的完整性與發行者，但不會使宣告內容保密。",
+      "correct_value": "有權請求 OIDC 權杖的工作可取得短效、帶簽章的 JWT，其承載的身分宣告可由接收方驗證。"
+    },
+    {
+      "claim": "只要是 `nexuspay/core` 倉庫裡的任何分支、任何 tag、甚至任何 PR，都能換取生產環境的部署角色。",
+      "verdict": "incorrect",
+      "reasoning": "依章內列出的 `sub` 格式，萬用字元涵蓋具有相同前綴的多種主體。這只說明一項比對條件成立。工作仍需獲准請求 OIDC 權杖，且權杖須符合受眾及角色信任政策的其餘條件。",
+      "correct_value": "`repo:nexuspay/core:*` 放寬該存放庫的 `sub` 限制。實際取得角色仍須符合 OIDC 權杖發行及 AWS STS 信任政策的全部條件。"
+    },
+    {
+      "claim": "正確做法是精確鎖定特定環境或受保護分支，並搭配 `job_workflow_ref` 限制僅允許特定發布 workflow 換取憑證。",
+      "verdict": "incorrect",
+      "reasoning": "JWT 內含某個宣告，無法推出 AWS IAM 可將它直接作為條件鍵使用。章內範例只展示 `sub`，也沒有提供支援直接比對 `job_workflow_ref` 的依據。此宣告描述可重用工作流程，也需要與呼叫端工作流程的識別資訊區分。",
+      "correct_value": "AWS 信任政策應驗證支援的 `aud` 與 `sub` 條件。若需要綁定可重用發布工作流程，可在適用時將其識別資訊納入 GitHub 自訂的 `sub`，再比對該主體。"
+    },
+    {
+      "claim": "SLSA Build L3 強制要求「建置環境與使用者可控制的建置腳本隔離」，從根本上防止遭投毒的建置腳本自行偽造「來源正常」的 Provenance。",
+      "verdict": "imprecise",
+      "reasoning": "建置腳本需要在建置環境中執行。章內實際推導出來的隔離目標，是使用者控制的步驟無法取得證明簽發能力。受保護的簽發方仍可能如實記錄一次使用惡意輸入的建置。提供的摘錄也沒有列出 SLSA 各級的完整規範。",
+      "correct_value": "應隔離建置執行與證明簽發控制，保護簽章憑證並防止建置步驟自行偽造來源證明。來源證明記錄產物如何產生，仍需依政策判斷建置輸入與流程是否可信。"
+    },
+    {
+      "claim": "Fulcio 核發一張有效期僅 10 分鐘的短效 X.509 程式碼簽章憑證；驗證端只需比對 Rekor 紀錄與 Fulcio 憑證鏈中的 OIDC 身分。",
+      "verdict": "incorrect",
+      "reasoning": "即使日誌記錄與憑證身分符合預期，若未檢查簽章是否有效且綁定待部署映像的摘要，便無法確認該映像就是被簽章的產物。提供的史料也沒有憑證樣本或服務版本可核對 10 分鐘數值。",
+      "correct_value": "驗證應涵蓋產物摘要與簽章的綁定、憑證鏈、預期發行者與身分，以及政策所需的透明日誌與時間證據。憑證有效期以實際服務配置及憑證記錄為準。"
+    },
+    {
+      "claim": "以 CycloneDX 或 SPDX 格式產出的 SBOM，記錄了映像檔或二進位檔內包含的所有直接與傳遞依賴版本與雜湊。",
+      "verdict": "incorrect",
+      "reasoning": "資料格式能表達元件、版本、雜湊及依賴關係，但無法替產生工具發現未辨識的元件，也無法補齊未蒐集的欄位。因此不能由格式推得完整涵蓋。",
+      "correct_value": "SBOM 記錄其產生流程辨識並納入的元件與依賴關係。涵蓋範圍、版本和雜湊欄位的完整度需按實際產物與工具結果確認。"
+    },
+    {
+      "claim": "未經 Cosign 簽章的 SBOM 本身可被攻擊者偽造，因此必須與產物本體一併簽章驗證。",
+      "verdict": "imprecise",
+      "reasoning": "供應鏈驗證需要確認 SBOM 來源、完整性與產物的對應關係。這些性質可由符合驗證政策的簽章或證明提供，從需求本身推不出必須使用 Cosign。簽章也不證明清單完整。",
+      "correct_value": "驗證 SBOM 時應確認其可信來源、完整性及與產物摘要的綁定。Cosign 是可用的實作之一。"
+    },
+    {
+      "claim": "高權限操作改採兩階段 `workflow_run` 隔離。",
+      "verdict": "imprecise",
+      "reasoning": "拆成兩個工作流程可建立權限邊界，但低權限流程傳入的快取、產物或其他資料仍可能被高權限流程採信。依章內 DAG 模型，這條傳遞邊仍需驗證。",
+      "correct_value": "兩階段流程須限制權限並驗證交接資料的來源、格式及用途。高權限步驟應避免執行低權限流程輸出的未受信任內容。"
+    },
+    {
+      "claim": "全域收緊權限：預設全部唯讀，僅授予單一 job 所需的最小權限。",
+      "verdict": "incorrect",
+      "reasoning": "全域 YAML 只列出 `contents: read`，該 job 另外宣告自己的 `pull-requests: read`。兩者都是明列個別權限，與註解所稱的全部唯讀不同。",
+      "correct_value": "工作流程層級僅授予 `contents: read`。`check-title` 的工作層級宣告只授予 `pull-requests: read`，未列出的相應權限不授予。範例的固定列印步驟本身未使用 GitHub API。"
+    },
+    {
+      "claim": "Sign container image with Cosign (Keyless OIDC)。",
+      "verdict": "incorrect",
+      "reasoning": "所列步驟呼叫的是 Cosign 安裝 Action。片段沒有簽章命令、待簽映像摘要或 OIDC 權限宣告，無法由安裝工具推得映像已完成簽章。提供的史料也沒有核對兩個 Commit SHA 的版本標籤。",
+      "correct_value": "將該步驟標示為安裝 Cosign。映像簽章需要在具備適當身分授權的獨立步驟對指定映像摘要執行，版本註解需以對應的上游提交證據核對。"
+    },
+    {
+      "claim": "建立一個本地雙來源 Mock npm Registry（支援同時查詢本地私有與模擬公有目錄，示範版本號搶佔與 `postinstall` 觸發）。",
+      "verdict": "incorrect",
+      "reasoning": "參考解答只封裝一個 `99.0.0` 套件並從本機 tarball 路徑安裝。命令沒有啟動 Registry、提供 `1.4.2` 候選套件或觸發來源間解析。第二次安裝仍使用同一個無 scope tarball，因而無法檢驗 scope 路由。",
+      "correct_value": "參考解答的示範範圍是本機 tarball 安裝時的生命週期腳本，以及 `--ignore-scripts` 對該腳本的影響。雙來源版本選擇與 scope 路由仍未驗證。"
+    },
+    {
+      "claim": "Alex Birsan (2021) — Dependency Confusion: How I Hacked Into Apple, Microsoft and Dozens of Other Companies：解析器優先序搶佔的經典實戰案例研究。",
+      "verdict": "imprecise",
+      "reasoning": "材料只有章末書目，沒有原文摘錄、出版記錄或可核對的位置。無法閉卷確認出版年份、事件涉及的公司或原文所支持的解析器行為。",
+      "correct_value": "可保留為待核對的延伸閱讀條目。年份與案例內容應以原文及可定位的史料查證。"
+    }
+  ]
+}

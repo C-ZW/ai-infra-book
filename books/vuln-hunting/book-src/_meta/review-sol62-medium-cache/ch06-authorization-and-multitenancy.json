@@ -1,0 +1,182 @@
+{
+  "chapter": "ch06-authorization-and-multitenancy.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "OWASP API Security Top 10:2023 把 BOLA、BOPLA 與 BFLA 分別列為 API1、API3 與 API5。",
+      "verdict": "correct",
+      "reasoning": "提供的史料摘錄逐項列出 API1 BOLA、API3 BOPLA、API5 BFLA，與章內編號逐一相符。",
+      "correct_value": "OWASP API Security Top 10:2023 的 API1 是 BOLA，API3 是 BOPLA，API5 是 BFLA。"
+    },
+    {
+      "claim": "BOLA（Broken Object Level Authorization，物件層級授權失效，歷史名稱為 IDOR）",
+      "verdict": "imprecise",
+      "reasoning": "章內按物件層級授權之失效定義 BOLA。IDOR 描述透過直接物件參照發生的典型越權情形，單憑這個關係無法推出兩個詞是歷史上可互換的名稱。提供的史料也沒有交代命名沿革。",
+      "correct_value": "IDOR 是常見的物件層級越權情形。若要主張名稱沿革，需補上相關歷史來源。"
+    },
+    {
+      "claim": "BOPLA 在 OWASP API Security Top 10:2023 中涵蓋了物件屬性層級的讀寫雙向越權（對應 2019 版分列的 API6 Mass Assignment（大量賦值）與 API3 Excessive Data Exposure（過度資料暴露））。",
+      "verdict": "imprecise",
+      "reasoning": "依章內定義，未授權讀取與未授權修改都屬於屬性層級的權限失效。提供的史料支持 2023 年的 API3 分類，但未附 2019 年條目或改版說明，無法獨立核對舊版編號與沿革。",
+      "correct_value": "BOPLA 涵蓋物件屬性的未授權讀取與寫入。2019 年條目編號及其與 2023 年版的關係需補史料。"
+    },
+    {
+      "claim": "OWASP API Security Top 10:2023 把 BOLA、BOPLA 與 BFLA 分別列為 API1、API3 與 API5，原因很單純：自動化掃描器讀不懂商業語意，而人工寫出的每一條 SQL、ORM 查詢與 DTO 綁定，都可能漏掉一個條件。",
+      "verdict": "imprecise",
+      "reasoning": "三類漏洞的區分可以由物件、屬性及功能的授權粒度推導。掃描與實作的限制可以解釋這些缺陷為何難以發現，但提供的史料只支持分類與編號，沒有記錄 OWASP 的分類動機。",
+      "correct_value": "OWASP 按物件、物件屬性及功能區分三類授權失效。若要說明官方採用該分類的原因，需引述改版說明或其他直接證據。"
+    },
+    {
+      "claim": "授權三元組與失效分類（API1 / API3 / API5）",
+      "verdict": "incorrect",
+      "reasoning": "章內公式列出 Subject、Action、Object、Context 四個獨立輸入，後續也逐項定義四者。小節標題與所採用的模型不一致。",
+      "correct_value": "授權四元組與失效分類（API1 / API3 / API5）。"
+    },
+    {
+      "claim": "JWT Access Token（RS256）有效期 = 900 s（15 分鐘）；併發尖峰 = 2,000 req/s",
+      "verdict": "correct",
+      "reasoning": "基準表列出 RS256、2048-bit RSA、900 秒與 2,000 req/s。900 除以每分鐘 60 秒等於 15 分鐘。req/s 的量綱是請求速率，無法單獨求出同時在途的請求數。",
+      "correct_value": "JWT 採 RS256、2048-bit RSA，有效期 900 秒（15 分鐘）。系統尖峰請求速率為 2,000 req/s。"
+    },
+    {
+      "claim": "標準結算手續費率 feeRate = 0.025（250 bps = 2.50%）",
+      "verdict": "imprecise",
+      "reasoning": "0.025 乘以 100 得 2.50%，乘以 10,000 得 250 個基點。換算成立，但提供的基準表沒有列出費率，章內所引的 running-examples.md 也未提供。",
+      "correct_value": "本例假設費率為 0.025，即 2.50% 或 250 bps。若稱為 NexusPay 標準費率，需補上基準資料。"
+    },
+    {
+      "claim": "只要每個交易開始時注入租戶識別碼，資料庫引擎就會在執行計畫（Query Plan）裡強制補上過濾謂詞，應用程式想漏寫 `WHERE tenant_id = ?` 也漏不掉。",
+      "verdict": "imprecise",
+      "reasoning": "按章內策略，受 RLS 約束的查詢只會取得租戶欄位符合交易上下文的列。但章內也列出具豁免的角色。即使策略生效，過濾結果也只會反映資料庫收到的租戶值，該值是否來自可信的授權上下文仍須由應用層保證。",
+      "correct_value": "在目標表已啟用 RLS、存取角色受有效策略約束，且資料查詢使用綁定正確租戶上下文的同一交易時，即使應用程式查詢省略租戶條件，該策略仍會限制可見資料列。"
+    },
+    {
+      "claim": "若應用程式在 PgBouncer transaction pooling 模式下用了工作階段級別的 `SET app.current_tenant_id` 而非交易作用域的 `SET LOCAL`，且交易結束後未重置狀態，後續重用同一條 PostgreSQL 後端實體連線且未覆寫該變數的請求，便可能沿用上一個租戶的 session 變數。",
+      "verdict": "correct",
+      "reasoning": "在章內給定的條件下，變數附著於後端工作階段，池化重用的是該工作階段，後續請求又沒有重置或覆寫它。因此租戶策略可能讀到前一次交易留下的值。",
+      "correct_value": "工作階段狀態未重置、同一後端連線被重用且變數未覆寫時，可能發生租戶上下文殘留。"
+    },
+    {
+      "claim": "另一個隱蔽故障發生在 PostgreSQL RLS 與連線池混用。多數 Node.js 服務透過 PgBouncer（transaction pooling 模式）連向 PostgreSQL 16。",
+      "verdict": "imprecise",
+      "reasoning": "提供的材料可用來分析這種部署配置的故障條件，但沒有調查樣本、部署統計或適用母體，無法判定此配置是否占多數。",
+      "correct_value": "本例假設 Node.js 服務透過採用 transaction pooling 的 PgBouncer 連接 PostgreSQL 16。"
+    },
+    {
+      "claim": "只要 `account_id` 全域唯一（無論是遞增整數還是可從報表、Webhook、錯誤訊息側漏的 UUIDv4），攻擊者就能用自己的 `:tid` 繞過 `TenantMatchGuard`，再把 `:aid` 換成受害租戶的帳戶 ID，越權讀取對方的帳戶資料與 `10,000` 分（`$100.00`）測試餘額。",
+      "verdict": "imprecise",
+      "reasoning": "全域唯一性只能推出識別碼會指向至多一個帳戶。要推出實際洩漏，還需要請求引用既有的他戶帳戶、有效的物件授權與 RLS 均未阻擋存取，以及輸出確實含所述欄位。基準表支持 10,000 分等於 $100.00。",
+      "correct_value": "路徑租戶比對只證明請求路徑上的租戶值與憑證相符。跨租戶資料洩漏需以未授權的既有帳戶確實被取出並回傳為判定依據。"
+    },
+    {
+      "claim": "如果 `ValidationPipe` 沒開 `whitelist: true`（或 DTO 屬性未加上 `class-validator` 裝飾器），客戶端送出額外欄位時，執行期的 `dto` 物件依然保留 `isVerified` 與 `feeRate`。",
+      "verdict": "incorrect",
+      "reasoning": "依本章後文，白名單以驗證裝飾器為依據。白名單生效時，缺少裝飾器會讓屬性無法列入白名單。啟用拒絕額外欄位的設定時，這類輸入會觸發拒絕。章內將缺少裝飾器誤列為額外欄位會保留的獨立條件。",
+      "correct_value": "若執行期未採用有效的白名單、明確映射或其他等效檢查，額外欄位可能保留。白名單生效時，未列入白名單的欄位會被剔除，或在啟用 `forbidNonWhitelisted` 時使請求被拒絕。"
+    },
+    {
+      "claim": "Controller 直接 `return await this.accountRepo.findOne(...)` 會把整張資料表載入的欄位全部序列化成 JSON 回傳。",
+      "verdict": "imprecise",
+      "reasoning": "按章內示例，查詢返回的是單筆物件。若查詢選取敏感欄位、將其載入物件，且該屬性會經過目前的序列化流程，回應才會包含它。查詢投影與其他回應轉換也會左右結果。",
+      "correct_value": "直接回傳查詢物件，可能暴露該筆物件已載入並被序列化的敏感屬性。"
+    },
+    {
+      "claim": "反向代理或中介層用 `req.path.startsWith('/v1/admin')` 阻擋非管理員，卻忽略大小寫（`/v1/Admin`）、尾斜線或路徑正規化差異。",
+      "verdict": "incorrect",
+      "reasoning": "按字串前綴定義，在原路徑尾端附加斜線不會改變前綴，因此尾斜線本身不會使這項檢查失去匹配。大小寫或正規化差異是否形成授權失效，要看授權層和實際路由層是否用不同規則把請求對應到受保護的功能。",
+      "correct_value": "若授權層與路由層對同一路徑的等價性判定不同，前綴式授權可能漏判受保護功能。應刪除把尾斜線單獨列為此一前綴判斷失效原因的說法。"
+    },
+    {
+      "claim": "下面針對 NexusPay 多租戶帳本 API 建立一份完整授權矩陣。",
+      "verdict": "imprecise",
+      "reasoning": "表格確實填滿 4 × 6 共 24 格，但 E5 的唯一允許角色 `platform_admin` 位於矩陣之外。R2 的定義只明列查詢與設定 Webhook，E2 註腳卻也給它修改 `displayName` 的權限。E4 是否涵蓋 R2 的查詢權限也可寫得更明確。",
+      "correct_value": "這是四個指定角色的 24 格矩陣。若要覆蓋本例全部角色，應列出 `platform_admin` 對六個端點的決策，並使 R2 的角色定義與 E2、E4 一致。"
+    },
+    {
+      "claim": "正常手續費 = 10,000 × 0.025 = 250 分（$2.50），淨撥款 = 9,750 分（$97.50）；竄改後手續費為 0 分，淨撥款為 10,000 分。",
+      "verdict": "correct",
+      "reasoning": "按題設費率先算出 250 分，再從結算本金 10,000 分扣除，得 9,750 分。零費率時，乘積為 0，淨撥款為全額。兩種情境的平台費用差額為 250 分。",
+      "correct_value": "正常手續費 $2.50，正常淨撥款 $97.50。零費率時手續費 $0.00、淨撥款 $100.00，每筆手續費差額 $2.50。"
+    },
+    {
+      "claim": "總結算筆數 = 100 req/s × 900 s = 90,000 筆；總手續費漏損估算 = 90,000 × 250 分 = 22,500,000 分 = $225,000.00。",
+      "verdict": "correct",
+      "reasoning": "100 除以 2,000 等於 5%。若題設的每一請求都代表一筆成功結算，900 秒共完成 90,000 筆。乘以每筆 250 分得 22,500,000 分，再除以 100 得 $225,000.00。系統尖峰速率本身無法證明這個結算吞吐量，也無法證明費率變更只持續一個 JWT 有效期。",
+      "correct_value": "在 900 秒內持續成功結算 100 筆／秒、且每筆少收 $2.50 的情境下，漏損估算為 $225,000.00。900 秒是本例計算窗口。"
+    },
+    {
+      "claim": "帳本直接盜領估算 = 500 × 10,000 分 = 5,000,000 分 = $50,000.00。",
+      "verdict": "correct",
+      "reasoning": "假設 500 個帳戶各有 10,000 分可用餘額，且每戶各有一次足額扣款成功，500 乘以 10,000 得 5,000,000 分，折合 $50,000.00。基準表支持單戶餘額及單次限額，500 戶及全數成功為本例假設。",
+      "correct_value": "500 戶各成功損失 $100.00 時，直接帳本損失為 $50,000.00。"
+    },
+    {
+      "claim": "E5 與 E2 屬於同一費率歸零效果的替代攻擊路徑，不重複累加損失。",
+      "verdict": "correct",
+      "reasoning": "以同一筆結算為單位，正常應收手續費只有一筆。兩個功能若都使該筆的有效費率變成零，差額仍是正常費用減零。若帳戶費率與租戶費率作用範圍不同，章內未提供費率優先順序，無法推定兩者影響的交易集合相同。",
+      "correct_value": "以受影響的結算筆數計算漏損，同一筆只計一次。若兩端點影響不同範圍，應依實際費率適用規則計算各筆差額。"
+    },
+    {
+      "claim": "這組推導說明為什麼授權漏洞在金融與多租戶 SaaS 裡幾乎直接對應最高等級風險。",
+      "verdict": "imprecise",
+      "reasoning": "示例可推導特定假設下的財務影響，沒有提供正式分級所需的可利用性、影響範圍或評分結果。基準表另列處置門檻，也沒有給出從損失金額直接轉換成最高等級的規則。",
+      "correct_value": "這些授權缺陷在本例條件下可能造成重大財務影響，正式嚴重度應依實際可利用性、影響範圍與適用評分規則判定。"
+    },
+    {
+      "claim": "當系統有 80 個端點分散在 12 個 Controller，每個端點各自用 `@Roles(...)` 或手寫 `if (user.id !== account.ownerId)`，必定出現新端點忘記加 Guard 的空窗。",
+      "verdict": "incorrect",
+      "reasoning": "端點與 Controller 數量可增加維護及驗證負擔，但這兩個數字無法推出一定存在漏掛。所有新端點恰好都經過授權檢查，仍符合題設的架構條件。",
+      "correct_value": "逐端點維護授權規則會增加漏掛風險。全域預設拒絕可使未宣告策略的端點無法預設放行。"
+    },
+    {
+      "claim": "這樣做的好處是能對整套授權矩陣做離線單元測試，不必啟動整個 HTTP 伺服器就能驗證 4 角色 × 6 端點的所有拒絕條件。",
+      "verdict": "imprecise",
+      "reasoning": "離線單元測試可以對 24 格的政策輸入檢查預期決策。實際端點還必須正確呼叫政策引擎、傳入對應的資源與上下文，並執行拒絕結果。單測政策本身無法證明這些整合條件。",
+      "correct_value": "離線測試驗證 24 格的政策決策。端點對政策的綁定、輸入與拒絕行為需另行驗證。"
+    },
+    {
+      "claim": "Service 層做「複合主鍵強制查詢」：即使有 RLS 兜底，Repository 方法簽章仍要求同時傳入 `(tenantId, accountId)`。",
+      "verdict": "incorrect",
+      "reasoning": "方法接受兩個參數，只能證明簽章要求兩個輸入。即使實際查詢也篩選兩個欄位，仍無法據此推導資料表宣告了由這兩欄組成的主鍵。章內也沒有提供相應的主鍵定義。",
+      "correct_value": "Repository 強制使用租戶與帳戶識別碼作為複合查詢條件。僅在資料表確實宣告兩欄共同組成主鍵時，才稱為複合主鍵查詢。"
+    },
+    {
+      "claim": "檢查是否未回傳 `403`。",
+      "verdict": "incorrect",
+      "reasoning": "章內矩陣本身就列出 404 與 400 也可能是預期的拒絕結果。未收到 403 只說明狀態碼不同，無法證明受限功能已執行。",
+      "correct_value": "以預期授權決策及受限功能是否實際執行判定。狀態碼用來比對 API 契約，持久化狀態用來確認有無未授權變更。"
+    },
+    {
+      "claim": "實測破口與情境數值推導",
+      "verdict": "imprecise",
+      "reasoning": "章內提供的是測試腳本、範例回應與情境估算，沒有附實際執行紀錄、對應的版本或前後資料庫狀態。節錄部分回應也不保證顯示指定欄位。可以驗算情境數字，無法確認實測結果。",
+      "correct_value": "若尚無執行紀錄，改稱「示範情境與數值推導」。若保留「實測」，需附足以核對預期決策和資料狀態的紀錄。"
+    },
+    {
+      "claim": "套用 RLS、交易內 `SET LOCAL`、`ValidationPipe(whitelist + forbidNonWhitelisted)` 與 `@Roles('platform_admin')` 後重新執行掃描，預期結果應轉為 `404`、`400`、`403`。",
+      "verdict": "correct",
+      "reasoning": "按本節完整設定，E1 的目標列被 RLS 過濾，且查無資料由 Controller 映射為 404。E2 的額外欄位觸發輸入拒絕，得到 400。E5 的授權 Guard 拒絕缺少平台管理角色的請求，得到 403。這是由前提推導的預期結果。",
+      "correct_value": "在交易上下文、查無資料映射、驗證管線與角色 Guard 均已正確接線時，E1、E2、E5 預期依序回傳 404、400、403。"
+    },
+    {
+      "claim": "透過 `NULLIF` 統一轉為 `NULL` 後，`tenant_id = NULL` 恆為 `UNKNOWN`（即不匹配任何資料列，預設拒絕 Fail-Closed），確保背景排程忘記設定租戶上下文時不會洩漏任何資料列。",
+      "verdict": "imprecise",
+      "reasoning": "未設定時依題設得到 NULL，空字串經 NULLIF 也得到 NULL。兩者轉成 bigint 後仍是 NULL，等值比較得到 UNKNOWN，因此這條策略不會允許該列。但整體拒絕還要求執行角色受 RLS 約束、沒有其他有效策略放行，且連線沒有殘留非空租戶值。章內自身已說明殘留值的可能性。",
+      "correct_value": "對受該策略約束的操作，缺少或清空租戶設定會使這條策略拒絕資料列。整體拒絕仍取決於角色、其餘策略及實際交易上下文。"
+    },
+    {
+      "claim": "為何在 PostgreSQL RLS 設定時，除了 `ENABLE ROW LEVEL SECURITY` 之外，通常還需要補上 `FORCE ROW LEVEL SECURITY`？",
+      "verdict": "imprecise",
+      "reasoning": "依章內給出的角色規則，`FORCE` 解決的是資料表擁有者預設略過 RLS 的問題。應用角色若另設為非擁有者且無豁免，所述隔離機制可在啟用 RLS 後約束該角色。是否通常需要 `FORCE` 取決於部署採用哪一種角色配置。",
+      "correct_value": "若需讓資料表擁有者的正常資料存取也受 RLS 約束，應設定 `FORCE ROW LEVEL SECURITY`。對另設的非擁有者、非超級使用者且無 `BYPASSRLS` 的應用角色，這項設定不是策略生效的必要條件。"
+    },
+    {
+      "claim": "PortSwigger 的三項指定實驗分別為 Apprentice、Practitioner、Practitioner，並各自對應章內所述的操作機制。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料只概述 Web Security Academy 的涵蓋範圍，未附三個實驗的官方頁面內容、難度或解題說明。題名可支持主題上的初步對照，但無法證實難度、特定覆寫標頭、路徑前綴或流程參數等細節。",
+      "correct_value": "可暫按題名對照物件授權、方法層級權限與多步驟流程授權。官方難度及具體操作細節需有各實驗的史料摘錄才能判定。"
+    }
+  ]
+}

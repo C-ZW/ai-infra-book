@@ -1,0 +1,206 @@
+{
+  "chapter": "ch04-authentication-and-sessions.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "只要簽章演算法用上 `RS256`（2048-bit RSA）、Access Token 過期時間設為 `900 s`（15 分鐘），系統看起來就已經安全了。",
+      "verdict": "correct",
+      "reasoning": "這是開場描述的安全印象，後文隨即否定其充分性。就可核對的規格而言，基準表列出 RS256 搭配 2048-bit RSA，且 900 ÷ 60 = 15。",
+      "correct_value": "NexusPay 採用 RS256、2048-bit RSA 與 900 秒 Access Token 有效期。這些規格本身不足以保證驗證安全。"
+    },
+    {
+      "claim": "當你把熱點設定或使用者權限放進應用層本地快取，並設定 `TTL = 300 s`（5 分鐘），你心裡很清楚這套設計的權衡：快取命中時省下跨網路查詢，代價是當上游資料庫修改或刪除該筆資料後，最多會有 `300 s` 的過期視窗（Stale Window），讓下游服務繼續讀到舊狀態；若要縮短視窗，就得引入主動失效通知（Pub/Sub Invalidation）或縮短 TTL。",
+      "verdict": "imprecise",
+      "reasoning": "若 TTL 從寫入快取時計算，且到期後停止使用舊值，更新剛好發生在快取寫入之後時，剩餘視窗接近 300 秒。若讀取會延長 TTL、到期後仍可使用舊值，或重新抓取的來源仍回傳舊值，單靠設定 TTL 推不出這個上限。",
+      "correct_value": "在固定 TTL、到期即停止使用舊值且更新後的來源不再回傳舊值的模型下，過期視窗最多 300 秒。"
+    },
+    {
+      "claim": "而離職工程師在權限撤銷前最後一秒拿到的合法 Access Token，只要仍在 `900 s` 有效期內，即使 JWKS 尚未完全失效或金鑰尚未替換，只要閘道仍能以對應公鑰驗過簽章，最長可繼續存取系統達 **`900 s`（15 分鐘）**。",
+      "verdict": "imprecise",
+      "reasoning": "既有 Token 必須同時滿足尚未過期與驗證端仍信任舊公鑰。若簽發在撤權前一秒，撤權時剩餘壽命是 899 秒。若同時自權威 JWKS 移除舊公鑰，並假設快取到期即停止使用舊鍵，兩個截止時間取較早者，因此上限是 300 秒。單純新增新鍵而保留舊鍵，則不會使既有 Token 提前失效。",
+      "correct_value": "立即移除舊鍵且快取硬性到期時，上限為 Token 剩餘壽命與舊鍵剩餘受信任時間的較小值，最長 300 秒。舊鍵若仍受信任，題述 Token 在撤權時剩 899 秒。"
+    },
+    {
+      "claim": "一旦驗證程式先讀取 Header 欄位再去決定「要用哪把金鑰、哪種演算法」才驗簽，就等於讓攻擊者反過來控制快取查表邏輯與信任根（Trust Anchor）。這已經不是資料過期問題，而是任意身分偽造。",
+      "verdict": "incorrect",
+      "reasoning": "章內防禦示例已提供反例。驗證端可先讀取不可信的 `kid`，再於伺服器預先限定的可信金鑰集中查表，同時限定演算法。輸入可以影響選中哪把已受信任的金鑰，卻無法擴張可信金鑰集合。",
+      "correct_value": "驗簽前可解析 Header 作為受約束的查表提示。允許 Header 改變可接受的演算法、金鑰類型或信任來源，才會破壞此處的信任邊界。"
+    },
+    {
+      "claim": "身分驗證漏洞很少來自 RSA 或 SHA-256 本身被暴力破解，幾乎全數發生在「**選擇驗證方式**」、「**解析重導向目標**」與「**狀態轉移原子性**」這三個邊界。",
+      "verdict": "imprecise",
+      "reasoning": "材料未提供漏洞母體、分類方法或統計數據。章內的 Session Fixation 也可由登入後未更新會話識別碼造成，即使所有狀態更新都以單一原子操作完成。",
+      "correct_value": "這三類是本章討論的部分失效邊界。材料不足以估計它們占所有身分驗證漏洞的比例。"
+    },
+    {
+      "claim": "持偽造的特權 JWT（有效期 `900 s`）作為高權限憑證，直接擊穿後續多租戶授權邊界（見 ch06）與非 REST 特權端點（見 ch07）。",
+      "verdict": "imprecise",
+      "reasoning": "驗簽通過只表示驗證端接受憑證。業務端是否授權仍取決於角色來源、租戶範圍與物件層權限。基準的 900 秒是正常 Access Token 的簽發規格，不能單獨證明有缺陷的驗證端也強制相同上限。資金提領、轉帳與帳號接管等影響同樣取決於下游檢查。",
+      "correct_value": "若下游將憑證中的身分或角色直接當成授權依據，受影響端點可能授予對應權限。實際影響與有效期間須依個別端點及驗證策略判定。"
+    },
+    {
+      "claim": "依據 RFC 7519 與 RFC 7515，一組 JWS（JSON Web Signature）格式的 JWT 由三段 Base64URL 字串以 `.` 串接：`Header.Payload.Signature`。",
+      "verdict": "correct",
+      "reasoning": "章內範例採用 JWS Compact Serialization。兩個句點分隔受保護標頭、承載 Claims 的 Payload 與簽章或 MAC。簽章輸入是前兩段編碼及其中間的句點，第三段存放運算結果。Base64URL 編碼不提供保密性。",
+      "correct_value": "對採 JWS Compact Serialization 的已簽署 JWT，格式為 `Header.Payload.Signature`，簽章輸入為 `ASCII(Header + '.' + Payload)`，其中前兩段已經過 Base64URL 編碼。"
+    },
+    {
+      "claim": "RFC 7515 §3.1 定義了 `alg: \"none\"` 作為不帶完整性保護的 Unsecured JWS，原意是給「外層已有 TLS 或其他加密通道保護」的場景使用。",
+      "verdict": "imprecise",
+      "reasoning": "章內可從空簽章段推得憑證自身沒有簽章完整性保護。所附證據未摘錄該節，也未提供足以確認條文位置或制定原意的史料。傳輸通道的保護範圍與憑證的發行來源驗證是不同問題。",
+      "correct_value": "`none` 表示憑證自身沒有 JWS 簽章完整性保護。精確的規範節次與設計背景須核對規範原文。"
+    },
+    {
+      "claim": "當驗證端實作未在進入驗簽前強制拒絕 `alg: \"none\"`（或大小寫變體如 `None`、`NONE`），只依 `header.alg` 分派驗證分支時，攻擊者只要把 Header 改為 `{\"alg\":\"none\",\"typ\":\"JWT\"}`、修改 Payload 的 `sub` 或 `role`，並將第三段簽章清空保留結尾句點（`Header.Payload.`），驗證函式就會直接回傳通過。",
+      "verdict": "incorrect",
+      "reasoning": "缺少顯式拒絕分支不等於存在接受分支。演算法查表可以拒絕未知值，驗證流程也可以統一要求簽章。大小寫變體是否被當成同一值，取決於實作是否做了大小寫正規化或不區分大小寫的比對。",
+      "correct_value": "只有驗證端確實接受不帶簽章的憑證並信任其中 Claims 時，才會發生此處所述的驗證失效。"
+    },
+    {
+      "claim": "這是最具殺傷力的結構性漏洞（經典脈絡可追溯至 CVE-2015-9235 與多數早期 JWT 套件預設行為）。",
+      "verdict": "imprecise",
+      "reasoning": "材料未提供該 CVE 記錄、早期套件版本與行為樣本，也未提出可比較各類漏洞影響的尺度。所附證據僅列出相關 RFC 與實驗資源。",
+      "correct_value": "將 RSA 驗證公鑰錯用為對稱密鑰會破壞簽章驗證的信任前提。CVE 歸屬與早期套件行為的普遍程度須另核史料。"
+    },
+    {
+      "claim": "未鎖定 algorithms      | 通過驗簽，取得 role: \"admin\"，有效期 900 s",
+      "verdict": "incorrect",
+      "reasoning": "本例另設了驗證器接受不匹配的金鑰類型這項前提。省略演算法白名單本身不足以推得驗簽成功。即使驗簽成功，`role` 欄位會否授予管理權仍取決於業務端。時間戳之差只證明樣本宣告的期間為 900 秒。",
+      "correct_value": "驗證結果取決於演算法與金鑰類型約束、Claims 檢查和下游授權規則。範例宣告的有效期間為 900 秒。"
+    },
+    {
+      "claim": "PKCS#1（`BEGIN RSA PUBLIC KEY`）與 PKCS#8（`BEGIN PUBLIC KEY`）格式差異",
+      "verdict": "incorrect",
+      "reasoning": "章內前文已把 `BEGIN PUBLIC KEY` 對應到 X.509 SubjectPublicKeyInfo。它與 PKCS#1 的 RSA 公鑰結構不同。PKCS#8 是私鑰封裝，把 SPKI 公鑰標成 PKCS#8 會混淆格式。",
+      "correct_value": "`BEGIN RSA PUBLIC KEY` 是 PKCS#1 RSA 公鑰，`BEGIN PUBLIC KEY` 是 X.509 SPKI 公鑰。"
+    },
+    {
+      "claim": "將其轉換為標準 X.509 SPKI PEM 格式後，包含結尾換行字元 `\\n` 共佔 **451 bytes**。",
+      "verdict": "correct",
+      "reasoning": "在題設的 2048 位元模數及指數 65537 下，DER 正整數編碼為模數加一個前導零。採常見的 RSA SPKI 演算法識別編碼時，整份 DER 為 294 位元組，Base64 後為 392 字元。以每行 64 字元及 LF 排版，本文有 7 個換行，首尾標記連各自的 LF 合計 52 位元組，總長為 392 + 7 + 52 = 451。",
+      "correct_value": "在上述 DER 編碼、每行 64 字元、LF 換行且保留檔尾 LF 的條件下為 451 位元組，移除最後一個 LF 後為 450 位元組。"
+    },
+    {
+      "claim": "Length = 36 + 1 ('.') + 90 = 127 bytes",
+      "verdict": "correct",
+      "reasoning": "逐欄計算 ASCII JSON，Header 的兩組鍵值為 13 與 11 位元組，加上括號和逗號得 27。Payload 的四組鍵值為 16、14、16、16 位元組，加上括號和三個逗號得 67。無填充 Base64URL 長度分別為 36 與 90，再加一個句點得 127。兩個時間戳相減也確為 900 秒。",
+      "correct_value": "Header 原文 27 位元組、編碼後 36 位元組。Payload 原文 67 位元組、編碼後 90 位元組。Signing Input 為 127 位元組。"
+    },
+    {
+      "claim": "輸出 MAC = HMAC-SHA256(K, Signing Input) -> 32 bytes (256 bits)\n  -> Base64URL (ceil(32 * 8 / 6) = 43 bytes，對某組實際產生的 2048-bit RSA SPKI PEM):\n  AP23Qv1HqS8svbaRv6Gt6jP2vehKFe19BtvPaxrQAfE",
+      "verdict": "imprecise",
+      "reasoning": "SHA-256 的輸出為 32 位元組，無填充 Base64URL 需要 43 個 ASCII 字元。章內未附該組 PEM 的完整位元組或完整模數。位元組數和公開指數可用於檢查格式，無法確定列出的 MAC。",
+      "correct_value": "MAC 為 32 位元組，無填充 Base64URL 為 43 字元。具體字串因缺少完整輸入金鑰而無法核對。"
+    },
+    {
+      "claim": "只要差一個位元組，HMAC 雜湊就會完全不同。",
+      "verdict": "incorrect",
+      "reasoning": "章內已列出 HMAC 對短金鑰補零的規則。若兩個短金鑰僅相差一個末尾零位元組，補零後可能完全相同。題述長 PEM 則會先經 SHA-256 處理，因此換行差異通常會改變結果，但有限長度的雜湊不能保證不同輸入永無碰撞。",
+      "correct_value": "實作應以實際驗證所用的金鑰位元組為準。對本例的長 PEM，檔尾換行不同通常會使 MAC 不同，驗簽是否失敗取決於最終比對值。"
+    },
+    {
+      "claim": "若目標是固定內容的系統檔（如 `/proc/sys/kernel/randomize_va_space` 內容恆為 `\"2\\n\"`），同樣可預測金鑰位元組。",
+      "verdict": "incorrect",
+      "reasoning": "章內與基準只提供 ASLR 模型的頁大小與典型熵值，沒有將該核心設定固定為 2。該檔反映系統目前的設定，不能用典型環境的值推定所有環境的檔案內容。",
+      "correct_value": "該檔案的實際內容取決於核心設定。`2\\n` 只能作為明示的環境假設。"
+    },
+    {
+      "claim": "若驗證器將 `jku` 抓回來的金鑰直接寫入全域 `kid` 快取表，攻擊者只要在自己的惡意 `jku` 回傳相同的 `kid`，就能毒化本地 `300 s` TTL 的 JWKS 快取，連帶影響後續正常流程。",
+      "verdict": "imprecise",
+      "reasoning": "共用 `kid` 命名空間會讓不同來源混用，但相同識別碼只證明能發生鍵值衝突。是否污染後續驗證取決於快取是否接受該來源、是否覆蓋或優先讀取該值，以及是否再核對發行者與金鑰來源。300 秒是基準設定的 TTL，並不保證每次污染都持續 300 秒。",
+      "correct_value": "若不可信來源可以填入後續可信流程會讀取的同一個快取項目，後續驗證可能使用錯誤金鑰。快取應依可信發行者及受控金鑰來源隔離。"
+    },
+    {
+      "claim": "回呼請求必須綁定發起登入的同一個瀏覽器會話（透過 `state` 與 PKCE）。",
+      "verdict": "imprecise",
+      "reasoning": "`state` 與會話綁定時可驗證回呼對應到哪一筆請求。PKCE 將授權碼兌換綁到該流程的 verifier，是否同時防止回呼被套用到另一會話，取決於 verifier 與登入交易如何綁定。材料未提供條文摘錄支持兩者在所有情境下都必須同時使用。",
+      "correct_value": "客戶端須驗證回呼與發起時的登入交易及會話相符，並依所採流程部署適當的 CSRF 防護與 PKCE。"
+    },
+    {
+      "claim": "若該登出端點直接重導向至 `next`（或載入外部資源洩漏 `Referer`），授權碼便會外洩給 `evil.example`。",
+      "verdict": "incorrect",
+      "reasoning": "依題示 URL，`next` 和 `code` 是第一個請求的兩個不同查詢參數。若第二次重新導向只把 `next` 的值寫入 `Location`，目標 URL 不包含 `code`。跨來源請求的 `Referer` 是否包含原始查詢字串，另取決於有效的 Referrer Policy。",
+      "correct_value": "題設只證明授權碼會送到登出端點。是否再外洩，取決於端點是否將該參數帶往外部，或瀏覽器是否依有效政策送出含查詢字串的 Referer。"
+    },
+    {
+      "claim": "若授權伺服器未強制要求 PKCE，或允許客戶端省略 `code_challenge_method` 退回 `plain`（明文直接傳送），任何從瀏覽器紀錄、代理日誌或開放重導向攔截到 `code` 的攻擊者都能直接兌換 Access Token。",
+      "verdict": "incorrect",
+      "reasoning": "使用 `plain` 時，驗證端仍須核對 verifier，單獨取得 `code` 不會同時取得 verifier。缺少 PKCE 的情況也可能仍要求客戶端驗證，且授權碼可能已被消費或過期。",
+      "correct_value": "缺少 PKCE 或使用 `plain` 會降低授權碼保護。能否兌換仍取決於該授權碼的狀態、客戶端驗證以及是否具備兌換所需的 verifier。"
+    },
+    {
+      "claim": "如果系統允許從 URL Query 或預先植入的 Cookie 讀取 `sid`，而登入處理函式只寫入 `req.session.userId = user.id` 卻沒有呼叫 `req.session.regenerate()`，攻擊者只要先在登入前把自己的 `sid` 塞給受害者，等受害者完成登入（甚至通過 MFA），攻擊者手持原本的 `sid` 就直接擁有已驗證身分。",
+      "verdict": "correct",
+      "reasoning": "依章內模型，登入只修改既有 `sid` 所指向的伺服器端狀態。若受害者與另一方都能使用同一個 `sid`，登入後兩者仍會讀到同一份已驗證狀態。MFA 可以保護登入過程，但在此模型中不會更新會話識別碼。",
+      "correct_value": "若攻擊者已知的匿名 `sid` 在登入後仍可用於存取同一會話，該識別碼便取得登入後權限。身分驗證成功時應更換識別碼並使舊識別碼失效。"
+    },
+    {
+      "claim": "兩個請求都會讀到 `revoked: false`，各自產出 `RT_2a` 與 `RT_2b` 並觸發兩次成功回應。",
+      "verdict": "imprecise",
+      "reasoning": "依章內偽碼，若兩次查詢都發生在第一次作廢更新之前，且後續操作沒有條件更新、鎖定或唯一性約束，兩個請求可能各自發出下一個憑證。若第二次查詢發生在第一次作廢之後，第二筆請求會在查詢階段遭拒。",
+      "correct_value": "非原子的先查後改允許同一 Refresh Token 被成功消費兩次。結果取決於操作交錯和資料庫約束。"
+    },
+    {
+      "claim": "使用資料庫單一原子語句（如 `UPDATE refresh_tokens SET revoked = true WHERE token_hash = $1 AND revoked = false RETURNING *`）",
+      "verdict": "correct",
+      "reasoning": "在 `token_hash` 唯一、且只對成功更新的結果進行換發的前提下，第一筆成功更新把 `revoked` 改為真，後續更新無法再次滿足同一條件。這一條語句足以建立單筆舊憑證的至多一次消費。",
+      "correct_value": "條件式原子更新可保證同一筆舊憑證至多被成功消費一次。後繼憑證建立與全族撤銷仍需獨立保證交易一致性。"
+    },
+    {
+      "claim": "則必須確保在 `UPDATE ... WHERE ... RETURNING` 回傳 `0` 筆資料時，立即判斷為 Token Reuse",
+      "verdict": "incorrect",
+      "reasoning": "參考解答中的更新同時要求雜湊存在、未用過、未撤銷且未過期。任何一項不符都可回傳零列。即使查到 `family_id`，也只證明舊記錄存在，無法區分已消費、已撤銷與自然到期。",
+      "correct_value": "零列表示本次沒有完成消費。應檢查持久化的使用狀態，再依明確的重用判定與撤銷政策處理該家族。"
+    },
+    {
+      "claim": "僅第 1 條搶得鎖定者回傳 `200` 與新 Token，其餘 4 條回傳 `401` 且隨後連帶使該 `family_id` 全面失效。",
+      "verdict": "imprecise",
+      "reasoning": "假設五個請求都對應同一筆起初有效的記錄，條件更新只保證至多一筆消費成功。若後繼憑證在另一筆交易中建立，撤銷可能先掃完現有列，之後才有新的未撤銷列插入。若採交易隔離或家族鎖定，個別 HTTP 結果仍取決於如何處理衝突、重試與撤銷。",
+      "correct_value": "將家族狀態、舊憑證消費、後繼憑證建立與家族撤銷置於可序列化的流程，才能保證家族撤銷後沒有可用分支。精確的回應數與狀態碼需由實作決定。"
+    },
+    {
+      "claim": "關於利用 HTTP/2 Single-Packet Attack 在 `< 1 ms` 視窗內穩定觸發這類競爭條件的技術細節，會在第 12 章完整展開。",
+      "verdict": "imprecise",
+      "reasoning": "基準中的 `< 1 ms` 量測的是伺服器端請求到達抖動。請求進入資料庫的時間、查寫交錯與成功率還受排程及交易行為影響。未提供第 12 章或測量結果，無法確認穩定觸發或跨章敘述。",
+      "correct_value": "基準設定的伺服器端到達抖動小於 1 毫秒。競爭是否發生與成功率須以該實作的資料庫操作順序和測量結果判定。"
+    },
+    {
+      "claim": "僅依賴 `900 s` 過期與 `300 s` JWKS 快取，缺乏緊急撤銷通道 | 密碼重設、帳號停權或金鑰外洩後仍可繼續存取達 `900 s`",
+      "verdict": "imprecise",
+      "reasoning": "密碼重設或停權後，既有憑證若仍可驗簽，存取上限是其剩餘壽命。金鑰外洩是不同事件。只要相應公鑰仍受信任，正常簽發規格的 900 秒無法為整起事件建立上限。移除舊鍵後，快取剩餘時間才會限制舊鍵的接受視窗。",
+      "correct_value": "既有憑證的上限由剩餘壽命及適用的撤銷機制共同決定。金鑰外洩的接受視窗應從停止信任該鍵及驗證端快取失效的時點計算。"
+    },
+    {
+      "claim": "重點在於**消除任何由輸入決定的動態分支**。",
+      "verdict": "incorrect",
+      "reasoning": "範例本身就依輸入決定是否接受演算法、發行者、受眾與 `jti`，也會依標頭資訊在可信 JWKS 中尋找適用金鑰。這些分支是落實政策的必要部分。",
+      "correct_value": "由可信設定定義允許的演算法、金鑰來源、發行者與受眾，並將輸入驅動的查表與判斷限制於該政策內。"
+    },
+    {
+      "claim": "maxTokenAge: '900s', // 對齊 900 s Access Token 有效期基準",
+      "verdict": "imprecise",
+      "reasoning": "最大 Token 年齡限制的是驗證當下距 `iat` 的時間。它與要求 `exp` 存在以及約束 `exp - iat` 是三件不同的事。片段未顯式要求 `exp`，也未檢查聲明的有效期間。所附資料沒有 `jose` 版本或文件摘錄可核對其預設行為。",
+      "correct_value": "用 `maxTokenAge` 限制 Token 年齡。若規格還要求每個 Token 帶 `exp` 且聲明的有效期間不超過 900 秒，應明確要求並驗證這兩項條件。"
+    },
+    {
+      "claim": "針對高敏操作或剛觸發密碼重設／登出的帳號，檢查 Redis jti 撤銷集合",
+      "verdict": "imprecise",
+      "reasoning": "中間件沒有操作類型或帳號事件的分支。在 `jti` 存在時，每次通過前段 JWT 驗證的呼叫都會查 Redis。片段也未展示帳號事件如何把受影響的 `jti` 寫入撤銷集合。",
+      "correct_value": "此函式要求 `jti` 並對每個通過前段驗證的 Token 查詢撤銷集合。密碼重設或登出能否撤銷憑證，取決於事件是否確實寫入相應撤銷記錄。"
+    },
+    {
+      "claim": "RFC 9700 — OAuth 2.0 Security Best Current Practice（2025 年正式定版）：全面取代舊版威脅模型，要求精確比對 `redirect_uri`、全面強制 PKCE `S256`、淘汰 Implicit Flow 並規範 Refresh Token 輪換與重用偵測。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據未摘錄 RFC 9700 的發布資訊或規範性條文，無法核對定版日期、取代範圍、比對例外及各項要求適用的客戶端或流程。章內使用了「全面強制」與「淘汰」，但沒有提供足以判定這些措辭是否符合原文的證據。",
+      "correct_value": "可將精確比對已註冊的重新導向 URI、採用 PKCE S256 與原子化 Refresh Token 輪換列為 NexusPay 的防禦政策。RFC 9700 的日期、規範強度、適用範圍和例外須逐條核對原文。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy：*JWT attacks* 與 *OAuth 2.0 authentication vulnerabilities* 實驗室系列，涵蓋本節所有實作變體。",
+      "verdict": "imprecise",
+      "reasoning": "所附證據支持 Academy 涵蓋 OAuth 等主題，但連結指向研究頁，材料沒有實驗目錄、各實驗內容或逐項對照，無法核實列出的完整名稱及涵蓋範圍。",
+      "correct_value": "可將 Academy 列為相關練習資源。個別實驗名稱、可用性與是否涵蓋每種變體，須以實驗目錄及內容核對。"
+    }
+  ]
+}

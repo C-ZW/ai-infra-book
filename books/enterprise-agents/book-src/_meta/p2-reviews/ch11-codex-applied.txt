@@ -1,0 +1,19 @@
+已依據 Codex 審查報告更新 [ch11-enterprise-patterns-in-action.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch11-enterprise-patterns-in-action.md)、[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch11/index.ts) 與 [main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch11/main.py)，並保留既有 6 個骨架標題與 `2026-11` Claude 5.5 基準：
+
+### 主要修正項目
+1. **場景 A（`OrderOps`）**：
+   - **金流冪等性**：改為在 DB 交易內保留額度、以業務鍵認領操作並持久化 `idempotency_key` 與 `status`，向金流端傳送同一 key，逾時或衝突時先對帳或讀回終止狀態，並由後端重驗租戶、權限、幣別、金額與可退額度。
+   - **快取與 SSE 控制**：更正 `cache_control` 斷點位置（最後一個靜態 `system` block）、分流／唯讀階段省略寫入工具、配對 `tool_result` 與保留 `thinking` blocks；要求等 `message_stop` 後依 `stop_reason`（含 `refusal`、`pause_turn` 等）分流。
+   - **吞吐、延遲與成本帳**：區分尖峰模型請求速率（約 `60` req/s）與在途工單併發池、說明 `18s` wall-clock 與 `3.5s` 重試上限；補充 `ch08` 移除 Batch 折扣後為 `$17,399.47/月`，以及 `Silent Miss` 正確分母、`71.43%` 上限與 `$174,750/月` 重寫成本。
+2. **場景 B（合約審核）**：
+   - **API 格式修正**：將 `thinking: { type: "enabled", budget_tokens: 2048 }` 改為 `thinking: { type: "adaptive" }` 與 `output_config.effort`；修正 `custom_id` 符合 `^[a-zA-Z0-9_-]{1,64}$`；補充受信任政策正文、`output_config.format` 與原生 Citations 互斥說明，以及 `canceled` 狀態處理。
+   - **驗證器與範例同步**：在 prose、`index.ts` 與 `main.py` 中拒絕空引文與重複 `clauseId`，統一 `clause_not_found`／`missing_verbatim_citation` 錯誤碼，並於 `main.py` 補齊 `build_nightly_batch_requests`（已執行 `python3 main.py` 驗證通過）。
+3. **場景 C（On-call 分診）**：
+   - **證據鏈與沙盒邊界**：`verifyTriageEvidenceChain` / `verify_triage_evidence_chain` 排除 `sandbox_repro` 計入遙測來源（僅計 `logs`/`metrics`/`trace`），並要求具備受信任 runner 驗證的 `sandbox_repro` 紀錄；釐清 MCP Client 與 Connector 差異、Prompt Injection 防護與自我檢核第 3 題時間窗上界（`now + 30s`）。
+4. **連結與表述**：修正 `ch06` 與 `ch08` 失效連結、改用相對路徑連結範例，並將配置門檻與 ROI 數字標註為示例配置與假設情境。
+
+### 未採納項目
+- 無刻意駁回項目；所有 Codex 提出的技術、數學、API 與程式碼問題均已採納並修正。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

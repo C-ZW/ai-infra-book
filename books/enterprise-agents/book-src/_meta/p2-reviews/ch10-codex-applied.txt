@@ -1,0 +1,22 @@
+已完成 `ch10` 章稿與雙語範例的修正與對齊，並通過 TS（`npx tsx ch10/index.ts`）與 Python（`python3 ch10/main.py`）執行驗證（兩者皆輸出 `Total spans recorded: 6`）。
+
+### 修正摘要
+
+1. **章稿技術、數學與架構修正**（[ch10-observability-and-operations.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch10-observability-and-operations.md)）：
+   - **基準與快取因果**：明確區分 `$0.012`（全套優化目標）與 `$0.1015`（全 Sonnet、停用快取基準，依 ch01 首輪 `6,000` 起算）；將 `20×` 標為近似值；`85%` 標為特定工作負載目標，並補充讀寫皆零的多重診斷原因。
+   - **四小時事故重算**：改用未取整平均流量 `8,333.33` 筆，修正為正常 `$100.00`（`$25.00/hr`）、事故 `$845.83`（`$211.46/hr`）、淨增額 `$745.83`（總成本 `8.46×`、淨增額 `7.46×`）；5 分鐘觀測窗為 `173.61` 筆、淨增額 `$15.54`、理論節省 `$730.30`。
+   - **燃燒上限與併發量綱**：補充 `$0.144/s` 燃燒速率、`174s`／`313s` 觸及時間、`$107.23` 整小時估算與 `$518.40/hr` 整小時尖峰；將 `60` 更正為 **LLM 呼叫／秒**而非連線槽位，並區分硬逾時與 `2.5s / 18s` SLO 路徑期限。
+   - **遙測、採樣與指標**：對齊 OTel GenAI 語意慣例（`gen_ai.provider.name`、`gen_ai.operation.name`、`CLIENT`、`gen_ai.usage.input_tokens` 含快取讀寫、`gen_ai.response.finish_reasons` 陣列）；要求在尾部採樣前產出全量計數器與直方圖，並以 `Σ cache_read / Σ total_input` 計算 token 加權比例。
+   - **冪等與帳本**：將 PostgreSQL 主鍵改為每次實際上游呼叫的 `event_id`（保留 `upstream_request_id` 與 `NUMERIC(12, 8)`），並區分外部副作用的業務操作鍵。
+   - **Shadow、Canary、漂移與整合邊界**：補充工具閘道封鎖副作用、PII 遮罩、樣本量檢查（`28.8` 分鐘／`2,500` 筆日流量）、分層線上漂移監控、`strict: true` / `output_config.format` / Thinking / MCP Connector / Batch 邊界，以及相對路徑連結與 `Pass^k` 參照。
+
+2. **程式碼對齊修正**（[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch10/index.ts)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch10/main.py)）：
+   - 將 `checkAndRecord` / `check_and_record` 拆分為 `checkBeforeSend`（`check_before_send`）與 `recordUsage`（`record_usage`），確保已發生的費用不會被提前回傳漏記，並區分 `>=` 與 `>`。
+   - 更新 OTel 屬性命名與型別（支援 `string[]`、`gen_ai.usage.input_tokens` 含快取讀寫），TS `UsagePayload.stop_reason` 補齊 `refusal`、`stop_sequence`、`pause_turn`、`model_context_window_exceeded` 與 `null`。
+   - Turn 1 補入模擬 `agent.tool` Span，使完整 Trace 樹為 `6` 筆 Span，並將阻斷狀態正確傳遞至根節點 Span。
+
+### 未採納／維持現狀項目
+- **未變更 `shared/types.ts` 與 `shared/types.py`**：為避免影響其他章節共用計價 helper，維持現有固定情境教學實作，並在 `ch10` 正文中明確標註其教學邊界與生產帳本應保留的欄位。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

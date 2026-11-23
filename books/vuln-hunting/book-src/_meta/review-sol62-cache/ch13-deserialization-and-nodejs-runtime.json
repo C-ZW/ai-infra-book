@@ -1,0 +1,146 @@
+{
+  "chapter": "ch13-deserialization-and-nodejs-runtime.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "物件字面值 `const a = { __proto__: { x: 1 } }` 會改變 `a` 的原型；`JSON.parse` 會建立名為 `\"__proto__\"` 的自有屬性。",
+      "verdict": "correct",
+      "reasoning": "字面值中的這種屬性定義會指定新物件的原型。JSON 解析則依鍵名建立自有資料屬性，無須透過繼承的 setter 賦值，因此解析本身也不會修改共享原型。",
+      "correct_value": "所示字面值會設定新物件的原型。標準 JSON 解析會保留同名自有資料屬性。"
+    },
+    {
+      "claim": "只要一個看似無害的設定合併函式允許攻擊者寫入 `__proto__` 或 `constructor.prototype`，污點不會停留在當前請求的區域變數裡，而是會寫進整個 Node.js 行程共享的原型物件。",
+      "verdict": "imprecise",
+      "reasoning": "結果取決於目標物件與合併方式。單純賦值可能只改變目標物件自己的原型。章中遞迴合併的跨物件影響來自實際寫入共享原型，屬性也只會被透過該原型解析且未遮蔽它的物件繼承。",
+      "correct_value": "發生共享原型寫入時，影響範圍是使用該原型且未遮蔽相關屬性的物件。"
+    },
+    {
+      "claim": "只要把 `Object.prototype.isAdmin = true` 或 `Object.prototype.role = \"admin\"` 寫入原型鏈，就能讓所有未顯式初始化該欄位的物件在讀取 `user.isAdmin` 時回傳 `true`，直接繞過授權檢查。",
+      "verdict": "incorrect",
+      "reasoning": "屬性查找依鍵名進行，寫入 `role` 不會改變 `isAdmin` 的讀取結果。即使寫入 `isAdmin`，原型鏈未包含該原型的物件也不會繼承它。授權影響取決於檢查是否採信繼承值。",
+      "correct_value": "授權檢查必須讀取遭影響的同名屬性、實際取得繼承值，並據此放行，才會造成授權繞過。"
+    },
+    {
+      "claim": "再觸發 `/api/v1/health/diag`，`cat /tmp/pp_rce_ok` 應印出子行程 PID，證明 RCE 成立。",
+      "verdict": "imprecise",
+      "reasoning": "章中提供的伺服器程式不足以推出這個結果。標準函式庫如何處理呼叫端選項取決於實際版本，材料沒有固定 Node.js 版本，也沒有提供對應原始碼或執行紀錄。既存的標記檔也不能證明本次執行成功。",
+      "correct_value": "將此結果標為未驗證。成立與否須有特定 Node.js 版本的行為證據，以及能歸因於本次執行的觀測結果。"
+    },
+    {
+      "claim": "若目標呼叫的是 `child_process.spawn(\"git\", [\"--version\"])` 這類非 Node 執行檔，單靠 `NODE_OPTIONS` 不會觸發解析；此時攻擊者需同時汙染 `Object.prototype.shell = \"/bin/sh\"`，讓 `spawn` 改經由 shell 啟動，進而把參數或環境變數轉化為命令執行。",
+      "verdict": "incorrect",
+      "reasoning": "依章內前提，`NODE_OPTIONS` 由 Node.js 執行時期解析。把固定的非 Node 命令交給 shell 執行，並不能推出有 Node.js 行程啟動，也不能推出環境變數的內容會被解讀成命令。",
+      "correct_value": "僅經 shell 啟動固定的非 Node 命令，不足以證明 `NODE_OPTIONS` 被解析或發生任意命令執行。"
+    },
+    {
+      "claim": "唯有直接汙染 `Object.prototype.env`，才能讓 `options.env` 變成攻擊者控制的物件並覆寫子行程的 `NODE_OPTIONS`。",
+      "verdict": "incorrect",
+      "reasoning": "即使完全採用章中簡化的 `options.env || process.env`，也只能推出真值的 `options.env` 優先。該值可能來自自有屬性，因此無法推出指定的共享原型路徑是必要條件。實際環境變數列舉行為仍須查閱對應版本。",
+      "correct_value": "簡化模型只說明選項物件與預設環境的取值優先順序。"
+    },
+    {
+      "claim": "Node.js 20+ 與 V8 現代版本在底層引入了 V8 Sandbox（Ubercage，保留 `1 TiB` 連續虛擬位址空間並將內部指標壓縮為 `32 bits` 相對偏移）。",
+      "verdict": "imprecise",
+      "reasoning": "基準表寫 `1 TiB`，史料摘錄寫 `1 TB`，兩者按單位定義分別為 2^40 與 10^12 bytes。若偏移以位元組為單位，32 位元只能涵蓋 4 GiB，因此兩個規格不能直接解讀成同一個可定址範圍。摘錄也未給出 Node.js 20 及後續發行版的啟用證據。",
+      "correct_value": "書內模型可沿用 `1 TiB` 保留空間與 `32 bits` 壓縮偏移兩項數字。實作描述應交代各自的區域、基底與偏移單位。Node.js 啟用範圍待核。"
+    },
+    {
+      "claim": "原型鏈汙染發生在合法的 JavaScript 語意層，不會被 V8 Sandbox 攔截。",
+      "verdict": "correct",
+      "reasoning": "依提供的隔離模型，V8 Sandbox 約束的是低階記憶體存取邊界。一般的原型屬性查找與賦值可在該邊界內發生，因此不能由記憶體隔離推得應用程式的原型受到保護。",
+      "correct_value": "V8 Sandbox 的記憶體隔離本身不會阻止符合 JavaScript 語意的原型汙染。"
+    },
+    {
+      "claim": "以 `ejs`（< 3.1.10 或未啟用嚴格選項隔離的版本）為例，當下次任何頁面渲染該模板時，便會觸發任意程式碼執行。",
+      "verdict": "imprecise",
+      "reasoning": "材料未提供修補差異、選項處理原始碼或特定設定下的證據。即使接受章中對編譯行為的描述，已快取的模板也可能不再經過相關編譯流程，因而不能推出下一次任何渲染必然觸發。",
+      "correct_value": "影響須以套件版本、選項來源、編譯路徑與快取狀態限定。`3.1.10` 的版本分界待核。"
+    },
+    {
+      "claim": "Java（`ObjectInputStream`）或 Python（`pickle`）原生就支援在反序列化過程執行建構子或 `__reduce__`。",
+      "verdict": "incorrect",
+      "reasoning": "這句將物件還原與序列化階段的鉤子混在一起。Java 一般 `Serializable` 類別的建構子不會按正常建立實例的方式執行。Python 的 `__reduce__` 通常是在序列化時提供重建描述，反序列化時可能呼叫的是描述所指定的可呼叫物件。",
+      "correct_value": "Java 反序列化可觸發還原鉤子，並依類別機制執行特定建構子。Python `pickle` 還原時可執行序列化資料指定的重建行為。"
+    },
+    {
+      "claim": "在 `js-yaml` 3.x 版本中，預設的 `yaml.load()` 採用包含擴充型別的 Schema；自 `js-yaml` 4.0.0 起，官方將 `yaml.load()` 的預設行為改為等效於舊版的 `safeLoad()`。",
+      "verdict": "imprecise",
+      "reasoning": "材料未附兩個主要版本的預設 Schema 定義、變更紀錄內容或匯出項目。由函式名稱與章中示例，無法判定完整的版本範圍，也無法判定新舊 API 的所有預設行為是否等效。",
+      "correct_value": "依版本列出 `load()` 的預設 Schema 與自訂標籤支援情形。舊版與新版宜比較是否接受相關 JS 標籤，整體等效性待核。"
+    },
+    {
+      "claim": "歷史知名的 `node-serialize` 使用 `_$$ND_FUNC$$_` 前綴格式，反序列化時直接呼叫 `eval('(' + str + ')')`。",
+      "verdict": "imprecise",
+      "reasoning": "章內的程式碼描述可以支持條件式推論：若不可信輸入確實被交給求值函式，資料邊界就可能觸發程式執行。材料沒有套件版本或對應原始碼，無法獨立判定此前綴與實作是否準確。",
+      "correct_value": "將套件的具體前綴、實作及受影響版本列為待核。"
+    },
+    {
+      "claim": "若使用 `plainToInstance()` 將未經嚴格清理的 JSON 轉為類別實例，且未開啟 `ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })`，攻擊者附帶的額外欄位會直接掛載到 DTO 實例上。",
+      "verdict": "imprecise",
+      "reasoning": "未啟用這組驗證選項，只能確定少了這一道檢查。轉換器本身的欄位規則、DTO 設定及後續資料映射，都可能先排除額外欄位。",
+      "correct_value": "當轉換與驗證流程保留額外欄位，後續又將 DTO 的欄位批次寫入實體時，才有覆寫內部欄位的風險。"
+    },
+    {
+      "claim": "對於長度為 n = 28 的連續 'a'，相鄰字元之間共有 n - 1 = 27 個「切分點」；共有 2^(n-1) = 2^27 = 134,217,728 種群組切分方式。",
+      "verdict": "correct",
+      "reasoning": "把 28 個字元切成非空連續群組時，每個相鄰間隙都有切或不切兩種選擇，而且每組選擇唯一對應一種完整切分，因此有 2^27 種。",
+      "correct_value": "134,217,728 種完整切分。"
+    },
+    {
+      "claim": "總回溯步數 ≈ 2^28 = 268,435,456 步；在一般伺服器 CPU 上，V8 Irregexp 執行單次回溯狀態轉移約需 20 ns；阻塞時間約 5.37 秒。",
+      "verdict": "imprecise",
+      "reasoning": "完整切分數、部分匹配的搜尋節點數與引擎的實際狀態轉移次數是不同的量。章中未建立它們的換算，也未提供每步 20 ns 的測量依據。若將步數與每步耗時都視為模型假設，相乘得到 5.36870912 秒，算術吻合。",
+      "correct_value": "5.37 秒是指定假設下的模型估計。實際耗時須由對應版本、設定與硬體的量測支持。"
+    },
+    {
+      "claim": "複雜度為 `O(2^n)`，因此 `n` 每增加 2，步數乘以 `2^2 = 4` 倍。以 `5 × 10^7 steps/s` 計算，阻塞時間從約 `5.37 s` 增至約 `21.47 s`。",
+      "verdict": "imprecise",
+      "reasoning": "大 O 給出漸近上界，無法單獨推出相鄰兩個指定輸入長度的比例。若明確採用章中的 `2^n` 步模型，再除以指定吞吐量，兩個耗時與四倍比例都算對。",
+      "correct_value": "在步數取 `2^n` 且吞吐量固定的模型下，步數與耗時均變為四倍，估計耗時約 21.47 秒。"
+    },
+    {
+      "claim": "Node.js keepAliveTimeout = 5 s（已超過連線保活上限）；僅需連續送出 6 個並發惡意請求，即可讓處理占用 > 32 s，直接觸發上游 504 Gateway Timeout。",
+      "verdict": "incorrect",
+      "reasoning": "基準數值是 5 秒及 30 秒，但前者關乎回應完成後的連線閒置，後者關乎上游相鄰兩次讀取之間的等待。即使總處理時間超過 32 秒，也不能推出某一個請求的上游讀取間隔超過 30 秒。還需要知道請求如何分派及何時送出回應。",
+      "correct_value": "活躍請求的同步運算超過 5 秒，不代表觸及保活逾時。判斷 504 須檢查個別上游請求的讀取等待及回應狀態。"
+    },
+    {
+      "claim": "單次 5.37 s 的 Event Loop 凍結會造成約 10,740 個正常結帳與提領請求被迫積壓在佇列中。",
+      "verdict": "imprecise",
+      "reasoning": "若整段期間維持 2,000 req/s，乘積確為約 10,740。這估計的是到達量。基準未說明有多少流量屬於結帳與提領、多少送往受阻的 Worker，或其佇列能容納多少請求。",
+      "correct_value": "若總流量持續維持尖峰速率，5.37 秒內約到達 10,740 個請求。實際積壓量須依工作行程分流、佇列容量與拒絕情形判定。"
+    },
+    {
+      "claim": "在本機測試時，`elapsedMs` 通常落在 `2,000–8,000 ms`；重新執行 ReDoS 測試，`elapsedMs` 將穩定維持在 `< 1 ms`。",
+      "verdict": "imprecise",
+      "reasoning": "材料沒有多次量測、硬體配置或引擎版本。演算法的成長率無法給出絕對毫秒數，也無法保證每次呼叫的上界。",
+      "correct_value": "將兩個時間區間列為待量測。修補後應以指定環境的實測延遲與輸入增長趨勢描述結果。"
+    },
+    {
+      "claim": "先檢查 `input.length <= MAX_LEN`（例如 Webhook 名稱上限 `128 bytes`）。",
+      "verdict": "incorrect",
+      "reasoning": "JavaScript 字串的 `.length` 計算 UTF-16 碼元。當輸入含非 ASCII 字元時，UTF-8 編碼後的位元組數可以超過 `.length`，因此這項檢查無法執行一般的 128 位元組限制。",
+      "correct_value": "若規格限定 128 個 UTF-8 位元組，應檢查 UTF-8 編碼後的長度。若使用 `.length`，規格應寫成 128 個 UTF-16 碼元。"
+    },
+    {
+      "claim": "完整修補程式碼中的 `safeDeepMerge` 可以安全遞迴合併巢狀物件。",
+      "verdict": "incorrect",
+      "reasoning": "若目標已有某個自有屬性且值為 `null`，`typeof null` 仍是 `\"object\"`，因此程式會把 `null` 傳進下一層。來源巢狀物件含有待處理的鍵時，下一層對目標做自有屬性檢查或賦值就會拋出錯誤。",
+      "correct_value": "遞迴前應確認目標值是非 `null` 且符合合併規格的容器。若不符合，應依規格初始化容器或拒絕輸入。"
+    },
+    {
+      "claim": "先用 JSON Schema（如 `ajv` 設定 `additionalProperties: false`）或 `zod` 驗證並剝離未定義欄位。",
+      "verdict": "imprecise",
+      "reasoning": "`additionalProperties: false` 表達的是額外屬性使資料不符合結構。從這項限制本身無法推出驗證器會改寫資料，或回傳已剝除額外欄位的物件。",
+      "correct_value": "依所用驗證器與設定，明確指定額外欄位是拒絕還是剝除。若要剝除，需配置對應行為並使用處理後的結果。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 提供章中所列的對應實驗，且其遠端程式碼執行實驗涵蓋章中指定的各項技巧。",
+      "verdict": "imprecise",
+      "reasoning": "來源摘錄只支持 Academy 涵蓋現代 Web 與 API 安全議題，未提供實驗目錄、題目內文或題目與技巧的對照位置。",
+      "correct_value": "可保留 Academy 作為外部練習來源。個別題名與涵蓋內容待核。"
+    }
+  ]
+}

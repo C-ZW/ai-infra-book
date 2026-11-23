@@ -1,0 +1,140 @@
+{
+  "chapter": "ch09-file-parsers-and-xxe.md",
+  "reviewer": "codex:gpt-6.2-sol:low",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "在 POSIX 作業系統中，路徑解析最終由核心 VFS 的 `path_lookupat()` 逐段處理目錄項（dentry）與 `inode`。",
+      "verdict": "incorrect",
+      "reasoning": "句子把可移植的路徑解析語意與特定核心的內部實作混為一談。POSIX 路徑語意無法推出核心函式名稱，材料也未提供 Linux 版本及各種開檔操作的呼叫路徑。",
+      "correct_value": "以 POSIX 路徑解析語意說明 `.`、`..` 與程序根目錄。若要點名 Linux 核心函式，應限定核心版本及適用操作。"
+    },
+    {
+      "claim": "過濾器使用非遞迴的 `filename.replace(\"../\", \"\")`：輸入 `....//` 經一次替換後，殘餘字元剛好拼回 `../`。",
+      "verdict": "correct",
+      "reasoning": "原字串有四個點與兩個斜線。首次匹配移除第三、第四個點及第一個斜線，剩餘兩個點與一個斜線。",
+      "correct_value": "一次替換後為 `../`。"
+    },
+    {
+      "claim": "`path.join()` 只做字串拼接與語法級正規化，不會檢查結果是否仍位於基準目錄之下。正規化後只用字串前綴判斷，會將 `/uploads-secret` 誤認為 `/uploads` 下的路徑。",
+      "verdict": "correct",
+      "reasoning": "詞法正規化只依路徑元件歸約。另一個目錄名稱可以共享相同的字串前綴，因此 `startsWith` 成立也無法推出目錄包含關係。",
+      "correct_value": "詞法檢查需辨認完整目錄元件的邊界。實際檔案操作仍須維持檔案系統層的限制。"
+    },
+    {
+      "claim": "若上傳目錄允許寫入 symlink 或硬連結，VFS 解析到該 `inode` 時仍會跟隨連結目標跳出沙箱。",
+      "verdict": "incorrect",
+      "reasoning": "符號連結包含由系統繼續解析的目標路徑。硬連結是指向同一 inode 的另一個目錄項，開檔時沒有第二條目標路徑可供追蹤。兩者可能破壞應用程式預期的隔離，但機制不同。",
+      "correct_value": "符號連結可能使路徑解析離開應用程式指定的目錄。硬連結可能讓該目錄內的名稱存取與其他名稱共享的 inode，前提是檔案系統與權限允許建立該連結。"
+    },
+    {
+      "claim": "現代 Node.js、Python 3 與新版 libc 介面已明確拒絕路徑中的 `\\x00`。",
+      "verdict": "incorrect",
+      "reasoning": "傳統 libc 路徑介面接收以 NUL 結尾的 C 字串。介面只有指標而沒有原始輸入長度，因此無法判斷終止符後還有上層原先視為同一路徑的資料。",
+      "correct_value": "應限定到實際會驗證內嵌 NUL 的語言 API。以 C 字串傳遞路徑的 FFI 邊界應在轉換前驗證完整輸入。"
+    },
+    {
+      "claim": "ZIP 規範（PKZIP APPNOTE.TXT）並未規定檔名欄位不可包含 `../` 或絕對路徑前綴。",
+      "verdict": "imprecise",
+      "reasoning": "提供的材料只有規範連結，未摘錄相應版本的檔名條款。欄位能表示某個字串，無法推出規範允許該字串。",
+      "correct_value": "歸檔讀取器可能遇到含不安全路徑成分的條目名稱，因此解壓縮器仍須執行目的目錄邊界檢查。對格式相容性的主張須引用指定版本的檔名條款。"
+    },
+    {
+      "claim": "未設防的 Node.js `adm-zip` 舊版、Python `zipfile.ZipFile.extract()` 早期實作，會直接拼接歸檔條目名稱並寫入磁碟。",
+      "verdict": "imprecise",
+      "reasoning": "材料未標示受影響版本，也未提供對應程式碼或公告。手寫範例的行為無法證明這兩個函式庫在特定版本的行為。",
+      "correct_value": "將結論限定於直接使用未驗證條目路徑的解壓縮器。具名歷史案例應附受影響版本及對應證據。"
+    },
+    {
+      "claim": "自我檢核第 3 題將第二個 TAR 條目寫為 `link/pwn`，並稱「名稱同樣不含 `..` 或 `/`」。",
+      "verdict": "incorrect",
+      "reasoning": "該名稱中間有一個 `/`。題目指定的過濾條件只檢查開頭的 `/`，兩種敘述的範圍不同。",
+      "correct_value": "該名稱不含 `..`，且不以 `/` 開頭。目錄外寫入還取決於解壓縮器是否允許建立與跟隨連結，以及程序是否具備寫入權限。"
+    },
+    {
+      "claim": "檔名總長度為 `12 + 4 + 7 + 12 = 35 bytes`。",
+      "verdict": "correct",
+      "reasoning": "檔名全部由 ASCII 字元構成。四個三字元元件與後續三段的長度相加為 35。",
+      "correct_value": "35 bytes。"
+    },
+    {
+      "claim": "`{\"secret\":\"pwned\",\"endpoint\":\"http://10.0.0.5/hook\"}` 的內容長度為 `51 bytes`，據此列出中央目錄與歸檔結尾的精確偏移。",
+      "verdict": "incorrect",
+      "reasoning": "最後一段包含 20 個 URL 字元、兩個引號與一個右大括號，共 23 bytes。四段相加為 10 + 8 + 11 + 23 = 52。依檔案資料長度推算的後續位置也因此不一致。",
+      "correct_value": "內容長度為 52 bytes。建議用無害的歸檔條目示範欄位長度、偏移及總長度如何隨資料長度變動。"
+    },
+    {
+      "claim": "情境 A 給出「完整位元組結構與路徑狀態追蹤」，且「結果直接覆寫了位於應用程式根目錄下的 Webhook 密鑰設定檔」。",
+      "verdict": "imprecise",
+      "reasoning": "章內將 CRC-32 標成範例值，且資料長度已與標頭不符。詞法路徑歸約只能確定候選路徑，無法證明歸檔被接受、檔案被開啟或寫入成功。",
+      "correct_value": "此處只建立詞法解析結果。實際覆寫需以有效歸檔、解壓縮器行為及目的檔案寫入權限為前提。"
+    },
+    {
+      "claim": "當 XML 解析器讀取到外部實體宣告時，會主動發起 `file://`、`http://`、`https://` 甚至 `php://`、`expect://` 等協定請求。",
+      "verdict": "incorrect",
+      "reasoning": "實體宣告提供識別資訊，是否載入還取決於解析器的處理階段、解析選項、實體解析器及可用的協定處理器。材料沒有證明列出的實作支援同一組協定。",
+      "correct_value": "解析器在組態允許且實際解析外部資源時，才可能透過環境支援的處理器讀取本機資源或發出網路請求。"
+    },
+    {
+      "claim": "XML 1.0 §2.8 的「Entity Value」限制會使 `SYSTEM` 識別字串中的參數實體引用非法，因此必須載入遠端外部 DTD。",
+      "verdict": "incorrect",
+      "reasoning": "`SYSTEM` 後方是系統識別字面值，與 XML 文法中的 `EntityValue` 屬不同語法項目。§2.8 對內部子集中參數實體引用位置的限制，無法證成所引用的字面值會進行實體替換，也無法推出必須採用遠端 DTD。",
+      "correct_value": "分別說明內部子集的參數實體位置限制與系統識別字面值的語意。將網路可達性及外部資源載入列為該情境的假設。"
+    },
+    {
+      "claim": "Error-Based XXE 利用 XML 允許「重新定義既有實體」的特性，覆寫本地 DTD 裡的某個參數實體。",
+      "verdict": "incorrect",
+      "reasoning": "重複宣告的繫結以先出現者為準。將順序效果描述為覆寫既有宣告，會讓讀者誤以為後宣告者生效。指定的本地 DTD 是否存在，以及錯誤是否會顯示敏感資料，也取決於部署與解析器。",
+      "correct_value": "說明實體採用第一個繫結宣告，並把本地 DTD 可用性、解析組態及錯誤可見性列為必要條件。"
+    },
+    {
+      "claim": "執行 `%exfil;` 後會發起 HTTP GET 並完成無回顯外帶。修補後重送歸檔會回傳 `400 Bad Request`。",
+      "verdict": "imprecise",
+      "reasoning": "提供的腳本只描述本地輔助程式，沒有服務端配置、請求紀錄或例外處理程式碼。解析順序無法單獨證明網路請求送達，路徑檢查拋出例外也無法推出 HTTP 狀態碼。",
+      "correct_value": "將外連與 `400` 寫成測試驗收條件。`400` 取決於端點是否將驗證例外映射為該狀態碼。"
+    },
+    {
+      "claim": "同源提供 `Content-Type: image/svg+xml` 的 SVG 下載或檢視時，內嵌腳本會直接在受害者瀏覽器執行。",
+      "verdict": "incorrect",
+      "reasoning": "來源與 MIME 型別無法決定資源的執行上下文。把 SVG 當文件直接開啟、當圖片嵌入或當附件下載，適用的腳本規則不同。",
+      "correct_value": "同源 SVG 若以允許執行腳本的文件上下文呈現，可能造成 Stored XSS。應明確限定載入方式與適用的瀏覽器政策。"
+    },
+    {
+      "claim": "Headless Chrome 載入本地檔案或內網服務後，會直接把內容繪製進最終產出的 PDF 頁面。防禦應啟用 `--disable-file-access-from-files`。",
+      "verdict": "imprecise",
+      "reasoning": "圖框能否載入與列印取決於文件來源、渲染器政策、可達性及回應是否允許嵌入。材料未提供 Chromium 版本或旗標文件，無法確認所列旗標有效。",
+      "correct_value": "將本地檔案或內網內容出現在 PDF 描述為有條件的風險。以部署版本及實際驗證為依據，限制渲染程序的檔案權限與網路存取。"
+    },
+    {
+      "claim": "ImageMagick 預設開放所有 Delegate，並依 Magic Bytes 決定解碼器與委派程式。",
+      "verdict": "imprecise",
+      "reasoning": "章內同時指出 `policy.xml` 可限制委派，因此僅憑套件名稱無法推定有效組態。材料未提供特定版本、發行套件或政策內容，也不足以確認具名歷史漏洞與協定的對應關係。",
+      "correct_value": "副檔名檢查無法保證使用預期解碼器。實際辨識與委派取決於版本、組建、輸入方式及有效政策。具名歷史漏洞應引用對應公告。"
+    },
+    {
+      "claim": "`65535 × 65535` 像素解壓後需要約 `16 GiB` 記憶體。",
+      "verdict": "imprecise",
+      "reasoning": "相乘得到 4,294,836,225 像素。以每像素 4 bytes 且整張影像同時進入未壓縮緩衝區計算，得到 17,179,344,900 bytes，約為 16 GiB。原句省略了像素格式與緩衝方式。",
+      "correct_value": "若完整配置一張每像素 4 bytes 的未壓縮影像，單一緩衝區約需 16 GiB。實際峰值依像素格式、解碼策略與附加緩衝而異。"
+    },
+    {
+      "claim": "`resolveSafePath()` 能回傳安全落於 `baseDir` 內的絕對路徑，並防禦已存在的 symlink 逃逸。",
+      "verdict": "incorrect",
+      "reasoning": "函式先檢查詞法邊界，再檢查已存在父目錄的實際路徑。它沒有驗證最終檔案元件，父目錄不存在時也會略過該步驟。函式回傳字串後，檢查結果與後續開檔操作沒有綁定。",
+      "correct_value": "此函式只提供詞法檢查與部分既有父目錄檢查。安全寫入應在同一檔案操作中強制目的目錄邊界與連結政策，並處理新建目錄、既有目的檔及競爭條件。"
+    },
+    {
+      "claim": "關閉 `LIBXML_NOENT` 可作為徹底禁用 DTD 與外部實體的安全組態。`fast-xml-parser` 預設不處理外部 DTD 網路或檔案請求。",
+      "verdict": "imprecise",
+      "reasoning": "實體替換、DTD 處理、外部資源載入及展開上限是不同控制項。材料沒有指定版本，也沒有提供這些選項的文件或測試結果。",
+      "correct_value": "依實際解析器與版本確認拒絕 DTD、禁止外部資源解析及限制資源消耗的有效設定。將 `LIBXML_NOENT` 限定為實體替換相關選項。"
+    },
+    {
+      "claim": "Lab B 所列 PortSwigger 練習均可作為這三個模組的 Practitioner 關卡。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 僅支持 Academy 提供 Web 安全訓練，未列出個別練習的標題、難度或分級。",
+      "correct_value": "保留練習名稱作為待核讀項目。每題的 Practitioner 標籤須有對應練習頁證據才能確認。"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "唯讀工具單次 timeout 設為 5s，若逾時或連線重置可直接重試 2 次（總預算 5s × 3 = 15s，未計退避）。",
+      "verdict": "correct",
+      "reasoning": "首次執行加上重試 2 次共 3 次呼叫，每次 timeout 上限 5s，未計退避時總時間上限為 5s × 3 = 15s，與文中計算一致。",
+      "correct_value": "5s × 3 = 15s（未計退避）"
+    },
+    {
+      "claim": "本地 Token Bucket 限流器補充速率設為租戶配額的 90%，例如 2,400 RPM 配額對應 36 calls/s。",
+      "verdict": "correct",
+      "reasoning": "2,400 RPM ÷ 60 s/min = 40 calls/s；取 90% 為 40 × 0.9 = 36 calls/s，與文中一致。",
+      "correct_value": "36 calls/s"
+    },
+    {
+      "claim": "base_delay_ms = 500ms、max_delay_ms = 30,000ms，前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s；同步 API 請求總 wall-clock 上限 120s，兩次 60s 呼叫即會耗盡同步預算；分流目標為 p95 ≤ 2.5s、多步處置 p95 ≤ 18s。",
+      "verdict": "correct",
+      "reasoning": "依公式 min(30000, 500 × 2^(attempt-1))，attempt = 1..4 的退避上限分別為 500ms (0.5s)、1000ms (1s)、2000ms (2s)、4000ms (4s)，總和為 0.5 + 1 + 2 + 4 = 7.5s。單次 HTTP timeout 60s × 2 = 120s，恰等於同步 wall-clock 上限 120s。延遲 SLO（分流 p95 ≤ 2.5s、多步工具處置 p95 ≤ 18s）亦與 baseline 一致。",
+      "correct_value": "前 4 次退避上限依序為 0.5s、1s、2s、4s（合計 7.5s）；2 × 60s = 120s；SLO 為 2.5s / 18s"
+    },
+    {
+      "claim": "Batch API 提供 50% 折扣（Sonnet 5.5 為 $1.00 / $5.00 per MTok）。",
+      "verdict": "correct",
+      "reasoning": "對照 baseline 與 source-evidence，Claude Sonnet 5.5 牌價為 Input $2.00 / Output $10.00 per MTok，Batch API 50% 折扣後為 $1.00 / $5.00 per MTok，完全吻合。",
+      "correct_value": "50% 折扣，Sonnet 5.5 為 $1.00 / $5.00 per MTok"
+    },
+    {
+      "claim": "Worked Example：OrderOps 日工單量 50,000 筆／天（1,500,000 筆／月，以 30 天計），尖峰流量 12 req/s（平均 0.5787 req/s，尖峰約 20.7×），單筆平均 5 次 API 呼叫，尖峰每秒 API 呼叫數 = 60 calls/s（3,600 RPM）。",
+      "verdict": "correct",
+      "reasoning": "50,000 × 30 = 1,500,000 筆／月；平均流量 = 50,000 ÷ 86,400 ≈ 0.5787037 req/s（四捨五入為 0.5787 req/s，baseline 四捨五入記為 0.58 req/s）；尖峰倍率 = 12 ÷ 0.5787037 = 20.736×（約 20.7×）；尖峰 API 呼叫率 = 12 req/s × 5 calls/req = 60 calls/s = 60 × 60 = 3,600 RPM。所有數值推導正確。",
+      "correct_value": "平均 0.5787 req/s（尖峰約 20.7×），尖峰 API 呼叫率 60 calls/s（3,600 RPM）"
+    },
+    {
+      "claim": "Worked Example：假設配額上限為 2,400 RPM（40 calls/s），按名目配額 40 calls/s，尖峰淨超額 20 calls/s，持續 30 秒累積 600 個 API 呼叫；尖峰後平均流量 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空。",
+      "verdict": "correct",
+      "reasoning": "2,400 RPM ÷ 60 = 40 calls/s；淨超額 = 60 - 40 = 20 calls/s；30 秒累積 = 20 × 30 = 600 calls。平均 API 呼叫率 = 0.5787037 req/s × 5 = 2.8935 calls/s（約 2.89 calls/s）；排空餘裕 = 40 - 2.89 = 37.11 calls/s；排空時間 = 600 ÷ 37.11 ≈ 16.168 s（約 16.2 秒）。推導與文中一致。",
+      "correct_value": "累積 600 calls，排空餘裕 37.11 calls/s，約 16.2 秒排空"
+    },
+    {
+      "claim": "Worked Example：按章內 90% 限流設定（36 calls/s），持續 30 秒累積 (60 - 36) × 30 = 720 個 API 呼叫（若尖峰開始時桶滿且立即放行 burst = 54，則剩 666 個，約 20.1 秒排空；無初始額度約 21.8 秒）。",
+      "verdict": "correct",
+      "reasoning": "限流速率 36 calls/s 下，淨超額 = 60 - 36 = 24 calls/s，30 秒累積 24 × 30 = 720 calls。扣除初始滿桶 burst = 54 後剩 720 - 54 = 666 calls。尖峰後在 36 calls/s 限流下之排空餘裕 = 36 - 2.8935 = 33.1065 calls/s（或 36 - 2.89 = 33.11 calls/s）；有初始桶額度時排空時間 = 666 ÷ 33.11 ≈ 20.11 s（約 20.1 秒），無初始桶額度時 = 720 ÷ 33.11 ≈ 21.75 s（約 21.8 秒）。推導正確。",
+      "correct_value": "無初始桶額度累積 720 個（約 21.8 秒排空），扣 burst = 54 剩 666 個（約 20.1 秒排空）"
+    },
+    {
+      "claim": "動手做範例：第一次執行因退款金額 $300 超過 $250 自動核准上限，會寫入 llm_turn、tool_call 與 hitl_pause 共 3 筆事件並回傳 waiting_hitl；人工核准寫入 hitl_resume 後，續跑寫入 tool_call 與 completed，最終累積 6 筆事件。",
+      "verdict": "correct",
+      "reasoning": "第一階段寫入 3 筆事件（llm_turn、tool_call、hitl_pause），人工審批寫入第 4 筆（hitl_resume），續跑寫入第 5 筆（tool_call）與第 6 筆（completed），合計 3 + 1 + 2 = 6 筆事件，且續跑時因 paused 為真跳過 call_llm()，不重複呼叫 LLM，計數與程式邏輯一致。",
+      "correct_value": "第一階段 3 筆事件，核准並續跑後共 6 筆事件"
+    },
+    {
+      "claim": "自我檢核第 3 題參考解答：20 req/s × 5 = 100 calls/s（6,000 RPM），名目配額為 3,600 RPM（60 calls/s），淨超額率為 40 calls/s，持續 45 秒累積 40 × 45 = 1,800 個 API 呼叫（約 37.5s 抵達 1,500 告警線）；若沿用 90% 限流（54 calls/s），未扣初始桶額度時積壓 (100 - 54) × 45 = 2,070 個。",
+      "verdict": "correct",
+      "reasoning": "尖峰呼叫率 = 20 × 5 = 100 calls/s = 6,000 RPM；名目配額 = 3,600 ÷ 60 = 60 calls/s；淨超額 = 100 - 60 = 40 calls/s；45 秒累積 = 40 × 45 = 1,800 calls；抵達 1,500 告警線時間 = 1,500 ÷ 40 = 37.5s。90% 限流速率 = 60 × 0.9 = 54 calls/s；淨超額 = 100 - 54 = 46 calls/s；45 秒累積 = 46 × 45 = 2,070 calls。所有數值完全正確。",
+      "correct_value": "名目配額下累積 1,800 個（37.5s 達 1,500），90% 限流下未扣初始桶額度累積 2,070 個"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "slug": "enterprise-agents",
+  "id": "eagent",
+  "title": "企業級 Agent 工程",
+  "subtitle": "用 Claude API 打造可上線、可觀測、可控成本的代理系統",
+  "form": "instructional",
+  "lang": "zh-TW",
+  "reader_register": "specialist",
+  "writer_model": "gemini-4-hydrogen-low",
+  "writer_family": "google",
+  "reviewer_model": "gpt-6.2-sol",
+  "reviewer_effort": "low",
+  "mode": "full",
+  "code_languages": ["typescript", "python"],
+  "examples_dir": "books/enterprise-agents/examples",
+  "preflight": {
+    "date": "2026-11-21",
+    "status": "passed",
+    "tools": ["lint_book.py", "verify_book.py", "gate_book.py", "check_diagrams.py", "build_reader.py", "build_shelf.py"],
+    "panel_smoke": {
+      "google": "agy --model gemini-4-hydrogen-low (OK)",
+      "openai": "codex exec -m gpt-6.2-sol -c model_reasoning_effort=\"low\" (OK)",
+      "anthropic": "claude -p --output-format text (OK)"
+    }
+  },
+  "outline_approved": {
+    "date": "2026-11-21",
+    "chapters": [
+      "ch01", "ch02", "ch03", "ch04", "ch05", "ch06",
+      "ch07", "ch08", "ch09", "ch10", "ch11", "ch12"
+    ]
+  },
+  "chapters": {
+    "ch01": "verified",
+    "ch02": "verified",
+    "ch03": "verified",
+    "ch04": "verified",
+    "ch05": "verified",
+    "ch06": "verified",
+    "ch07": "verified",
+    "ch08": "verified",
+    "ch09": "verified",
+    "ch10": "verified",
+    "ch11": "verified",
+    "ch12": "verified"
+  },
+  "gates": {
+    "p2_5": { "status": "passed", "date": "2026-11-22", "chapters": 12 },
+    "p3": { "status": "passed", "date": "2026-11-22", "lint_errors": 0, "lint_warns": 0, "diagram_errors": 0, "byte_identical": true, "py_compile_errors": 0 },
+    "p4": {
+      "status": "passed_with_user_waiver",
+      "date": "2026-11-22",
+      "rounds_completed": 2,
+      "fail_chapters": 0,
+      "inconclusive_chapters": 0,
+      "single_family_incorrect_fixed": 5,
+      "imprecise_waived_by_user": true,
+      "bridging": "12/12 passed/exempt",
+      "quarantine_report": "books/enterprise-agents/book-src/_meta/quarantine-report.md"
+    },
+    "p4_5": { "status": "passed", "date": "2026-11-21", "passed_chapters": 12, "total_chapters": 12 },
+    "p5": { "status": "passed", "date": "2026-11-22", "reader": "books/enterprise-agents/web/index.html", "shelf": "bookshelf.html" }
+  }
+}

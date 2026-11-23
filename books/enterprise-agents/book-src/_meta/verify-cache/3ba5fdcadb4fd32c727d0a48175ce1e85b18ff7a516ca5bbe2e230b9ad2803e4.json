@@ -1,0 +1,96 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "單筆 Haiku 護欄成本：500 × $0.10/MTok + 50 × $0.50/MTok = $0.000050 + $0.000025 = $0.000075",
+      "verdict": "correct",
+      "reasoning": "500 tokens 屬於 ≤100K 級距，適用 $0.10/$0.50 牌價。500×0.10/1e6 = 0.00005；50×0.50/1e6 = 0.000025；兩者相加為 0.000075。",
+      "correct_value": "$0.000075／筆"
+    },
+    {
+      "claim": "每日 50,000 筆的附加成本為 $3.75／天、$112.50／月；套用 1.1× 後為 $4.125／天，約 $123.75／月",
+      "verdict": "correct",
+      "reasoning": "50,000×0.000075 = 3.75；3.75×30 = 112.5；3.75×1.1 = 4.125；4.125×30 = 123.75。基準資料寫明 1.1× 倍率適用於全部 token 類別，所以 input 與 output 都要乘。",
+      "correct_value": "$3.75/天、$112.50/月；啟用 inference_geo:\"us\" 後為 $4.125/天、$123.75/月"
+    },
+    {
+      "claim": "淨 ROI = ($10,000 − $112.50) / $112.50 ≈ 87.89×",
+      "verdict": "correct",
+      "reasoning": "9,887.5 / 112.5 = 87.888…，四捨五入為 87.89。章節也註明：增量 ROI 應以分類器在既有 PolicyEngine 之上額外減少的損失為分子；如果 $200 上限已能攔下這兩筆，增量效益為 $0。這項限定是恰當的。另外，所採用的 $112.50 是 global 費率，沒有套用 1.1×。",
+      "correct_value": "≈87.89×（只在『分類器能獨立避免這兩筆損失』的假設下成立；增量 ROI 可能為 0）"
+    },
+    {
+      "claim": "自我檢核第 3 題：800 input + 100 output，套用 1.1× 後為 $0.000143／筆、$7.15／天、$214.50／月",
+      "verdict": "correct",
+      "reasoning": "800×0.10/1e6 = 0.00008；100×0.50/1e6 = 0.00005；合計 0.00013。乘 1.1 得 0.000143；乘 50,000 得 7.15；乘 30 得 214.5。",
+      "correct_value": "$0.000143/筆、$7.15/天、$214.50/月"
+    },
+    {
+      "claim": "第 3 題參考解答建議：若延遲逼近 SLO，可在驗證完整輸出率後把護欄 max_tokens 降到 64",
+      "verdict": "imprecise",
+      "reasoning": "這一題自己假設平均每筆輸出 100 tokens。如果平均輸出已達 100 tokens，max_tokens 設為 64 會讓大多數回應以 stop_reason=max_tokens 截斷，依 Layer 1 的規則全部走降級（轉人工）路徑，等於讓護欄失效。即使是 Layer 1 的初值 128，也只比平均 100 多出 28%。這個建議只在實際輸出遠低於 64 tokens 時才可行，例如範例 JSON 大約只有 25 tokens。",
+      "correct_value": "在平均輸出 100 tokens 的假設下，不宜降到 64。應先縮減輸出 schema（例如只保留 decision/category），讓實際輸出明顯低於上限，再考慮下調 max_tokens"
+    },
+    {
+      "claim": "完整工具集基準前綴為 6,000 tokens（System Prompt 2,400 + 18 個工具 Schema 3,600），工具共 12 個唯讀加 6 個寫入",
+      "verdict": "correct",
+      "reasoning": "2,400 + 3,600 = 6,000；12 + 6 = 18。兩組數字都與基準資料一致。",
+      "correct_value": "6,000 tokens；18 = 12 + 6"
+    },
+    {
+      "claim": "在最後一個靜態 System content block 設 cache_control，可涵蓋依 tools → system → messages 排序的完整前綴；前綴中較早的區塊一旦變動，下游斷點就會失效",
+      "verdict": "correct",
+      "reasoning": "source-evidence 記載前綴從 tools 開始，依 tools→system→messages 精確比對，任一較早區塊變動都會讓下游斷點失效。6,000 tokens 也高於 source-evidence 列出的各個最低快取門檻（512／1,024／4,096）。",
+      "correct_value": "與已提供的證據一致"
+    },
+    {
+      "claim": "全站尖峰基準為 12 req/s",
+      "verdict": "correct",
+      "reasoning": "50,000 / 86,400 ≈ 0.579 req/s，乘以 20 倍約為 11.57，進位後與基準的 12 req/s 一致。",
+      "correct_value": "≈12 req/s（平均 0.58 req/s × 20）"
+    },
+    {
+      "claim": "退款上限 20,000 分 = $200.00；500000 分 = $5,000；25_000 分 = $250；ScopedToken TTL 300s = 5 分鐘",
+      "verdict": "correct",
+      "reasoning": "以 1 美元 = 100 分換算：20,000/100 = 200，500,000/100 = 5,000，25,000/100 = 250。300 秒 / 60 = 5 分鐘。",
+      "correct_value": "全部正確"
+    },
+    {
+      "claim": "Batch API 適用於離線護欄評估，輸入與輸出都是半價",
+      "verdict": "correct",
+      "reasoning": "基準資料與 source-evidence 都記載 input 與 output 同時打五折。章節把需要 800ms 判定的即時入口排除在 Batch 之外，這個邏輯也正確。",
+      "correct_value": "input/output 皆 50% 折扣"
+    },
+    {
+      "claim": "以 output_config.format 的 JSON Schema 約束分類器輸出；strict: true 驗證工具名稱與參數形狀，但金額上限與資源歸屬仍須由後端驗證",
+      "verdict": "correct",
+      "reasoning": "source-evidence 記載 output_config.format 接受 JSON Schema，strict: true 會在解碼時強制工具名稱與 input 符合 schema。schema 層級的驗證本來就無法表達租戶歸屬、剩餘可退額這類業務規則，所以必須另由後端檢查。",
+      "correct_value": "與證據一致"
+    },
+    {
+      "claim": "PolicyEngine 範例中 currency 預設為 \"USD\"，用來檢查幣別",
+      "verdict": "imprecise",
+      "reasoning": "如果呼叫端沒有提供 currency，程式會預設為 USD；當 token.currency 也是 USD 時，幣別檢查就會靜默通過，與正文『幣別須原子檢查』的要求不一致。確定性的政策檢查應拒絕缺少幣別的請求，而不是替它補上預設值。此外，金額與幣別檢查只套用在 issue_refund，其他 5 個寫入工具在這個範例裡只檢查白名單與租戶。",
+      "correct_value": "issue_refund 若缺少 currency 應 deny；其他寫入工具也應有對應的業務檢查，或在正文明示交由執行器處理"
+    },
+    {
+      "claim": "Claude API MCP Connector（mcp_servers／mcp_toolset）為 beta，Anthropic 會在回應交給應用前呼叫 MCP 工具，因此寫入政策必須由 MCP server 或其 gateway 強制執行",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 支持：Connector 可直接呼叫遠端 MCP 工具，不經過自訂的 client loop，只支援遠端 HTTP。由此推論『政策執行點必須移到 MCP server 端』是合理的。但『beta』這個狀態在已提供的證據中找不到。",
+      "correct_value": "保留推論；『beta』標註須另查官方文件"
+    },
+    {
+      "claim": "啟用 inference_geo:\"us\" 會帶來 1.1× 全類別費率，且可能因區域路由增加些許延遲；ZDR 資格（含 MCP Connector、Message Batches）須另行查核",
+      "verdict": "imprecise",
+      "reasoning": "1.1× 全類別倍率與證據一致。但『增加延遲』，以及 ZDR 與 Batch、Connector 之間的資格關係，都不在已提供的證據中，閉卷無法判定。章節把 ZDR 寫成『須查核』而不下斷言，這個做法是恰當的。",
+      "correct_value": "1.1× 正確；延遲影響與 ZDR 適用範圍須以官方文件查證"
+    },
+    {
+      "claim": "範例預期輸出的雜湊值（125dcbcf70d5…、2b759fb5b981…、669e919ad057…）與『Audit chain verified: True』",
+      "verdict": "imprecise",
+      "reasoning": "沒有提供範例程式碼與雜湊輸入格式，無法重算 SHA-256。成本那一行的 $3.75 與前面的計算一致。章節已註明『實際結果仍須於本地執行後確認』。",
+      "correct_value": "雜湊值須實際執行範例後確認"
+    }
+  ]
+}

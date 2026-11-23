@@ -1,0 +1,36 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "本地 Token Bucket 限流器補充速率設為租戶配額的 90%，例如 2,400 RPM 配額對應 36 calls/s；前 4 次退避上限（base_delay_ms = 500ms, max_delay_ms = 30,000ms）依序為 0.5s、1s、2s、4s，合計 7.5s。",
+      "verdict": "correct",
+      "reasoning": "獨立計算：(1) 2,400 RPM = 2,400 / 60 = 40 calls/s，其 90% 為 40 × 0.9 = 36 calls/s；(2) 指數退避上限 min(30000, 500 × 2^(attempt-1)) 於 attempt = 1..4 分別為 500ms (0.5s)、1,000ms (1s)、2,000ms (2s)、4,000ms (4s)，總和為 0.5 + 1 + 2 + 4 = 7.5s。與章節敘述完全一致。",
+      "correct_value": "36 calls/s；前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s"
+    },
+    {
+      "claim": "Batch API 提供 50% 折扣（Sonnet 5.5 為 $1.00 / $5.00 per MTok）。",
+      "verdict": "correct",
+      "reasoning": "依據基準資料與 source-evidence，Claude Sonnet 5.5 標準牌價為 Input $2.00 / Output $10.00 per MTok，Batch API 提供 Input 與 Output 同步 50% 折扣，折算後為 $1.00 / $5.00 per MTok，與章節一致。",
+      "correct_value": "50% 折扣，Sonnet 5.5 為 Input $1.00 / Output $5.00 per MTok"
+    },
+    {
+      "claim": "Worked Example：OrderOps 日工單量 50,000 筆／天（1,500,000 筆／月，以 30 天計），平均流量 0.5787 req/s，尖峰 12 req/s（約 20.7×），單筆 5 回合下尖峰 API 呼叫率為 60 calls/s（3,600 RPM）。",
+      "verdict": "correct",
+      "reasoning": "獨立驗算：50,000 筆 / 86,400 秒 ≈ 0.5787037 req/s（基準表簡記為 0.58 req/s）；12 / 0.5787037 = 20.736×（約 20.7×）；每月 50,000 × 30 = 1,500,000 筆。單筆 5 回合充分重疊時，尖峰每秒呼叫數 = 12 × 5 = 60 calls/s，換算每分鐘 = 60 × 60 = 3,600 RPM。所有數值與基準及推導吻合。",
+      "correct_value": "平均 0.5787 req/s（尖峰 12 req/s 約 20.7×），尖峰 API 呼叫率 60 calls/s（3,600 RPM）"
+    },
+    {
+      "claim": "Worked Example：租戶配額 2,400 RPM（40 calls/s）下，按名目配額尖峰淨超額 20 calls/s，持續 30 秒累積 600 個 API 呼叫；尖峰後平均流量 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空。按 90% 限流（36 calls/s）持續 30 秒累積 720 個（扣除初始滿桶 burst = 54 剩 666 個），排空時間分別為約 20.1 秒（有初始額度）與約 21.8 秒（無初始額度）。",
+      "verdict": "correct",
+      "reasoning": "獨立驗算：(1) 名目配額 40 calls/s：超額速率 60 - 40 = 20 calls/s，30 秒累積 20 × 30 = 600 calls。平均呼叫率 = 0.5787037 × 5 ≈ 2.8935 calls/s（約 2.89 calls/s），排空餘裕 = 40 - 2.8935 = 37.1065 calls/s（約 37.11 calls/s），排空時間 = 600 / 37.1065 ≈ 16.17s（約 16.2 秒）。(2) 90% 限流 36 calls/s：30 秒累積 (60 - 36) × 30 = 720 calls，扣 burst 54 剩 666 calls。尖峰後以 36 calls/s 限流排空，淨排空速率 = 36 - 2.8935 = 33.1065 calls/s，有初始 burst 時排空時間 = 666 / 33.1065 ≈ 20.117s（約 20.1 秒），無初始額度時 = 720 / 33.1065 ≈ 21.748s（約 21.8 秒）。推導完全一致。",
+      "correct_value": "名目配額累積 600 calls、約 16.2 秒排空；90% 限流累積 720 calls（扣 burst 54 為 666 calls），排空時間約 20.1 秒（有初始額度）或 21.8 秒（無初始額度）"
+    },
+    {
+      "claim": "自我檢核第 3 題：尖峰流量升至 20 req/s（每筆 5 次 API 呼叫，即 100 calls/s、6,000 RPM），租戶配額 3,600 RPM（60 calls/s），持續 45 秒尖峰：名目配額淨超額 40 calls/s，累積 1,800 個 API 呼叫（約 37.5s 抵達 1,500 告警線）；90% 限流（54 calls/s）未扣初始桶額度時積壓 2,070 個。",
+      "verdict": "correct",
+      "reasoning": "獨立驗算：20 req/s × 5 = 100 calls/s = 6,000 RPM。配額 3,600 RPM = 60 calls/s。名目淨超額 = 100 - 60 = 40 calls/s，45 秒累積 40 × 45 = 1,800 calls；抵達 1,500 告警線時間 = 1,500 / 40 = 37.5 秒。90% 限流速率 = 60 × 0.9 = 54 calls/s，淨超額 = 100 - 54 = 46 calls/s，45 秒未扣初始桶額度累積 46 × 45 = 2,070 calls。全部正確。",
+      "correct_value": "名目配額累積 1,800 個（37.5s 達 1,500 告警線）；90% 限流未扣初始額度累積 2,070 個"
+    }
+  ]
+}

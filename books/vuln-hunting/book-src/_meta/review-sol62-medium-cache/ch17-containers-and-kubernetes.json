@@ -1,0 +1,194 @@
+{
+  "chapter": "ch17-containers-and-kubernetes.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "所有在同一台 Worker Node 上執行的容器，底層共享同一份 Linux 核心與系統呼叫介面。",
+      "verdict": "imprecise",
+      "reasoning": "依章內模型，namespace 改變行程看見的資源，cgroups 控制資源用量，兩者都沒有為行程建立另一份核心。因此共享核心的結論適用於直接在節點 Linux 上執行的行程型容器。「所有」還涵蓋可能採用額外沙箱或客體核心的執行時期，超出章內模型。",
+      "correct_value": "直接以節點 Linux 行程執行的容器共享該節點的核心。採用額外沙箱或虛擬機的工作負載應依其執行時期判定隔離邊界。"
+    },
+    {
+      "claim": "Linux 行程在啟動時透過 `clone(2)` 或 `unshare(2)` 進入獨立的 `chroot`/Namespace 視圖，並掛載 cgroups 限制資源配額，這是容器隔離的技術基礎。",
+      "verdict": "incorrect",
+      "reasoning": "章內列出的三種作用各有不同對象。`clone` 或 `unshare` 可設定命名空間，`chroot` 改變行程解析路徑時使用的根目錄。掛載 cgroup 檔案系統提供管理介面，資源限制則取決於行程所屬群組及其控制器設定。",
+      "correct_value": "容器執行時期設定命名空間與根檔案系統，並將行程納入已設定資源控制的 cgroup。"
+    },
+    {
+      "claim": "Linux 核心透過 8 種 Namespace 限制行程「能看見什麼」。",
+      "verdict": "correct",
+      "reasoning": "逐項計數得到 mount、PID、network、IPC、UTS、user、cgroup、time，共八種。章內也將 time namespace 的範圍限定於所列單調及開機時間時鐘的偏移。",
+      "correct_value": "依章內列舉，共 8 種 Linux namespace。"
+    },
+    {
+      "claim": "例如核心模組載入介面、核心訊息環形緩衝區（`dmesg`）、裝置節點（`/dev/*`）與多數 `/proc/sys` 參數都是全系統共享的。",
+      "verdict": "imprecise",
+      "reasoning": "章內已定義 mount namespace 會隔離掛載視圖，因此容器看見的 `/dev` 節點集合可不同。裝置節點的可見性、底層裝置是否共享，以及行程能否操作裝置，是不同的判斷。材料也沒有列出可用來支持「多數」的 sysctl 清單及版本範圍。",
+      "correct_value": "部分核心資源及 sysctl 具有全域作用。容器可見的裝置節點取決於掛載與執行時期配置，存取權另受裝置政策及其他核心控制約束。個別 sysctl 是否隔離須逐項判定。"
+    },
+    {
+      "claim": "本章模型採用 `x86_64` 基本記憶體分頁大小 `4 KiB`，實際計費與回收粒度依核心版本與頁類型而定。",
+      "verdict": "correct",
+      "reasoning": "基準表在 Linux 核心項與 ASLR 項均採用 4 KiB。按二進位單位換算，4 × 1,024 = 4,096 bytes。章節將這個數值限定為模型中的基本分頁大小。",
+      "correct_value": "4 KiB = 4,096 bytes，為本章 x86_64 模型的基本分頁大小。"
+    },
+    {
+      "claim": "當某個已啟用 `notify_on_release = 1` 且配置了 `release_agent` 的 cgroup 內最後一個行程終止（且無子 cgroup 殘留）時，宿主機上的 Linux 核心會以 `root` 身分自動執行頂層 `release_agent` 檔案內指定的宿主路徑程式。",
+      "verdict": "imprecise",
+      "reasoning": "按章內所述的釋放通知模型，決定性狀態是群組已空且沒有子群組。最後一個行程終止只是到達該狀態的方式之一。材料也未附相應核心版本的文件或實作，能支持後文將兩項環境條件視為充分條件。",
+      "correct_value": "在支援該介面的 cgroups v1 階層，釋放通知取決於群組成為空群組且無子群組等條件。實際影響須依介面可達性與部署配置判定。純 v2 環境沒有此 v1 介面。"
+    },
+    {
+      "claim": "Linux Capabilities 則將特權拆分為 41 個獨立位元（bit `0` 至 `40`），記錄在行程 `/proc/<pid>/status` 的五個 64 位元十六進位遮罩中（`CapInh`、`CapPrm`、`CapEff`、`CapBnd`、`CapAmb`）。",
+      "verdict": "correct",
+      "reasoning": "以本章採用的編號範圍計算，40 − 0 + 1 = 41。各集合的 64 位元表示與目前使用的位元數相容。另依位元編號獨立換算，bit 21、2、39 的遮罩分別為 `0x0000000000200000`、`0x0000000000000004`、`0x0000008000000000`，均與原文相符。",
+      "correct_value": "本章採用 41 個已定義的能力位元，編號 0 至 40。三個列舉的遮罩值均正確。"
+    },
+    {
+      "claim": "容器執行時期預設只保留約 14 個低風險 Capability（如 `CAP_NET_BIND_SERVICE`、`CAP_CHOWN`），其餘全部清除。",
+      "verdict": "imprecise",
+      "reasoning": "從 41 個能力位元及五種集合的定義無法推出執行時期的預設清單。材料也未指定支援「約 14 個」的執行時期版本、設定檔或能力集合。「低風險」取決於工作負載可接觸的資源。",
+      "correct_value": "執行時期的預設能力集合應按產品、版本和設定列舉，並標明所指的能力集合。"
+    },
+    {
+      "claim": "若容器被授予 `CAP_BPF`（若需掛載追蹤型程式如 kprobe/tracepoint/uprobe，還需搭配 `CAP_PERFMON` 或 `CAP_SYS_ADMIN`），攻擊者便能在權限允許的附掛點載入自訂 eBPF 程式，觀測同節點上其他容器經由核心或共享函式庫處理的系統呼叫參數與緩衝區資料。",
+      "verdict": "imprecise",
+      "reasoning": "提供的證據支持 eBPF 可用於執行期觀測，也支持 `CAP_BPF` 用來拆分權限。證據未核定各類程式、附掛點與資料讀取能力的完整授權條件。章內的 seccomp 與核心權限模型也顯示，持有某個能力位元只通過其中一項檢查。",
+      "correct_value": "eBPF 在允許的附掛點可具備跨工作負載觀測能力。有效權限及可讀資料依核心版本、程式與附掛類型、verifier、seccomp 和其他安全政策而定。"
+    },
+    {
+      "claim": "`seccomp-bpf` 透過載入一段標準 BPF 位元組碼至核心，在每個系統呼叫進入核心處理函式前檢查 `struct seccomp_data`（包含系統呼叫編號 `nr`、CPU 架構 `arch` 與前 6 個暫存器參數 `args[6]`）。",
+      "verdict": "correct",
+      "reasoning": "章內提出的按系統呼叫編號、架構及參數篩選，都有對應欄位。這也解釋了移除 Capabilities 之後，seccomp 仍可獨立縮小行程可觸及的系統呼叫面。括號使用「包含」，未聲稱列出結構的全部欄位。",
+      "correct_value": "seccomp filter 可在系統呼叫處理前依 `nr`、`arch` 與六個 `args` 引數值做判斷。"
+    },
+    {
+      "claim": "Docker 與 containerd 的 `RuntimeDefault` seccomp 設定檔明確將 `open_by_handle_at` 列為封鎖項目（回傳 `EPERM`），因此在未將 seccomp 設為 `Unconfined` 的情況下可成功攔截。",
+      "verdict": "incorrect",
+      "reasoning": "依章內的過濾模型，是否攔截由實際載入的規則決定。`Localhost` 是章內明列的另一種合規設定，其規則可以允許此呼叫，所以「未設為 `Unconfined`」不足以推出攔截。材料也未附兩套執行時期特定版本的設定檔，無法確認一律封鎖或一律回傳 `EPERM`。",
+      "correct_value": "只有容器實際套用的規則拒絕該呼叫時，seccomp 才會攔截。`RuntimeDefault` 的規則、條件及拒絕動作應以所用執行時期版本核對。"
+    },
+    {
+      "claim": "歷史上許多核心記憶體漏洞與提權路徑正是透過這些非特權系統呼叫觸發的。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料摘錄支持 `io_uring` 有生命週期競爭與 UAF 的歷史，也指出預設限制因部署而異。摘錄未列舉漏洞、受影響版本與權限前提，無法確認「許多」或將所列介面一併歸入相同的歷史結論。",
+      "correct_value": "部分無須特權 Capability 即可進入的系統呼叫路徑會擴大核心攻擊面。材料支持 `io_uring` 曾有競爭與 UAF 問題，個案的可達性及影響須依版本與政策查證。"
+    },
+    {
+      "claim": "一旦拿下節點，就能讀取同一台節點上所有其他 Pod 的記憶體、環境變數與掛載密鑰。",
+      "verdict": "imprecise",
+      "reasoning": "共享核心支持節點失陷可危及同節點一般工作負載的結論，但無法推出所有 Pod 的全部資料均可取得。NexusPay 範例也未證明結算引擎與外部服務同節點，更未交代私鑰是否可由該節點讀取。",
+      "correct_value": "節點遭接管會危及同節點一般工作負載可由節點存取的資料。實際暴露範圍取決於排程、執行時期隔離及憑證儲存方式。"
+    },
+    {
+      "claim": "取得宿主節點權限後，攻擊者可從節點直接存取雲端中繼資料服務以竊取節點 IAM Role。",
+      "verdict": "imprecise",
+      "reasoning": "章內沒有給出雲端供應商、節點身分、中繼資料服務政策或有效網路可達性。即使服務提供節點角色的臨時憑證，該憑證的權限也須由角色政策判定。",
+      "correct_value": "若節點可存取會發放節點身分憑證的中繼資料服務，節點失陷可能使此類憑證暴露。影響由雲端配置與憑證權限決定。"
+    },
+    {
+      "claim": "Linux 核心在某個行程崩潰（如收到 `SIGSEGV`）並準備寫出 Core Dump 時，會讀取 `/proc/sys/kernel/core_pattern`。若該值以管線符號 `|` 開頭（例如 `|/tmp/payload.sh`），核心會直接在宿主機的 root 命名空間啟動該指定程式。",
+      "verdict": "imprecise",
+      "reasoning": "原句第一句已限定行程須進入產生 core dump 的流程，後續敘述卻把收到訊號視為充分條件。「root 命名空間」也沒有指出是哪一類命名空間，且指定程式是否可執行仍是獨立條件。",
+      "correct_value": "管線型 `core_pattern` 的影響以核心實際進入傾印處理且輔助程式可執行為前提。描述執行環境時應逐一指明相關命名空間與憑證。"
+    },
+    {
+      "claim": "`hostPID: true` 讓容器共享宿主的 PID Namespace，使宿主行程出現在容器的 `/proc/<host_pid>` 視圖中。若容器同時以宿主 `root`（或具備 `CAP_SYS_PTRACE` / `CAP_DAC_READ_SEARCH` 等足夠核心權限且未受 LSM 攔截）執行，便能透過 `/proc/<host_pid>/root` 觸及宿主程序的檔案系統視圖、讀取 `/proc/<host_pid>/environ` 中的環境變數，甚至用 `ptrace` 附加到宿主高權限行程注入指令。",
+      "verdict": "imprecise",
+      "reasoning": "共享 PID 命名空間解釋行程可見性。章內對 `CAP_DAC_READ_SEARCH` 的定義只涵蓋檔案讀取與目錄搜尋的 DAC 檢查，無法推導它可替代跨行程的 ptrace 存取檢查。列舉的操作須各自判斷授權。",
+      "correct_value": "`hostPID` 擴大行程可見性。存取敏感 `/proc` 項目或附加至其他行程，仍須通過各操作對應的核心權限與安全政策檢查。"
+    },
+    {
+      "claim": "在 Kubernetes 1.22 之後，系統預設改採具備時效性的 Bound ServiceAccount Token。",
+      "verdict": "imprecise",
+      "reasoning": "提供的材料未附 Kubernetes 版本史，無法查定 1.22 指功能穩定、預設啟用，還是舊式 Secret Token 的自動建立行為改變。這些事件也無法由章內的 TokenRequest 機制推導。",
+      "correct_value": "現代 Kubernetes 通常以投射方式提供具時效、綁定 Pod 的 ServiceAccount Token。功能階段、預設行為及舊式 Token 政策的版本界線應分別查證。"
+    },
+    {
+      "claim": "Bound Token 雖然有時效性（預設 `3600 s`）且綁定 Pod 生命週期，但只要 `kubelet` 持續為該存活中的 Pod 自動續簽並更新檔案內容，應用程式發生任意檔案讀取漏洞時，攻擊者仍可取得當時有效的 JWT。",
+      "verdict": "imprecise",
+      "reasoning": "若投射檔案可讀且持續輪替，短效性確實無法消除存活工作負載的憑證暴露。不過正文把 3,600 秒限定為常見預設請求期限，參考解答把它簡化成實際預設有效期。基準表的 900 秒則是 NexusPay 應用的 Access Token 規格，無法用來核定 Kubernetes 所簽憑證。",
+      "correct_value": "3,600 秒可描述為常見的投射 Token 請求期限。實際有效時間依簽發結果及設定而定。關閉自動掛載可移除自動投射造成的暴露。"
+    },
+    {
+      "claim": "但只要 `automountServiceAccountToken` 未明確設為 `false`，容器內被攻破的應用程式依然能直接讀取該 Token 並向 API Server 發出請求。",
+      "verdict": "imprecise",
+      "reasoning": "章內範例在 Pod 和 ServiceAccount 都設定此欄位，但原句未交代兩者的優先關係。即使有效設定允許掛載，容器實際可讀該檔案及能連到 API Server 仍是兩個獨立前提。",
+      "correct_value": "Pod 層的明確設定優先，未設定時採 ServiceAccount 層設定。暴露成立於憑證實際投射且可讀的容器，其 API 可用性另取決於網路、憑證有效性與授權。"
+    },
+    {
+      "claim": "能建立 Pod 的身份，可以在同一個 Namespace 內自由指定 `spec.serviceAccountName`（直接借用該 Namespace 內更高權限的 ServiceAccount Token）。",
+      "verdict": "imprecise",
+      "reasoning": "同命名空間是必要的範圍約束。章內本身也依賴准入與憑證投射設定，因此僅憑 `pods/create` 無法保證任意身分選擇均獲准入，或保證建立者可取得憑證。",
+      "correct_value": "在沒有額外身分選用限制時，Pod 建立權可讓工作負載以同一命名空間的既有 ServiceAccount 執行。憑證是否暴露取決於投射設定及實際可達性。"
+    },
+    {
+      "claim": "擁有此動詞的身份，可在對 API Server 發送的 HTTP 請求中加入 `Impersonate-User: system:admin` 或 `Impersonate-Group: system:masters` 標頭，直接以授權範圍內的目標身份執行操作。",
+      "verdict": "imprecise",
+      "reasoning": "章內已將使用者、群組與 ServiceAccount 列為不同的授權資源，因而不能把群組視為可獨立替代使用者的身分，也不能從對其中一項的授權推得對另一項的授權。",
+      "correct_value": "模擬使用者及其群組涉及各自的授權檢查。應以實際獲准模擬的完整身分及其有效權限來評估影響。"
+    },
+    {
+      "claim": "若對目標 `ClusterRole`（如 `cluster-admin`）擁有 `bind` 動詞，且同時具備 `rolebindings`（Namespace 範圍）或 `clusterrolebindings`（全叢集範圍）的 `create`/`patch` 權限，便能將該高權限角色綁定到自己控制的 ServiceAccount 上。",
+      "verdict": "imprecise",
+      "reasoning": "依授權圖的範圍規則，RoleBinding 引用 ClusterRole 時，有效授權仍受該 RoleBinding 的命名空間限制。`patch` 也以存在可修改且引用適當角色的綁定為前提，不能當成建立新綁定或改寫 `roleRef` 的等價權限。",
+      "correct_value": "有效權限取決於角色規則及綁定範圍。建立新綁定和修改既有綁定是不同操作，既有綁定的 `roleRef` 不可變更。"
+    },
+    {
+      "claim": "在這個審計場景中，`nexuspay-prod` 未啟用任何准入限制（無 Pod Security Admission 標籤或外部 Webhook 阻擋）。",
+      "verdict": "imprecise",
+      "reasoning": "若把「沒有有效准入限制」視為模型前提，可以直接採用。若括號是在說明如何從配置驗證此前提，沒有標籤或外部 Webhook 不足以排除叢集層預設政策或其他准入控制。",
+      "correct_value": "案例應明定目標 Pod 規格可通過叢集實際套用的所有准入控制。"
+    },
+    {
+      "claim": "在此拓樸前提下，如何從低權限的 `worker-sa` 透過 `pods/create` 完成 `Cluster-Admin` 提權的最短 3 步路徑。",
+      "verdict": "incorrect",
+      "reasoning": "表中確有 5 個 ServiceAccount 與 4 條綁定。從 B1 可推出 `worker-sa` 對 `nexuspay-prod` 有 Pod 建立權，B2 至 B4 沒有以它為主體，故這份圖沒有授予它讀取 Secret、跨命名空間管理或執行進入其他 Pod 的權限。原文的第一步權限枚舉沒有改變權限或狀態，而且初始立足點已掛載憑證。其餘步驟依賴圖外的准入、排程、節點存取和有效高權限憑證。沒有定義步驟成本，也沒有證明所有替代路徑的長度下界。",
+      "correct_value": "5 個 ServiceAccount、4 條綁定。案例提出一條分三段描述的條件性風險鏈，未證明最短步數，也未證明僅憑 B1 即能取得叢集管理權。"
+    },
+    {
+      "claim": "在 Kubernetes 1.25 之後，內建的 Pod Security Admission（PSA）取代了舊版 PodSecurityPolicy。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料只涉及 Linux 子系統及 eBPF，未記錄 PodSecurityPolicy 移除或 Pod Security Admission 功能階段的時間。章內的標籤範例也無法證明版本界線。",
+      "correct_value": "章內範例採用 PSA 執行 Pod Security Standards。涉及 1.25 的功能階段和移除日期應分別引用官方版本紀錄。"
+    },
+    {
+      "claim": "下表彙整常見的設定故障模式、其對應的利用機制，以及必須同時落地的縱深防禦措施。",
+      "verdict": "imprecise",
+      "reasoning": "表內將未指定 `seccompProfile` 直接等同 `Unconfined`，漏掉正文的節點 `SeccompDefault` 條件。另外，Pod 層的 `restricted` 可阻擋違規 Pod 規格，但 `impersonate`、`bind` 和 `escalate` 是其他 API 操作，不能由這個 Pod 標準直接控制。",
+      "correct_value": "以實際有效的 seccomp 設定判定暴露。以 PSA 約束 Pod 規格，並在 RBAC 與適用的准入政策中分別治理身分模擬與角色變更。"
+    },
+    {
+      "claim": "以下為符合 PSS Restricted 的 NexusPay Pod 與 ServiceAccount 硬化配置基準。",
+      "verdict": "correct",
+      "reasoning": "逐項檢查所示 Linux Pod template，Pod 層指定 `runAsNonRoot: true`、非零 UID 和 `RuntimeDefault`，容器關閉權限提升並移除全部 Capabilities，且只列出 `emptyDir` 磁碟區。這與章內列舉的限制一致。唯讀根檔案系統與關閉 Token 自動掛載是同一範例另行加入的防禦。",
+      "correct_value": "依章內列出的 Restricted 條件，所示 Linux Pod template 符合這些條件。服務能否在唯讀根檔案系統下正常運行，材料未驗證。"
+    },
+    {
+      "claim": "僅授予 `services`、`endpoints`、`ingresses` 的 `get`/`list`/`watch` 權限，絕不授予 `pods/create` 或全叢集 `secrets/get`。",
+      "verdict": "imprecise",
+      "reasoning": "這份清單可用於章內假設只觀察三類資源的元件。材料沒有給出控制器實作、版本、啟用功能與觀察範圍，無法證明同一清單足以讓實際 Ingress Controller 正常運行。控制器部署在哪個命名空間也無法單獨決定其跨命名空間權限。",
+      "correct_value": "按 NexusPay 實際控制器的功能與觀察範圍授予最小權限，並分別核對控制器的部署位置和 RBAC 授權範圍。"
+    },
+    {
+      "claim": "等待幾秒後查看 `evil-escalate-pod` 的日誌，即可看到本來被 RBAC 拒絕存取的 `DB_DSN` 明文以及宿主節點 `/etc/kubernetes` 目錄內容。",
+      "verdict": "imprecise",
+      "reasoning": "從所示 Role 可推得 `worker-sa` 有 Pod 建立權，其規則沒有授予 `pods/log`。因此外部操作者能讀取日誌的情形不能當作 `worker-sa` 本身可讀日誌的證據。目錄輸出與等待時間也取決於排程、容器啟動及節點檔案配置。",
+      "correct_value": "案例可說明直接讀取 Secret 的 API 授權與 Pod 內資料暴露是不同的檢查。日誌輸出須由另有 `pods/log` 授權的操作者觀察，實際輸出取決於工作負載及節點狀態。"
+    },
+    {
+      "claim": "此時若再次於 `nexuspay-worker` 內執行步驟 2 的 `POST .../pods` 請求，Kubernetes API Server 會在准入階段直接回傳 `403 Forbidden`，並附帶明確的違規原因。",
+      "verdict": "correct",
+      "reasoning": "按照參考解答的順序，先啟用 Restricted，原本的綁定與已投射憑證此時仍在。若請求已通過身分驗證與 RBAC，規格中的 privileged 與 hostPath 已足以構成章內所列的准入違規。移除綁定後再測，單憑同樣的 HTTP 狀態碼便無法判定是哪一層拒絕。",
+      "correct_value": "在憑證有效、RBAC 仍授權且 Restricted 確實強制執行的條件下，應收到 PSA 准入拒絕。以回應中的拒絕原因判定控制層。"
+    },
+    {
+      "claim": "Pod Security Standards `restricted` 禁止的是特權升級與宿主逃逸（`privileged: true`、`hostPath` 等），並不會禁止合法的 `envFrom.secretRef` 或 `volumes.secret` 掛載，也不會限制在該 Namespace 內指定其他既有的 `serviceAccountName`。",
+      "verdict": "correct",
+      "reasoning": "按章內控制項重建判斷，Restricted 檢查的是 Pod 的安全規格，RBAC 另行決定呼叫者能否直接讀取 Secret。直接讀取被拒絕，不能推出同命名空間內合規的 Secret 引用也被拒絕。能否取得資料仍取決於其他准入與資料可達性。",
+      "correct_value": "Restricted 本身不限制所列的同命名空間 Secret 引用或 ServiceAccount 選用。需要此類隔離時，須另由建立權限或適用的准入政策約束。"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "providers": [
+    {"family": "openai", "command": ["codex", "exec", "--skip-git-repo-check", "--ephemeral", "--sandbox", "read-only", "-m", "gpt-6.1-terra", "-c", "model_reasoning_effort=\"medium\"", "--output-last-message", "{output}", "-"]},
+    {"family": "google", "command": ["agy", "--model", "gemini-4-argon-medium", "--output-format", "text", "--print", "{prompt}"]},
+    {"family": "anthropic", "command": ["claude", "-p", "{prompt}", "--output-format", "text"]}
+  ]
+}

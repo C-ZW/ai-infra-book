@@ -1,0 +1,124 @@
+[
+  {
+    "chapter": "ch01-agent-architecture.md",
+    "detected_bridges": [
+      {
+        "source_concept": "有限狀態機與事件迴圈（FSM + Event Loop）",
+        "description": "將 Agent Loop 對應為由外部程式驅動的 FSM + Event Loop（無狀態 LLM 對應後端保存並重送 messages、stop_reason 對應狀態轉移函數、while 迴圈對應事件迴圈），並明確界定控制權留存後端的成立邊界與機率性轉移導致無窮迴圈的失效邊界。"
+      }
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch02-tool-use-and-mcp.md",
+    "detected_bridges": [
+      {
+        "source_concept": "微服務 RPC 契約與冪等鍵（OpenAPI + Idempotency Key）",
+        "description": "將微服務的 OpenAPI 端點契約與金流 Idempotency-Key 機制對照至 Agent Tool Use 的 input_schema 與寫入型工具冪等鍵／dry_run 預檢，並明確界定成立邊界與失效邊界（確定性程式碼呼叫端 vs. 機率性 LLM 呼叫端對結構化錯誤的處理差異）。"
+      }
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch03-context-and-prompt-engineering.md",
+    "detected_bridges": [
+      "CPU 快取局部性與虛擬記憶體分頁（Cache Prefix + Paging）：將 CPU 空間局部性對照 Prompt Caching 的固定前綴（tools → system → messages）KV Cache 命中機制，並將作業系統虛擬記憶體分頁的冷頁換出對照工具結果截斷與對話歷史 Compaction，同時明確寫出成立邊界與失效邊界。"
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch04-state-memory-and-retrieval.md",
+    "detected_bridges": [
+      {
+        "source_concept": "資料庫預寫日誌與列級權限（WAL Checkpoint + Row-Level Security）",
+        "description": "將 WAL Checkpoint 對照至 PostgreSQL 持久化回合狀態與無狀態 Worker 恢復（並界定非確定性與寫入副作用的失效邊界），將 RLS 對照至向量與全文檢索前的多租戶 ACL 前置過濾（並界定 Context Window 生成洩漏的失效邊界）。"
+      }
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch05-multi-agent-orchestration.md",
+    "detected_bridges": [
+      "分散式 Saga 編排與補償（Orchestrated Saga）：以中央 Orchestrator 派發子任務給各領域服務並僅收集結構化結果的微服務機制，對照多 Agent 協作中中央協調者與專責 Sub-agent 的 Context 隔離、工具面縮小與最小權限控制，並明確陳述成立邊界與失效邊界（自然語言推理與機率性工具呼叫引發的 Context Bloat 與 Handoff Drift）。"
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch06-reliability-and-durable-execution.md",
+    "detected_bridges": [
+      {
+        "source_concept": "熔斷器與 Transactional Outbox 模式",
+        "description": "將後端微服務的熔斷器（快速失敗隔離雪崩）與 Transactional Outbox（先落盤再派送並搭配 Idempotency Key 去重）映射到 Agent 的 LLM API 退避／熔斷與寫入型工具 Checkpoint 日誌，並明確界定成立邊界與失效邊界。"
+      }
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch07-evals-and-systematic-tuning.md",
+    "detected_bridges": [
+      {
+        "source_concept": "CI 回歸測試套件與契約斷言（Regression Suite）",
+        "description": "將傳統後端 CI 單元／整合測試的確定性契約斷言對照至 Agent 評測驅動開發（EDD）的三層評測器、Trajectory Eval 與 Pass^k，並明確界定確定性成立邊界（Enum、固定 ID、API 契約）與非確定性／多步複合誤差下的失效邊界。"
+      }
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch08-cost-and-latency-optimization.md",
+    "detected_bridges": [
+      {
+        "source_concept": "雲端 FinOps 單位成本與 CDN 快取命中率",
+        "description": "將 Prompt Caching 前綴複用對照 CDN 靜態資源快取、將 Model Routing 對照 FinOps 運算分層，並明確界定 KV Cache 前綴狀態與輸出邊際成本差異的失效邊界。"
+      }
+    ],
+    "isomorphism_score": 5,
+    "conversational_phrases": [],
+    "verdict": "pass",
+    "rewrite_notes": ""
+  },
+  {
+    "chapter": "ch09-security-guardrails-and-governance.md",
+    "declared_bridge": "none",
+    "verdict": "exempt",
+    "isomorphism_score": 5
+  },
+  {
+    "chapter": "ch10-observability-and-operations.md",
+    "declared_bridge": "none",
+    "verdict": "exempt",
+    "isomorphism_score": 5
+  },
+  {
+    "chapter": "ch11-enterprise-patterns-in-action.md",
+    "declared_bridge": "none",
+    "verdict": "exempt",
+    "isomorphism_score": 5
+  },
+  {
+    "chapter": "ch12-production-readiness-blueprint.md",
+    "declared_bridge": "none",
+    "verdict": "exempt",
+    "isomorphism_score": 5
+  }
+]

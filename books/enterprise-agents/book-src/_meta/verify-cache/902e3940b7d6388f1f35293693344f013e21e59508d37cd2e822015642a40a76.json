@@ -1,0 +1,84 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "OrderOps 尖峰流量：12 req/s（平均 0.5787 req/s，尖峰約 20.7×）",
+      "verdict": "correct",
+      "reasoning": "50,000 ÷ 86,400 = 0.5787 req/s；12 ÷ 0.5787 ≈ 20.74×。基準表把這兩個值四捨五入成 0.58 req/s 與 20×，本章寫的是較精確的值，兩者沒有矛盾。",
+      "correct_value": "平均 0.5787 req/s，尖峰約 20.7×（基準表四捨五入為 20×）"
+    },
+    {
+      "claim": "每秒 API 呼叫數 = 12 req/s × 5 calls/req = 60 calls/s；尖峰 RPM = 3,600",
+      "verdict": "correct",
+      "reasoning": "12 × 5 = 60 calls/s，60 × 60 = 3,600 RPM。這個結果建立在章內明說的「五回合充分重疊、不計重試」假設上。",
+      "correct_value": "60 calls/s，3,600 RPM（前提是五回合重疊）"
+    },
+    {
+      "claim": "2,400 RPM 配額的 90% 限流對應 36 calls/s，burst = 54",
+      "verdict": "correct",
+      "reasoning": "2,400 ÷ 60 = 40 calls/s，乘以 90% 得 36 calls/s。burst 54 等於 1.5 秒的補充量，屬於設計選擇，和其他數字不衝突。",
+      "correct_value": "36 calls/s；burst 54 是設計參數"
+    },
+    {
+      "claim": "按名目配額 40 calls/s：30 秒累積 600 個呼叫；尖峰後平均 2.89 calls/s，排空餘裕 37.11 calls/s，約 16.2 秒排空",
+      "verdict": "correct",
+      "reasoning": "(60 − 40) × 30 = 600。尖峰後平均呼叫率 0.5787 × 5 = 2.89 calls/s，40 − 2.89 = 37.11，600 ÷ 37.11 ≈ 16.17 秒。",
+      "correct_value": "600 個；約 16.2 秒排空"
+    },
+    {
+      "claim": "按 90% 限流 36 calls/s：30 秒累積 720 個；若 burst 54 立即放行剩 666 個，約 20.1 秒排空；無初始額度約 21.8 秒",
+      "verdict": "correct",
+      "reasoning": "(60 − 36) × 30 = 720，扣掉 burst 54 剩 666。排空餘裕為 36 − 2.89 = 33.11 calls/s：666 ÷ 33.11 ≈ 20.11 秒，720 ÷ 33.11 ≈ 21.75 秒。",
+      "correct_value": "720／666 個；約 21.8／20.1 秒"
+    },
+    {
+      "claim": "前 4 次退避上限依序為 0.5s、1s、2s、4s，合計 7.5s",
+      "verdict": "correct",
+      "reasoning": "上限公式為 500ms × 2^(attempt−1)，attempt 1 到 4 依序是 0.5、1、2、4 秒，都低於 30s 封頂，總和 7.5 秒。",
+      "correct_value": "7.5s"
+    },
+    {
+      "claim": "唯讀工具 timeout 5s，重試 2 次，總預算 5s × 3 = 15s；兩次 60s 呼叫即耗盡 120s 同步預算",
+      "verdict": "correct",
+      "reasoning": "首次加 2 次重試共 3 次嘗試，3 × 5 = 15 秒；2 × 60 = 120 秒，剛好等於同步上限。",
+      "correct_value": "15s；120s"
+    },
+    {
+      "claim": "自我檢核 3：100 calls/s（6,000 RPM），名目 60 calls/s 下 45 秒累積 1,800 個（約 37.5s 抵達 1,500 告警線）；90% 限流（54 calls/s）積壓 2,070 個",
+      "verdict": "correct",
+      "reasoning": "20 × 5 = 100 calls/s = 6,000 RPM；3,600 RPM = 60 calls/s。(100 − 60) × 45 = 1,800，1,500 ÷ 40 = 37.5 秒。60 × 0.9 = 54，(100 − 54) × 45 = 2,070。",
+      "correct_value": "1,800／37.5s／2,070"
+    },
+    {
+      "claim": "Batch API 提供 50% 折扣（Sonnet 5.5 為 $1.00 / $5.00 per MTok）",
+      "verdict": "correct",
+      "reasoning": "Sonnet 5.5 牌價 $2.00／$10.00 打五折得 $1.00／$5.00，與基準表和 source-evidence 一致。",
+      "correct_value": "$1.00 / $5.00 per MTok"
+    },
+    {
+      "claim": "預期輸出：首次 3 筆 Checkpoint，HITL 核准後共 6 筆，最終 completed",
+      "verdict": "correct",
+      "reasoning": "首次寫入 llm_turn、tool_call、hitl_pause 共 3 筆；續跑再寫入 hitl_resume、tool_call、completed 共 3 筆，合計 6 筆。這和本章的敘述一致。實際程式碼沒有附上，所以無法驗證它是否真的輸出這個結果。",
+      "correct_value": "3 → 6，與敘述一致"
+    },
+    {
+      "claim": "Sonnet 5.5 預設 adaptive thinking（between_tools 可停用前置 thinking，disabled 與舊式 enabled 會被拒絕）",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只寫了 thinking 透過 `thinking: { type: \"enabled\", budget_tokens: N }` 啟用，或在較新模型上使用 adaptive 模式。它沒有說 Sonnet 5.5 預設採用 adaptive，沒有提到 `between_tools` 選項，也沒有說 `enabled`／`disabled` 會被拒絕；「enabled 被拒絕」甚至和該證據有落差。",
+      "correct_value": "需要查官方文件確認；在確認前，建議改成「新模型可能支援 adaptive reasoning，具體參數以官方文件為準」"
+    },
+    {
+      "claim": "Batch custom_id 須符合 ^[a-zA-Z0-9_-]{1,64}$；expired 為 24 小時到期；processing_status 狀態為 in_progress／ended／canceling／canceled",
+      "verdict": "imprecise",
+      "reasoning": "source-evidence 只提到 Batch API 打五折和非同步處理，沒有 custom_id 格式、24 小時到期或狀態列舉的內容。這些細節無法從提供的材料判定。",
+      "correct_value": "需要外部官方文件查證"
+    },
+    {
+      "claim": "429／529 回應標頭與主體（retry-after、anthropic-ratelimit-* 標頭、overloaded_error 主體格式）及 stop_reason 列舉值",
+      "verdict": "imprecise",
+      "reasoning": "提供的基準資料和 source-evidence 都沒有涵蓋 rate limit 標頭名稱、錯誤主體格式或 stop_reason 列舉，無法依材料判定。",
+      "correct_value": "需要外部官方文件查證"
+    }
+  ]
+}

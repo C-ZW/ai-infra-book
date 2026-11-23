@@ -1,0 +1,25 @@
+已完成 `ch04`（[ch04-state-memory-and-retrieval.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch04-state-memory-and-retrieval.md)）與雙語範例（[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch04/index.ts)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch04/main.py)）的修訂，並保留 `landscape-2026-11.md` 與 `running-examples.md` 的 Claude 5.5 基準與 6 個骨架標題。
+
+### 已修正項目
+1. **狀態轉移與退款冪等性（§2、故障模式 1/3、自我檢核 3）**：
+   - 明確區分資料庫提交與退款副作用：呼叫寫入型工具前先以帶狀態條件的 CAS（檢查 `status`、`version`、`expires_at > NOW()` 並遞增 `version`、檢查更新列數為 `1`）寫入可恢復操作紀錄。
+   - 將 idempotency key 改為綁定業務操作、跨推理重試穩定的格式（`{tenant_id}:{ticket_id}:refund:{operation_id}`），並補齊下游逾時對帳（`pending_reconciliation`）、Webhook 去重與持久化後才回 `200 OK`，以及到期排程與喚醒競爭同一狀態轉移。
+2. **快取與資料庫一致性契約（§1–2、動手做）**：
+   - 明定 PostgreSQL 為唯一事實來源，快取回填須帶 `version` 保護；區分 Redis TTL（24h）、外部等待 `expires_at` 與資料留存期限；補上 PostgreSQL RLS 與交易內租戶身分設定（應用角色不可為表擁有者或 `BYPASSRLS`），以及獨立操作／稽核紀錄表以保留摘要壓縮後的證據。
+3. **ACL 前置過濾、pgvector 與引用驗證（§4、故障模式 2、自我檢核 2）**：
+   - 補充 pgvector 近似索引先掃候選再過濾可能導致有效結果少於 K、複合 GIN 索引需 `btree_gin` 與壓測驗證 `50 ms` 目標，以及退款工具須獨立驗證工單歸屬、金額、政策版本與 HITL 門檻。
+   - 補充 `output_config.format`、`strict: true` 與原生 Citations 不可並用（回 `400`）；更新 `verifyCitations` / `verify_citations` 攔截漏引（`missingCitation`）與大小寫／格式異常。
+4. **Prompt Caching 與 Messages 重播契約（§2–3、故障模式 1/4/5）**：
+   - 修正 `cache_control` 斷點位置：設於最後一個穩定的 `system` 內容區塊以涵蓋完整 `6,000` tokens（`tools → system → messages`），並說明 `cache_creation_input_tokens` 與 `cache_read_input_tokens` 皆為 `0` 時的排查方向。
+   - 補齊 `tool_result` 排在文字前、保留 `thinking`/`redacted_thinking` 與簽章、過濾本地 metadata、`stop_reason`（含 `stop_sequence`、`refusal`、`model_context_window_exceeded`、`pause_turn`）、SSE `error` 與共用重試預算。
+5. **成本口徑與清晰度（§5、動手做、自我檢核）**：
+   - 明確標示 `90.3%` 為「檢索片段單次未快取輸入費降幅」，並區分純檢索片段輸入費（`$0.003600`）與含 350 output tokens 的單回合成本（`$0.007100`）；標明設定值、情境假設、告警分母與最小樣本數、SLO 適用範圍（`2.5 s` vs `18 s`）及 RRF `k=60` 細節。
+6. **TS / Python 範例對齊與驗證**：
+   - 雙語範例改為真正的 BM25（`k1=1.2, b=0.75`）+ 向量餘弦相似度 + RRF（以 `docId#clauseId` 查名次、零分不計入、`topK` 上下限保護），補上 `version` 樂觀鎖、持久化寫回與重載驗證、版本衝突測試、TS 相對時鐘與巢狀 `Map`、Python 區分 `ttl_hours` 與一般更新。
+   - `python3 books/enterprise-agents/examples/py/ch04/main.py` 實跑通過並符合章內預期輸出。
+
+### 刻意未採納／保留說明
+- 無刻意駁回的技術意見；所有有效問題皆已依 `landscape-2026-11.md` 與 `running-examples.md` 基準修正。TypeScript 範例因環境缺少 `tsx` 與 `shared/types.js` 編譯產物未在無掛鉤下直接執行，已在「動手做」註明需 Node.js 22+ 或安裝 `tsx`。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

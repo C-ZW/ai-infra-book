@@ -1,0 +1,20 @@
+已完成 `ch01` 章節與對應範例的修訂：
+
+### 已修正項目
+1. **預算護欄與五輪基準對齊**：將 `maxInputTokens` 更名為 `maxTotalInputTokens`（Python 為 `max_total_input_tokens`）並調高至 `50,000`，確保 5 回合基準（`42,000` tokens）不會在第 4 輪被截斷；同時於內文區分「回合後軟性斷路器」與「發送前硬預算」。
+2. **超時、API 例外與最後一輪保護**（[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch01/index.ts)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch01/main.py)）：
+   - 捕捉 `APIConnectionTimeoutError` / `APIUserAbortError` / `APITimeoutError` 與 `APIError`，回傳結構化 `timeout` 或 `error` 結果而非外拋例外。
+   - 在派發工具前補上 `wallClockTimeoutMs` / `wall_clock_timeout_s` 檢查與 `turns >= maxTurns` 防護，避免最後一輪執行寫入工具後才回報 `max_turns`。
+   - 同步更新章內 TS 節錄與 CLI 驗證說明（含 Python `snake_case` 輸出與 `sampleTicket` 實際軌跡說明）。
+3. **租戶隔離與金流授權**：`executeTool` / `execute_tool` 改為從已驗證的 `ticket` 上下文綁定 `tenantId` 與後端產生的 `idempotencyKey`，並驗證 `amount_usd` 為有限正數；章內補齊租戶範圍 Redis lease（`orderops:run:{tenant_id}:{ticket_id}`）、異參數衝突區分與待對帳狀態說明。
+4. **成本、容量模型與 API 契約補充**：
+   - 明確定義 `6,000` 為首輪基準假設、`350` 為計費輸出（含 thinking），並於自我檢核 #3 補齊 `$62,403/月`、`$0.027495/筆` 與 Batch 24 小時延遲限制。
+   - 將尖峰倍數修正為「約 `21×`」，標註 `60` calls/s 與 `128` 連線為壓測起點，並替換為 transport-agnostic 連線池說明。
+   - 標明 `stop_reason` 圖為本章本地工具核心子集、Wire JSON 為節錄、Sonnet 5.5 預設 adaptive thinking，並將絕對 `file://` 連結改為 repo 相對路徑、補上官方直連與「重複退款」用詞修正。
+
+### 刻意未於本章展開的項目（保留邊界）
+- **MCP Connector、Prompt Caching 與 `calculateCostUsd` 多模型／`>100K` 計費擴展**：本章維持最小本地工具無快取範例，相關實作依全書結構留待第 2 章與第 8 章展開。
+- **同輪唯讀併行／寫入原子性編排**：已於內文補齊規範，範例程式碼維持單純序列執行以聚焦第 1 章 FSM 主軸。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

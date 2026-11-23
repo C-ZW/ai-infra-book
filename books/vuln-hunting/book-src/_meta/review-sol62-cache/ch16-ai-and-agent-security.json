@@ -1,0 +1,33 @@
+{
+  "chapter": "ch16-ai-and-agent-security.md",
+  "reviewer": "agy:gemini-4-argon-low",
+  "fallback_used": true,
+  "fallback_reason": "timeout after 180s",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "以 NexusPay 帳務測試環境為基準：單戶測試餘額為 `10,000`（整數分，即 `$100.00`），單次提領與退款系統上限同為 `10,000` 分。在推導範例中，攻擊商戶 `acct_mallory_99` 初始餘額為 `10,000` 分（`$100.00`），當 `issue_refund(account_id=\"acct_mallory_99\", amount=10000)` 通過 `amount <= 10000` 檢查並寫入帳本後，`acct_mallory_99` 餘額由 `10,000` 分增至 `20,000` 分（`$200.00`），淨盜領 `$100.00`。",
+      "verdict": "correct",
+      "reasoning": "依據全書基準數字表（baseline），NexusPay 單戶測試餘額為 10,000（整數分，即 $100.00），單次提領上限為 10,000。獨立驗算：初始餘額 10,000 分（10,000 / 100 = $100.00），呼叫退款金額 amount = 10,000 分，符合 0 < 10,000 <= 10,000 之數值上限檢查；入帳後新餘額為 10,000 + 10,000 = 20,000 分（20,000 / 100 = $200.00），淨增加 10,000 分（$100.00）。數值與基準表及算術推導完全一致。",
+      "correct_value": "單戶測試餘額 10,000 分（$100.00），單次上限 10,000 分，退款 10,000 分後餘額為 20,000 分（$200.00），淨盜領 $100.00。"
+    },
+    {
+      "claim": "在 `pgvector` 全域檢索推導與修補程式碼中，使用 `1 - (embedding <=> $1) AS score`（或 `similarity`）搭配 `ORDER BY embedding <=> $1 LIMIT 5` 進行 Cosine Similarity 相似度計算與排序，且在無 `WHERE tenant_id = $2` 前過濾時會跨租戶取出前 5 筆最高相似度區塊（如 rank 1 score = 0.912、rank 2 score = 0.884）。",
+      "verdict": "correct",
+      "reasoning": "在 PostgreSQL `pgvector` 擴充套件中，`<=>` 運算子代表餘弦距離（Cosine Distance，定義為 1 - Cosine Similarity）。因此 `1 - (embedding <=> $1)` 即為餘弦相似度（Cosine Similarity），且依餘弦距離 `embedding <=> $1` 由小到大排序（預設 `ASC`）等價於依餘弦相似度由大到小排序（如 0.912 > 0.884，對應距離 0.088 < 0.116）。當 SQL 缺少 `WHERE tenant_id` 條件時，查詢會掃描全表回傳全域最相近的 5 筆紀錄，造成跨租戶資料進入上下文；加上 `WHERE tenant_id = $2` 後則會在該租戶範圍內取 topK。語法與邏輯推導皆正確。",
+      "correct_value": "`1 - (embedding <=> $1)` 為 Cosine Similarity，按 `embedding <=> $1` 升冪排序並加上 `WHERE tenant_id = $2` 可正確實現租戶前過濾之 Top-K 檢索。"
+    },
+    {
+      "claim": "本章對齊 OWASP Top 10 for Large Language Model Applications（2025），涵蓋 LLM01 Prompt Injection、LLM02 Sensitive Information Disclosure 與 LLM06 Excessive Agency。",
+      "verdict": "imprecise",
+      "reasoning": "核對 `source-evidence`，其中僅記載「本章直接對齊 OWASP Top 10 for LLM Applications（LLM01 Prompt Injection、LLM06 Excessive Agency）與 Agent 工具調用授權隔離」以及「OWASP Top 10:2025」的一般 Web 分類（A01、A02、A03、A10），並未提供 OWASP Top 10 for LLM Applications 的年份版本（2025）、網址以及「LLM02 Sensitive Information Disclosure」的編號對應證據。依查核規則，未由所提供基準與證據完全涵蓋的外部標準細節應標記為 imprecise。",
+      "correct_value": "source-evidence 僅確認 LLM01 Prompt Injection 與 LLM06 Excessive Agency；LLM02 Sensitive Information Disclosure 與 2025 年份版本標示缺少 source-evidence 條文明確佐證。"
+    },
+    {
+      "claim": "動手做章節列出 PortSwigger Web Security Academy 的『Web LLM attacks』主題下 4 個實戰關卡名稱與難度級別：1. Exploiting LLM APIs with excessive agency（Apprentice/Practitioner）、2. Exploiting vulnerabilities in LLM APIs（Practitioner）、3. Indirect prompt injection（Practitioner）、4. Exploiting insecure output handling in LLMs（Expert）。",
+      "verdict": "imprecise",
+      "reasoning": "核對 `source-evidence`，其中僅記載「Web / API 實驗基準：PortSwigger Web Security Academy（免費且涵蓋 HTTP Smuggling、Race Condition、OAuth 等現代議題）」，並未列出 Web LLM attacks 具體的 4 個實驗名稱與各自對應的難度分級（Apprentice / Practitioner / Expert）。在閉卷查核規則下，無法僅憑外部記憶確認這 4 個外部靶場關卡的精確名稱與難度級別，故標記為 imprecise。",
+      "correct_value": "需在 source-evidence 中補充 PortSwigger Web Security Academy Web LLM attacks 關卡清單與難度級別之外部查證紀錄。"
+    }
+  ]
+}

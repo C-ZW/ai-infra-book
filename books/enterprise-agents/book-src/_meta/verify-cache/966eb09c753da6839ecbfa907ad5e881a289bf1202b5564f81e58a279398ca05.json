@@ -1,0 +1,42 @@
+{
+  "family": "google",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "Agentic RAG 單次檢索工具 timeout 設為 800 ms，單回合最多允許 max_search_retries = 2 次改寫重試，串行檢索最多耗 2.4 s。",
+      "verdict": "correct",
+      "reasoning": "單回合初次檢索 1 次加上最多 2 次改寫重試，共計最多 1 + 2 = 3 次串行檢索。每次 timeout 上限為 800 ms，因此串行檢索最大耗時為 3 × 800 ms = 2,400 ms = 2.4 s，且加計改寫與模型延遲後適用 18 s 多步處置 SLO（基準資料：分流 p95 ≤ 2.5s；多步工具處置 p95 ≤ 18s）。",
+      "correct_value": "2.4 s（3 次檢索 × 800 ms）"
+    },
+    {
+      "claim": "Claude 依 tools → system → messages 順序建立快取前綴；System Prompt（2,400 tokens）與 18 個工具定義（3,600 tokens）合計構成 6,000 tokens 的穩定前綴；若只把 cache_control 放在最後一個工具僅涵蓋約 3,600 tokens，設在最後一個穩定的 system 內容區塊才能涵蓋 6,000 tokens，且 5 分鐘 TTL 讀取僅需基礎輸入單價的 0.05×。",
+      "verdict": "correct",
+      "reasoning": "依據基準資料與 source-evidence，前綴匹配順序為 tools → system → messages，OrderOps 基準前綴為 18 個工具 Schema 3,600 tokens + System Prompt 2,400 tokens = 6,000 tokens。因此斷點在 tools 結尾僅涵蓋 3,600 tokens，在 system 結尾則涵蓋 3,600 + 2,400 = 6,000 tokens。Sonnet/Opus 5.5 的 Prompt Caching 讀取倍率為基礎輸入單價的 0.05×。",
+      "correct_value": "前綴順序 tools → system → messages，總計 6,000 tokens，讀取倍率 0.05×"
+    },
+    {
+      "claim": "Worked Example：靜態 RAG（每筆固定 +6,500 tokens）與 Agentic RAG（35% 工單觸發、每次 +1,800 tokens）在每日 50,000 筆（每月 1,500,000 筆）、Claude Sonnet 5.5（Input $2.00 / MTok）下的單次未快取檢索片段輸入費：方案 A 每日 $650.00、每月 $19,500.00；方案 B 每日 $63.00、每月 $1,890.00；每日節省 $587.00、每月節省 $17,610.00（降幅 90.3%）。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：方案 A 每日額外 tokens = 50,000 × 6,500 = 325,000,000 tokens = 325.0 MTok；每日成本 = 325.0 × $2.00 = $650.00；30 天月成本 = $650.00 × 30 = $19,500.00。方案 B 每日觸發 = 50,000 × 0.35 = 17,500 筆；每日額外 tokens = 17,500 × 1,800 = 31,500,000 tokens = 31.5 MTok；每日成本 = 31.5 × $2.00 = $63.00；30 天月成本 = $63.00 × 30 = $1,890.00。每日節省 = $650.00 - $63.00 = $587.00；每月節省 = $19,500.00 - $1,890.00 = $17,610.00；降幅 = 17,610 / 19,500 = 90.3077% ≈ 90.3%。與章節完全一致。",
+      "correct_value": "方案 A $650/天（$19,500/月），方案 B $63/天（$1,890/月），月省 $17,610（降幅 90.3%）"
+    },
+    {
+      "claim": "針對 529 採用指數退避加 Full Jitter（基底 500 ms、上限 16,000 ms、最多重試 4 次，上界合計至多 7.5 s）。",
+      "verdict": "correct",
+      "reasoning": "標準指數退避第 i 次重試（i = 0, 1, 2, 3，共 4 次）的上界為 min(cap, base × 2^i)。以 base = 500 ms、cap = 16,000 ms 計算，4 次重試的等待上界分別為 500 ms、1,000 ms、2,000 ms、4,000 ms（皆未達 16,000 ms 上限），加總上界為 500 + 1,000 + 2,000 + 4,000 = 7,500 ms = 7.5 s。",
+      "correct_value": "7.5 s（500 + 1,000 + 2,000 + 4,000 = 7,500 ms）"
+    },
+    {
+      "claim": "動手做預期輸出：Retrieved chunks input cost (USD): 0.003600；Retrieved chunks (1,800) + 350 output tokens cost (excl. prefix/other input/history, USD): 0.007100。",
+      "verdict": "correct",
+      "reasoning": "以預設模型 Claude Sonnet 5.5（Input $2.00 / MTok、Output $10.00 / MTok）計算：1,800 input tokens 成本 = 1,800 × ($2.00 / 1,000,000) = $0.003600；350 output tokens（基準每回合輸出 tokens）成本 = 350 × ($10.00 / 1,000,000) = $0.003500；兩者合計 = $0.003600 + $0.003500 = $0.007100。",
+      "correct_value": "檢索輸入成本 $0.003600，加計 350 輸出 tokens 合計 $0.007100"
+    },
+    {
+      "claim": "自我檢核解答 1：在 5 回合對話中，若均按未快取費率計價，前綴每多 1,000 tokens 就會乘以 5 倍消耗；以 Sonnet 5.5 $2.00 / MTok 計算，單筆多花 $0.01，每日 50,000 筆就是 $500。",
+      "verdict": "correct",
+      "reasoning": "獨立重算：前綴每增加 1,000 tokens，5 回合累計增加 1,000 × 5 = 5,000 input tokens = 0.005 MTok。按 Sonnet 5.5 未快取輸入單價 $2.00 / MTok 計，單筆增加成本 = 0.005 × $2.00 = $0.01。每日 50,000 筆工單增加成本 = 50,000 × $0.01 = $500。",
+      "correct_value": "單筆 $0.01，每日 $500"
+    }
+  ]
+}

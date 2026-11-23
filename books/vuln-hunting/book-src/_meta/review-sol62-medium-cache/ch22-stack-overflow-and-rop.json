@@ -1,0 +1,188 @@
+{
+  "chapter": "ch22-stack-overflow-and-rop.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "固定 `8 bytes` 檔頭（`magic: 2B`、`type: 2B`、`len: 4B` `uint32`）、合法負載上限 `65,536 bytes`（`64 KiB`）",
+      "verdict": "correct",
+      "reasoning": "三個欄位合計 2 + 2 + 4 = 8 bytes。以每 KiB 為 1,024 bytes 換算，64 × 1,024 = 65,536 bytes。兩者皆符合全書基準。",
+      "correct_value": "檔頭 8 bytes，負載上限 65,536 bytes。若負載達上限，檔頭與負載合計 65,544 bytes。"
+    },
+    {
+      "claim": "作業系統以 `4 KiB` 頁框為單位實施 W^X（Write XOR Execute），把程式碼段標記為唯讀可執行（`R-X`），把堆疊與堆積標記為可讀寫不可執行（`RW-`）。",
+      "verdict": "imprecise",
+      "reasoning": "基準支持本書採用 4 KiB 頁面。W^X 規範可寫與可執行權限互斥，無法由頁面大小推出作業系統一律強制該政策，也無法由 W^X 單獨推出各個映射的完整權限。",
+      "correct_value": "在本章採用的 4 KiB 頁面模型中，典型程式碼映射為 R-X，典型堆疊與堆積映射為 RW-。W^X 的實施範圍取決於平台與政策。"
+    },
+    {
+      "claim": "在高階語言裡，函式回傳位址與區域變數由執行時期或編譯器嚴格隔離，陣列越界會觸發 `RangeError` 或 `panic`，不會污染呼叫端狀態。",
+      "verdict": "incorrect",
+      "reasoning": "語言層的存取規則不用依賴回傳位址與區域變數分開存放。前文列舉的 TypeScript 一般陣列索引沿用 JavaScript 語意，讀取常見的越界索引通常得到 `undefined`。Go 與 Rust 的受檢查索引才通常在越界時觸發 panic。",
+      "correct_value": "依各語言與索引操作分別說明。JavaScript 一般陣列越界讀取通常得到 `undefined`，Go 與 Rust 的受檢查索引會在越界時觸發 panic。原生介面與不安全操作需要另行驗證。"
+    },
+    {
+      "claim": "開啟 NX（No-Execute）後，CPU 拒絕從堆疊頁取指執行，這確實消滅了早期的堆疊機器碼注入，但並未阻止控制流被導向「原本就存在於 `.text` 或 `libc.so` 裡的合法可執行指令」。",
+      "verdict": "imprecise",
+      "reasoning": "若堆疊頁標為不可執行，從該頁取指會失敗。既有可執行映射仍可取指，因此頁權限檢查與控制流目標檢查涵蓋不同條件。提供的史料沒有證明「消滅」這項歷史結論。",
+      "correct_value": "NX 阻止 CPU 從標為不可執行的堆疊頁取指。對既有可執行頁的控制流轉移，則由其他機制驗證。"
+    },
+    {
+      "claim": "在 Linux x86_64 環境下，ASLR 為使用者空間 `mmap` 與動態函式庫提供約 `28 bits` 的隨機化熵值（頁大小 `4 KiB = 4,096 bytes`，頁內 `12 bits` 偏移固定）。",
+      "verdict": "correct",
+      "reasoning": "4,096 = 2 的 12 次方，因此頁基底對齊時低 12 位元固定。約 28 bits 是基準另外給定的典型隨機化參數，無法單由頁大小推算。",
+      "correct_value": "本書模型採用約 28 bits 的典型 mmap 隨機化熵。4 KiB 頁面有 12 bits 頁內偏移。實際映射的熵取決於環境。"
+    },
+    {
+      "claim": "觸發 `__stack_chk_fail()` 或硬體控制保護異常（`#CP`）仍會立即以 `SIGABRT` / `SIGSEGV` 終止整個 API Gateway Worker 行程，中斷正在處理的請求並引發連線雪崩。",
+      "verdict": "incorrect",
+      "reasoning": "章內將函式庫中止、CPU 異常、作業系統的訊號處理和服務層的連鎖反應串成必然結果。`#CP` 是 CPU 異常，行程是否終止還涉及作業系統和訊號處理。即使 worker 終止，連線雪崩仍取決於重試、流量與容錯配置。",
+      "correct_value": "在典型 glibc 環境中，`__stack_chk_fail()` 導致行程中止。Linux 使用者態的 `#CP` 可交付為 `SIGSEGV`，預設動作是終止行程。受影響的請求及後續連鎖效應取決於部署。"
+    },
+    {
+      "claim": "呼叫前：`RSP % 16 == 0`。`call` 壓入 `8B` `Saved RIP` 後：進入函式第一行時 `RSP % 16 == 8`。`push rbp` 壓入 `8B` `Saved RBP` 後：`RSP % 16 == 0`，此時 `RBP` 正好對齊 `16 bytes`。",
+      "verdict": "imprecise",
+      "reasoning": "以 16 取餘數，兩次各減 8 得到 0 → 8 → 0。`push rbp` 後對齊的是 `RSP`，隨後執行 `mov rbp, rsp` 才使 `RBP` 取得該對齊值。16 bytes 是此例採用的最低對齊要求，特定堆疊傳參可有更嚴格的要求。",
+      "correct_value": "以本例的 16-byte 對齊為前提，`call` 後 RSP 的餘數為 8，`push rbp` 後為 0，`mov rbp, rsp` 後 RBP 的餘數也為 0。"
+    },
+    {
+      "claim": "假設呼叫前 `RSP = 0x7fffffffdd00`（`0x7fffffffdd00 % 16 == 0`），進入函式執行 `push rbp; mov rbp, rsp; sub rsp, 0x50` 後，完整堆疊幀佈局如下：",
+      "verdict": "incorrect",
+      "reasoning": "`call` 與 `push rbp` 共消耗 16 bytes，因此從尾碼 `dd00` 減去 `0x10` 得到 `dcf0`，表內 RBP 卻以 `dce0` 為基礎，相差 `0x10`。再減局部配置的 `0x50`，得到的總位移是 `0x60`，表中最低位址與指定起點卻相差 `0x70`。",
+      "correct_value": "指定序言會使 RBP 位於呼叫前 RSP 減 `0x10`，配置區低端位於呼叫前 RSP 減 `0x60`。依同一基準重算表內絕對位址，並把各局部物件的相對位置標為假設。"
+    },
+    {
+      "claim": "`memcpy(buf, src, len)` 是由低位址（`0x7fffffffdc98`）往高位址（`0x7fffffffdce8`）循序寫入",
+      "verdict": "incorrect",
+      "reasoning": "目的物件長度是 64 bytes，合法複製時只需滿足 `memcpy` 的結果語意。介面未承諾實際儲存順序，超出物件邊界的操作又構成未定義行為，因此無法由 C 原始碼保證逐位元組的寫入次序或結果。",
+      "correct_value": "複製長度超過 64 bytes 即超出目的物件界線。將圖示用於說明假設配置中的相鄰物件，將實際診斷描述為特定建置的結果。"
+    },
+    {
+      "claim": "在 System V AMD64 ABI 中，`printf(const char *fmt, ...)` 的第 1 個參數（格式字串指標 `fmt`）放在 `RDI`，第 2 至第 6 個參數依序放在 `RSI`、`RDX`、`RCX`、`R8`、`R9`，第 7 個起才從呼叫端堆疊頂端讀取。",
+      "verdict": "incorrect",
+      "reasoning": "文中的序列適用於各占一個通用暫存器的整數類引數。浮點引數可走向量暫存器，其他型別有各自的 ABI 分類，因此總引數的序號無法單獨決定位置。",
+      "correct_value": "格式字串指標使用 RDI。後續以整數類歸類且各占一個暫存器的引數使用剩餘通用暫存器，浮點引數依向量暫存器規則傳遞。"
+    },
+    {
+      "claim": "當外部輸入字串包含多個 `%lx` 或 `%p` 時，`printf` 會先把 `RSI`–`R9` 當時殘留的暫存器內容當成參數印出，接著繼續沿著堆疊指標往上讀取相鄰堆疊幀的內容——包含函式區域變數、Stack Canary 與 `Saved RIP`。",
+      "verdict": "imprecise",
+      "reasoning": "格式指定了呼叫端未提供的引數，依 C 語意屬於未定義行為。ABI 可解釋為何某些實作可能讀到呼叫端資料，無法保證讀取順序或會洩漏列出的特定物件。",
+      "correct_value": "以外部輸入作為格式字串可能觸發未定義行為並洩漏程序資料。可控文字應作為固定格式字串的引數。"
+    },
+    {
+      "claim": "啟用 `-O2 -D_FORTIFY_SOURCE=3` 後，編譯器會透過內建函式 `__builtin_object_size` 與 `__builtin_dynamic_object_size`（自 GCC 12 / Clang 9 搭配 glibc 2.34+ 提供更完整的動態大小追蹤），在編譯期推算目標緩衝區的已知上限，並將呼叫替換為檢查版本（例如 `__memcpy_chk`、`__snprintf_chk`）。",
+      "verdict": "imprecise",
+      "reasoning": "物件大小可在編譯時確定，也可形成執行時求值的運算式。是否有檢查版本的呼叫，取決於函式是否受強化、編譯器能否推知物件大小，以及是否能證明呼叫安全。所附資料沒有編譯器或 glibc 的版本對照，無法判定列出的最低版本。",
+      "correct_value": "在支援的工具鏈上，FORTIFY 第 3 級可利用動態物件大小資訊強化受支援的函式。檢查是否保留取決於大小資訊與最佳化結果。版本門檻需有對應文件或實測支持。"
+    },
+    {
+      "claim": "當緩衝區指標經過跨編譯單元的不透明傳遞、或編譯器無法靜態／動態追蹤其配置來源大小時，`__builtin_dynamic_object_size` 會回傳 `(size_t)-1`",
+      "verdict": "imprecise",
+      "reasoning": "未知大小的回傳值與內建函式使用的模式有關。跨編譯單元也只有在分析確實看不到配置資訊時，才會造成此處描述的限制。",
+      "correct_value": "對採用 `(size_t)-1` 作未知大小標記的模式，若工具鏈無法推知物件大小，該呼叫便無法利用相應的物件大小資訊做界線檢查。"
+    },
+    {
+      "claim": "`_FORTIFY_SOURCE` 也會在執行期封鎖來自可寫記憶體格式字串中的 `%n` 寫入佔位符。",
+      "verdict": "imprecise",
+      "reasoning": "這項檢查位於特定 glibc 格式化函式的強化路徑。籠統寫成 `_FORTIFY_SOURCE` 會將不同強化級別和未經強化的函式呼叫一起納入。",
+      "correct_value": "glibc 在適用的較高 FORTIFY 級別與強化格式化路徑中，會拒絕可寫格式字串裡的 `%n`。"
+    },
+    {
+      "claim": "編譯器在函式序言從執行緒區域儲存區（Thread-Local Storage，x86_64 Linux 位於 `fs:0x28`）載入一個行程啟動時由核心 `AT_RANDOM` 亂數產生的 64 位元隨機值（Canary），置於 `[rbp - 0x08]`；在函式尾聲 `ret` 前執行 `xor rax, fs:0x28` 比對",
+      "verdict": "imprecise",
+      "reasoning": "按本章自己的低位元組歸零前提，64 位元是儲存寬度，只有其餘 56 位元可承載隨機性。正文指定 `xor`，實驗解答又寫 `sub`。兩者都可用於判定相等，所用指令、框架指標及槽位取決於建置。",
+      "correct_value": "典型 x86_64 Linux glibc 建置以 TLS 保存 8-byte 守衛，其中最低位元組清零。編譯器在受保護函式中保存守衛副本，離開前驗證。具體槽位、指令及初始化細節應限定到相應工具鏈。"
+    },
+    {
+      "claim": "因為編譯器在產生 Stack Canary 時，刻意將其最低位元組（小端序下位於最低位址 `[rbp - 0x08]`）設為 `0x00`（NUL 字元）。依賴 NUL 結尾的 C 字串函式（如 `strcpy`、`printf(\"%s\", ...)`）一讀到該 `0x00` 位元組就會認定字串結束而停止",
+      "verdict": "imprecise",
+      "reasoning": "依章內模型，初始化守衛的是執行期，編譯器插入保存與比對程式碼。NUL 會終止字串來源的掃描。`strcpy` 依來源字串決定何時停止，目的區內原有的 NUL 不影響停止條件。若讀取已越過原字串物件，C 也不保證結果。",
+      "correct_value": "在採用最低位元組歸零的實作中，若 NUL 終止的來源掃描遇到未受破壞的守衛零位元組，掃描會在該處停止。目的區原有的零位元組無法阻止 `strcpy` 越界寫入。"
+    },
+    {
+      "claim": "`-fstack-protector` 僅保護含 `>= 8 bytes` 字元陣列的函式；`-fstack-protector-strong` 擴展至任何大小的區域陣列、含陣列的結構體以及被取址（`&var`）的區域變數，在效能與涵蓋率之間取得最佳平衡（主流 Linux 發行版如 Ubuntu/Debian/Fedora 預設採用）。",
+      "verdict": "incorrect",
+      "reasoning": "基本模式的條件也涵蓋 `alloca` 等情況，8-byte 門檻不能寫成唯一條件。強化模式的判定也受最佳化後哪些物件實際配置於堆疊影響。所附材料缺少各發行版及版本的建置政策，也沒有衡量「最佳平衡」的資料。",
+      "correct_value": "基本模式依工具鏈規則保護含符合條件的緩衝區或動態堆疊配置的函式。strong 模式擴大涵蓋範圍，包括實際保留的區域陣列及符合條件的框架位址引用。發行版預設需按版本和建置範圍查證。"
+    },
+    {
+      "claim": "Canary 只能偵測「跨過 Canary 區域的連續寫入」。",
+      "verdict": "incorrect",
+      "reasoning": "章內的檢查比較守衛副本和參考值，因此判定條件是執行檢查時兩者是否不同。單次不連續寫入只要改變守衛，也能被偵測。連續寫入若未留下差異，檢查便會通過。",
+      "correct_value": "Canary 偵測函式尾聲檢查時仍存在的守衛值差異。"
+    },
+    {
+      "claim": "Intel CET Shadow Stack 與 ARM PAC 在「能否擋住跳過 Canary 的索引寫入」欄均標為「是」。",
+      "verdict": "incorrect",
+      "reasoning": "依章內機制，Shadow Stack 在回傳時比對回傳位址，PAC 在使用受保護指標時驗證。兩者的檢查點皆晚於一般資料堆疊寫入，因此表頭所問的寫入和實際阻擋的事件不同。",
+      "correct_value": "兩者都允許一般堆疊寫入依其記憶體權限執行。功能啟用且回傳路徑受保護時，Shadow Stack 可拒絕位址不一致的回傳，回傳位址 PAC 可拒絕驗證失敗的回傳。"
+    },
+    {
+      "claim": "編譯器加上 `-fcf-protection=full` 後，會在所有合法的間接呼叫／跳轉目標函式開頭插入 `endbr64` 指令",
+      "verdict": "imprecise",
+      "reasoning": "編譯器輸出 `endbr64` 與執行環境啟用 IBT 是兩個條件。章內原理所需的是受追蹤分支的目標具有合格著陸指令，僅憑旗標無法保證所有程式碼、相依物件和分支形式的涵蓋情況。",
+      "correct_value": "支援的建置可在適用的間接分支目標產生 `endbr64`。硬體在執行環境已啟用 IBT 時，才對受追蹤的分支檢查著陸指令。"
+    },
+    {
+      "claim": "ARMv8.3-A 引入的 **PAC** 機制直接利用這段高位元空間",
+      "verdict": "imprecise",
+      "reasoning": "章內的 48-bit 虛擬位址是配置示例，無法據此推出所有平台有相同的可用 PAC 位元數。所附史料未涵蓋 PAC 的版本沿革及各處理器的支援細節，無法獨立判定引入版本。",
+      "correct_value": "PAC 可使用依位址配置可用的指標位元保存驗證碼。可用位元的位置和數量需按架構及平台配置說明，引入版本需架構史料支持。"
+    },
+    {
+      "claim": "若堆疊上的 `Saved LR` 被竄改，或 `SP` 上下文不符，驗證指令會刻意將指標高位元破壞為非規範位址（Non-canonical Address），一旦 CPU 嘗試跳轉該位址便立即觸發位址轉譯異常。",
+      "verdict": "imprecise",
+      "reasoning": "章內已指出驗證碼是截斷值，因此應將後果限定在驗證失敗的情況。由提供的材料也無法推出所有 PAC 指令和硬體配置都採用相同的報錯時機與異常類型。",
+      "correct_value": "使用相應金鑰與正確上下文驗證回傳指標。驗證失敗時，按架構特性與指令形式，可能直接產生異常，或使指標在後續使用時觸發異常。"
+    },
+    {
+      "claim": "LLVM CFI 透過啟用連結期最佳化（`-flto -fsanitize=cfi`）補上這塊缺口：在連結期建構全程式的函式指標型別等價類別（Bitset Jump Table），於每次間接呼叫或 C++ `vtable` 分派前，檢查目標位址是否屬於與該呼叫點函式簽章完全相符的合法集合",
+      "verdict": "imprecise",
+      "reasoning": "間接函式呼叫與虛擬分派使用不同的檢查規則。IBT 的著陸點條件確實無法判定型別相容性，但 CFI 的涵蓋範圍、等價規則及跨模組行為取決於所啟用的檢查與建置配置。",
+      "correct_value": "LLVM CFI 對受涵蓋的間接呼叫或虛擬分派，依對應的型別相容規則驗證目標。IBT 驗證受追蹤分支是否抵達合格著陸點。"
+    },
+    {
+      "claim": "分別編譯並執行「僅開 Stack Canary + CET」與「開啟 AddressSanitizer + FORTIFY_SOURCE」版本",
+      "verdict": "incorrect",
+      "reasoning": "第一條編譯命令同時指定 `-fstack-protector-strong`、`-fcf-protection=full` 與 `-D_FORTIFY_SOURCE=3`。ASan 命令沒有指定 FORTIFY。選項與兩個版本的文字標示對調。",
+      "correct_value": "依列出的命令，第一個未修復版本同時請求 Canary、CET 標記和 FORTIFY，第二個未修復版本請求 ASan。"
+    },
+    {
+      "claim": "執行未修復版 `./tlv_vuln_canary`（傳入 `len = 88`，超過 `fast_buf[64]`）時，`88 bytes` 寫入直接覆寫了 `[rbp - 0x08]` 的 Stack Canary，函式返回前檢查失敗並立即中止",
+      "verdict": "incorrect",
+      "reasoning": "88 比 64 多 24，足以在原始碼層級判定複製要求超過目的陣列。若建置產生並保留有效的 FORTIFY 大小檢查，呼叫會在寫入前被攔截。章內也未提供實際建置輸出來確認局部槽位，或證明一定出現 Canary 訊息。",
+      "correct_value": "這組輸入要求複製 88 bytes 到 64-byte 陣列。若有效的 FORTIFY 大小檢查先執行，應在複製之前拒絕。將實際訊息與觸發機制標為特定建置的觀測結果。"
+    },
+    {
+      "claim": "透過 `objdump -d -M intel tlv_vuln_canary` 檢視 `parse_fast_tlv`，可以看到編譯器自動植入的三個防禦特徵",
+      "verdict": "incorrect",
+      "reasoning": "解答的編號清單只列兩類特徵，分別是 `endbr64` 與 Canary 的載入和比對。它沒有展示第三項 FORTIFY 檢查，也沒有附反組譯結果。僅憑 `endbr64` 無法證實執行時的 CET 啟用狀態。",
+      "correct_value": "文字目前描述兩類反組譯特徵。若要列 FORTIFY 為第三類，應以實際產物中的檢查呼叫或等效檢查為證。"
+    },
+    {
+      "claim": "執行 `./tlv_vuln_asan` 時，AddressSanitizer 的 Shadow Memory 會精確指出寫入越界發生在 `fast_buf` 尾端之後，並在寫入當下（而非等到函式 `ret`）即刻攔截",
+      "verdict": "imprecise",
+      "reasoning": "已知目的陣列為 64 bytes，呼叫請求 88 bytes。如果 ASan 建置保留可受檢查的複製，診斷可以指出超出陣列的寫入範圍。所列絕對位址、框架偏移、堆疊追蹤及輸出格式都無法由提供的原始碼唯一推導。",
+      "correct_value": "若以 ASan 建置後保留並檢查該複製，預期會在複製操作處報告 stack-buffer-overflow。將位址與堆疊追蹤標為示意或附上實測結果。"
+    },
+    {
+      "claim": "執行修復版 `./tlv_fixed` 時，前置條件 `hdr->len > NEXUS_MAX_PAYLOAD || hdr->len > sizeof(fast_buf)` 在進入 `memcpy` 前即拒絕 `len = 88` 的封包並回傳 `-1`，行程維持健康運作且不觸發任何記憶體異常",
+      "verdict": "imprecise",
+      "reasoning": "88 > 65,536 為假，88 > 64 為真，故解析函式印出拒絕訊息並回傳 `-1`。`main` 直接回傳該值，測試行程隨即正常退出。現有 `main` 只測長度 88，無法完成文字承諾的合法長度驗證。這段程式也沒有來源實際長度資訊，無法驗證是否能安全讀取宣告的負載長度。",
+      "correct_value": "此測試會在複製前拒絕長度 88，解析函式回傳 `-1`，測試行程正常退出。快速路徑的有效目的長度上限為 64 bytes。合法輸入測試和來源長度驗證需各自具備相應資料。"
+    },
+    {
+      "claim": "大於等於 `56` 的最小 `16` 的倍數為 **64 bytes**（`0x40`）。",
+      "verdict": "correct",
+      "reasoning": "依題設，同時保留 48-byte 緩衝區與 8-byte 守衛需要 56 bytes。若配置後必須維持 16-byte 對齊，48 不足而 64 足夠，因此下限是 64 bytes。這項四捨上取整結論不決定實際編譯器的配置。",
+      "correct_value": "在題設的物件大小、指定序言和對齊條件下，最小 N 為 64 bytes。"
+    },
+    {
+      "claim": "前往 **pwn.college** 的 *Memory Errors* 模組，重點研讀各關卡原始碼",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料只確認 pwn.college 是系統安全實戰平台，沒有列出模組名稱、內容或關卡原始碼的取得方式。",
+      "correct_value": "pwn.college 可作為系統安全練習資源。指定模組及其原始碼可取得性的說法需要對應課程資料支持。"
+    }
+  ]
+}

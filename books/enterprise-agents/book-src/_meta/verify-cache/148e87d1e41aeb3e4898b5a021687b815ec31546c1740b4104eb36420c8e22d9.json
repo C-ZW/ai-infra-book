@@ -1,0 +1,54 @@
+{
+  "family": "openai",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "方案 B 合計平均純前綴成本 = $0.005085 / 筆；純前綴成本降幅 = 91.53%。",
+      "verdict": "correct",
+      "reasoning": "依題設分別計算：Router 為 450 × 0.10 / 1,000,000 = $0.000045；唯讀 Worker 為 2,800 × 2 × 0.10 / 1,000,000 = $0.000560；Opus 仲裁攤提為 2,800 × 2 × 4.00 / 1,000,000 × 20% = $0.004480。合計 $0.005085；相對方案 A 的 $0.060000，降幅為 91.525%，四捨五入為 91.53%。此結果僅適用於章內列出的純前綴與流量假設。",
+      "correct_value": "平均純前綴成本 $0.005085／筆，降幅 91.53%。"
+    },
+    {
+      "claim": "若平均每筆扇出 2 個等量 Worker 則為 $0.005645，降幅 90.59%。",
+      "verdict": "correct",
+      "reasoning": "在其他假設不變下，再加一個唯讀 Worker 的 $0.000560，得到 $0.005645；1 − 0.005645 / 0.060000 = 90.5917%。",
+      "correct_value": "$0.005645／筆，降幅約 90.59%。"
+    },
+    {
+      "claim": "尖峰 12 tickets/s 下，每筆扇出 3–4 個 Worker 代表 36–48 次 Worker 啟動／秒（若耗滿 4 回合則達 144–192 次呼叫／秒）。",
+      "verdict": "imprecise",
+      "reasoning": "12 × 3–4 = 36–48，若每個 Worker 均有 4 次模型呼叫，12 × 3–4 × 4 = 144–192 次呼叫／筆工單到達所對應的每秒平均負載。但各回合分散在執行時間內，且可能發生排隊或同步重試，不能僅由工單到達率推出任一瞬間的實際 API 呼叫率或峰值。",
+      "correct_value": "在持續穩態、所有 Worker 完成 4 次模型呼叫且無其他放大因素時，長期平均約 144–192 次模型呼叫／秒；瞬間峰值須依時間分布、併發及重試測量或建模。"
+    },
+    {
+      "claim": "facts 應具備版本化欄位、大小上限、證據來源與觀測時間……以下是 OrderOps 採用的 WorkerHandoff 契約。",
+      "verdict": "imprecise",
+      "reasoning": "列出的介面僅將 facts 定義為 Record<string, unknown>，未要求版本、證據來源或觀測時間，也未表達大小限制。文字提出的保障可能由外部驗證器實作，但提供的介面與節錄無法證明這些限制確實被強制執行。",
+      "correct_value": "在契約中明定版本、來源及觀測時間等必填欄位，並以執行期驗證明確實施大小與欄位限制；否則應說明這些要求由何處強制。"
+    },
+    {
+      "claim": "每次 API 回應的 usage……分別換算為美元後累加寫入 WorkerHandoff.costUsd；逾時等無法確認的帳務則另行標示並對帳。",
+      "verdict": "incorrect",
+      "reasoning": "展示的失敗分支對所有逾時或例外一律回傳 costUsd: 0。若 Worker 在失敗前已有成功回應並產生可確認費用，這些已知費用不會由該分支帶入，與累加已知成本的要求不一致。costStatus: unconfirmed 能標示未知部分，不能補回已知的漏計金額。",
+      "correct_value": "將每次已確認呼叫的累積費用保存在失敗時仍可讀取的狀態，失敗交接時填入該已知金額，並另外標示及對帳未確認費用。"
+    },
+    {
+      "claim": "新增 2 個工具會使每日多出 20,000,000 輸入 tokens，按 Haiku ≤100K 無快取牌價約多 $2／日。",
+      "verdict": "correct",
+      "reasoning": "依章內每個工具約 200 tokens、每天 50,000 筆，且每筆 Router 呼叫一次的假設，新增輸入為 2 × 200 × 50,000 = 20,000,000 tokens／日。以每百萬輸入 tokens $0.10 計，費用為 $2／日。",
+      "correct_value": "每日約增加 2,000 萬輸入 tokens 與 $2；多回合或快取等情況須另算。"
+    },
+    {
+      "claim": "Claude Agent SDK 原生支援工作目錄隔離、權限控制（allowedTools / disallowedTools）與 Sub-agent 上下文切分。",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 支持 SDK 具備 Agent loop、hooks、MCP 與 allowedTools／disallowedTools 等權限控制，但未記載工作目錄隔離或 Sub-agent 上下文切分的具體保證。章內雖另說租戶與行程隔離仍需實際沙盒，仍無法據此確認 SDK 原生提供的隔離範圍。",
+      "correct_value": "可依提供的證據確認 SDK 具備所列權限控制；工作目錄隔離與 Sub-agent 上下文切分的具體能力和限制，須核對相應版本的官方文件。"
+    },
+    {
+      "claim": "示意輸出中 TKT-5001 的 totalCostUsd 為 0.00051，TKT-5002 為 0.01811。",
+      "verdict": "imprecise",
+      "reasoning": "章節未提供兩筆示例各次模型呼叫的輸入、輸出及快取 token 用量；不同模型與 token 類別的費率不同，無法僅憑 Worker 數量和 Opus 呼叫次數重算這兩個總額。",
+      "correct_value": "須提供或核對每次呼叫的模型、各類 token 用量與適用費率後，才能驗證兩筆金額。"
+    }
+  ]
+}

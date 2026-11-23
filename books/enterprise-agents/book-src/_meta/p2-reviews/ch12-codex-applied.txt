@@ -1,0 +1,25 @@
+已完成 `ch12` 與對應範例的修正：
+
+### 已修正項目
+1. **預算口徑與 US 推論成本**：
+   - 在 [ch12-production-readiness-blueprint.md](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/book-src/ch12-production-readiness-blueprint.md) 明確區分全球基準（`$16,500/月`）、`inference_geo: "us"` 1.1× 加價（`$18,150/月`、`$605/天`）與 `$18,000` 硬上限的關係（若含 US 加價仍須壓在 `$18,000` 內，單筆基礎成本須 `≤ $0.010909`），並說明 `1.1×` 適用於 input、output、cache write 與 cache read，儲存與日誌落地須另行驗證。
+2. **四階段帳本與損益平衡**：
+   - 修正階段四 L3 節省計算：`450,000 × (4/60) × $24 = $720,000/月`（原誤用 `0.0667` 得 `$720,360`），總節省修正為 `$1,980,000/月`，扣除 US API `$18,150` 後估算淨效益為 `$1,961,850/月`。
+   - 修正損益平衡推導：70/30 加權每筆節省 `$1.32`，每日超過 `459` 筆（`605 ÷ 1.32 = 458.33`，約 `0.92%`）即打平每日 `$605` API 成本。
+   - 將「淨 ROI」改稱為「估算淨效益」，並註明真確 ROI 須定義分母與營運／覆核／退款損失等成本。
+3. **快取失效與架構／PRR 運行契約**：
+   - 改寫快取失效推論，說明成本會朝未優化 `$152,250` 基準攀升，並定義 `cache_hit_ratio < 0.70` 告警分母與 `$0.011` rollout 假設口徑。
+   - 補強 PRR 與故障模式中的工具服務端授權、未知付款結果查核對帳、Shadow 禁寫、`0 < toolTimeoutMs < llmTimeoutMs < wallClockTimeoutMs` 與剩餘 deadline 傳遞、每日 `$600` 預留與 `$900` 熔斷、5%／3 分鐘錯誤率與 30 秒退場界線。
+4. **程式碼與節錄同步（[index.ts](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/ts/ch12/index.ts)、[main.py](file:///Users/theway.chen/Desktop/personal/ai-infra-book/books/enterprise-agents/examples/py/ch12/main.py)）**：
+   - TS 補齊 `model_registry` 閘道。
+   - 兩版改為以 `dailyTicketVolume × 30 × estimatedBaseCostPerTicketUsd × geoMult <= monthlyBudgetCapUsd` 計算（候選設定採 `$0.0108/筆`、`us` `1.1×` 得 `$17,820/月 <= $18,000`）。
+   - 兩版補齊 `0 < toolTimeoutMs < llmTimeoutMs < wallClockTimeoutMs`、正數／整數／`[0,1]` 區間／enum／布林與 `0 < maxAutoRefundUsd <= 50` 檢查，並同步更新內文 TS 節錄。
+   - 兩支腳本皆已重新執行並通過（exit `0`）。
+5. **清晰度與連結**：
+   - 替換抽象描述為可驗收選型條件、補上 L1 驗收時點與政策參數標示、修正 `自我檢核` Q2 答案（補入連續 14 天 `Pass^3 >= 0.95`）、將 `file:///Users/...` 改為 repo 相對路徑並更新 `延伸閱讀` 連結。
+
+### 刻意未採納／保留原樣項目
+- **未在 `examples/ts/ch12/index.ts` 與 `examples/py/ch12/main.py` 加入實際 Claude API 請求（Messages API / Agent SDK / MCP Connector / Batch）**：本節範例定位為離線「PRR 啟動設定驗證器（Config Validator）」，刻意不發出外部網路請求以確保可離線、零金鑰驗證；相關 API 欄位（如 `max_turns`、`output_config.format`、`strict: true`、`stop_reason` 處置）已於內文補充說明。
+
+[STDERR]
+warning: --mode auto is not available for this account; continuing in the default mode.

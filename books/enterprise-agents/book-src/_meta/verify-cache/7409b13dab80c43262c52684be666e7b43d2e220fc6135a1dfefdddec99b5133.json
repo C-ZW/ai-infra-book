@@ -1,0 +1,66 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "基準單筆成本（無快取，5 回合）：輸入 6,000 + 7,200 + 8,400 + 9,600 + 10,800 = 42,000 tokens，輸出 350 × 5 = 1,750 tokens，單筆成本 = $0.0840 + $0.0175 = $0.1015",
+      "verdict": "correct",
+      "reasoning": "第 n 回合的輸入是 6,000 + 1,200 × (n−1)，所以五回合依序是 6,000、7,200、8,400、9,600、10,800，加總 42,000。輸出 5 × 350 = 1,750。以 Sonnet 5.5 每百萬 tokens $2 / $10 計：42,000 × 2 / 1e6 = $0.084，1,750 × 10 / 1e6 = $0.0175，合計 $0.1015。結果與基準表的 42,000 / 1,750 / $0.1015 一致。",
+      "correct_value": "$0.1015 / 筆"
+    },
+    {
+      "claim": "多出的第 6 回合輸入 12,000 tokens、輸出 350 tokens，成本 $0.0275；乘以 12% 得每筆 $0.0033，每日 $165.00，每月 $4,950",
+      "verdict": "correct",
+      "reasoning": "第 6 回合輸入 = 6,000 + 5 × 1,200 = 12,000。成本 = 0.024 + 0.0035 = $0.0275。$0.0275 × 0.12 = $0.0033；× 50,000 = $165 / 天；× 30 = $4,950 / 月。數字正確。不過 12% 與「錯誤全可由 strict 消除」都是情境假設，章節也已標明。",
+      "correct_value": "$0.0275 / 次；$0.0033 / 筆；$165 / 天；$4,950 / 月（情境估算）"
+    },
+    {
+      "claim": "固定前綴占五回合總輸入 30,000 / 42,000 = 71.43%；首回合冷啟動、後四回合命中時，快取讀取 4 × 6,000 = 24,000 tokens，占 57.14%",
+      "verdict": "correct",
+      "reasoning": "5 × 6,000 = 30,000，30,000 / 42,000 = 0.714286；24,000 / 42,000 = 0.571429。6,000 tokens 也高於 source-evidence 所列 Sonnet 等級 1,024 tokens 的最低可快取門檻，因此會被快取。",
+      "correct_value": "71.43% / 57.14%"
+    },
+    {
+      "claim": "第 2 回合 Wire 範例：usage 為 input_tokens 1,200、cache_read_input_tokens 6,000，總輸入 7,200 tokens",
+      "verdict": "correct",
+      "reasoning": "斷點放在最後一個固定 system 區塊時，只快取 tools + system 共 6,000 tokens；第 2 回合新增的 1,200 tokens 不在快取內，計為 input_tokens。1,200 + 6,000 = 7,200，與第 5 節第 2 回合的總輸入一致。補充一點：輸出 350 tokens 依假設包含 thinking，但範例 content 裡沒有 thinking 區塊，與「保留帶簽章 thinking」的說明搭配時可加註「省略 thinking 區塊」。",
+      "correct_value": "7,200 tokens（1,200 未快取 + 6,000 快取讀取）"
+    },
+    {
+      "claim": "OrderOps 18 個工具 = 12 個唯讀 + 6 個寫入，列表與數量相符",
+      "verdict": "correct",
+      "reasoning": "逐一數過：Read-only 列了 12 個名稱，Mutating 列了 6 個名稱，合計 18，與基準一致。",
+      "correct_value": "12 + 6 = 18"
+    },
+    {
+      "claim": "若 12 req/s 為工單進件率，5 回合穩態下約對應 60 次模型請求/秒（未計重試）",
+      "verdict": "correct",
+      "reasoning": "12 × 5 = 60。基準尖峰 12 req/s 來自平均 0.58 req/s × 20 ≈ 11.6，而 50,000 / 86,400 ≈ 0.579，前後一致。",
+      "correct_value": "約 60 次模型請求/秒（尖峰、未計重試）"
+    },
+    {
+      "claim": "前綴匹配順序為 tools → system → messages；斷點只放在最後一個工具時只快取 tools，要涵蓋 system 須放在最後一個固定 system 區塊",
+      "verdict": "correct",
+      "reasoning": "source-evidence 指出前綴是從請求開頭依 tools → system → messages 精確比對，前面的區塊一變動就會讓後面的斷點全部失效。依這個規則，斷點放在 system 末端就會連同 tools 一起快取。",
+      "correct_value": "同章節所述"
+    },
+    {
+      "claim": "原則 4 要求 tenant_id 取自已驗證的身分上下文、操作鍵由後端產生，但 issue_refund 的 strict schema 與 Wire 範例卻讓模型填入 tenant_id 與 idempotency_key",
+      "verdict": "imprecise",
+      "reasoning": "章節的設計原則和它給的範例契約互相矛盾。schema 把 tenant_id、idempotency_key 列為模型必填，description 還要求模型自己組出確定性的鍵；可是原則 4 說不信任模型填的 tenant_id，並由後端產生操作鍵。讀者照範例實作的話，就會讓模型掌控租戶與冪等鍵，跨租戶或改鍵繞過去重的風險還在。",
+      "correct_value": "應說明 schema 裡的 tenant_id / idempotency_key 只用於展示或比對，執行層要以已驗證的身分覆寫 tenant_id，並由後端依 (tenant_id, order_id, ticket_id) 產生冪等鍵；或直接從模型可見的 schema 移除這兩個欄位。"
+    },
+    {
+      "claim": "strict: true 在解碼階段以受限採樣強制 tool_use.input 符合支援的 JSON Schema 子集，但不能保證語意或數值範圍（如 amount_usd > 0）",
+      "verdict": "correct",
+      "reasoning": "source-evidence 寫的是 strict: true 在解碼時強制工具名稱與輸入符合 schema。章節把它限定在「支援的子集」、「成功完成的」輸出，並把範圍與業務驗證留給應用層，說法保守而且與證據一致。",
+      "correct_value": "同章節所述"
+    },
+    {
+      "claim": "退避參數 base = 500 ms、cap = 4,000 ms、max_retries = 4，並受 18,000 ms 全鏈路 deadline 約束",
+      "verdict": "correct",
+      "reasoning": "Full Jitter 下每次最大等待依序是 500、1,000、2,000、4,000 ms，最多累計 7.5 s，還在 18 s deadline 之內。章節也要求以剩餘 deadline 再截斷，邏輯一致。",
+      "correct_value": "最壞累計退避約 7.5 s，在 18 s 預算內"
+    }
+  ]
+}

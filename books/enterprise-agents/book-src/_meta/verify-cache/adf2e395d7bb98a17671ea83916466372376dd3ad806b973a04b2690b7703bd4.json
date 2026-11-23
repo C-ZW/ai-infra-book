@@ -1,0 +1,78 @@
+{
+  "family": "anthropic",
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "方案 A 靜態 RAG：50,000 × 6,500 = 325.0 MTok/天，以 $2.00/MTok 計為每天 $650.00、每月 $19,500.00",
+      "verdict": "correct",
+      "reasoning": "50,000 × 6,500 = 325,000,000 tokens，即 325 MTok。325 × $2.00 = $650/天，乘以 30 天為 $19,500/月。Sonnet 5.5 輸入牌價 $2.00 與基準資料一致。",
+      "correct_value": "$650.00/天；$19,500.00/月"
+    },
+    {
+      "claim": "方案 B Agentic RAG：每天 17,500 筆 × 1,800 = 31.5 MTok，即每天 $63.00、每月 $1,890.00；每月節省 $17,610，降幅 90.3%",
+      "verdict": "correct",
+      "reasoning": "50,000 × 35% = 17,500 筆。17,500 × 1,800 = 31,500,000 tokens，乘以 $2/MTok 為 $63/天，30 天為 $1,890。$650 − $63 = $587/天；$19,500 − $1,890 = $17,610/月。17,610 / 19,500 = 90.31%。章節已標明這只是檢索片段單次未快取口徑，限定恰當。",
+      "correct_value": "$63/天；$1,890/月；每月節省 $17,610（90.3%）"
+    },
+    {
+      "claim": "預期輸出：檢索片段輸入費 0.003600 USD；1,800 輸入 tokens 加 350 輸出 tokens 合計 0.007100 USD",
+      "verdict": "correct",
+      "reasoning": "1,800 × $2 / 1M = $0.0036。350 × $10 / 1M = $0.0035。兩者相加為 $0.0071。",
+      "correct_value": "0.003600 / 0.007100"
+    },
+    {
+      "claim": "5 回合未快取時，前綴每多 1,000 tokens，單筆多花 $0.01，每天 50,000 筆就是 $500",
+      "verdict": "correct",
+      "reasoning": "1,000 × 5 回合 = 5,000 tokens，乘以 $2/MTok 為 $0.01/筆。$0.01 × 50,000 = $500/天。",
+      "correct_value": "$0.01/筆；$500/天"
+    },
+    {
+      "claim": "斷點只放在最後一個工具時僅涵蓋約 3,600 tokens；放在最後一個穩定的 system 區塊才能涵蓋 6,000 tokens；5 分鐘 TTL 讀取為 0.05×",
+      "verdict": "correct",
+      "reasoning": "史料記載前綴順序為 tools → system → messages。斷點放在最後一個工具時，只快取工具 Schema 的 3,600 tokens；放在 system 末端則涵蓋 3,600 + 2,400 = 6,000 tokens。Sonnet 5.5 的快取讀取倍率為 0.05×，與基準資料一致。6,000 tokens 也高於史料列出的 Sonnet 最小可快取門檻 1,024。",
+      "correct_value": "成立"
+    },
+    {
+      "claim": "單次檢索 timeout 800 ms，max_search_retries = 2，串行檢索最多耗 2.4 s，因此適用 18 s SLO 而非 2.5 s SLO",
+      "verdict": "correct",
+      "reasoning": "首次查詢加 2 次重試共 3 次，3 × 800 ms = 2.4 s。再加上改寫與模型延遲，必然超過 2.5 s 的分流 SLO，所以歸入 18 s 的多步處置 SLO 合理。",
+      "correct_value": "2.4 s（僅檢索部分）"
+    },
+    {
+      "claim": "針對 529 採用 Full Jitter 退避，基底 500 ms、上限 16,000 ms、最多重試 4 次，上界合計至多 7.5 s",
+      "verdict": "correct",
+      "reasoning": "4 次重試的上界依序為 500、1,000、2,000、4,000 ms，都沒碰到 16,000 ms 的上限，合計 7,500 ms = 7.5 s。",
+      "correct_value": "7.5 s"
+    },
+    {
+      "claim": "RRF 公式 rrf_score = 1/(60+rank_bm25) + 1/(60+rank_vector)，採 1-based 名次，未出現在某一路結果時該路貢獻為 0",
+      "verdict": "correct",
+      "reasoning": "這是標準 RRF 的定義，k = 60 是常用值。缺席的一路以 0 計入，符合 RRF 常見的實作方式。",
+      "correct_value": "成立"
+    },
+    {
+      "claim": "平均 0.58 req/s，尖峰 12 req/s 約為 20×；Redis TTL 86,400 秒 = 24 小時",
+      "verdict": "correct",
+      "reasoning": "50,000 / 86,400 ≈ 0.579 req/s，0.58 × 20 = 11.6 ≈ 12。86,400 / 3,600 = 24 小時。",
+      "correct_value": "成立"
+    },
+    {
+      "claim": "stop_reason 的值包含 model_context_window_exceeded、refusal、pause_turn，且 HTTP 200 之後仍可能出現 SSE error 事件",
+      "verdict": "imprecise",
+      "reasoning": "提供的 source-evidence 沒有列出 stop_reason 的值，也沒有記載串流錯誤事件。這些值是否存在、在哪些模型與 API 版本可用，閉卷無法確認。",
+      "correct_value": "建議註明「依撰寫時官方 Messages API 文件所列的 stop_reason 值，各模型版本可能不同」，並對照官方文件確認"
+    },
+    {
+      "claim": "可為 (tenant_id, acl_roles) 建立帶 btree_gin 的 GIN 複合索引，並驗證是否達到 50 ms 目標",
+      "verdict": "imprecise",
+      "reasoning": "btree_gin 讓 GIN 索引可以同時涵蓋純量欄位與陣列欄位，做法可行。但「50 ms 目標」在本章正文和基準資料中都沒有定義，讀者無從得知它的來源與口徑（p95 還是平均？只算檢索還是端到端？）。",
+      "correct_value": "在正文定義檢索延遲預算（例如：前置過濾後單路檢索 p95 ≤ 50 ms），或刪除這個數字"
+    },
+    {
+      "claim": "應用連線角色不可為表擁有者或具備 BYPASSRLS 權限，否則 RLS 不生效",
+      "verdict": "correct",
+      "reasoning": "PostgreSQL 預設不對表擁有者套用 RLS（除非設定 FORCE ROW LEVEL SECURITY），具 BYPASSRLS 權限的角色也會略過 RLS，所以這個建議成立。若要更周全，可補充 FORCE ROW LEVEL SECURITY 這個選項。",
+      "correct_value": "成立；可補充 ALTER TABLE ... FORCE ROW LEVEL SECURITY"
+    }
+  ]
+}

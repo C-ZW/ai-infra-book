@@ -1,0 +1,170 @@
+{
+  "chapter": "ch11-ssrf-parsers-and-cache.md",
+  "reviewer": "codex:gpt-6.2-sol:medium",
+  "fallback_used": false,
+  "status": "complete",
+  "claims": [
+    {
+      "claim": "Nginx 也設定了靜態資源快取與 `proxy_read_timeout = 30 s`（後端 Node.js 則維持 `keepAliveTimeout = 5 s`）",
+      "verdict": "correct",
+      "reasoning": "基準表把 30 秒指定給 Nginx 的 `proxy_read_timeout`，把 5 秒指定給 Node.js 的 `keepAliveTimeout`。章文的數值、單位與元件均一致。",
+      "correct_value": "Nginx `proxy_read_timeout = 30 s`，Node.js `keepAliveTimeout = 5 s`。"
+    },
+    {
+      "claim": "負責「驗證」的元件與負責「執行」的元件幾乎從來不是同一套解析器。",
+      "verdict": "imprecise",
+      "reasoning": "章內範例能說明兩個元件可能採用不同解析器。章內也示範兩者共用同一解析器的設計。材料沒有提供部署樣本或統計，無法量化「幾乎從來」的頻率。",
+      "correct_value": "驗證器與發起器可能採用不同解析器，或對同一輸入採取不同的正規化策略。"
+    },
+    {
+      "claim": "嚴格依循 RFC 3986 字元集切分的解析器（如 Python `urllib.parse.urlsplit` 或常見的 RFC 3986 正則 `^https?://(?:[^/@]+@)?([^/:?#]+)`）不把 `\\` 視為路徑分隔符，因此將 `127.0.0.1:8080\\` 視為 userinfo、把 `webhook.merchant.example` 視為主機而放行。",
+      "verdict": "incorrect",
+      "reasoning": "判定分隔符位置和驗證欄位字元是兩個步驟。RFC 3986 的 userinfo 字元集排除未編碼的反斜線，所以嚴格驗證整段 URI 時會拒絕。寬鬆擷取可以回傳主機欄位，但回傳欄位不代表符合 RFC 語法，也不代表後續驗證會放行。",
+      "correct_value": "嚴格 RFC 3986 語法驗證應拒絕該輸入。若要描述欄位擷取結果，應明確標示為寬鬆解析，並限定實作及版本。"
+    },
+    {
+      "claim": "WHATWG 規定在解析前先剝除 ASCII 空白與控制字元（`\\t` 0x09、`\\n` 0x0A、`\\r` 0x0D）。",
+      "verdict": "imprecise",
+      "reasoning": "這句把兩種作用範圍寫成同一步。前後端的 C0 控制字元與空格會被修剪。Tab、LF 和 CR 則會從輸入各處移除。這個差異會影響對內嵌空格和其他控制字元的推論。",
+      "correct_value": "先修剪輸入首尾的 C0 控制字元與空格，再移除輸入中所有 ASCII Tab、LF 和 CR。"
+    },
+    {
+      "claim": "八進位 `0177` = `1×64 + 7×8 + 7 = 127`，純十進位整數為 `127 × 256^3 + 0 × 256^2 + 0 × 256 + 1 = 2,130,706,433`。",
+      "verdict": "correct",
+      "reasoning": "依位值計算，八進位部分為 64＋56＋7＝127。四個位元組的整數值為 127×16,777,216＋1＝2,130,706,433。",
+      "correct_value": "127 與 2,130,706,433。這是數值換算結果，實作是否接受特定文字格式須依解析器判定。"
+    },
+    {
+      "claim": "**IPv6 本機與 IPv4-mapped IPv6**：`http://[::1]/`、`http://[::]/`、`http://[::ffff:127.0.0.1]/`。",
+      "verdict": "imprecise",
+      "reasoning": "三個值的位址語意不同。章內防禦程式也把 `::` 註記為 Unspecified，把 `::1` 註記為 Loopback。是否可以建立連線還取決於系統和用戶端。",
+      "correct_value": "`::1` 是 IPv6 回環位址，`::` 是 IPv6 未指定位址，`::ffff:127.0.0.1` 是映射至 IPv4 回環位址的 IPv6 表示。"
+    },
+    {
+      "claim": "Validator 呼叫 `dns.lookup(hostname)` 拿到 IP 並通過檢查後，把原始網域名稱交給 HTTP Client 去連線。",
+      "verdict": "correct",
+      "reasoning": "依章內模型，第一次查詢的結果只用於驗證，連線端並未綁定通過檢查的位址。若連線端另外解析名稱且取得不同結果，先前的檢查無法約束實際連線目的地。這條推論不要求兩次解析一定發生。",
+      "correct_value": "驗證與實際連線各自取得位址時，存在 TOCTOU 風險。"
+    },
+    {
+      "claim": "本機的 `systemd-resolved` 或容器上游 DNS resolver 有時會強制把 `TTL=0` 拉長成最小快取時間（例如 1–5 秒）。",
+      "verdict": "imprecise",
+      "reasoning": "最小 TTL 可以作為時間軸的假設，但基準表與史料摘錄沒有列出相關版本、設定、解析鏈或量測紀錄。章內假設無法證明特定解析器有此行為，也無法支持 1–5 秒的範圍。",
+      "correct_value": "若實際解析鏈設有最小快取時間，應使用經設定或量測確認的值。5 秒可保留為假設值。"
+    },
+    {
+      "claim": "只要中間間隔超過上游最小 TTL，第二次查詢同樣會拿到新紀錄。",
+      "verdict": "incorrect",
+      "reasoning": "最小 TTL 是快取時間的下限。超過下限時，快取項目仍可能有效，客戶端也可能重用既有連線。即使確實重新解析，查到的答案仍由當時的解析鏈決定。",
+      "correct_value": "第二次連線需要重新解析、各相關快取沒有繼續供應舊答案，且解析結果確有變動時，才會取得不同紀錄。"
+    },
+    {
+      "claim": "若 Validator 只檢查 `ips[0]` 而 HTTP client 依輪詢或 Happy Eyeballs 連向 `ips[1]`（或第一筆連線被防火牆 drop 後自動 fallback 到第二筆），防線立刻失效。",
+      "verdict": "imprecise",
+      "reasoning": "只驗證一筆位址無法保證其他候選位址經過檢查。不過，兩筆同族別記錄的存在不足以推出客戶端會採用第二筆。排序、重試及位址族別選擇都取決於實作和設定。",
+      "correct_value": "若實際連線可能採用未驗證的候選位址，僅檢查第一筆紀錄不足以建立連線安全性。"
+    },
+    {
+      "claim": "Webhook 驗證或背景派發通常只回傳「已排入佇列（`202 Accepted`）」或「目標連線失敗／成功」，這就是 Blind SSRF。",
+      "verdict": "incorrect",
+      "reasoning": "狀態碼與回應內容只說明呼叫者能觀察什麼。即使服務只回傳 `202`，若呼叫者無法使伺服器發起未獲授權的請求，仍不能推出存在 SSRF。",
+      "correct_value": "當呼叫者能使伺服器發起未獲授權的請求，且無法直接取得目標回應內容時，才構成這裡所說的 Blind SSRF。"
+    },
+    {
+      "claim": "讓伺服器連線至攻擊者控制的外部 DNS/HTTP 監聽器，直接取得伺服器的真實對外出口 IP、`User-Agent` 版本。",
+      "verdict": "imprecise",
+      "reasoning": "DNS 端可能只觀察到遞迴解析器的位址。HTTP 端觀察到的是對端位址，可能屬於 NAT 或代理。`User-Agent` 只有在請求包含此欄位時才看得到，欄位值也無法單獨證實函式庫版本。",
+      "correct_value": "外部觀測可證明有可見的 DNS 或 HTTP 互動。來源位址與標頭應依解析器、代理及網路架構解讀。"
+    },
+    {
+      "claim": "若有效新鮮期為 `max-age=60` 且目前 `Age: 52`，代表剩餘新鮮期為 `60 - 52 = 8` 秒，這份快取將在約 8 秒後轉為陳舊（stale）並觸發下一次源站抓取。",
+      "verdict": "imprecise",
+      "reasoning": "若 60 秒是有效新鮮期，且 52 秒是快取目前採用的年齡，差值確實為 8 秒。轉為陳舊只改變快取項目的狀態，是否回源、何時回源，以及是否進行條件式再驗證，都要看後續請求及快取政策。",
+      "correct_value": "在所給前提下約剩 8 秒新鮮期。後續處理由請求與快取政策決定。"
+    },
+    {
+      "claim": "快取層依規範忽略 GET 的 body 來計算鍵值，但某些後端框架（如特定設定下的 Express 或 Rails）會把 GET body 合併進 `req.params` 並優先採用。",
+      "verdict": "incorrect",
+      "reasoning": "GET 內容沒有一般定義的語意，無法據此推出所有快取都必須將其排除於鍵之外。就 Express 的欄位用途而言，`req.params` 代表路由參數，是否將解析出的請求內容合併進其他資料結構，取決於應用程式或中介軟體。",
+      "correct_value": "若共享快取的有效鍵未涵蓋請求內容，而源站確實讀取該內容並用它產生可共享回應，就可能出現未鍵入輸入。個別框架的欄位與優先序需要版本及設定證據。"
+    },
+    {
+      "claim": "只要這筆請求搶在所有正常使用者之前抵達快取層並觸發 `MISS`，源站產生的惡意 HTML 就會被寫進 `/login` 或 `/home` 的公開快取鍵中，在接下來的 `60` 秒內（且攻擊者可以每 `60` 秒自動續期）感染每一位存取該頁面的使用者。",
+      "verdict": "incorrect",
+      "reasoning": "`MISS` 表示此次查找未命中，無法推出回應會被寫入共享快取。即使寫入，讀取仍取決於節點、有效鍵與變體。內容是否在瀏覽器執行，還要看輸出上下文及瀏覽器端防護。",
+      "correct_value": "只有可共享且實際寫入的回應會影響後續命中同一快取項目的請求。影響期間和範圍由實際快取政策與應用行為決定。"
+    },
+    {
+      "claim": "源站（Nginx / Node.js）先將 `%2f` 解碼為 `/` 再執行點段正規化（折疊兩個 `/../`），實際路由變成 `/v1/merchant/profile`，回傳 `200 OK` 與受害者的敏感資料。",
+      "verdict": "imprecise",
+      "reasoning": "依例子的路徑結構，第一個上層點段會移除靜態目錄段，第二個則到達根目錄邊界。只有採用在根目錄截止的演算法，才會得到文中路由。材料未指定完整的源站解析與轉送行為，也未提供觀測結果。",
+      "correct_value": "文中路由是特定解碼與根目錄截止規則下的推論。實際路由及回應狀態取決於完整的代理與源站組態。"
+    },
+    {
+      "claim": "CDN 寫入快取（Cache-Control 被忽略或未設 no-store）。",
+      "verdict": "incorrect",
+      "reasoning": "忽略一個標頭或缺少一項禁止指令，都不足以推出一定寫入。其他快取控制、`Set-Cookie`、`Vary`、攔截條件及快取資格仍可能改變結果。",
+      "correct_value": "只有回應符合所有生效的共享快取條件並實際寫入，後續請求才可能查到該項目。"
+    },
+    {
+      "claim": "任務 1A 的「方案一（利用 url.parse() 不正規化八進位/DWORD IPv4，而 WHATWG fetch() 自動正規化）」可作為所列驗證器的參考解答。",
+      "verdict": "incorrect",
+      "reasoning": "參考解答僅證明第一道主機字串檢查有差異。題目程式隨即呼叫 `dns.lookup()` 並再檢查回傳位址。若查詢失敗，驗證流程會中止。若回傳回環 IPv4，第二道檢查會拒絕。材料未建立完整驗證能通過的前提。",
+      "correct_value": "此例說明解析結果差異，未證明能通過題目中的完整驗證器。"
+    },
+    {
+      "claim": "任務 1A 的「方案二（若前置 Validator 為嚴格 RFC 3986 解析器／正則，而 Fetcher 為 WHATWG fetch()）」可作為原題的參考解答。",
+      "verdict": "incorrect",
+      "reasoning": "方案二更換了題目指定的驗證器。按章文對原題 Node.js 解析器的描述，第一道主機檢查就會拒絕。即使改採假設中的寬鬆前置元件，參考解答自己列出的發起端路徑也有額外前綴，與題目要求的精確路徑不同。",
+      "correct_value": "方案二未滿足原題的驗證器及精確路徑條件。"
+    },
+    {
+      "claim": "安全驗證範例會「解析所有 A/AAAA 記錄並全數檢查」。",
+      "verdict": "incorrect",
+      "reasoning": "`dns.lookup(..., { all: true })` 的檢查範圍是系統名稱解析介面此次回傳的位址清單，未涵蓋可向權威 DNS 取得的全部記錄。此外，程式將含方括號的 IPv6 URL 主機直接交給 `dns.lookup()`。若查詢先失敗，程式會拒絕請求，但並未執行聲稱的 CIDR 判定。",
+      "correct_value": "網域名稱應檢查系統解析所得的全部候選位址。IP 字面值應直接轉為可供位址檢查的形式，再驗證與釘選。"
+    },
+    {
+      "claim": "任務 1B 的範例可「透過單次請求的 lookup 回呼釘選已驗證 IP」。",
+      "verdict": "imprecise",
+      "reasoning": "範例的回呼固定回傳單一位址與族別，未處理要求候選陣列的呼叫形式。若連線重用，該次請求也不會再呼叫 `lookup`。材料缺少 Node.js 版本、Agent 行為與驗證結果，無法證明這段程式在所宣稱的範圍內都能正常完成釘選。",
+      "correct_value": "釘選保證應限定在已驗證的回呼契約與連線管理行為，並確認請求使用的連線確實對應選定的位址。"
+    },
+    {
+      "claim": "任務 2B 稱「因漏洞組態含 proxy_ignore_headers Cache-Control 且強制快取 200 回應 300s，將個資寫入共享快取」。",
+      "verdict": "imprecise",
+      "reasoning": "300 秒與該區塊的設定一致，但它是適用時的快取有效期。範例忽略的是 `Cache-Control`，未提供完整回應標頭、實際生效的快取條件或寫入紀錄，所以無法從 `200` 和這兩項指令推出後續匿名請求必定命中。",
+      "correct_value": "300 秒是範例為符合條件的 `200` 回應設定的快取有效期。個資是否寫入和能否被匿名讀取，仍須由實際組態及觀測結果判定。"
+    },
+    {
+      "claim": "在查詢字串參與有效快取鍵的前提下，加上高熵隨機的 Cache Buster 參數可以將測試請求隔離到一個尚未被占用的快取鍵下。",
+      "verdict": "correct",
+      "reasoning": "若這個參數確實改變有效鍵，兩筆請求就不會查找同一項目。隨機值能降低與既有測試鍵碰撞的機率，但無法單獨保證鍵從未使用，或保證請求必然到達最終源站。",
+      "correct_value": "有效鍵包含該參數且所選值未與既有鍵碰撞時，測試請求會使用獨立的快取項目。"
+    },
+    {
+      "claim": "本章的 Poisoning 案例源於快取鍵（與 `Vary` 變體）遺漏了會影響源站回應的輸入欄位（Unkeyed Input）；Deception 案例則源於快取層與源站對路徑／副檔名的解析與快取資格規則（如忽略源站 `Cache-Control`）不一致。",
+      "verdict": "correct",
+      "reasoning": "依章內模型，前者將內容可以不同的請求歸到同一快取項目。後者把私人回應誤判為適合共享。原句把因果描述限定在本章案例，與兩個模型相符。",
+      "correct_value": "本章的 Poisoning 案例涉及有效鍵或變體遺漏。Deception 案例涉及將私有回應誤判為可共享。"
+    },
+    {
+      "claim": "所有需驗證身分或回傳動態個人資料的端點，應由統一的中介軟體預設加上 `Cache-Control: no-store, private`，確保任何上游代理或 CDN 都不得將其存入共享快取。",
+      "verdict": "imprecise",
+      "reasoning": "這個標頭可以宣告禁止儲存，但章內已展示代理可設定忽略 `Cache-Control`。因此，源站的宣告無法單獨保證實際部署遵守。",
+      "correct_value": "`Cache-Control: no-store, private` 應配合共享快取遵守源站指令，以及動態路由的快取控制。"
+    },
+    {
+      "claim": "PortSwigger Web Security Academy 提供文中逐一列出的 SSRF、Web Cache Poisoning 和 Web Cache Deception 挑戰，且屬於 Practitioner／Expert 等級。",
+      "verdict": "imprecise",
+      "reasoning": "史料摘錄只提供 Academy 的一般介紹，所附連結也是研究入口。材料沒有逐項課程頁、難度標籤或查閱日期，因此只能支持平台提供相關安全實驗的一般描述。",
+      "correct_value": "平台的一般描述獲提供材料支持。各挑戰的精確名稱、難度與可用狀態尚待逐項查證。"
+    },
+    {
+      "claim": "Orange Tsai 的 *A New Era of SSRF — Exploiting URL Parser in Trending Programming Languages!* 發表於 Black Hat USA 2017；James Kettle 的相關研究分別列於 2018 與 2020 年；*Gotta cache 'em all: bending the rules of web cache exploitation* 列於 2024 年。",
+      "verdict": "imprecise",
+      "reasoning": "提供的史料摘錄沒有逐筆書目、會議議程、研究文章頁或出版日期。可從章文辨認作者引用了哪些作品，但無法據此獨立確認各作品的年份、場合及內容範圍。",
+      "correct_value": "將這幾筆保留為待核書目，逐項以會議議程或原始出版頁核對作者、標題、年份與場合。"
+    }
+  ]
+}
