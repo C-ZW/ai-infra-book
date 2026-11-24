@@ -1,0 +1,11 @@
+# Temporary checks are not book sources. Keep final conclusions in one report.
+.review-output/
+.cache/
+*.tmp
+__pycache__/
+book-src/_meta/reviews/
+book-src/_meta/source-audits/
+book-src/_meta/browser-status.json
+book-src/_meta/offline-verification.json
+book-src/_meta/source-snapshot.json
+book-src/_meta/state.json

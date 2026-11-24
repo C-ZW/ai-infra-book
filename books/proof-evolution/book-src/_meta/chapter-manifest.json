@@ -1,0 +1,74 @@
+[
+  {
+    "id": "ch01",
+    "file": "ch01-why-prove.md"
+  },
+  {
+    "id": "ch02",
+    "file": "ch02-tablets-and-algorithms.md"
+  },
+  {
+    "id": "ch03",
+    "file": "ch03-greek-deduction.md"
+  },
+  {
+    "id": "ch04",
+    "file": "ch04-plural-traditions.md"
+  },
+  {
+    "id": "ch05",
+    "file": "ch05-algebra-and-symbols.md"
+  },
+  {
+    "id": "ch06",
+    "file": "ch06-infinity-and-limits.md"
+  },
+  {
+    "id": "ch07",
+    "file": "ch07-axioms-and-models.md"
+  },
+  {
+    "id": "ch08",
+    "file": "ch08-logic-and-foundations.md"
+  },
+  {
+    "id": "ch09",
+    "file": "ch09-incompleteness-and-computation.md"
+  },
+  {
+    "id": "ch10",
+    "file": "ch10-construction-and-programs.md"
+  },
+  {
+    "id": "ch11",
+    "file": "ch11-experiment-and-evidence.md"
+  },
+  {
+    "id": "ch12",
+    "file": "ch12-probability-and-statistics.md"
+  },
+  {
+    "id": "ch13",
+    "file": "ch13-causality-and-replication.md"
+  },
+  {
+    "id": "ch14",
+    "file": "ch14-computer-assisted-proofs.md"
+  },
+  {
+    "id": "ch15",
+    "file": "ch15-proof-assistants.md"
+  },
+  {
+    "id": "ch16",
+    "file": "ch16-interactive-and-zero-knowledge.md"
+  },
+  {
+    "id": "ch17",
+    "file": "ch17-ai-and-proof.md"
+  },
+  {
+    "id": "ch18",
+    "file": "ch18-responsibility-of-proof.md"
+  }
+]
